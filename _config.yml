@@ -12,17 +12,17 @@ search_enabled: true
 search:
   heading_level: 2
   previews: 3
-  preview_words_before: 5
-  preview_words_after: 10
+  preview_words_before: 8
+  preview_words_after: 16
   rel_url: true
-  button: false
+  button: true
 
 aux_links:
   "GitHub":
     - "https://github.com/eliekh05/guides"
 aux_links_new_tab: true
 
-color_scheme: dark
+color_scheme: system
 
 plugins:
   - jekyll-remote-theme

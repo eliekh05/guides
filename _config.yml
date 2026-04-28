@@ -1,6 +1,3 @@
 remote_theme: just-the-docs/just-the-docs
 title: macOS & Linux Guides
 description: Practical guides for problems that are hard to find solutions for online.
-# Correct TOC configuration for just-the-docs
-just_the_docs:
-  show_toc: true

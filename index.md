@@ -44,5 +44,5 @@ A collection of clear, practical guides for problems that are hard to find solut
 
 ### Others - 2 Installation Guides
 
-- [How to install chromeOS with brunch framework on laptop bare metal](how-to-install-chromeOS-with-brunch-framework-on-laptop-bare-metal)
-- [Clean Install of Arch Linux + JaKooLit Hyprland on Wi-Fi only](clean-install-of-arch-linux-+-haKooLit-hyprland-on-wi-fi-only)
+- [How to install chromeOS with brunch framework on laptop bare metal](how-to-install-chromeos-with-brunch-framework-on-laptop-bare-metal)
+- [Clean Install of Arch Linux + JaKooLit Hyprland on Wi-Fi only](clean-install-of-arch-linux-+-jakooLit-hyprland-on-wi-fi-only)

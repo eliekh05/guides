@@ -17,9 +17,6 @@ search:
   rel_url: true
   button: false
 
-# Empty footer — removes "macOS & Linux & Installation Guides" text at bottom
-footer_content: ""
-
 aux_links:
   "GitHub":
     - "https://github.com/eliekh05/guides"

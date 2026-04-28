@@ -1,3 +1,10 @@
+---
+layout: default
+title: "Promote User to Admin (macOS 12 and Earlier)"
+parent: "System & Users"
+nav_order: 1
+---
+
 # Promote a Standard User to Admin (macOS 12 and Earlier)
 
 This guide explains how to grant administrator privileges to a standard user account on macOS 12 (Monterey) and earlier. It is useful when system groups have been removed or the account was set up without admin rights.

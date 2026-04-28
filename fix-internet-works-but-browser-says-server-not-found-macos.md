@@ -1,3 +1,10 @@
+---
+layout: default
+title: "Fix Internet Works But Browser Doesn't"
+parent: "Networking & DNS"
+nav_order: 2
+---
+
 # Fix: Internet Works But Browser Says "Server Not Found" (macOS)
 
 If apps like Mail, Spotify, or the App Store work fine, but your browser shows "Server Not Found", "This site can't be reached", or similar errors — your internet connection is fine. The problem is with **DNS** (the system that translates domain names like `google.com` into IP addresses).

@@ -1,3 +1,10 @@
+---
+layout: default
+title: "Fix Homebrew / Commands Not Found"
+parent: "Homebrew & Packages"
+nav_order: 2
+---
+
 # Fix Homebrew / Commands Not Found After New Shell Session (macOS)
 
 After installing Homebrew or a tool via Homebrew, you may find that the command works in one Terminal window but not in a new one — or disappears entirely after a restart. This happens because the command's location is not in your **PATH**, or the file where you added it is not being loaded correctly.

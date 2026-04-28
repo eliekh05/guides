@@ -1,3 +1,10 @@
+---
+layout: default
+title: "Flush DNS Cache (All Versions)"
+parent: "Networking & DNS"
+nav_order: 1
+---
+
 # Flush DNS Cache on macOS (All Versions)
 
 The DNS flush command changes with almost every major macOS release. Most guides online are outdated — you run the command, nothing happens, and you assume it did not work. This guide lists the correct command for every macOS version in one place.

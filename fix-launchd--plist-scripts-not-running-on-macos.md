@@ -1,3 +1,10 @@
+---
+layout: default
+title: "Fix launchd / plist Scripts Not Running"
+parent: "Task Scheduling"
+nav_order: 2
+---
+
 # Fix launchd / plist Scripts Not Running on macOS
 
 `launchd` is macOS's built-in task scheduler — the replacement for `cron`. It is used to run scripts automatically on a schedule or at login. However, it is notoriously difficult to get working because it runs in a completely different environment from your Terminal. Scripts that work perfectly in Terminal often fail silently under `launchd` for reasons that are hard to diagnose.

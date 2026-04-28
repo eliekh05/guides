@@ -1,3 +1,10 @@
+---
+layout: default
+title: "Fix Safari Cannot Move File After Download"
+parent: "System & Users"
+nav_order: 3
+---
+
 # Fix Safari "Cannot Move File" Error After Download (macOS)
 
 If Safari shows an error saying it cannot move a file after downloading, the issue is usually that your **Downloads folder does not have full Read & Write access** for all users.

@@ -1,3 +1,10 @@
+---
+layout: default
+title: "Install ChromeOS with Brunch Framework"
+parent: "Installation Guides"
+nav_order: 1
+---
+
 # ChromeOS with Brunch Framework – Laptop Installation Guide
 
 This guide explains how to install **ChromeOS with the Brunch Framework** on a laptop (bare metal).

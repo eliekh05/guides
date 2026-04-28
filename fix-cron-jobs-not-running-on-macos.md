@@ -1,3 +1,10 @@
+---
+layout: default
+title: "Fix cron Jobs Not Running"
+parent: "Task Scheduling"
+nav_order: 1
+---
+
 # Fix cron Jobs Not Running on macOS
 
 `cron` is a classic Unix tool for scheduling tasks. It still exists on macOS but has several limitations that cause jobs to silently fail. This guide explains why, and gives you working solutions.

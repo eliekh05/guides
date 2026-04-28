@@ -1,3 +1,10 @@
+---
+layout: default
+title: "Fix Keychain Local Items Password Prompt"
+parent: "Security & Apps"
+nav_order: 2
+---
+
 # Fix Mac Repeatedly Asking for Keychain "Local Items" Password (macOS)
 
 If your Mac keeps showing a popup asking for the **"Local Items"** keychain password — especially after a macOS update — the keychain cache has likely become corrupted. This is a known issue and not a sign of a security problem.

@@ -1,3 +1,10 @@
+---
+layout: default
+title: "Fix App Is Damaged and Can't Be Opened"
+parent: "Security & Apps"
+nav_order: 1
+---
+
 # Fix "App Is Damaged and Can't Be Opened" (macOS)
 
 This error does **not** mean the app is actually broken. macOS has a security system called **Gatekeeper** that blocks apps downloaded from outside the App Store. When it cannot verify the app's origin, it refuses to open it and shows this message.

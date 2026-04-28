@@ -1,3 +1,10 @@
+---
+layout: default
+title: "Reset NVRAM and SMC (All Models)"
+parent: "Security & Apps"
+nav_order: 3
+---
+
 # Reset NVRAM and SMC on Mac (All Models)
 
 This guide covers when and how to reset **NVRAM** and **SMC** on every Mac model. Most online guides mix up the two or are outdated. The process varies significantly depending on whether your Mac uses an Intel chip, a T2 chip, or Apple Silicon (M1/M2/M3/M4).

@@ -1,3 +1,10 @@
+---
+layout: default
+title: "Add Asterisk Feedback to Sudo"
+parent: "macOS & Linux"
+nav_order: 2
+---
+
 # Add Asterisk Feedback to Sudo (Mac and Linux)
 
 By default, `sudo` does not show any characters when you type your password. This guide enables asterisk (`*`) feedback so you can see how many characters you have typed.

@@ -1,3 +1,10 @@
+---
+layout: default
+title: "Sudo Password Reminder"
+parent: "macOS & Linux"
+nav_order: 1
+---
+
 # Sudo Password Reminder
 
 > **Important:** All `sudo` commands require your **Mac or Linux login password** — the same password you use to log into your computer.

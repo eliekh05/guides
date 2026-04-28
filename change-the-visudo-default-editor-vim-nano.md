@@ -1,3 +1,10 @@
+---
+layout: default
+title: "Change the Visudo Default Editor"
+parent: "macOS & Linux"
+nav_order: 3
+---
+
 # Change the Visudo Default Editor (Vim ↔ Nano)
 
 `visudo` opens the sudoers file using a default text editor. This guide shows how to switch that editor between **vi** and **nano**.

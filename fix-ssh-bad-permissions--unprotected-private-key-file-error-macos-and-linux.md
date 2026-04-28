@@ -1,3 +1,10 @@
+---
+layout: default
+title: "Fix SSH Bad Permissions / Unprotected Private Key"
+parent: "macOS & Linux"
+nav_order: 4
+---
+
 # Fix SSH "Bad Permissions" / "Unprotected Private Key File" Error (macOS and Linux)
 
 When connecting via SSH, you may see an error like:

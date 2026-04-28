@@ -1,3 +1,10 @@
+---
+layout: default
+title: "Fix Broken File Permissions After Copying Drives"
+parent: "macOS & Linux"
+nav_order: 5
+---
+
 # Fix Broken File Permissions After Copying Between Drives (macOS and Linux)
 
 When you copy files between drives — especially from NTFS or exFAT to APFS or HFS+ — files can end up with wrong permissions, missing execute bits, or corrupted extended attributes. This makes files read-only, scripts non-executable, or apps that refuse to launch.

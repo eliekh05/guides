@@ -1,3 +1,10 @@
+---
+layout: default
+title: "Fix curl Errors After Reinstalling Homebrew"
+parent: "Homebrew & Packages"
+nav_order: 1
+---
+
 # Fix curl Errors on macOS (After Reinstalling Homebrew)
 
 This guide covers how to resolve `curl`-related errors that can appear after uninstalling and reinstalling Homebrew on macOS.

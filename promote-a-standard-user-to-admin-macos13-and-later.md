@@ -1,3 +1,10 @@
+---
+layout: default
+title: "Promote User to Admin (macOS 13 and Later)"
+parent: "System & Users"
+nav_order: 2
+---
+
 # Promote a Standard User to Admin (macOS 13 and Later)
 
 This guide explains how to grant administrator privileges to a standard user account on macOS 13 (Ventura) and later. It is useful when system groups have been removed or the account was set up without admin rights.

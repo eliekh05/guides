@@ -1,3 +1,10 @@
+---
+layout: default
+title: "Clean Install Arch Linux + Hyprland (Wi-Fi Only)"
+parent: "Installation Guides"
+nav_order: 2
+---
+
 # Arch Linux + Hyprland Installation Guide (Wi-Fi Only)
 
 > ⚠️ **Note:** Arch Linux 2026 versions the `archinstall` menus have changed and can be unpredictable.

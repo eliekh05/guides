@@ -4,7 +4,7 @@ title: Home
 nav_order: 1
 ---
 
-# macOS & Linux Guides
+# macOS & Linux Installation Guides
 
 A collection of clear, practical guides for problems that are hard to find solutions for online.
 
@@ -22,4 +22,4 @@ Browse the sections in the sidebar, or use the search bar at the top.
 | **Security & Apps** | Gatekeeper, Keychain, NVRAM/SMC |
 | **Networking & DNS** | DNS flush, browser not loading |
 | **Task Scheduling** | cron, launchd |
-| **Installation Guides** | ChromeOS, Arch Linux |
+| **Installation Guides** | Any OS installation guide|

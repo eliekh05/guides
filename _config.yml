@@ -17,7 +17,11 @@ search:
   rel_url: true
   button: false
 
-footer_content: "macOS &amp; Linux Guides"
+# Empty footer — removes "macOS & Linux Guides" text at bottom
+footer_content: ""
+
+# Removes "This site uses Just the Docs" line
+last_edit_time_format: ""
 
 aux_links:
   "GitHub":

@@ -1,4 +1,4 @@
-# 🖥️ ChromeOS with Brunch Framework – Laptop Installation Guide
+# ChromeOS with Brunch Framework – Laptop Installation Guide
 
 This guide explains how to install **ChromeOS with the Brunch Framework** on a laptop (bare metal).
 It works on most modern Intel-based laptops with **UEFI firmware**.

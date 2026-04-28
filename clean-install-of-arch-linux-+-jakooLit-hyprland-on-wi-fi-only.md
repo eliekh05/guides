@@ -1,4 +1,4 @@
-# 🖥️ Arch Linux + Hyprland Installation Guide (Wi-Fi Only)
+# Arch Linux + Hyprland Installation Guide (Wi-Fi Only)
 
 > ⚠️ **Note:** Arch Linux 2026 versions the `archinstall` menus have changed and can be unpredictable.
 > This guide keeps the original installation instructions for stability and accuracy.

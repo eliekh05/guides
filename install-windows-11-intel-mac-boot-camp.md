@@ -11,8 +11,6 @@ Boot Camp lets you install Windows natively on an Intel Mac — not in a virtual
 
 > **Intel Mac only.** Boot Camp was removed on Apple Silicon Macs (M1/M2/M3/M4). It only works on Intel Macs. If you have Apple Silicon, see the VMware Fusion or UTM guides instead.
 
-> **macOS Sequoia note:** Apple removed Boot Camp Assistant in macOS Sequoia 15. If you are on Sequoia, you need to use an alternative method — see the end of this guide.
-
 ---
 
 ## Requirements

@@ -45,7 +45,7 @@ This is the method used to create a bootable macOS ISO for virtual machines. Rep
 
 ```bash
 # Step 1 — Create a blank DMG to write the installer into
-hdiutil create -o /tmp/Sequoia -size 16384m -volname "Install macOS Sequoia" -layout SPUD -fs HFS+J
+hdiutil create -o /tmp/Sequoia -size 18500m -volname "Install macOS Sequoia" -layout SPUD -fs HFS+J
 
 # Step 2 — Mount the blank DMG
 hdiutil attach /tmp/Sequoia.dmg -noverify -mountpoint /Volumes/InstallMacOSSequoia

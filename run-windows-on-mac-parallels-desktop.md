@@ -35,7 +35,7 @@ The trade-off is cost: Parallels is a paid subscription. This guide covers what 
 
 ## Requirements
 
-- A Mac running macOS 13 (Ventura) or later
+- A Mac running macOS 13 (Ventura) or later — Parallels Desktop 26 dropped support for macOS 12 Monterey
 - At least **8 GB RAM** (16 GB recommended)
 - At least **60 GB free disk space**
 - A Parallels Desktop subscription (see pricing below)
@@ -44,11 +44,15 @@ The trade-off is cost: Parallels is a paid subscription. This guide covers what 
 
 ## Parallels Editions
 
-| Edition | Price | Best for |
-|---|---|---|
-| Standard | ~$100/year or ~$130 one-time | Home use, basic Windows apps |
-| Pro | ~$120/year | Developers, heavy workloads, more RAM/CPU allocation |
-| Business | ~$150/year per user | Teams, centralised management |
+The current version is **Parallels Desktop 26**.
+
+| Edition | Annual Subscription | Perpetual License | Best for |
+|---|---|---|---|
+| Standard | $99.99/year | $219.99 one-time | Home use, basic Windows apps |
+| Pro | $119.99/year | Not available | Developers, heavy workloads, more RAM/CPU |
+| Business | $149.99/year | Not available | Teams, centralised management |
+
+> **Perpetual vs subscription:** The Standard perpetual license lets you use that version forever with no recurring fee, but you pay extra for future major version upgrades. The subscription always includes the latest version.
 
 Student and education discounts are available. Check [parallels.com/education](https://www.parallels.com/education/) for pricing.
 

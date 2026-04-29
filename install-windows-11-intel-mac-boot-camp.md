@@ -118,27 +118,7 @@ If you want to go back to macOS only:
 2. Open **Boot Camp Assistant**.
 3. Select **Remove Windows 10 or later version** and click **Continue**.
 4. Boot Camp will remove the Windows partition and restore your full disk to macOS.
-
----
-
-## Boot Camp on macOS Sequoia (Alternative Method)
-
-Apple removed Boot Camp Assistant in macOS Sequoia 15. If you are on Sequoia and want native Windows on your Intel Mac, you have two options:
-
-### Option 1 — Downgrade to Sonoma first
-Install macOS Sonoma (14), run Boot Camp to set up Windows, then upgrade back to Sequoia. Windows will remain installed and bootable.
-
-### Option 2 — Manual partition method
-1. Open **Disk Utility** → select your drive → **Partition** → add a new partition, format as **ExFAT**, name it `BOOTCAMP`, size it 64 GB+.
-2. Download the Boot Camp drivers from Apple: run this in Terminal and note the download URL it generates:
-   ```bash
-   sudo /Applications/Utilities/Boot\ Camp\ Assistant.app/Contents/MacOS/BootCampAssistant
-   ```
-   If Boot Camp Assistant is not present, download the drivers directly from [Apple's support page](https://support.apple.com/en-us/102673) for your Mac model.
-3. Create a Windows 11 bootable USB using [Rufus](https://rufus.ie) on a Windows PC.
-4. Hold **Option (⌥)** at startup and boot from the USB to install Windows manually.
-5. Install Boot Camp drivers inside Windows after setup.
-
+5. 
 ---
 
 ## Troubleshooting

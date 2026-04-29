@@ -114,6 +114,7 @@ Inside **LabConfig**, create the following DWORD (32-bit) values — right-click
 | `BypassTPMCheck` | `1` |
 | `BypassSecureBootCheck` | `1` |
 | `BypassRAMCheck` | `1` |
+| `BypassCPUCheck` | `1`  Check CPU Hard Limit section below |
 
 4. Close Registry Editor and Command Prompt.
 5. Click **Install now** and proceed normally.

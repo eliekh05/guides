@@ -133,9 +133,6 @@ To change RAM, CPU, or disk:
 
 ## Troubleshooting
 
-### "Your trial has expired" before 14 days
-Sign in to your Parallels account inside the app — the trial counter resets if you are signed in.
-
 ### Windows activation fails
 On Apple Silicon with Windows 11 ARM, activation uses your Microsoft account rather than a product key. Sign in to a Microsoft account during Windows setup to activate automatically.
 

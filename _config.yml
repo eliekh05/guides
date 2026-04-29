@@ -22,21 +22,7 @@ aux_links:
     - "https://github.com/eliekh05/guides"
 aux_links_new_tab: true
 
-color_scheme: system
+color_scheme: dark
 
 plugins:
   - jekyll-remote-theme
-  - jekyll-seo-tag
-  - jekyll-include-cache
-  - jekyll-theme-primer
-  - jekyll-github-metadata
-  - jekyll-coffeescript
-  - jekyll-commonmark-ghpages
-  - jekyll-gist
-  - jekyll-github-metadata
-  - jekyll-paginate
-  - jekyll-relative-links
-  - jekyll-optional-front-matter
-  - jekyll-readme-index
-  - jekyll-default-layout
-  - jekyll-titles-from-headings

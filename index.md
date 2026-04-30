@@ -18,10 +18,10 @@ Browse the sections in the sidebar, or use the search bar at the top.
 
 | Section | Guides |
 |---|---|
-| **macOS & Linux** | Sudo, SSH, file permissions |
-| **System & Users** | Admin accounts, Safari downloads |
+| **macOS & Linux** | Sudo, SSH, file permissions, Dock reset, DMG to ISO, operation not permitted |
+| **System & Users** | Admin accounts, Safari downloads, clone drive, Time Machine backup |
 | **Homebrew & Packages** | curl errors, PATH issues |
-| **Security & Apps** | Gatekeeper, Keychain, NVRAM/SMC |
-| **Networking & DNS** | DNS flush, browser not loading |
+| **Security & Apps** | Gatekeeper, Keychain, NVRAM/SMC, SIP (disable/enable) |
+| **Networking & DNS** | DNS flush, browser not loading, static IP (macOS), static IP (Linux) |
 | **Task Scheduling** | cron, launchd |
-| **Installation Guides** | Any OS installation guide|
+| **Installation Guides** | Windows on Mac (Boot Camp, VMware Fusion, Parallels, UTM), macOS on VM (VMware Workstation, VirtualBox), macOS on unsupported Mac (OCLP), Proxmox on laptop WiFi, Arch Linux, Chrome OS Flex, Ubuntu dual boot on Mac, Windows 11 no TPM, Linux on Chromebook |

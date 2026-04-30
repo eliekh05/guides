@@ -101,8 +101,7 @@ apt list --upgradable
 # Remove packages that were installed as dependencies but are no longer needed
 sudo apt autoremove  
 
-Remove no longer needed dependencies with config files
-
+# Remove no longer needed dependencies with config files
 sudo apt autoremove --purge
 
 # Remove downloaded package files from cache (frees disk space)

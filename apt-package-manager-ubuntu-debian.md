@@ -51,6 +51,8 @@ Remove a package, its config files, and any dependencies no longer needed:
 
 ```bash
 sudo apt purge wget && sudo apt autoremove
+
+# You can use sudo apt autoremove --purge to remove config files like sudo apt purge wget
 ```
 
 ### Upgrade all installed packages
@@ -94,7 +96,9 @@ apt list --upgradable
 
 ```bash
 # Remove packages that were installed as dependencies but are no longer needed
-sudo apt autoremove
+sudo apt autoremove  
+
+# You can use sudo apt autoremove --purge to remove config files like sudo apt purge wget
 
 # Remove downloaded package files from cache (frees disk space)
 sudo apt clean

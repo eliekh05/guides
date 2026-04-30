@@ -13,7 +13,7 @@ This guide explains how to grant administrator privileges to a standard user acc
 
 ## Prerequisites
 
-- Your Mac must be updated to the latest compatible macOS version before starting.
+- Your Mac must be updated to the latest compatible macOS version before starting because if system groups removed macOS updates will replace/add the groups.
 - You will need access to Recovery Mode.
 
 ---

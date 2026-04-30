@@ -1,10 +1,10 @@
 ---
 layout: default
-title: "Homebrew & Packages"
+title: "Package Managers (All OSes)"
 nav_order: 4
 has_children: true
 ---
 
-# Homebrew & Packages
+# Package Managers (All OSes)
 
-Fixing Homebrew, curl, and PATH issues on macOS.
+Guides for every major package manager across macOS, Linux, and Windows — from Homebrew and MacPorts on Mac, to apt/dnf/pacman on Linux, to winget and Chocolatey on Windows.

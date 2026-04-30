@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Fix Homebrew / Commands Not Found"
-parent: "Homebrew & Packages"
+parent: "Package Managers (All OSes)"
 nav_order: 2
 ---
 

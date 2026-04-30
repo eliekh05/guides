@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Fix curl Errors After Reinstalling Homebrew"
-parent: "Homebrew & Packages"
+parent: "Package Managers (All OSes)"
 nav_order: 1
 ---
 

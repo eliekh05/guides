@@ -329,13 +329,7 @@ Log in with:
 
 ### Step 19 — Disable the Subscription Nag (Optional)
 
-Proxmox shows a popup on login saying you have no subscription. To remove it:
-
-```bash
-sed -i.bak "s/Ext.Msg.show(/void(/g" \
-  /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
-
-systemctl restart pveproxy
+Proxmox shows a popup on login saying you have no subscription check [proxmox-no-subscription-repo-setup](proxmox-no-subscription-repo-setup) guide to remove it
 ```
 
 The popup will be gone after a browser refresh. This edit is cosmetic only and does not affect functionality.

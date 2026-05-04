@@ -7,7 +7,7 @@ nav_order: 13
 
 # Windows Keyboard Shortcuts That Actually Save Time
 
-The ones worth memorising — not every shortcut, just the ones you will use every day.
+The ones worth memorizing — not every shortcut, just the ones you will use every day.
 
 ---
 

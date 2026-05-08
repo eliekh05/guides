@@ -42,7 +42,7 @@ curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix 
 **Official installer:**
 
 ```bash
-sh <(curl -L https://nixos.org/nix/install) --daemon
+sh <(curl -L https://nixos.org/nix/install) 
 ```
 
 After installation, close and reopen your terminal (or source the profile):

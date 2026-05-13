@@ -140,11 +140,11 @@ This is the free repo — no license needed. It receives the same packages as th
 
 ```bash
 nano /etc/apt/sources.list.d/proxmox.sources
-
+```
 
 in the window that open add the following
 
-
+```
 Types: deb
 URIs: http://download.proxmox.com/debian/pve
 Suites: trixie

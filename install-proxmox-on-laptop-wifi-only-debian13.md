@@ -252,6 +252,11 @@ This gives your VMs automatic IP addresses on the `10.10.100.x` subnet:
 ```bash
 apt install dnsmasq -y
 ```
+Remove the dnsmasq config:
+
+```bash
+rm -rf /etc/dnsmasq.conf
+```
 
 Edit the dnsmasq config:
 
@@ -259,16 +264,18 @@ Edit the dnsmasq config:
 nano /etc/dnsmasq.conf
 ```
 
-Scroll to the bottom and add these lines:
+add these lines:
 
-```
-interface=vmbr0
-dhcp-range=10.10.100.10,10.10.100.200,24h
-dhcp-option=3,10.10.100.1
+# Global Settings
 server=1.1.1.1
 server=8.8.8.8
 dhcp-leasefile=/var/lib/misc/dnsmasq.leases
-```
+bind-interfaces
+
+# --- Configuration for vmbr0 ---
+interface=vmbr0
+dhcp-range=set:net0,10.10.0.1,10.10.0.200,24h
+dhcp-option=tag:net0,3,10.10.0.1
 
 Save and restart dnsmasq:
 

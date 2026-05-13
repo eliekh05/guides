@@ -10,6 +10,7 @@ A collection of clear, practical guides for problems that are hard to find solut
 
 Browse the sections in the sidebar, or use the search bar at the top.
 
-**PLEASE READ THE WHOLE SENTENCE DO NOT SKIP ANYTHING IN INSTALLATION AND OTHER GUIDES AND WHEN TYPING COMMANDS IF YOU DO NOT UNDERSTAND WHAT ARE YOU TYPING THIS MEANS YOU ARE NOT AT THE LEVEL IF DO NOT WANT TO USE THIS WHICH I HIGHLY RECOMMEND THEN GOOD LUCK SPENDING DAYS ON GOOGLE AND FORUMS AND VIDEOS. I SPEND OVER 10 DAYS TRYING TO DO ONE THING WITH OVER 10 AI SESSIONS ACRROS AI TOOLS WITH LIMITS HIT AND WAITING OVER DAYS TO SEND ONE MORE PROMPT SO THIS WEBSITE IS HERE TO HELP YOU WITHOUT USING GOOGLE**
+**⚠️ Please read everything before typing any command. If you do not understand what a command does, you are not ready to run it. If you choose to skip ahead — good luck spending days on Google, forums, and videos. This site exists so you do not have to.
 
-**PLEASE NOTE THAT DUE TO CURRENT AI OR PERSON (ME, YOU, SOMEONE ELSE) THE ACCURACY OF TYPING/WRITING THE GUIDES ARE MEDIUM TO HARD DIFFICULTY BECAUSE OF HOW THE GUIDES ARE WRITTEN FROM ACTUAL DEVS AND COMMUNITY SO DON'T GET TO EXCITED OF ACCURACY IF THERE IS SOMETHING NOT ACCURATE OR WRONG JUST USE GOOGLE AND USE WHAT YOU SEE BUT MOST GUIDES SHOULD BE ACCURATE BUT WHO KNOWS**
+
+📋 A note on accuracy: These guides are written from real experience, official documentation, and community knowledge — but no guide is perfect. Most should be accurate, but some steps may differ depending on your hardware, OS version, or configuration. If something does not work, cross-reference with Google or the official docs for that tool. You were going to end up there anyway — now at least you have a starting point.**

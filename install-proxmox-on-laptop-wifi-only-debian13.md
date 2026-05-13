@@ -128,20 +128,32 @@ Log back in as root.
 ### Step 8 — Add the Proxmox GPG Key
 
 ```bash
-wget https://enterprise.proxmox.com/debian/proxmox-release-trixie.gpg \
-  -O /etc/apt/trusted.gpg.d/proxmox-release-trixie.gpg
-
-chmod +r /etc/apt/trusted.gpg.d/proxmox-release-trixie.gpg
+wget https://enterprise.proxmox.com/debian/proxmox-archive-keyring-trixie.gpg -O /usr/share/keyrings/proxmox-archive-keyring.gpg
 ```
+Control + X 
+Y
+ENTER/RETURN (depending on keyboard)
 
 ### Step 9 — Add the Proxmox No-Subscription Repository
 
 This is the free repo — no license needed. It receives the same packages as the enterprise repo, just slightly earlier in the release cycle.
 
 ```bash
-echo "deb [arch=amd64] http://download.proxmox.com/debian/pve trixie pve-no-subscription" \
-  > /etc/apt/sources.list.d/pve-install-repo.list
+nano /etc/apt/sources.list.d/proxmox.sources
+
+
+in the window that open add the following
+
+
+Types: deb
+URIs: http://download.proxmox.com/debian/pve
+Suites: trixie
+Components: pve-no-subscription
+Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
 ```
+Control + X 
+Y
+ENTER/RETURN (depending on keyboard)
 
 ### Step 10 — Update and Install the Proxmox Kernel
 
@@ -149,7 +161,7 @@ echo "deb [arch=amd64] http://download.proxmox.com/debian/pve trixie pve-no-subs
 apt update && apt full-upgrade -y
 apt install proxmox-default-kernel -y
 reboot
-```
+``` 
 
 After rebooting, log back in as root. You are now running the Proxmox kernel.
 
@@ -167,7 +179,7 @@ You should see something like `6.8.12-4-pve` or similar — the `-pve` suffix co
 apt install proxmox-ve postfix open-iscsi chrony -y
 ```
 
-During installation, **Postfix** (mail server) will ask how to configure itself. For most home lab setups, select **No configuration** and press Enter. You can configure it properly later if needed.
+During installation, **Postfix** (mail server) will ask how to configure itself. For most home lab setups, select **No configuration** and press Enter. You can configure it properly later if needed. Reboot after installation you can work on  network and other steps
 
 ### Step 12 — Remove the Debian Kernel and os-prober
 

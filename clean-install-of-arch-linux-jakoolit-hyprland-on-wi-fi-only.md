@@ -127,8 +127,16 @@ After verifying your selections, click **Install** and wait until the process co
 
 After rebooting and logging into your new Arch Linux installation, run:
 
+For ArchLinux 2025 (No longer Maintained but can be installed and works)
+
 ```bash
 sh <(curl -L https://raw.githubusercontent.com/JaKooLit/Arch-Hyprland/main/auto-install.sh)
+```
+
+For ArchLinux 2026 (updated and working)
+
+```bash
+sh <(curl -L https://raw.githubusercontent.com/LinuxBeginnings/Arch-Hyprland/main/auto-install.sh)
 ```
 
 Follow the on-screen instructions.

@@ -1,0 +1,86 @@
+DATA:networking:IPv6 Basics on Linux:Networking & DNS
+<h1>IPv6 Basics on Linux</h1>
+<p>IPv6 is the successor to IPv4. While IPv4 uses 32-bit addresses
+(192.168.1.1), IPv6 uses 128-bit addresses (2001:db8::1). Most Linux
+systems have IPv6 enabled by default even if you do not use it.</p>
+<h2 id="check-ipv6-addresses">Check IPv6 Addresses</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> <span class="at">-6</span> addr                  <span class="co"># all IPv6 addresses</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> <span class="at">-6</span> addr show eth0        <span class="co"># specific interface</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-6</span> ifconfig.me         <span class="co"># your public IPv6</span></span></code></pre></div>
+<h2 id="types-of-ipv6-addresses">Types of IPv6 Addresses</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Prefix</th>
+<th>Type</th>
+<th>Equivalent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>::1</code></td>
+<td>Loopback</td>
+<td>127.0.0.1</td>
+</tr>
+<tr class="even">
+<td><code>fe80::/10</code></td>
+<td>Link-local (auto-assigned, not routable)</td>
+<td>169.254.x.x</td>
+</tr>
+<tr class="odd">
+<td><code>fd00::/8</code></td>
+<td>Unique local (private network)</td>
+<td>192.168.x.x</td>
+</tr>
+<tr class="even">
+<td><code>2001::/16</code></td>
+<td>Global unicast (public internet)</td>
+<td>Public IPv4</td>
+</tr>
+</tbody>
+</table>
+<h2 id="test-ipv6-connectivity">Test IPv6 Connectivity</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ping6</span> google.com            <span class="co"># ping via IPv6</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ping6</span> ::1                   <span class="co"># ping loopback</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-6</span> https://google.com  <span class="co"># HTTP via IPv6</span></span></code></pre></div>
+<h2 id="configure-a-static-ipv6-address-netplan">Configure a Static IPv6
+Address (Netplan)</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> nano /etc/netplan/01-netcfg.yaml</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">network</span><span class="kw">:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">ethernets</span><span class="kw">:</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">eth0</span><span class="kw">:</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">addresses</span><span class="kw">:</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> 192.168.1.100/24</span><span class="co">          # IPv4 (existing)</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> 2001:db8::100/64</span><span class="co">          # IPv6 (new)</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">routes</span><span class="kw">:</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">to</span><span class="kw">:</span><span class="at"> default</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">via</span><span class="kw">:</span><span class="at"> </span><span class="fl">192.168.1.1</span><span class="co">          # IPv4 gateway</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">to</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;::/0&quot;</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">via</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;2001:db8::1&quot;</span><span class="co">        # IPv6 gateway</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">nameservers</span><span class="kw">:</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">addresses</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="fl">1.1.1.1</span><span class="kw">,</span><span class="at"> </span><span class="dv">2606</span><span class="at">:</span><span class="dv">4700</span><span class="at">:</span><span class="dv">4700</span><span class="at">::</span><span class="dv">1111</span><span class="kw">]</span><span class="co">   # IPv4 and IPv6 DNS</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> netplan apply</span></code></pre></div>
+<h2 id="disable-ipv6-if-causing-issues">Disable IPv6 (If Causing
+Issues)</h2>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> nano /etc/sysctl.d/99-disable-ipv6.conf</span></code></pre></div>
+<pre><code>net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1</code></pre>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> sysctl <span class="at">-p</span> /etc/sysctl.d/99-disable-ipv6.conf</span></code></pre></div>
+<p>To re-enable, remove the file and reboot.</p>
+<h2 id="firewall-rules-for-ipv6">Firewall Rules for IPv6</h2>
+<p><code>ufw</code> manages IPv4 and IPv6 rules together. Confirm:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> /etc/default/ufw <span class="kw">|</span> <span class="fu">grep</span> IPV6</span></code></pre></div>
+<p><code>iptables</code> IPv6 rules need a separate command:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ip6tables <span class="at">-A</span> INPUT <span class="at">-m</span> state <span class="at">--state</span> ESTABLISHED,RELATED <span class="at">-j</span> ACCEPT</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ip6tables <span class="at">-A</span> INPUT <span class="at">-p</span> tcp <span class="at">--dport</span> 22 <span class="at">-j</span> ACCEPT</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ip6tables <span class="at">-A</span> INPUT <span class="at">-j</span> DROP</span></code></pre></div>

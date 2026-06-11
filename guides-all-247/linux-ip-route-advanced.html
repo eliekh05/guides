@@ -1,0 +1,66 @@
+DATA:networking:Advanced IP Routing on Linux:Networking & DNS
+<h1>Advanced IP Routing on Linux</h1>
+<p>Beyond basic routing, Linux supports policy routing, multiple routing
+tables, and traffic shaping.</p>
+<h2 id="view-routing-tables">View Routing Tables</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> route                          <span class="co"># main routing table</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> route show table all           <span class="co"># all routing tables</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> route show table local         <span class="co"># local/loopback routes</span></span></code></pre></div>
+<h2 id="add-and-delete-static-routes">Add and Delete Static Routes</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ip route add 10.0.0.0/24 via 192.168.1.1 dev eth0</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ip route add default via 192.168.1.1</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ip route del 10.0.0.0/24</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ip route flush table main</span></code></pre></div>
+<h2 id="check-route-for-a-specific-destination">Check Route for a
+Specific Destination</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> route get 8.8.8.8           <span class="co"># which route would be used to reach 8.8.8.8</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> route get 192.168.1.50      <span class="co"># route to LAN host</span></span></code></pre></div>
+<h2 id="permanent-routes-with-netplan-ubuntudebian">Permanent Routes
+with Netplan (Ubuntu/Debian)</h2>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">network</span><span class="kw">:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">ethernets</span><span class="kw">:</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">eth0</span><span class="kw">:</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">routes</span><span class="kw">:</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">to</span><span class="kw">:</span><span class="at"> 10.0.0.0/8</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">via</span><span class="kw">:</span><span class="at"> </span><span class="fl">192.168.1.1</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">to</span><span class="kw">:</span><span class="at"> 0.0.0.0/0</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">via</span><span class="kw">:</span><span class="at"> </span><span class="fl">192.168.1.1</span><span class="co">    # default route</span></span></code></pre></div>
+<h2 id="policy-routing-multiple-routing-tables">Policy Routing (Multiple
+Routing Tables)</h2>
+<p>Useful when a machine has multiple network interfaces and you need
+traffic from each interface to go back through that same interface:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;100 custom_table&quot;</span> <span class="kw">|</span> <span class="fu">sudo</span> tee <span class="at">-a</span> /etc/iproute2/rt_tables</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ip route add default via 192.168.2.1 table custom_table</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ip rule add from 192.168.2.0/24 table custom_table</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> rule list</span></code></pre></div>
+<h2 id="enable-ip-forwarding-routing-between-interfaces">Enable IP
+Forwarding (Routing Between Interfaces)</h2>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> 1 <span class="op">&gt;</span> /proc/sys/net/ipv4/ip_forward</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;net.ipv4.ip_forward = 1&quot;</span> <span class="kw">|</span> <span class="fu">sudo</span> tee <span class="at">-a</span> /etc/sysctl.d/99-routing.conf</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> sysctl <span class="at">-p</span> /etc/sysctl.d/99-routing.conf</span></code></pre></div>
+<h2 id="source-nat-masquerade">Source NAT (MASQUERADE)</h2>
+<p>Make traffic from one network appear to come from your machine:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> iptables <span class="at">-t</span> nat <span class="at">-A</span> POSTROUTING <span class="at">-s</span> 10.0.0.0/24 <span class="at">-o</span> eth0 <span class="at">-j</span> MASQUERADE</span></code></pre></div>
+<p>This is what WireGuard and OpenVPN use to let VPN clients reach the
+internet.</p>
+<h2 id="traceroute-and-mtr">traceroute and mtr</h2>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">traceroute</span> google.com          <span class="co"># trace hops to a destination</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">traceroute</span> <span class="at">-T</span> <span class="at">-p</span> 443 google.com  <span class="co"># TCP traceroute on port 443</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">mtr</span> google.com                  <span class="co"># live updating traceroute</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">mtr</span> <span class="at">--report</span> google.com         <span class="co"># generate a report</span></span></code></pre></div>

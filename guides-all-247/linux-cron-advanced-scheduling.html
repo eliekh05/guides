@@ -1,0 +1,66 @@
+DATA:scheduling:Advanced cron Scheduling Patterns on Linux:Task Scheduling
+<h1>Advanced cron Scheduling Patterns on Linux</h1>
+<p>Beyond the basics, cron supports patterns that most guides never
+explain clearly.</p>
+<h2 id="crontab-field-review">Crontab Field Review</h2>
+<pre><code>MIN  HOUR  DOM  MON  DOW  COMMAND
+ *    *     *    *    *   /path/to/command</code></pre>
+<ul>
+<li><code>MIN</code> 0–59, <code>HOUR</code> 0–23, <code>DOM</code>
+1–31, <code>MON</code> 1–12, <code>DOW</code> 0–7 (0 and 7 =
+Sunday)</li>
+</ul>
+<h2 id="advanced-patterns">Advanced Patterns</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">*/15</span> 9-17 <span class="pp">*</span> <span class="pp">*</span> 1-5 /path/to/job.sh</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span> 9 1-7,22-31 <span class="pp">*</span> 1 /path/to/job.sh</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span> <span class="pp">*</span>/2 <span class="pp">*</span> <span class="pp">*</span> <span class="pp">*</span> /path/to/job.sh</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span> 6,18 <span class="pp">*</span> <span class="pp">*</span> <span class="pp">*</span> /path/to/job.sh</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="ex">*/15</span> <span class="pp">*</span> <span class="pp">*</span> <span class="pp">*</span> 6,7 /path/to/job.sh</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span> 0 1 1 <span class="pp">*</span> /path/to/yearly.sh</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="ex">*/5</span> <span class="pp">*</span> <span class="pp">*</span> 6,12 <span class="pp">*</span> /path/to/job.sh</span></code></pre></div>
+<h2 id="multiple-values-ranges-and-steps">Multiple Values, Ranges, and
+Steps</h2>
+<pre><code>,  = list of values:    1,15,30 = at minute 1, 15, and 30
+-  = range:             1-5     = Monday through Friday
+/  = step:              */10    = every 10 units</code></pre>
+<p>Examples:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">0,15,30,45</span> <span class="pp">*</span> <span class="pp">*</span> <span class="pp">*</span> <span class="pp">*</span> /job.sh</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span> 8-17 <span class="pp">*</span> <span class="pp">*</span> <span class="pp">*</span> /job.sh</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">*/10</span> <span class="pp">*</span> <span class="pp">*</span> <span class="pp">*</span> <span class="pp">*</span> /job.sh</span></code></pre></div>
+<h2 id="run-after-reboot">Run After Reboot</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">@reboot</span> /path/to/startup.sh</span></code></pre></div>
+<p>Runs once when the system starts. Useful for launching services that
+are not managed by systemd.</p>
+<h2 id="environment-setup">Environment Setup</h2>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="va">SHELL</span><span class="op">=</span>/bin/bash</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="va">PATH</span><span class="op">=</span>/opt/homebrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="va">MAILTO</span><span class="op">=</span><span class="st">&quot;&quot;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="va">HOME</span><span class="op">=</span>/home/youruser</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span> 2 <span class="pp">*</span> <span class="pp">*</span> <span class="pp">*</span> /home/youruser/scripts/backup.sh <span class="op">&gt;&gt;</span> /var/log/backup.log <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<h2 id="use-systemd-timers-instead-for-complex-schedules">Use systemd
+Timers Instead for Complex Schedules</h2>
+<p>For anything that needs:</p>
+<ul>
+<li>Accurate tracking of missed runs (cron skips if machine was
+off)</li>
+<li>Dependencies on other services</li>
+<li>Logging via journald</li>
+</ul>
+<p>See the <strong>systemd Service Management</strong> guide — timers
+are the modern alternative.</p>
+<h2 id="quick-pattern-generator">Quick Pattern Generator</h2>
+<p>Use <a href="https://crontab.guru">crontab.guru</a> to build and
+verify any schedule visually.</p>

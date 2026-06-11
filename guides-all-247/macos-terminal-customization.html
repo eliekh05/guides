@@ -1,0 +1,77 @@
+DATA:macos:Customize the macOS Terminal — Colors, Fonts, Prompt:macOS
+<h1>Customize the macOS Terminal — Colors, Fonts, Prompt</h1>
+<h2 id="change-the-terminal-theme">Change the Terminal Theme</h2>
+<p><strong>Terminal app:</strong> Terminal → Settings → Profiles tab.
+Click the <strong>+</strong> to add a new profile or select one of the
+built-in themes. Popular ones: Pro, Homebrew, Ocean.</p>
+<p><strong>iTerm2:</strong> Preferences → Profiles → Colors. Import a
+colour scheme from <a
+href="https://iterm2colorschemes.com/">iterm2colorschemes.com</a>.</p>
+<h2 id="install-a-better-font">Install a Better Font</h2>
+<p>Fonts with ligatures and icons make the terminal look significantly
+better.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install <span class="at">--cask</span> font-jetbrains-mono</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install <span class="at">--cask</span> font-fira-code</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install <span class="at">--cask</span> font-meslo-lg-nerd-font</span></code></pre></div>
+<p>Set the font in Terminal: Settings → Profiles → Text → Font.</p>
+<h2 id="customize-the-shell-prompt-without-oh-my-zsh">Customize the
+Shell Prompt (Without Oh My Zsh)</h2>
+<p>The prompt is controlled by <code>PS1</code> (bash) or
+<code>PROMPT</code> (zsh).</p>
+<p>Add to <code>~/.zshrc</code>:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="va">PROMPT</span><span class="op">=</span><span class="st">&quot;%F{cyan}%n%f@%F{green}%m%f:%F{yellow}%~%f $ &quot;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">autoload</span> <span class="at">-Uz</span> vcs_info</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">precmd()</span> <span class="kw">{</span> <span class="ex">vcs_info</span> }</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">zstyle</span> <span class="st">&#39;:vcs_info:git:*&#39;</span> formats <span class="st">&#39; (%b)&#39;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="va">PROMPT</span><span class="op">=</span><span class="st">&quot;%F{cyan}%n%f:%F{yellow}%~%f%F{magenta}</span><span class="va">${vcs_info_msg_0_}</span><span class="st">%f $ &quot;</span></span></code></pre></div>
+<p>zsh prompt codes: <code>%n</code> = username, <code>%m</code> =
+hostname, <code>%~</code> = path, <code>%F{color}</code> = foreground
+colour, <code>%f</code> = reset colour.</p>
+<h2 id="aliases-for-a-better-experience">Aliases for a Better
+Experience</h2>
+<p>Add to <code>~/.zshrc</code>:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> ls=<span class="st">&#39;ls -G&#39;</span>                  <span class="co"># colorized</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> ll=<span class="st">&#39;ls -lah&#39;</span>                <span class="co"># long format, human sizes, hidden files</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> la=<span class="st">&#39;ls -A&#39;</span>                  <span class="co"># show hidden, not . and ..</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> ..=<span class="st">&#39;cd ..&#39;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> ...=<span class="st">&#39;cd ../..&#39;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> ~=<span class="st">&#39;cd ~&#39;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> zshrc=<span class="st">&#39;nano ~/.zshrc &amp;&amp; source ~/.zshrc&#39;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> rm=<span class="st">&#39;rm -i&#39;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> cp=<span class="st">&#39;cp -i&#39;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> mv=<span class="st">&#39;mv -i&#39;</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> path=<span class="st">&#39;echo $PATH | tr &quot;:&quot; &quot;\n&quot;&#39;</span></span></code></pre></div>
+<h2 id="use-lsd-or-eza-instead-of-ls">Use lsd or eza Instead of ls</h2>
+<p>Modern alternatives to <code>ls</code> with icons and colors:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install lsd     <span class="co"># ls with icons</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install eza     <span class="co"># maintained replacement for exa</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> ls=<span class="st">&#39;lsd&#39;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> ll=<span class="st">&#39;lsd -lah&#39;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> lt=<span class="st">&#39;lsd --tree&#39;</span></span></code></pre></div>
+<h2 id="add-syntax-highlighting-to-less">Add Syntax Highlighting to
+Less</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install source-highlight</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">LESSOPEN</span><span class="op">=</span><span class="st">&quot;| /opt/homebrew/bin/src-hilite-lesspipe.sh %s&quot;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">LESS</span><span class="op">=</span><span class="st">&quot;-R&quot;</span></span></code></pre></div>
+<p>Now <code>less file.py</code> shows syntax-highlighted Python.</p>
+<h2 id="iterm2-specific-features">iTerm2 Specific Features</h2>
+<p><strong>Split panes:</strong> Cmd+D (vertical), Cmd+Shift+D
+(horizontal) <strong>Tab management:</strong> Cmd+T (new tab),
+Cmd+Option+Arrow (move between panes) <strong>Instant replay:</strong>
+Cmd+Option+B — rewind terminal output like a video <strong>Broadcast
+input:</strong> type in one pane and all panes receive it (useful for
+multiple servers)</p>

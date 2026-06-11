@@ -1,0 +1,78 @@
+DATA:networking:Dynamic DNS — Access Your Home Server With a Domain:Networking & DNS
+<h1>Dynamic DNS — Access Your Home Server With a Domain</h1>
+<p>Most home internet connections have a dynamic IP that changes
+occasionally. Dynamic DNS (DDNS) automatically updates a domain name to
+point to your current IP address.</p>
+<h2 id="free-ddns-providers">Free DDNS Providers</h2>
+<ul>
+<li><strong>DuckDNS</strong> — duckdns.org — completely free, simple,
+reliable</li>
+<li><strong>No-IP</strong> — noip.com — free (must confirm monthly)</li>
+<li><strong>Dynu</strong> — dynu.com — free tier available</li>
+<li><strong>Cloudflare</strong> — if you own a domain on Cloudflare, use
+their API</li>
+</ul>
+<h2 id="duckdns-setup">DuckDNS Setup</h2>
+<ol type="1">
+<li>Go to <a href="https://www.duckdns.org">duckdns.org</a></li>
+<li>Sign in with Google/GitHub</li>
+<li>Create a subdomain (you get <code>yourname.duckdns.org</code>)</li>
+<li>Copy your token</li>
+</ol>
+<p><strong>Auto-update on Linux (cron):</strong></p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/duckdns</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> ~/duckdns/duck.sh</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> url=<span class="st">&quot;https://www.duckdns.org/update?domains=YOURDOMAIN&amp;token=YOURTOKEN&amp;ip=&quot;</span> <span class="kw">|</span> <span class="ex">curl</span> <span class="at">-k</span> <span class="at">-o</span> ~/duckdns/duck.log <span class="at">-K</span> <span class="at">-</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x ~/duckdns/duck.sh</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">crontab</span> <span class="at">-e</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">*/5</span> <span class="pp">*</span> <span class="pp">*</span> <span class="pp">*</span> <span class="pp">*</span> ~/duckdns/duck.sh <span class="op">&gt;</span>/dev/null <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<p><strong>Docker (automated):</strong></p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="dt">\</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--name</span> duckdns <span class="dt">\</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restart</span> unless-stopped <span class="dt">\</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-e</span> TOKEN=your-token <span class="dt">\</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">-e</span> SUBDOMAINS=yoursubdomain <span class="dt">\</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  lscr.io/linuxserver/duckdns:latest</span></code></pre></div>
+<h2 id="cloudflare-ddns-if-you-own-a-domain">Cloudflare DDNS (If You Own
+a Domain)</h2>
+<p>If your domain is on Cloudflare, use <a
+href="https://github.com/timothymiller/cloudflare-ddns">cloudflare-ddns</a>:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="dt">\</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--name</span> cloudflare-ddns <span class="dt">\</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restart</span> unless-stopped <span class="dt">\</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> /path/to/config.json:/app/config.json <span class="dt">\</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  timothymiller/cloudflare-ddns:latest</span></code></pre></div>
+<p><code>config.json</code>:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;cloudflare&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;authentication&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;api_token&quot;</span><span class="fu">:</span> <span class="st">&quot;YOUR_CF_TOKEN&quot;</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">},</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;zone_id&quot;</span><span class="fu">:</span> <span class="st">&quot;YOUR_ZONE_ID&quot;</span><span class="fu">,</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;subdomains&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span><span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;home&quot;</span><span class="fu">,</span> <span class="dt">&quot;proxied&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">}</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>      <span class="ot">]</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;a&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;aaaa&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;purgeUnknownRecords&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;ttl&quot;</span><span class="fu">:</span> <span class="dv">300</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h2 id="port-forwarding">Port Forwarding</h2>
+<p>After setting up DDNS, configure your router to forward traffic to
+your server:</p>
+<ol type="1">
+<li>Log into your router admin (usually 192.168.1.1)</li>
+<li>Find <strong>Port Forwarding</strong> or <strong>NAT</strong></li>
+<li>Forward external port 80 and 443 to your server's internal IP</li>
+<li>Your domain now reaches your server</li>
+</ol>

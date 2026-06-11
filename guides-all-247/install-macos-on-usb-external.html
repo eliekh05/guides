@@ -1,0 +1,62 @@
+DATA:installation:Run macOS from an External USB Drive:Installation Guides
+<h1>Run macOS from an External USB Drive</h1>
+<p>You can install and run a full macOS on an external SSD or USB drive.
+Useful for testing a new macOS version before upgrading, recovering from
+a bad internal drive, or having a clean portable macOS.</p>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li>External SSD (512GB minimum, SSD strongly recommended — USB flash
+drives are too slow)</li>
+<li>USB 3.0 or Thunderbolt connection</li>
+<li>About 2–3 hours</li>
+</ul>
+<h2 id="create-a-bootable-macos-installer">Create a Bootable macOS
+Installer</h2>
+<p>First download the macOS installer from the App Store (search "macOS
+Sequoia" or the version you want).</p>
+<p>Format your external drive:</p>
+<ol type="1">
+<li>Open <strong>Disk Utility</strong></li>
+<li>Select your external drive → <strong>Erase</strong></li>
+<li>Format: <strong>APFS</strong>, Scheme: <strong>GUID Partition
+Map</strong></li>
+<li>Name it "MyVolume"</li>
+</ol>
+<p>Create the installer USB:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> /Applications/Install\ macOS\ Sequoia.app/Contents/Resources/createinstallmedia <span class="at">--volume</span> /Volumes/MyVolume</span></code></pre></div>
+<h2 id="install-macos-to-the-external-drive">Install macOS to the
+External Drive</h2>
+<ol type="1">
+<li>Restart your Mac</li>
+<li><strong>Intel Mac:</strong> Hold Option at boot → select the USB
+installer</li>
+<li><strong>Apple Silicon:</strong> Hold power button → Options →
+continue to boot menu → select USB</li>
+<li>Open <strong>Disk Utility</strong> → format the external SSD as
+APFS</li>
+<li>Close Disk Utility</li>
+<li>Select <strong>Install macOS</strong> → choose your external SSD as
+the destination</li>
+</ol>
+<p>Installation takes 30–60 minutes and reboots several times.</p>
+<h2 id="boot-from-the-external-macos">Boot from the External macOS</h2>
+<p><strong>Intel Mac:</strong> Hold <strong>Option</strong> at startup →
+select the external drive</p>
+<p><strong>Apple Silicon:</strong> Hold <strong>power button</strong> →
+select the external macOS in the boot menu</p>
+<p>Set as default boot disk: System Settings → General → Startup Disk →
+select external drive → Restart</p>
+<h2 id="performance-expectations">Performance Expectations</h2>
+<ul>
+<li><strong>USB 3.0 flash drive:</strong> Unusably slow. Do not
+attempt.</li>
+<li><strong>USB 3.0 SSD enclosure:</strong> Usable, noticeable lag</li>
+<li><strong>USB 3.1 Gen 2 or Thunderbolt SSD:</strong> Fast, close to
+internal speed</li>
+</ul>
+<h2 id="use-case--test-new-macos-before-upgrading">Use Case — Test New
+macOS Before Upgrading</h2>
+<p>Install the new macOS on an external drive and test your apps and
+workflow before committing to upgrading your internal drive. If anything
+breaks, just boot back from your internal macOS.</p>

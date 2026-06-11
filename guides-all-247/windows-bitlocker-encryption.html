@@ -1,0 +1,67 @@
+DATA:windows:BitLocker Drive Encryption on Windows:Windows
+<h1>BitLocker Drive Encryption on Windows</h1>
+<p>BitLocker encrypts your entire drive. If someone steals your laptop,
+they cannot read your files without the PIN or recovery key.</p>
+<h2 id="enable-bitlocker">Enable BitLocker</h2>
+<p><strong>Control Panel → BitLocker Drive Encryption → Turn on
+BitLocker</strong></p>
+<p>Or right-click the C: drive in File Explorer → <strong>Turn on
+BitLocker</strong></p>
+<p><strong>Requirements:</strong></p>
+<ul>
+<li>Windows 11 Pro, Enterprise, or Education</li>
+<li>A TPM 2.0 chip (most modern PCs have this)</li>
+</ul>
+<h2 id="save-the-recovery-key">Save the Recovery Key</h2>
+<p>During setup, you must save or print the recovery key. Options:</p>
+<ul>
+<li><strong>Save to Microsoft account</strong> (recommended — access at
+account.microsoft.com/devices/recoverykey)</li>
+<li><strong>Save to a USB drive</strong></li>
+<li><strong>Save to a file</strong></li>
+<li><strong>Print it</strong></li>
+</ul>
+<p>Keep the recovery key somewhere safe. You will need it if:</p>
+<ul>
+<li>You change TPM settings in BIOS</li>
+<li>You enable/disable Secure Boot</li>
+<li>You change hardware</li>
+<li>You forget your PIN</li>
+</ul>
+<h2 id="set-a-pin-stronger-protection">Set a PIN (Stronger
+Protection)</h2>
+<p>A PIN adds a pre-boot authentication step — the drive does not unlock
+until you enter the PIN:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>manage<span class="op">-</span>bde <span class="op">-</span>protectors <span class="op">-</span>add C<span class="op">:</span> <span class="op">-</span>TPMAndPIN</span></code></pre></div>
+<h2 id="check-bitlocker-status">Check BitLocker Status</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>manage<span class="op">-</span>bde <span class="op">-</span>status C<span class="op">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>Get<span class="op">-</span>BitLockerVolume    <span class="co"># PowerShell cmdlet</span></span></code></pre></div>
+<h2 id="common-commands">Common Commands</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>Enable<span class="op">-</span>BitLocker <span class="op">-</span>MountPoint <span class="st">&quot;C:&quot;</span> <span class="op">-</span>EncryptionMethod XtsAes256 <span class="op">-</span>TpmProtector</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>Enable<span class="op">-</span>BitLocker <span class="op">-</span>MountPoint <span class="st">&quot;C:&quot;</span> <span class="op">-</span>EncryptionMethod XtsAes256 <span class="op">-</span>TpmAndPinProtector</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>Suspend<span class="op">-</span>BitLocker <span class="op">-</span>MountPoint <span class="st">&quot;C:&quot;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>Resume<span class="op">-</span>BitLocker <span class="op">-</span>MountPoint <span class="st">&quot;C:&quot;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>Disable<span class="op">-</span>BitLocker <span class="op">-</span>MountPoint <span class="st">&quot;C:&quot;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="op">(</span>Get<span class="op">-</span>BitLockerVolume <span class="op">-</span>MountPoint <span class="st">&quot;C:&quot;</span><span class="op">).</span><span class="fu">KeyProtector</span> <span class="op">|</span> <span class="fu">Where</span> <span class="op">{</span><span class="va">$_</span><span class="op">.</span><span class="fu">KeyProtectorType</span> <span class="op">-</span>eq <span class="st">&quot;RecoveryPassword&quot;</span><span class="op">}</span> <span class="op">|</span> <span class="fu">Select</span> RecoveryPassword</span></code></pre></div>
+<h2 id="bitlocker-on-external-drives-bitlocker-to-go">BitLocker on
+External Drives (BitLocker To Go)</h2>
+<p>Right-click any external drive → <strong>Turn on
+BitLocker</strong></p>
+<p>This encrypts USB drives and external disks. They can be read on any
+Windows PC by entering the password. On macOS, use <a
+href="https://www.hasleo.com/bitlocker/">BitLocker Anywhere</a> or free
+tools like BitLocker Drive Encryption on macOS.</p>
+<h2 id="windows-11-home--device-encryption">Windows 11 Home — Device
+Encryption</h2>
+<p>Windows 11 Home does not have full BitLocker but has "Device
+Encryption" if requirements are met: Settings → Privacy &amp; Security →
+Device Encryption → On</p>
+<p>Less configurable than BitLocker but still encrypts the drive.</p>

@@ -1,0 +1,59 @@
+DATA:server:Portainer — Docker GUI Management:Server & Self-Hosting
+<h1>Portainer — Docker GUI Management</h1>
+<p>Portainer is a web-based Docker management interface. Instead of
+remembering Docker CLI commands, you manage containers, images, volumes,
+and networks through a browser.</p>
+<h2 id="install-portainer">Install Portainer</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> volume create portainer_data</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="dt">\</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--name</span> portainer <span class="dt">\</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restart</span> always <span class="dt">\</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">-p</span> 9000:9000 <span class="dt">\</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> /var/run/docker.sock:/var/run/docker.sock <span class="dt">\</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> portainer_data:/data <span class="dt">\</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  portainer/portainer-ce:latest</span></code></pre></div>
+<p>Open <code>http://YOUR_IP:9000</code> and create your admin
+password.</p>
+<h2 id="what-portainer-can-do">What Portainer Can Do</h2>
+<ul>
+<li><strong>Containers</strong> — start, stop, restart, remove, view
+logs, exec into shell</li>
+<li><strong>Images</strong> — pull, build, remove, inspect layers</li>
+<li><strong>Volumes</strong> — create, remove, browse contents</li>
+<li><strong>Networks</strong> — create, remove, inspect</li>
+<li><strong>Stacks</strong> — deploy Docker Compose files from the
+UI</li>
+<li><strong>App Templates</strong> — one-click deploy of popular
+self-hosted apps</li>
+</ul>
+<h2 id="deploy-a-stack-compose-from-ui">Deploy a Stack (Compose) from
+UI</h2>
+<ol type="1">
+<li><strong>Stacks → Add stack</strong></li>
+<li>Paste your <code>docker-compose.yml</code> content</li>
+<li>Add environment variables in the UI</li>
+<li>Click <strong>Deploy the stack</strong></li>
+</ol>
+<h2 id="view-container-logs">View Container Logs</h2>
+<p>Containers → click container name → <strong>Logs</strong></p>
+<p>Set log lines, enable auto-refresh, or download logs.</p>
+<h2 id="exec-into-a-container">Exec Into a Container</h2>
+<p>Containers → click container → <strong>Console</strong> → Connect</p>
+<p>Gives you a terminal inside the container — same as
+<code>docker exec -it container bash</code>.</p>
+<h2 id="portainer-agent-remote-hosts">Portainer Agent (Remote
+Hosts)</h2>
+<p>Manage multiple Docker hosts from one Portainer instance:</p>
+<p>On the remote host:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="dt">\</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--name</span> portainer_agent <span class="dt">\</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restart</span> always <span class="dt">\</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> /var/run/docker.sock:/var/run/docker.sock <span class="dt">\</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> /var/lib/docker/volumes:/var/lib/docker/volumes <span class="dt">\</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">-p</span> 9001:9001 <span class="dt">\</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  portainer/agent:latest</span></code></pre></div>
+<p>In Portainer: <strong>Environments → Add environment → Agent</strong>
+→ enter remote host IP and port 9001.</p>

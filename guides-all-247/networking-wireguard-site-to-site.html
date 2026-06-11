@@ -1,0 +1,68 @@
+DATA:networking:WireGuard Site-to-Site VPN:Networking & DNS
+<h1>WireGuard Site-to-Site VPN</h1>
+<p>A site-to-site VPN connects two entire networks — devices on Site A
+can reach devices on Site B as if they were on the same LAN. This covers
+two routers/servers running WireGuard.</p>
+<h2 id="architecture">Architecture</h2>
+<pre><code>Site A (192.168.1.0/24)         Site B (192.168.2.0/24)
+WireGuard IP: 10.0.0.1 -------&gt; WireGuard IP: 10.0.0.2</code></pre>
+<p>Both sites have a WireGuard server. Each acts as both server and
+peer.</p>
+<h2 id="site-a-configuration">Site A Configuration</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> nano /etc/wireguard/wg0.conf</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode ini"><code class="sourceCode ini"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[Interface]</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="dt">Address </span><span class="ot">=</span><span class="st"> 10.0.0.1/30</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="dt">PrivateKey </span><span class="ot">=</span><span class="st"> SITE_A_PRIVATE_KEY</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="dt">ListenPort </span><span class="ot">=</span><span class="st"> </span><span class="dv">51820</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="dt">PostUp </span><span class="ot">=</span><span class="st"> iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="dt">PostDown </span><span class="ot">=</span><span class="st"> iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="kw">[Peer]</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="dt">PublicKey </span><span class="ot">=</span><span class="st"> SITE_B_PUBLIC_KEY</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="dt">Endpoint </span><span class="ot">=</span><span class="st"> SITE_B_PUBLIC_IP:51820</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="dt">AllowedIPs </span><span class="ot">=</span><span class="st"> 10.0.0.2/32, 192.168.2.0/24    # WireGuard IP + Site B&#39;s LAN</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="dt">PersistentKeepalive </span><span class="ot">=</span><span class="st"> </span><span class="dv">25</span></span></code></pre></div>
+<h2 id="site-b-configuration">Site B Configuration</h2>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode ini"><code class="sourceCode ini"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[Interface]</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="dt">Address </span><span class="ot">=</span><span class="st"> 10.0.0.2/30</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="dt">PrivateKey </span><span class="ot">=</span><span class="st"> SITE_B_PRIVATE_KEY</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="dt">ListenPort </span><span class="ot">=</span><span class="st"> </span><span class="dv">51820</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="dt">PostUp </span><span class="ot">=</span><span class="st"> iptables -A FORWARD -i wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="dt">PostDown </span><span class="ot">=</span><span class="st"> iptables -D FORWARD -i wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="kw">[Peer]</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="dt">PublicKey </span><span class="ot">=</span><span class="st"> SITE_A_PUBLIC_KEY</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="dt">Endpoint </span><span class="ot">=</span><span class="st"> SITE_A_PUBLIC_IP:51820</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="dt">AllowedIPs </span><span class="ot">=</span><span class="st"> 10.0.0.1/32, 192.168.1.0/24    # WireGuard IP + Site A&#39;s LAN</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="dt">PersistentKeepalive </span><span class="ot">=</span><span class="st"> </span><span class="dv">25</span></span></code></pre></div>
+<h2 id="route-traffic-from-each-lan-through-wireguard">Route Traffic
+From Each LAN Through WireGuard</h2>
+<p>Devices on each LAN need to know how to reach the other network. Two
+options:</p>
+<p><strong>Option 1 — Static route on each router:</strong></p>
+<p>On Site A's router, add route: destination
+<code>192.168.2.0/24</code> via <code>192.168.1.WG_SERVER_IP</code> On
+Site B's router, add route: destination <code>192.168.1.0/24</code> via
+<code>192.168.2.WG_SERVER_IP</code></p>
+<p><strong>Option 2 — Set the WireGuard server as the default
+gateway:</strong></p>
+<p>On devices that need site-to-site access, change their default
+gateway to the WireGuard server.</p>
+<h2 id="enable-ip-forwarding-on-both-servers">Enable IP Forwarding on
+Both Servers</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;net.ipv4.ip_forward=1&quot;</span> <span class="kw">|</span> <span class="fu">sudo</span> tee <span class="at">-a</span> /etc/sysctl.conf</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> sysctl <span class="at">-p</span></span></code></pre></div>
+<h2 id="start-and-test">Start and Test</h2>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl enable <span class="at">--now</span> wg-quick@wg0</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ping</span> 192.168.2.100</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> wg show</span></code></pre></div>
+<h2 id="open-firewall">Open Firewall</h2>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ufw allow 51820/udp</span></code></pre></div>

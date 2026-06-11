@@ -1,0 +1,70 @@
+DATA:installation:Clean Install Windows 11:Installation Guides
+<h1>Clean Install Windows 11</h1>
+<h2 id="create-installation-media">Create Installation Media</h2>
+<ol type="1">
+<li>Download the <strong>Media Creation Tool</strong> from <a
+href="https://www.microsoft.com/en-us/software-download/windows11">microsoft.com/en-us/software-download/windows11</a></li>
+<li>Run it → <strong>Create installation media</strong> → USB flash
+drive (8GB minimum)</li>
+<li>Or download the ISO directly and flash with Rufus</li>
+</ol>
+<h2 id="boot-from-usb">Boot from USB</h2>
+<p>Restart and boot from USB. Keys: F12 (Dell/Lenovo), F9 (HP), Esc
+(Asus)</p>
+<h2 id="installation">Installation</h2>
+<p><strong>Language and keyboard:</strong> Choose yours</p>
+<p><strong>Install type:</strong> Always choose <strong>Custom: Install
+Windows only</strong> — this gives you a clean install, not an
+upgrade</p>
+<p><strong>Partition:</strong> If reinstalling on the same drive:</p>
+<ul>
+<li>Delete all existing partitions (data is lost)</li>
+<li>Select the unallocated space</li>
+<li>Click Next — Windows creates its own partitions</li>
+</ul>
+<p><strong>Wait:</strong> Installation takes 15–30 minutes</p>
+<h2 id="first-boot--skip-or-minimise-telemetry">First Boot — Skip or
+Minimise Telemetry</h2>
+<p>When Windows asks for setup:</p>
+<p><strong>No internet yet:</strong> Press <strong>Shift+F10</strong> to
+open Command Prompt, then type:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode cmd"><code class="sourceCode dosbat"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>oobe\bypassnro</span></code></pre></div>
+<p>This restarts the setup and lets you skip the "Let's connect to a
+network" requirement, allowing a local account setup.</p>
+<p><strong>Privacy settings:</strong> Turn off everything Microsoft
+suggests turning on — location, diagnostics, advertising ID, tailored
+experience. These are all optional.</p>
+<h2 id="after-install">After Install</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>winget upgrade <span class="op">--</span>all</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>winget install <span class="op">-</span>e <span class="op">--</span>id 7zip<span class="op">.</span><span class="fu">7zip</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>winget install <span class="op">-</span>e <span class="op">--</span>id VideoLAN<span class="op">.</span><span class="fu">VLC</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>winget install <span class="op">-</span>e <span class="op">--</span>id Notepad<span class="op">++.</span><span class="fu">Notepad</span><span class="op">++</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>winget install <span class="op">-</span>e <span class="op">--</span>id Microsoft<span class="op">.</span><span class="fu">VisualStudioCode</span></span></code></pre></div>
+<h2 id="activate-windows">Activate Windows</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>slmgr <span class="op">/</span>xpr</span></code></pre></div>
+<p>If you have a product key: Settings → System → Activation → Change
+product key</p>
+<h2 id="bypass-tpm-and-secure-boot-check">Bypass TPM and Secure Boot
+Check</h2>
+<p>For installing on unsupported hardware, modify the registry during
+setup:</p>
+<ol type="1">
+<li>At the "Let's connect you to a network" screen, press
+<strong>Shift+F10</strong></li>
+<li>Type <code>regedit</code></li>
+<li>Navigate to <code>HKEY_LOCAL_MACHINE\SYSTEM\Setup</code></li>
+<li>Create key <strong>LabConfig</strong> inside Setup</li>
+<li>Inside LabConfig, add DWORD values:
+<ul>
+<li><code>BypassTPMCheck = 1</code></li>
+<li><code>BypassSecureBootCheck = 1</code></li>
+<li><code>BypassRAMCheck = 1</code></li>
+</ul></li>
+<li>Close registry, continue setup</li>
+</ol>
+<p>See the <strong>Install Windows 11 on Unsupported PC</strong> guide
+for a full walkthrough.</p>

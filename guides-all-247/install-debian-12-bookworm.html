@@ -1,0 +1,69 @@
+DATA:installation:Install Debian 12 (Bookworm) — Desktop and Server:Installation Guides
+<h1>Install Debian 12 (Bookworm) — Desktop and Server</h1>
+<p>Debian 12 is the most stable Linux distribution. Packages are older
+than Fedora or Ubuntu but never break. Supported until 2028.</p>
+<h2 id="download">Download</h2>
+<p>Go to <a
+href="https://www.debian.org/distrib/netinst">debian.org/distrib/netinst</a>
+and download:</p>
+<ul>
+<li><strong>amd64 netinst</strong> — small installer, downloads packages
+during install (needs internet)</li>
+<li><strong>DVD image</strong> — larger, installs without internet</li>
+</ul>
+<p>If your WiFi card needs proprietary firmware: download the
+<strong>unofficial non-free firmware</strong> version instead.</p>
+<h2 id="installer-type--graphical-vs-expert">Installer Type — Graphical
+vs Expert</h2>
+<p><strong>Graphical install:</strong> Easier, same result
+<strong>Expert install:</strong> More control (static IP, custom
+partitioning, less hand-holding)</p>
+<p>For a server, use Expert install. For a desktop, Graphical install is
+fine.</p>
+<h2 id="installation">Installation</h2>
+<p><strong>Hostname:</strong> Set something meaningful (e.g.,
+<code>debian-desktop</code> or <code>homeserver</code>)</p>
+<p><strong>Domain:</strong> Leave blank unless in a domain
+environment</p>
+<p><strong>Root password:</strong> Set one, or leave blank to disable
+root and make your user a sudo admin</p>
+<p><strong>User account:</strong> Create a regular user</p>
+<p><strong>Partitioning:</strong></p>
+<ul>
+<li><strong>Guided — use entire disk with LVM</strong> is recommended
+for both desktop and server</li>
+<li>For desktop: all files in one partition</li>
+<li>For server: separate <code>/home</code> is optional</li>
+</ul>
+<p><strong>Software selection (tasksel):</strong></p>
+<ul>
+<li>Desktop: GNOME Desktop Environment + standard system utilities</li>
+<li>Server: SSH server + standard system utilities (no desktop)</li>
+</ul>
+<h2 id="after-install--enable-sudo">After Install — Enable sudo</h2>
+<p>Unlike Ubuntu, Debian does not add your user to sudo automatically if
+you set a root password:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">su</span> <span class="at">-</span>     <span class="co"># switch to root</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">apt</span> install sudo <span class="at">-y</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">usermod</span> <span class="at">-aG</span> sudo yourusername</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">exit</span></span></code></pre></div>
+<p>Log out and back in. Test: <code>sudo apt update</code></p>
+<h2 id="non-free-firmware-and-repositories">Non-Free Firmware and
+Repositories</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> nano /etc/apt/sources.list</span></code></pre></div>
+<p>Add <code>contrib non-free non-free-firmware</code> to each line:</p>
+<pre><code>deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
+deb http://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware
+deb http://deb.debian.org/debian/ bookworm-updates main contrib non-free non-free-firmware</code></pre>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt update</span></code></pre></div>
+<h2 id="install-common-desktop-apps">Install Common Desktop Apps</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install flatpak <span class="at">-y</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">flatpak</span> remote-add <span class="at">--if-not-exists</span> flathub https://dl.flathub.org/repo/flathub.flatpakrepo</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">flatpak</span> install flathub com.visualstudio.code</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">flatpak</span> install flathub org.videolan.VLC</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="ex">flatpak</span> install flathub com.spotify.Client</span></code></pre></div>

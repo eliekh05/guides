@@ -1,0 +1,68 @@
+DATA:server:Automated Backups with restic:Server & Self-Hosting
+<h1>Automated Backups with restic</h1>
+<p>restic is a modern backup tool — fast, encrypted, deduplicated, and
+supports multiple storage backends (local, S3, Backblaze B2, SFTP,
+etc.).</p>
+<h2 id="install">Install</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install restic <span class="at">-y</span>          <span class="co"># Ubuntu/Debian</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dnf install restic <span class="at">-y</span>          <span class="co"># Fedora/RHEL</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install restic                 <span class="co"># macOS</span></span></code></pre></div>
+<h2 id="initialise-a-repository">Initialise a Repository</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">restic</span> init <span class="at">--repo</span> /mnt/backup/restic</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">restic</span> init <span class="at">--repo</span> b2:mybucket:restic</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="va">AWS_ACCESS_KEY_ID</span><span class="op">=</span>key <span class="va">AWS_SECRET_ACCESS_KEY</span><span class="op">=</span>secret <span class="dt">\</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">restic</span> init <span class="at">--repo</span> s3:s3.amazonaws.com/mybucket/restic</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ex">restic</span> init <span class="at">--repo</span> sftp:user@server:/backup/restic</span></code></pre></div>
+<p>Set a strong encryption passphrase when prompted. <strong>Store this
+passphrase securely — without it, backups cannot be
+decrypted.</strong></p>
+<h2 id="back-up-files">Back Up Files</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">restic</span> <span class="at">-r</span> /mnt/backup/restic backup ~/Documents</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">restic</span> <span class="at">-r</span> /mnt/backup/restic backup ~/Documents ~/Pictures /etc</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">restic</span> <span class="at">-r</span> /mnt/backup/restic backup ~/ <span class="dt">\</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--exclude</span> ~/.cache <span class="dt">\</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--exclude</span> ~/Downloads <span class="dt">\</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--exclude</span> node_modules</span></code></pre></div>
+<h2 id="list-snapshots">List Snapshots</h2>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">restic</span> <span class="at">-r</span> /mnt/backup/restic snapshots</span></code></pre></div>
+<h2 id="restore">Restore</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">restic</span> <span class="at">-r</span> /mnt/backup/restic restore latest <span class="at">--target</span> /restore/</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">restic</span> <span class="at">-r</span> /mnt/backup/restic restore abc12345 <span class="at">--target</span> /restore/</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">restic</span> <span class="at">-r</span> /mnt/backup/restic restore latest <span class="at">--target</span> /tmp/ <span class="at">--include</span> <span class="st">&quot;/home/user/important.txt&quot;</span></span></code></pre></div>
+<h2 id="prune-old-snapshots">Prune Old Snapshots</h2>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">restic</span> <span class="at">-r</span> /mnt/backup/restic forget <span class="at">--prune</span> <span class="dt">\</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--keep-daily</span> 7 <span class="dt">\</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--keep-weekly</span> 4 <span class="dt">\</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--keep-monthly</span> 6</span></code></pre></div>
+<h2 id="automate-with-cron">Automate with cron</h2>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> /usr/local/bin/restic-backup.sh</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">RESTIC_REPOSITORY</span><span class="op">=</span>/mnt/backup/restic</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">RESTIC_PASSWORD</span><span class="op">=</span>yourpassphrase</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ex">restic</span> backup /home /etc <span class="at">--exclude</span> /home/<span class="pp">*</span>/.cache</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="ex">restic</span> forget <span class="at">--prune</span> <span class="at">--keep-daily</span> 7 <span class="at">--keep-weekly</span> 4 <span class="at">--keep-monthly</span> 6</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="ex">restic</span> check</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x /usr/local/bin/restic-backup.sh</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">crontab</span> <span class="at">-e</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ex">0</span> 2 <span class="pp">*</span> <span class="pp">*</span> <span class="pp">*</span> /usr/local/bin/restic-backup.sh <span class="op">&gt;&gt;</span> /var/log/restic.log <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<h2 id="check-repository-integrity">Check Repository Integrity</h2>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">restic</span> <span class="at">-r</span> /mnt/backup/restic check</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">restic</span> <span class="at">-r</span> /mnt/backup/restic check <span class="at">--read-data</span>     <span class="co"># verify all data (slow)</span></span></code></pre></div>

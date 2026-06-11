@@ -1,0 +1,62 @@
+DATA:macos:Find and Delete Large Files on macOS:macOS
+<h1>Find and Delete Large Files on macOS</h1>
+<p>When your Mac is running out of storage, here is how to find and
+clean up what is taking space.</p>
+<h2 id="see-what-is-using-space">See What Is Using Space</h2>
+<p><strong>Built-in:</strong> Apple menu → About This Mac → More Info →
+Storage (or System Settings → General → Storage)</p>
+<p>Shows categories: Movies, Apps, Documents, iCloud Drive, etc. Click
+each for details.</p>
+<h2 id="find-large-files-with-terminal">Find Large Files with
+Terminal</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> ~ <span class="at">-size</span> +1G <span class="at">-type</span> f <span class="dv">2</span><span class="op">&gt;</span>/dev/null <span class="kw">|</span> <span class="fu">sort</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> ~/Downloads <span class="at">-size</span> +500M <span class="at">-type</span> f</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">du</span> <span class="at">-sh</span> ~/<span class="pp">*</span> <span class="dv">2</span><span class="op">&gt;</span>/dev/null <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-rh</span> <span class="kw">|</span> <span class="fu">head</span> <span class="at">-20</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> find / <span class="at">-size</span> +1G <span class="at">-type</span> f <span class="dv">2</span><span class="op">&gt;</span>/dev/null <span class="kw">|</span> <span class="fu">xargs</span> du <span class="at">-sh</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-rh</span> <span class="kw">|</span> <span class="fu">head</span> <span class="at">-20</span></span></code></pre></div>
+<h2 id="common-space-wasters">Common Space Wasters</h2>
+<p><strong>Xcode derived data:</strong></p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> ~/Library/Developer/Xcode/DerivedData</span></code></pre></div>
+<p><strong>iOS device backups:</strong></p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/Library/Application\ Support/MobileSync/Backup/</span></code></pre></div>
+<p><strong>Simulator data:</strong></p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">xcrun</span> simctl list devices</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">xcrun</span> simctl delete unavailable</span></code></pre></div>
+<p><strong>Docker images:</strong></p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> system prune <span class="at">-a</span> <span class="at">--volumes</span>    <span class="co"># remove all unused Docker data</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> system df                    <span class="co"># see how much Docker uses</span></span></code></pre></div>
+<p><strong>Homebrew cache:</strong></p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> cleanup <span class="at">-s</span>         <span class="co"># remove all cached downloads</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">du</span> <span class="at">-sh</span> <span class="va">$(</span><span class="ex">brew</span> <span class="at">--cache</span><span class="va">)</span>  <span class="co"># see cache size</span></span></code></pre></div>
+<p><strong>Old Time Machine local snapshots:</strong></p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tmutil</span> listlocalsnapshots /</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">tmutil</span> deletelocalsnapshots SNAPSHOT_DATE</span></code></pre></div>
+<p><strong>Log files:</strong></p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> rm <span class="at">-rf</span> /private/var/log/asl/<span class="pp">*</span>.asl</span></code></pre></div>
+<h2 id="gui-tools">GUI Tools</h2>
+<p><strong>DaisyDisk</strong> — visual disk usage map, paid (~<span
+class="math inline">10) *  * <em>O</em><em>m</em><em>n</em><em>i</em><em>D</em><em>i</em><em>s</em><em>k</em><em>S</em><em>w</em><em>e</em><em>e</em><em>p</em><em>e</em><em>r</em> *  * —<em>f</em><em>r</em><em>e</em><em>e</em>, <em>s</em><em>h</em><em>o</em><em>w</em><em>s</em><em>f</em><em>o</em><em>l</em><em>d</em><em>e</em><em>r</em><em>s</em><em>i</em><em>z</em><em>e</em><em>s</em> *  * <em>C</em><em>l</em><em>e</em><em>a</em><em>n</em><em>M</em><em>y</em><em>M</em><em>a</em><em>c</em> *  * —<em>c</em><em>o</em><em>m</em><em>p</em><em>r</em><em>e</em><em>h</em><em>e</em><em>n</em><em>s</em><em>i</em><em>v</em><em>e</em><em>c</em><em>l</em><em>e</em><em>a</em><em>n</em><em>e</em><em>r</em>, <em>p</em><em>a</em><em>i</em><em>d</em>( </span>40/year)
+— check what it removes before confirming</p>
+<h2 id="icloud-optimise-storage">iCloud Optimise Storage</h2>
+<p>If you use iCloud Drive, enable "Optimise Mac Storage":
+<strong>System Settings → Apple ID → iCloud → iCloud Drive → Optimise
+Mac Storage</strong></p>
+<p>macOS removes local copies of files that have not been accessed
+recently. They stay in iCloud and download on demand.</p>
+<h2 id="empty-bin-and-icloud-bin">Empty Bin and iCloud Bin</h2>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> ~/.Trash</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> ~/.Trash/<span class="pp">*</span></span></code></pre></div>
+<p>Also check: iCloud.com → iCloud Drive → Recently Deleted — files
+deleted from iCloud stay there for 30 days.</p>

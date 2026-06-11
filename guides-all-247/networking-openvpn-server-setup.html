@@ -1,0 +1,81 @@
+DATA:networking:Set Up OpenVPN Server on Linux:Networking & DNS
+<h1>Set Up OpenVPN Server on Linux</h1>
+<p>OpenVPN is the most widely supported VPN protocol — every platform
+has a client. It is more complex to set up than WireGuard but more
+compatible.</p>
+<h2 id="easiest-setup--openvpn-install-script">Easiest Setup —
+openvpn-install Script</h2>
+<p>The community-maintained <code>openvpn-install</code> script handles
+all configuration:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-O</span> https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x openvpn-install.sh</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> bash openvpn-install.sh</span></code></pre></div>
+<p>The script asks:</p>
+<ul>
+<li>IP address (auto-detected)</li>
+<li>Port (default: 1194 UDP)</li>
+<li>DNS provider (Cloudflare, Google, Pi-hole, etc.)</li>
+<li>First client name</li>
+</ul>
+<p>It installs OpenVPN, generates all certificates, and creates a
+<code>.ovpn</code> client config file.</p>
+<h2 id="add-more-clients">Add More Clients</h2>
+<p>Run the script again:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> bash openvpn-install.sh</span></code></pre></div>
+<p>Select <strong>Add a new client</strong> and enter a name. A new
+<code>.ovpn</code> file is created.</p>
+<h2 id="transfer-client-config-to-your-device">Transfer Client Config to
+Your Device</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">scp</span> user@server:/root/client.ovpn ~/</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> /root/client.ovpn</span></code></pre></div>
+<h2 id="connect-with-openvpn-client">Connect With OpenVPN Client</h2>
+<p><strong>macOS/Windows:</strong> Install <a
+href="https://tunnelblick.net/">Tunnelblick</a> or <a
+href="https://openvpn.net/vpn-client/">OpenVPN Connect</a></p>
+<p><strong>Linux:</strong></p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install openvpn <span class="at">-y</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> openvpn <span class="at">--config</span> client.ovpn</span></code></pre></div>
+<p><strong>iOS/Android:</strong> Install OpenVPN Connect from App Store
+/ Play Store</p>
+<h2 id="manual-setup-without-script">Manual Setup (Without Script)</h2>
+<p>If you want to understand the setup:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install openvpn easy-rsa <span class="at">-y</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">make-cadir</span> ~/openvpn-ca <span class="kw">&amp;&amp;</span> <span class="bu">cd</span> ~/openvpn-ca</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">./easyrsa</span> init-pki</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./easyrsa</span> build-ca nopass</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="ex">./easyrsa</span> gen-dh</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="ex">./easyrsa</span> build-server-full server nopass</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="ex">./easyrsa</span> build-client-full client1 nopass</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="ex">openvpn</span> <span class="at">--genkey</span> secret ta.key</span></code></pre></div>
+<p>Server config (<code>/etc/openvpn/server.conf</code>):</p>
+<pre><code>port 1194
+proto udp
+dev tun
+ca /etc/openvpn/ca.crt
+cert /etc/openvpn/server.crt
+key /etc/openvpn/server.key
+dh /etc/openvpn/dh.pem
+tls-auth /etc/openvpn/ta.key 0
+server 10.8.0.0 255.255.255.0
+push &quot;redirect-gateway def1 bypass-dhcp&quot;
+push &quot;dhcp-option DNS 1.1.1.1&quot;
+keepalive 10 120
+cipher AES-256-GCM
+persist-key
+persist-tun
+status /var/log/openvpn-status.log
+verb 3</code></pre>
+<h2 id="open-firewall">Open Firewall</h2>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ufw allow 1194/udp</span></code></pre></div>
+<p>Enable IP forwarding:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;net.ipv4.ip_forward=1&quot;</span> <span class="kw">|</span> <span class="fu">sudo</span> tee <span class="at">-a</span> /etc/sysctl.conf</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> sysctl <span class="at">-p</span></span></code></pre></div>

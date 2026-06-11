@@ -1,0 +1,63 @@
+DATA:windows:Run Linux GUI Apps in WSL2 on Windows:Windows
+<h1>Run Linux GUI Apps in WSL2 on Windows</h1>
+<p>WSL2 includes WSLg (Windows Subsystem for Linux GUI) which lets Linux
+applications open windows on your Windows desktop — no VNC or X server
+needed.</p>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li>Windows 11 (or Windows 10 build 19044+ with GPU drivers)</li>
+<li>WSL2 installed and updated</li>
+<li>An up-to-date GPU driver</li>
+</ul>
+<h2 id="update-wsl">Update WSL</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>wsl <span class="op">--</span>update</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>wsl <span class="op">--</span>shutdown</span></code></pre></div>
+<h2 id="install-and-run-gui-apps">Install and Run GUI Apps</h2>
+<p>Inside your WSL2 terminal:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install gedit <span class="at">-y</span>       <span class="co"># text editor</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install nautilus <span class="at">-y</span>    <span class="co"># Gnome file manager</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install gimp <span class="at">-y</span>        <span class="co"># image editor</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install vlc <span class="at">-y</span>         <span class="co"># video player</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install firefox <span class="at">-y</span>     <span class="co"># browser</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ex">gedit</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ex">firefox</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">gimp</span></span></code></pre></div>
+<p>The app opens as a regular Windows window. You can minimise, resize,
+and use it alongside Windows apps.</p>
+<h2 id="fix-gui-apps-not-appearing">Fix: GUI Apps Not Appearing</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">wsl</span> <span class="at">--version</span>   <span class="co"># look for &quot;WSLg version&quot;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$DISPLAY</span>   <span class="co"># should return something like :0</span></span></code></pre></div>
+<p>If <code>$DISPLAY</code> is empty:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">DISPLAY</span><span class="op">=</span><span class="va">$(</span><span class="fu">cat</span> /etc/resolv.conf <span class="kw">|</span> <span class="fu">grep</span> nameserver <span class="kw">|</span> <span class="fu">awk</span> <span class="st">&#39;{print $2}&#39;</span><span class="va">)</span>:0.0</span></code></pre></div>
+<h2 id="pin-linux-apps-to-windows-taskbar">Pin Linux Apps to Windows
+Taskbar</h2>
+<ol type="1">
+<li>Launch the app from WSL</li>
+<li>It appears in the taskbar</li>
+<li>Right-click → <strong>Pin to taskbar</strong></li>
+</ol>
+<p>Next time: click the pinned icon and it launches (starting WSL if
+needed).</p>
+<h2 id="file-sharing-between-windows-and-linux-gui-apps">File Sharing
+Between Windows and Linux GUI Apps</h2>
+<p>GUI apps running in WSL can access Windows files via the
+<code>/mnt/c/</code> path.</p>
+<p>In a file picker, type <code>/mnt/c/Users/YourName/</code> to browse
+Windows files from a Linux GUI app.</p>
+<h2 id="supported-desktop-environments">Supported Desktop
+Environments</h2>
+<p>WSLg primarily supports X11 apps well. Wayland apps work partially.
+Full desktop environments (GNOME, KDE) can be installed but require more
+configuration — use <a
+href="https://github.com/DamionGans/ubuntu-wsl2-systemd-script">WSL
+utilities</a> for systemd support.</p>
+<h2 id="performance-tip">Performance Tip</h2>
+<p>Store files in the Linux filesystem (<code>~/</code>) for better
+performance with Linux GUI apps. Files on <code>/mnt/c/</code> work but
+are slower due to filesystem translation.</p>

@@ -1,0 +1,106 @@
+DATA:server:Set Up Tailscale — Zero-Config Mesh VPN:Server & Self-Hosting
+<h1>Set Up Tailscale — Zero-Config Mesh VPN</h1>
+<p>Tailscale creates an encrypted mesh network between your devices over
+the internet. Unlike WireGuard which requires a server and manual
+configuration, Tailscale connects devices directly — your laptop talks
+to your homelab server without port forwarding or a VPN server.</p>
+<h2 id="install">Install</h2>
+<p><strong>Linux:</strong></p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-fsSL</span> https://tailscale.com/install.sh <span class="kw">|</span> <span class="fu">sh</span></span></code></pre></div>
+<p><strong>macOS:</strong></p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install tailscale</span></code></pre></div>
+<p><strong>Windows:</strong> Download from <a
+href="https://tailscale.com/download">tailscale.com/download</a></p>
+<h2 id="connect-a-device">Connect a Device</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tailscale up</span></code></pre></div>
+<p>A browser opens asking you to log in with Google, GitHub, or
+Microsoft. After login the device is connected.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tailscale</span> ip          <span class="co"># your Tailscale IP (always 100.x.x.x)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">tailscale</span> status      <span class="co"># see all connected devices</span></span></code></pre></div>
+<h2 id="connect-all-your-devices">Connect All Your Devices</h2>
+<p>Install Tailscale on every device — laptop, phone, server, Raspberry
+Pi. They all appear on your Tailscale admin dashboard and can reach each
+other using their Tailscale IP addresses.</p>
+<h2 id="ssh-between-devices">SSH Between Devices</h2>
+<p>Once two devices are on Tailscale:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> user@100.x.x.x    <span class="co"># use Tailscale IP</span></span></code></pre></div>
+<p>Or with MagicDNS:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> user@hostname      <span class="co"># use device name from Tailscale admin</span></span></code></pre></div>
+<h2 id="enable-magicdns">Enable MagicDNS</h2>
+<p>MagicDNS lets you use device names instead of IPs:</p>
+<ol type="1">
+<li>Go to <a
+href="https://login.tailscale.com">login.tailscale.com</a></li>
+<li><strong>DNS → Enable MagicDNS</strong></li>
+</ol>
+<p>Now <code>ssh user@myserver</code> works if <code>myserver</code> is
+the device's name in Tailscale.</p>
+<h2 id="use-as-exit-node-route-all-traffic">Use as Exit Node (Route All
+Traffic)</h2>
+<p>Make one device (a VPS or always-on server) route all internet
+traffic for other devices:</p>
+<p><strong>On the exit node:</strong></p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tailscale up <span class="at">--advertise-exit-node</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&#39;net.ipv4.ip_forward = 1&#39;</span> <span class="kw">|</span> <span class="fu">sudo</span> tee <span class="at">-a</span> /etc/sysctl.d/99-tailscale.conf</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> sysctl <span class="at">-p</span> /etc/sysctl.d/99-tailscale.conf</span></code></pre></div>
+<p>In the Tailscale admin: approve the exit node.</p>
+<p><strong>On devices that want to use it:</strong></p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tailscale up <span class="at">--exit-node</span><span class="op">=</span>IP_OF_EXIT_NODE</span></code></pre></div>
+<h2 id="subnet-router-access-devices-without-tailscale">Subnet Router
+(Access Devices Without Tailscale)</h2>
+<p>Make a server advertise your local network so other Tailscale devices
+can reach everything on your LAN:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tailscale up <span class="at">--advertise-routes</span><span class="op">=</span>192.168.1.0/24</span></code></pre></div>
+<p>Approve in Tailscale admin. Now <code>192.168.1.x</code> is reachable
+from anywhere on your Tailscale network.</p>
+<h2 id="tailscale-vs-wireguard">Tailscale vs WireGuard</h2>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Tailscale</th>
+<th>WireGuard</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Setup</td>
+<td>2 minutes</td>
+<td>20–60 minutes</td>
+</tr>
+<tr class="even">
+<td>Server required</td>
+<td>No (peer-to-peer)</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>NAT traversal</td>
+<td>Automatic</td>
+<td>Manual port forwarding</td>
+</tr>
+<tr class="even">
+<td>Config management</td>
+<td>Web UI</td>
+<td>Manual files</td>
+</tr>
+<tr class="odd">
+<td>Free tier</td>
+<td>3 users, 100 devices</td>
+<td>Self-hosted, unlimited</td>
+</tr>
+<tr class="even">
+<td>Open source</td>
+<td>Partially</td>
+<td>Fully</td>
+</tr>
+</tbody>
+</table>

@@ -1,0 +1,52 @@
+DATA:windows:Windows Registry — Basics and Useful Tweaks:Windows
+<h1>Windows Registry — Basics and Useful Tweaks</h1>
+<p>The Windows Registry stores system and application settings. Direct
+edits can break Windows — always back up before changing anything.</p>
+<h2 id="open-registry-editor">Open Registry Editor</h2>
+<p>Press <strong>Win+R</strong> → type <code>regedit</code> → Enter</p>
+<h2 id="back-up-before-editing">Back Up Before Editing</h2>
+<p><strong>File → Export</strong> → save the entire registry (or just
+the key you are editing) to a <code>.reg</code> file. Restore by
+double-clicking the <code>.reg</code> file.</p>
+<h2 id="registry-structure">Registry Structure</h2>
+<pre><code>HKEY_LOCAL_MACHINE (HKLM)    — system-wide settings
+HKEY_CURRENT_USER (HKCU)     — current user settings
+HKEY_CLASSES_ROOT (HKCR)     — file associations
+HKEY_USERS (HKU)             — all user profiles
+HKEY_CURRENT_CONFIG (HKCC)   — current hardware profile</code></pre>
+<h2 id="useful-tweaks">Useful Tweaks</h2>
+<p><strong>Disable lock screen (Windows 11):</strong></p>
+<pre><code>HKLM\SOFTWARE\Policies\Microsoft\Windows\Personalization
+New DWORD: NoLockScreen = 1</code></pre>
+<p><strong>Set DNS over HTTPS (DoH):</strong></p>
+<pre><code>HKLM\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters
+New DWORD: EnableAutoDoh = 2</code></pre>
+<p><strong>Disable automatic restart after updates:</strong></p>
+<pre><code>HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
+New DWORD: NoAutoRebootWithLoggedOnUsers = 1</code></pre>
+<p><strong>Add "Open PowerShell here" to right-click menu:</strong></p>
+<pre><code>HKCR\Directory\Background\shell
+Create key: OpenPSHere
+Default value: Open PowerShell Here
+
+Inside: shell\OpenPSHere\command
+Default value: powershell.exe -NoExit -Command &quot;cd &#39;%V&#39;&quot;</code></pre>
+<h2 id="edit-registry-via-powershell-automatable">Edit Registry via
+PowerShell (Automatable)</h2>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-ItemProperty</span> <span class="op">-</span>Path <span class="st">&quot;HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced&quot;</span> <span class="op">-</span>Name <span class="st">&quot;HideFileExt&quot;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">Set-ItemProperty</span> <span class="op">-</span>Path <span class="st">&quot;HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced&quot;</span> <span class="op">-</span>Name <span class="st">&quot;HideFileExt&quot;</span> <span class="op">-</span>Value 0</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">New-Item</span> <span class="op">-</span>Path <span class="st">&quot;HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization&quot;</span> <span class="op">-</span>Force</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">New-ItemProperty</span> <span class="op">-</span>Path <span class="st">&quot;HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization&quot;</span> <span class="op">-</span>Name <span class="st">&quot;NoLockScreen&quot;</span> <span class="op">-</span>Value 1 <span class="op">-</span>PropertyType DWORD</span></code></pre></div>
+<h2 id="apply-reg-files">Apply <code>.reg</code> Files</h2>
+<p>Create a <code>.reg</code> file with a text editor:</p>
+<pre class="reg"><code>Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced]
+&quot;HideFileExt&quot;=dword:00000000
+&quot;LaunchTo&quot;=dword:00000001</code></pre>
+<p>Double-click to import. The <code>dword:</code> prefix means DWORD
+(32-bit integer) in hex.</p>

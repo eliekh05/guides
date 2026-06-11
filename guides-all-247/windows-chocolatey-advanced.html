@@ -1,0 +1,98 @@
+DATA:windows:Chocolatey Package Manager — Advanced Usage:Windows
+<h1>Chocolatey Package Manager — Advanced Usage</h1>
+<p>Chocolatey is the Windows package manager. Beyond the basics, it
+supports versioning, configuration management, and scripting.</p>
+<h2 id="install-chocolatey">Install Chocolatey</h2>
+<p>Run PowerShell as Administrator:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Set-ExecutionPolicy</span> Bypass <span class="op">-</span>Scope <span class="kw">Process</span> <span class="op">-</span>Force</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">[</span>System<span class="op">.</span><span class="fu">Net</span><span class="op">.</span><span class="fu">ServicePointManager</span><span class="op">]::</span>SecurityProtocol <span class="op">=</span> <span class="op">[</span>System<span class="op">.</span><span class="fu">Net</span><span class="op">.</span><span class="fu">ServicePointManager</span><span class="op">]::</span>SecurityProtocol <span class="op">-</span>bor 3072</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">iex</span> <span class="op">((</span><span class="fu">New-Object</span> System<span class="op">.</span><span class="fu">Net</span><span class="op">.</span><span class="fu">WebClient</span><span class="op">).</span><span class="fu">DownloadString</span><span class="op">(</span><span class="st">&#39;https://community.chocolatey.org/install.ps1&#39;</span><span class="op">))</span></span></code></pre></div>
+<h2 id="essential-commands">Essential Commands</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>choco install googlechrome        <span class="co"># install</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>choco install googlechrome <span class="op">-</span>y     <span class="co"># install without prompt</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>choco uninstall googlechrome      <span class="co"># remove</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>choco upgrade googlechrome        <span class="co"># upgrade one package</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>choco upgrade all                 <span class="co"># upgrade everything</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>choco list                        <span class="co"># list installed packages</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>choco search <span class="st">&quot;code editor&quot;</span>        <span class="co"># search</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>choco info vscode                 <span class="co"># package info and version history</span></span></code></pre></div>
+<h2 id="install-multiple-packages">Install Multiple Packages</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>choco install <span class="op">-</span>y git vscode googlechrome firefox 7zip vlc notepadplusplus</span></code></pre></div>
+<h2 id="pin-a-package-version-prevent-upgrades">Pin a Package Version
+(Prevent Upgrades)</h2>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>choco pin add <span class="op">-</span>n googlechrome</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>choco pin list</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>choco pin remove <span class="op">-</span>n googlechrome</span></code></pre></div>
+<h2 id="install-a-specific-version">Install a Specific Version</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>choco install git <span class="op">--</span>version<span class="op">=</span>2<span class="op">.</span><span class="fu">42</span><span class="op">.</span><span class="fu">0</span> <span class="op">-</span>y</span></code></pre></div>
+<h2 id="packages-config-file">Packages Config File</h2>
+<p>Create a <code>packages.config</code> XML file to install everything
+at once:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;utf-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">packages</span>&gt;</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">package</span><span class="ot"> id=</span><span class="st">&quot;git&quot;</span> /&gt;</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">package</span><span class="ot"> id=</span><span class="st">&quot;vscode&quot;</span> /&gt;</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">package</span><span class="ot"> id=</span><span class="st">&quot;7zip&quot;</span> /&gt;</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">package</span><span class="ot"> id=</span><span class="st">&quot;googlechrome&quot;</span> /&gt;</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">package</span><span class="ot"> id=</span><span class="st">&quot;firefox&quot;</span> /&gt;</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">package</span><span class="ot"> id=</span><span class="st">&quot;vlc&quot;</span> /&gt;</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">package</span><span class="ot"> id=</span><span class="st">&quot;notepadplusplus&quot;</span> /&gt;</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">packages</span>&gt;</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>choco install packages<span class="op">.</span><span class="fu">config</span> <span class="op">-</span>y</span></code></pre></div>
+<h2 id="export-installed-packages">Export Installed Packages</h2>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>choco export packages<span class="op">.</span><span class="fu">config</span></span></code></pre></div>
+<p>Generates a <code>packages.config</code> from currently installed
+packages. Use to replicate setup on a new machine.</p>
+<h2 id="chocolatey-gui">Chocolatey GUI</h2>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>choco install chocolateygui <span class="op">-</span>y</span></code></pre></div>
+<p>Opens a graphical interface for searching, installing, and updating
+packages.</p>
+<h2 id="winget-vs-chocolatey">Winget vs Chocolatey</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Winget</th>
+<th>Chocolatey</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Built into Windows</td>
+<td>Yes (Win 11)</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>Package count</td>
+<td>Large</td>
+<td>Larger</td>
+</tr>
+<tr class="odd">
+<td>Non-app software</td>
+<td>Limited</td>
+<td>Good</td>
+</tr>
+<tr class="even">
+<td>Enterprise features</td>
+<td>Basic</td>
+<td>Advanced (licensed)</td>
+</tr>
+<tr class="odd">
+<td>Scripting</td>
+<td>PowerShell</td>
+<td>PowerShell</td>
+</tr>
+</tbody>
+</table>
+<p>Use <strong>winget</strong> for most things. Use
+<strong>Chocolatey</strong> when winget does not have the package you
+need.</p>

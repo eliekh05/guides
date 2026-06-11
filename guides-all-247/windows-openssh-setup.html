@@ -1,0 +1,62 @@
+DATA:windows:Set Up OpenSSH on Windows:Windows
+<h1>Set Up OpenSSH on Windows</h1>
+<p>Windows includes a built-in OpenSSH client and server. The client
+lets you SSH into Linux servers from PowerShell. The server lets you SSH
+into your Windows machine.</p>
+<h2 id="install-openssh">Install OpenSSH</h2>
+<p><strong>Check if already installed:</strong></p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Get<span class="op">-</span>WindowsCapability <span class="op">-</span>Online <span class="op">|</span> <span class="fu">Where-Object</span> Name <span class="op">-</span>like <span class="st">&#39;OpenSSH*&#39;</span></span></code></pre></div>
+<p><strong>Install client and server:</strong></p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Add<span class="op">-</span>WindowsCapability <span class="op">-</span>Online <span class="op">-</span>Name OpenSSH<span class="op">.</span><span class="fu">Client</span><span class="op">~~~~</span>0<span class="op">.</span><span class="fu">0</span><span class="op">.</span><span class="fu">1</span><span class="op">.</span><span class="fu">0</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>Add<span class="op">-</span>WindowsCapability <span class="op">-</span>Online <span class="op">-</span>Name OpenSSH<span class="op">.</span><span class="fu">Server</span><span class="op">~~~~</span>0<span class="op">.</span><span class="fu">0</span><span class="op">.</span><span class="fu">1</span><span class="op">.</span><span class="fu">0</span></span></code></pre></div>
+<p>Or: Settings → Optional features → Add a feature → search
+"OpenSSH"</p>
+<h2 id="enable-ssh-server">Enable SSH Server</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Start-Service</span> sshd</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">Set-Service</span> <span class="op">-</span>Name sshd <span class="op">-</span>StartupType Automatic</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>Get<span class="op">-</span>NetFirewallRule <span class="op">-</span>Name <span class="op">*</span>ssh<span class="op">*</span></span></code></pre></div>
+<h2 id="connect-to-another-machine">Connect to Another Machine</h2>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ssh username@server<span class="op">-</span>ip</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>ssh username@windows<span class="op">-</span>machine<span class="op">-</span>ip</span></code></pre></div>
+<h2 id="set-up-ssh-keys-no-password-login">Set Up SSH Keys (No Password
+Login)</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ssh<span class="op">-</span>keygen <span class="op">-</span>t ed25519 <span class="op">-</span>C <span class="st">&quot;your@email.com&quot;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">type</span> <span class="va">$env</span><span class="op">:</span>USERPROFILE\<span class="op">.</span><span class="fu">ssh</span>\id_ed25519<span class="op">.</span><span class="fu">pub</span> <span class="op">|</span> ssh user@server <span class="st">&quot;cat &gt;&gt; ~/.ssh/authorized_keys&quot;</span></span></code></pre></div>
+<p>For Windows-to-Windows SSH with keys, the authorized_keys file
+location differs for admin users:</p>
+<p><strong>For standard users:</strong>
+<code>C:\Users\Username\.ssh\authorized_keys</code> <strong>For
+administrators:</strong>
+<code>C:\ProgramData\ssh\administrators_authorized_keys</code></p>
+<p>Set correct permissions on the administrators file:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>icacls <span class="st">&quot;C:\ProgramData\ssh\administrators_authorized_keys&quot;</span> <span class="op">/</span>inheritance<span class="op">:</span>r <span class="op">/</span>grant <span class="st">&quot;SYSTEM:R&quot;</span> <span class="op">/</span>grant <span class="st">&quot;Administrators:R&quot;</span></span></code></pre></div>
+<h2 id="ssh-config-for-multiple-hosts">SSH Config for Multiple
+Hosts</h2>
+<p>Create <code>C:\Users\YourName\.ssh\config</code>:</p>
+<pre><code>Host myserver
+    HostName 192.168.1.100
+    User ubuntu
+    IdentityFile ~/.ssh/id_ed25519
+
+Host work
+    HostName work.example.com
+    User john
+    Port 2222</code></pre>
+<p>Then just: <code>ssh myserver</code> or <code>ssh work</code></p>
+<h2 id="scp--copy-files">SCP — Copy Files</h2>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>scp C<span class="op">:</span>\file<span class="op">.</span><span class="fu">txt</span> user@server<span class="op">:/</span>home<span class="op">/</span>user<span class="op">/</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>scp user@server<span class="op">:/</span>home<span class="op">/</span>user<span class="op">/</span>file<span class="op">.</span><span class="fu">txt</span> C<span class="op">:</span>\</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>scp <span class="op">-</span>r C<span class="op">:</span>\folder user@server<span class="op">:/</span>home<span class="op">/</span>user<span class="op">/</span></span></code></pre></div>

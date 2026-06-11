@@ -1,0 +1,64 @@
+DATA:linux:awk Advanced Data Processing:Linux
+<h1>awk Advanced Data Processing</h1>
+<p>awk is a complete text processing language. Beyond the basics, it can
+do math, arrays, functions, and formatted output.</p>
+<h2 id="multiple-conditions-and-actions">Multiple Conditions and
+Actions</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">&#39;$1 == &quot;server&quot; &amp;&amp; $3 &gt; 100 { print $0 }&#39;</span> file</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">&#39;{ if ($3 &gt; 100) print &quot;HIGH: &quot; $0; else print &quot;LOW:  &quot; $0 }&#39;</span> file</span></code></pre></div>
+<h2 id="built-in-variables">Built-in Variables</h2>
+<pre><code>NR     current record (line) number
+NF     number of fields in current record
+FS     field separator (default whitespace)
+OFS    output field separator
+RS     record separator (default newline)
+ORS    output record separator
+FILENAME  current filename</code></pre>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">&#39;{ print NR&quot;: &quot;$0 }&#39;</span> file</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">&#39;{ print $NF }&#39;</span> file</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">&#39;BEGIN{OFS=&quot;,&quot;} { print $1,$2,$3 }&#39;</span> file</span></code></pre></div>
+<h2 id="begin-and-end-blocks">BEGIN and END Blocks</h2>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">&#39;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="st">  BEGIN { print &quot;Starting...&quot; }</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="st">  { total += $3; count++ }</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="st">  END { print &quot;Total:&quot;, total; print &quot;Count:&quot;, count; print &quot;Average:&quot;, total/count }</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="st">&#39;</span> data.txt</span></code></pre></div>
+<h2 id="arrays">Arrays</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">&#39;{ count[$1]++ } END { for (k in count) print k, count[k] }&#39;</span> file</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">&#39;{ total[$1] += $2 } END { for (cat in total) print cat, total[cat] }&#39;</span> file <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-k2</span> <span class="at">-rn</span></span></code></pre></div>
+<h2 id="functions">Functions</h2>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">&#39;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="st">function max(a, b) { return a &gt; b ? a : b }</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="st">function min(a, b) { return a &lt; b ? a : b }</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="st">{ print &quot;max:&quot;, max($1, $2), &quot;min:&quot;, min($1, $2) }</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="st">&#39;</span> file</span></code></pre></div>
+<h2 id="process-csv-files">Process CSV Files</h2>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="at">-F</span><span class="st">&#39;,&#39;</span> <span class="st">&#39;{ print $1, $3 }&#39;</span> file.csv</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="at">-F</span><span class="st">&#39;,&#39;</span> <span class="st">&#39;NR &gt; 1 { print $1, $3 }&#39;</span> file.csv</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="at">-F</span><span class="st">&#39;,&#39;</span> <span class="st">&#39;NR &gt; 1 { sum += $2 } END { print &quot;Total:&quot;, sum }&#39;</span> file.csv</span></code></pre></div>
+<h2 id="multi-file-processing">Multi-File Processing</h2>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">&#39;{ print FILENAME&quot;: &quot;$0 }&#39;</span> file1.txt file2.txt</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">&#39;FILENAME==&quot;access.log&quot; &amp;&amp; /error/&#39;</span> access.log error.log</span></code></pre></div>
+<h2 id="formatted-output">Formatted Output</h2>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">&#39;{ printf &quot;%-20s %10.2f\n&quot;, $1, $2 }&#39;</span> file</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">&#39;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="st">BEGIN { printf &quot;%-20s %10s\n&quot;, &quot;Name&quot;, &quot;Score&quot;; print &quot;-&quot; }</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="st">{ printf &quot;%-20s %10.2f\n&quot;, $1, $2 }</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="st">END { printf &quot;-\nTotal records: %d\n&quot;, NR }</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="st">&#39;</span> file</span></code></pre></div>

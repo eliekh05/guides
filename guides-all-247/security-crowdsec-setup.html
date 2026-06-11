@@ -1,0 +1,85 @@
+DATA:security:Set Up CrowdSec — Collaborative Security:Security & Apps
+<h1>Set Up CrowdSec — Collaborative Security</h1>
+<p>CrowdSec is a modern security stack that analyses logs for attacks
+and blocks bad IPs — similar to Fail2ban but with a community
+intelligence layer. Blocked IPs are shared across the CrowdSec
+community, so you benefit from attacks detected on other servers.</p>
+<h2 id="install">Install</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-s</span> https://packagecloud.io/install/repositories/crowdsec/crowdsec/script.deb.sh <span class="kw">|</span> <span class="fu">sudo</span> bash</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install crowdsec <span class="at">-y</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-s</span> https://packagecloud.io/install/repositories/crowdsec/crowdsec/script.rpm.sh <span class="kw">|</span> <span class="fu">sudo</span> bash</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dnf install crowdsec <span class="at">-y</span></span></code></pre></div>
+<h2 id="install-a-bouncer-what-actually-blocks-ips">Install a Bouncer
+(What Actually Blocks IPs)</h2>
+<p>CrowdSec detects, bouncers block. Install the firewall bouncer:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install crowdsec-firewall-bouncer-iptables <span class="at">-y</span></span></code></pre></div>
+<h2 id="check-status">Check Status</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cscli status</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cscli decisions list         <span class="co"># currently blocked IPs</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cscli alerts list            <span class="co"># recent alerts</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cscli metrics                <span class="co"># detection statistics</span></span></code></pre></div>
+<h2 id="install-collections-detection-rules">Install Collections
+(Detection Rules)</h2>
+<p>Collections are pre-packaged rules for common software:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cscli collections list</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cscli collections install crowdsecurity/nginx</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cscli collections install crowdsecurity/sshd</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cscli collections install crowdsecurity/linux</span></code></pre></div>
+<h2 id="view-and-manage-decisions">View and Manage Decisions</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cscli decisions list</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cscli decisions add <span class="at">--ip</span> 1.2.3.4 <span class="at">--reason</span> <span class="st">&quot;manual ban&quot;</span> <span class="at">--duration</span> 24h</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cscli decisions delete <span class="at">--ip</span> 1.2.3.4</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cscli allowlists add-item <span class="at">--ip</span> YOUR.IP.HERE <span class="at">--duration</span> 0 <span class="at">--expiry</span> <span class="st">&quot;&quot;</span></span></code></pre></div>
+<h2 id="crowdsec-vs-fail2ban">CrowdSec vs Fail2ban</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>CrowdSec</th>
+<th>Fail2ban</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Community blocklist</td>
+<td>✅ Shared intelligence</td>
+<td>❌ Local only</td>
+</tr>
+<tr class="even">
+<td>Log parsing</td>
+<td>Same concept</td>
+<td>Same concept</td>
+</tr>
+<tr class="odd">
+<td>Bouncer plugins</td>
+<td>Many (nginx, cloudflare, etc.)</td>
+<td>Limited</td>
+</tr>
+<tr class="even">
+<td>Dashboard</td>
+<td>Online at app.crowdsec.net</td>
+<td>None</td>
+</tr>
+<tr class="odd">
+<td>Setup complexity</td>
+<td>Slightly more</td>
+<td>Simpler</td>
+</tr>
+</tbody>
+</table>
+<h2 id="view-your-stats-online">View Your Stats Online</h2>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cscli console enroll ENROLLMENT_KEY</span></code></pre></div>
+<p>Get the key at <a
+href="https://app.crowdsec.net">app.crowdsec.net</a>. View blocked IPs,
+attack types, and stats across all your servers from one dashboard.</p>

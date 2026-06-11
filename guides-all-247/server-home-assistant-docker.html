@@ -1,0 +1,65 @@
+DATA:server:Run Home Assistant in Docker:Server & Self-Hosting
+<h1>Run Home Assistant in Docker</h1>
+<p>Home Assistant is a home automation platform. Running it in Docker is
+simpler than the full HAOS image and works on any Linux server.</p>
+<h2 id="docker-compose">Docker Compose</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">services</span><span class="kw">:</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">homeassistant</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">container_name</span><span class="kw">:</span><span class="at"> homeassistant</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> ghcr.io/home-assistant/home-assistant:stable</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">restart</span><span class="kw">:</span><span class="at"> unless-stopped</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">privileged</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">network_mode</span><span class="kw">:</span><span class="at"> host</span><span class="co">        # required for device discovery</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> ./config:/config</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> /etc/localtime:/etc/localtime:ro</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">environment</span><span class="kw">:</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> TZ=America/New_York</span><span class="co">   # your timezone</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">-d</span></span></code></pre></div>
+<p>Open <code>http://YOUR_SERVER_IP:8123</code> and create your
+account.</p>
+<h2 id="first-setup">First Setup</h2>
+<ol type="1">
+<li>Create account (admin user)</li>
+<li>Set location — used for sunrise/sunset automations</li>
+<li>Home Assistant scans your network and shows discovered devices</li>
+<li>Add integrations: Settings → Devices &amp; Services → Add
+Integration</li>
+</ol>
+<h2 id="common-integrations">Common Integrations</h2>
+<p>Search for these in <strong>Settings → Devices &amp; Services → Add
+Integration:</strong></p>
+<ul>
+<li><strong>HACS</strong> (Home Assistant Community Store) — add
+community integrations</li>
+<li><strong>Google Cast</strong> — control Chromecast, Google Home</li>
+<li><strong>HomeKit</strong> — control Apple HomeKit devices and expose
+HA to iOS</li>
+<li><strong>MQTT</strong> — for DIY devices (ESP8266, Zigbee
+bridges)</li>
+<li><strong>Zigbee2MQTT</strong> — Zigbee devices</li>
+<li><strong>Z-Wave</strong> — Z-Wave devices</li>
+<li><strong>Shelly</strong> — Shelly smart plugs and switches</li>
+<li><strong>Philips Hue</strong> — Hue lights</li>
+</ul>
+<h2 id="access-from-outside-your-network">Access from Outside Your
+Network</h2>
+<p><strong>Option 1 — Nabu Casa ($6.50/month)</strong> Settings → Home
+Assistant Cloud. Provides instant remote access, no port forwarding
+needed.</p>
+<p><strong>Option 2 — Nginx + Certbot</strong> See the <strong>Nginx
+Reverse Proxy</strong> and <strong>Certbot SSL</strong> guides. Point a
+domain at port 8123.</p>
+<p><strong>Option 3 — Tailscale</strong> Install Tailscale on your
+server and phone. Access via Tailscale IP from anywhere.</p>
+<h2 id="backup">Backup</h2>
+<p>Settings → System → Backups → Create Backup</p>
+<p>Backups include configuration, automations, and history. Download
+them manually or configure automatic cloud backup.</p>
+<h2 id="update">Update</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull ghcr.io/home-assistant/home-assistant:stable</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose down <span class="kw">&amp;&amp;</span> <span class="ex">docker</span> compose up <span class="at">-d</span></span></code></pre></div>
+<p>Or from the HA UI: Settings → System → Updates</p>

@@ -1,0 +1,102 @@
+DATA:linux:Linux Namespaces — How Containers Work:Linux
+<h1>Linux Namespaces — How Containers Work</h1>
+<p>Docker, Podman, and all container runtimes are built on Linux
+namespaces and cgroups. Understanding namespaces explains why containers
+behave the way they do.</p>
+<h2 id="what-a-namespace-does">What a Namespace Does</h2>
+<p>A namespace makes a process think it has its own isolated view of a
+system resource — its own process list, network interfaces, hostname, or
+filesystem. Processes in different namespaces cannot see each other's
+resources.</p>
+<h2 id="the-seven-namespace-types">The Seven Namespace Types</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Namespace</th>
+<th>What it isolates</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>pid</code></td>
+<td>Process IDs — container has its own PID 1</td>
+</tr>
+<tr class="even">
+<td><code>net</code></td>
+<td>Network interfaces, routing tables, ports</td>
+</tr>
+<tr class="odd">
+<td><code>mnt</code></td>
+<td>Filesystem mount points</td>
+</tr>
+<tr class="even">
+<td><code>uts</code></td>
+<td>Hostname and domain name</td>
+</tr>
+<tr class="odd">
+<td><code>ipc</code></td>
+<td>Inter-process communication (shared memory, semaphores)</td>
+</tr>
+<tr class="even">
+<td><code>user</code></td>
+<td>User and group IDs (rootless containers)</td>
+</tr>
+<tr class="odd">
+<td><code>cgroup</code></td>
+<td>cgroup hierarchy view</td>
+</tr>
+</tbody>
+</table>
+<h2 id="create-a-namespace-unshare">Create a Namespace (unshare)</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> unshare <span class="at">--uts</span> bash</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hostname</span> container-test     <span class="co"># only affects this shell</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hostname</span>                    <span class="co"># shows: container-test</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">exit</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">hostname</span>                    <span class="co"># original hostname unchanged</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> unshare <span class="at">--net</span> bash</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> a                        <span class="co"># only shows loopback</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="bu">exit</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> unshare <span class="at">--pid</span> <span class="at">--mount</span> <span class="at">--uts</span> <span class="at">--ipc</span> <span class="at">--net</span> <span class="at">--fork</span> bash</span></code></pre></div>
+<h2 id="view-namespaces-of-a-process">View Namespaces of a Process</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-la</span> /proc/<span class="va">$$</span>/ns      <span class="co"># your current shell&#39;s namespaces</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">lsns</span>                    <span class="co"># all namespaces on the system</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">lsns</span> <span class="at">-t</span> net             <span class="co"># only network namespaces</span></span></code></pre></div>
+<h2 id="how-docker-uses-namespaces">How Docker Uses Namespaces</h2>
+<p>When you run <code>docker run ubuntu</code>, Docker:</p>
+<ol type="1">
+<li>Creates new <code>pid</code>, <code>net</code>, <code>mnt</code>,
+<code>uts</code>, <code>ipc</code> namespaces</li>
+<li>Sets up a virtual network interface in the <code>net</code>
+namespace</li>
+<li>Mounts the container image as the root filesystem
+(<code>mnt</code>)</li>
+<li>Starts your process as PID 1 in the <code>pid</code> namespace</li>
+<li>Uses cgroups to limit CPU and memory</li>
+</ol>
+<p>The container's PID 1 maps to a regular process on the host — you can
+see it with <code>ps aux</code>.</p>
+<h2 id="enter-a-running-containers-namespace">Enter a Running
+Container's Namespace</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec <span class="at">-it</span> mycontainer bash</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="va">PID</span><span class="op">=</span><span class="va">$(</span><span class="ex">docker</span> inspect <span class="at">--format</span> <span class="st">&#39;{{.State.Pid}}&#39;</span> mycontainer<span class="va">)</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> nsenter <span class="at">-t</span> <span class="va">$PID</span> <span class="at">--mount</span> <span class="at">--uts</span> <span class="at">--ipc</span> <span class="at">--net</span> <span class="at">--pid</span> bash</span></code></pre></div>
+<h2 id="network-namespaces-in-practice">Network Namespaces in
+Practice</h2>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ip netns add myns</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ip netns exec myns ip a</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ip link add veth0 type veth peer name veth1</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ip link set veth1 netns myns</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ip netns exec myns ip addr add 10.0.0.1/24 dev veth1</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ip netns exec myns ip link set veth1 up</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ip netns del myns</span></code></pre></div>

@@ -1,0 +1,104 @@
+DATA:linux:Podman — Rootless Containers on Linux:Linux
+<h1>Podman — Rootless Containers on Linux</h1>
+<p>Podman runs containers without a daemon and without root. It is
+Docker-compatible — most Docker commands work with <code>podman</code>
+instead of <code>docker</code>.</p>
+<h2 id="install">Install</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install podman <span class="at">-y</span>          <span class="co"># Ubuntu/Debian</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dnf install podman <span class="at">-y</span>          <span class="co"># Fedora/RHEL (included by default)</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> pacman <span class="at">-S</span> podman               <span class="co"># Arch</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install podman <span class="kw">&amp;&amp;</span> <span class="ex">podman</span> machine init <span class="kw">&amp;&amp;</span> <span class="ex">podman</span> machine start  <span class="co"># macOS</span></span></code></pre></div>
+<h2 id="docker-compatibility">Docker Compatibility</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">podman</span> pull nginx</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">podman</span> run <span class="at">-d</span> <span class="at">-p</span> 8080:80 nginx</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">podman</span> ps</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">podman</span> logs CONTAINER</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">podman</span> exec <span class="at">-it</span> CONTAINER bash</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ex">podman</span> stop CONTAINER</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ex">podman</span> rm CONTAINER</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> docker=podman</span></code></pre></div>
+<h2 id="rootless--key-difference-from-docker">Rootless — Key Difference
+From Docker</h2>
+<p>Docker runs a daemon as root. Podman runs containers as your current
+user. This means:</p>
+<ul>
+<li>No <code>sudo</code> needed for most commands</li>
+<li>Compromised container cannot easily escalate to root</li>
+<li>Ports below 1024 require extra configuration</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">podman</span> run <span class="at">-d</span> <span class="at">-p</span> 8080:80 nginx</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> sysctl <span class="at">-w</span> net.ipv4.ip_unprivileged_port_start=80</span></code></pre></div>
+<h2 id="podman-compose">Podman Compose</h2>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install podman-compose <span class="at">--break-system-packages</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dnf install podman-compose</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">podman-compose</span> up <span class="at">-d</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">podman-compose</span> down</span></code></pre></div>
+<p>Uses the same <code>docker-compose.yml</code> format.</p>
+<h2 id="run-as-a-systemd-user-service">Run as a systemd User
+Service</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">podman</span> generate systemd <span class="at">--name</span> mycontainer <span class="at">--files</span> <span class="at">--new</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/.config/systemd/user/</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mv</span> container-mycontainer.service ~/.config/systemd/user/</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> <span class="at">--user</span> enable <span class="at">--now</span> container-mycontainer</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="ex">loginctl</span> enable-linger <span class="va">$(</span><span class="fu">whoami</span><span class="va">)</span></span></code></pre></div>
+<h2 id="podman-pods-group-containers">Podman Pods (Group
+Containers)</h2>
+<p>Pods share a network namespace — containers inside can reach each
+other on localhost:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">podman</span> pod create <span class="at">--name</span> myapp <span class="at">-p</span> 8080:80</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">podman</span> run <span class="at">-d</span> <span class="at">--pod</span> myapp nginx</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">podman</span> run <span class="at">-d</span> <span class="at">--pod</span> myapp mybackend</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">podman</span> pod start myapp</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="ex">podman</span> pod stop myapp</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="ex">podman</span> pod ps</span></code></pre></div>
+<h2 id="useful-differences-from-docker">Useful Differences From
+Docker</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Docker</th>
+<th>Podman</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Daemon</td>
+<td>Required</td>
+<td>None</td>
+</tr>
+<tr class="even">
+<td>Root required</td>
+<td>Yes</td>
+<td>No (rootless)</td>
+</tr>
+<tr class="odd">
+<td>systemd integration</td>
+<td>Extra setup</td>
+<td>Native</td>
+</tr>
+<tr class="even">
+<td>Docker Compose</td>
+<td><code>docker compose</code></td>
+<td><code>podman-compose</code></td>
+</tr>
+<tr class="odd">
+<td>Image compatibility</td>
+<td>✅</td>
+<td>✅ (same registries)</td>
+</tr>
+</tbody>
+</table>

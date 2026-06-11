@@ -1,0 +1,80 @@
+DATA:server:Docker and Container Networking Explained:Server & Self-Hosting
+<h1>Docker and Container Networking Explained</h1>
+<p>Understanding Docker networking helps you connect containers to each
+other, to the host, and to the internet correctly.</p>
+<h2 id="default-network-modes">Default Network Modes</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> network ls                   <span class="co"># list networks</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> network inspect bridge       <span class="co"># inspect default bridge</span></span></code></pre></div>
+<p><strong>bridge</strong> (default): Container gets its own IP on an
+internal network. NAT for internet access. Cannot reach other containers
+by name.</p>
+<p><strong>host</strong>: Container shares the host's network stack.
+<code>localhost</code> inside the container is the host's localhost.</p>
+<p><strong>none</strong>: No network access.</p>
+<h2 id="user-defined-bridge-networks-recommended">User-Defined Bridge
+Networks (Recommended)</h2>
+<p>User-defined bridges allow containers to reach each other <strong>by
+name</strong>:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> network create myapp-network</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="at">--name</span> db <span class="at">--network</span> myapp-network postgres</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="at">--name</span> web <span class="at">--network</span> myapp-network nginx</span></code></pre></div>
+<p>This is what Docker Compose does automatically.</p>
+<h2 id="connect-and-disconnect">Connect and Disconnect</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> network connect myapp-network existing-container</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> network disconnect myapp-network container</span></code></pre></div>
+<h2 id="expose-ports">Expose Ports</h2>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">-p</span> 8080:80         <span class="co"># host:container — expose to all interfaces</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">-p</span> 127.0.0.1:8080:80  <span class="co"># expose on localhost only (security best practice for internal services)</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">-p</span> 8080:80/udp     <span class="co"># UDP port</span></span></code></pre></div>
+<p><strong>Only expose ports that need to be accessed from outside the
+Docker network.</strong> Containers on the same Docker network can reach
+each other without port mapping.</p>
+<h2 id="dns-in-docker">DNS in Docker</h2>
+<p>Docker provides automatic DNS for user-defined networks:</p>
+<ul>
+<li>Container name resolves to the container's IP</li>
+<li>Service names in Docker Compose resolve to their containers</li>
+<li><code>host.docker.internal</code> resolves to the host machine's IP
+(useful for development)</li>
+</ul>
+<h2 id="docker-compose-networking">Docker Compose Networking</h2>
+<p>All services in a <code>docker-compose.yml</code> are automatically
+on the same network and can reach each other by service name:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">services</span><span class="kw">:</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">web</span><span class="kw">:</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> nginx</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">depends_on</span><span class="kw">:</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> api</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">api</span><span class="kw">:</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> myapp</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">    # Web can reach this as &quot;http://api:3000&quot;</span></span></code></pre></div>
+<h2 id="macvlan--container-gets-its-own-lan-ip">Macvlan — Container Gets
+Its Own LAN IP</h2>
+<p>Advanced use: give a container its own IP on your physical
+network:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> network create <span class="at">-d</span> macvlan <span class="dt">\</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subnet</span><span class="op">=</span>192.168.1.0/24 <span class="dt">\</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--gateway</span><span class="op">=</span>192.168.1.1 <span class="dt">\</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-o</span> parent=eth0 <span class="dt">\</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  mymacvlan</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="at">--network</span> mymacvlan <span class="at">--ip</span> 192.168.1.200 nginx</span></code></pre></div>
+<p>The container appears on your LAN as <code>192.168.1.200</code>.
+Useful for Pi-hole, Home Assistant, etc.</p>
+<h2 id="troubleshoot-container-networking">Troubleshoot Container
+Networking</h2>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> exec <span class="at">-it</span> container bash</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ping</span> other-container</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> http://other-container:8080</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> inspect container <span class="kw">|</span> <span class="ex">jq</span> <span class="st">&#39;.[0].NetworkSettings&#39;</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> iptables <span class="at">-t</span> nat <span class="at">-L</span> DOCKER <span class="at">-n</span> <span class="at">--line-numbers</span></span></code></pre></div>

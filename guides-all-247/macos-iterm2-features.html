@@ -1,0 +1,105 @@
+DATA:macos:iTerm2 — Features You Should Be Using:macOS
+<h1>iTerm2 — Features You Should Be Using</h1>
+<p>iTerm2 is the best terminal emulator for macOS. Most people use only
+10% of what it can do.</p>
+<h2 id="install">Install</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install <span class="at">--cask</span> iterm2</span></code></pre></div>
+<h2 id="split-panes">Split Panes</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Shortcut</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Cmd+D</td>
+<td>Split vertically (side by side)</td>
+</tr>
+<tr class="even">
+<td>Cmd+Shift+D</td>
+<td>Split horizontally (top/bottom)</td>
+</tr>
+<tr class="odd">
+<td>Cmd+Option+Arrow</td>
+<td>Navigate between panes</td>
+</tr>
+<tr class="even">
+<td>Cmd+Shift+Enter</td>
+<td>Maximise/restore current pane</td>
+</tr>
+<tr class="odd">
+<td>Cmd+W</td>
+<td>Close pane or tab</td>
+</tr>
+</tbody>
+</table>
+<h2 id="profiles--multiple-appearances">Profiles — Multiple
+Appearances</h2>
+<p>Create different profiles for different contexts (work server,
+personal server, local terminal):</p>
+<p><strong>Preferences → Profiles → + (new profile)</strong></p>
+<p>Assign:</p>
+<ul>
+<li>Different background colour</li>
+<li>Different font</li>
+<li>Custom working directory</li>
+<li>SSH command to auto-connect</li>
+</ul>
+<p>Then open any profile: <strong>Profiles → (profile name)</strong> or
+set a keyboard shortcut.</p>
+<h2 id="triggers--react-to-terminal-output">Triggers — React to Terminal
+Output</h2>
+<p>Triggers fire when text matching a pattern appears. Useful for alerts
+on error messages:</p>
+<p><strong>Preferences → Profiles → Advanced → Triggers → +
+(add)</strong></p>
+<p>Examples:</p>
+<ul>
+<li>Pattern: <code>ERROR</code> → Action: <strong>Bounce Dock
+Icon</strong> or <strong>Send Notification</strong></li>
+<li>Pattern: <code>Build succeeded</code> → Action:
+<strong>Notify</strong></li>
+<li>Pattern: <code>\$ </code> → Action: <strong>Set Title to
+"idle"</strong></li>
+</ul>
+<h2 id="password-manager">Password Manager</h2>
+<p>Store SSH passwords (for servers that do not support keys):</p>
+<p><strong>Window → Password Manager</strong> → + → add server and
+password</p>
+<p>When you need it: <strong>Window → Password Manager</strong> → click
+password → it types automatically.</p>
+<h2 id="shell-integration">Shell Integration</h2>
+<p>Install iTerm2 shell integration to unlock:</p>
+<ul>
+<li>Click to jump between command outputs</li>
+<li>⌘⇧↑/↓ to navigate between prompts</li>
+<li>Drag and drop status bar widgets</li>
+<li>See each command's exit code</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-L</span> https://iterm2.com/shell_integration/install_shell_integration.sh <span class="kw">|</span> <span class="fu">bash</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> ~/.iterm2_shell_integration.bash   <span class="co"># or .zsh</span></span></code></pre></div>
+<h2 id="instant-replay">Instant Replay</h2>
+<p><strong>Cmd+Option+B</strong> — replay terminal output like a video.
+Scrub back through what happened even without scrollback.</p>
+<h2 id="command-history">Command History</h2>
+<p><strong>Cmd+Shift+;</strong> — opens a searchable popup of recent
+commands. Different from shell history — it shows commands across all
+panes.</p>
+<h2 id="coprocess--background-commands">Coprocess — Background
+Commands</h2>
+<p>Run a command whose input/output is piped to the terminal:</p>
+<p><strong>Shell → Run Coprocess</strong> — useful for logging sessions
+or piping output.</p>
+<h2 id="find-with-regex">Find with Regex</h2>
+<p><strong>Cmd+F</strong> opens find. Enable regex by clicking the icon
+in the find bar. Matches are highlighted and can be copied.</p>
+<h2 id="tmux-integration">tmux Integration</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tmux</span> <span class="at">-CC</span> new</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">tmux</span> <span class="at">-CC</span> attach</span></code></pre></div>
+<p>Tmux panes appear as native iTerm2 panes that you can resize with the
+mouse.</p>

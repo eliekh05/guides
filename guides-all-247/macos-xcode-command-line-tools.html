@@ -1,0 +1,60 @@
+DATA:macos:Xcode Command Line Tools — Install and Manage:macOS
+<h1>Xcode Command Line Tools — Install and Manage</h1>
+<p>Xcode Command Line Tools (CLT) provides compilers, Git, and developer
+tools without installing the full Xcode app (which is 15GB+). Required
+for Homebrew and many developer tools.</p>
+<h2 id="install">Install</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">xcode-select</span> <span class="at">--install</span></span></code></pre></div>
+<p>A dialog appears. Click <strong>Install</strong>. Download takes 5–15
+minutes depending on internet speed.</p>
+<h2 id="verify-installation">Verify Installation</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">xcode-select</span> <span class="at">-p</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="at">--version</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> <span class="at">--version</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">clang</span> <span class="at">--version</span></span></code></pre></div>
+<h2 id="install-full-xcode-instead">Install Full Xcode Instead</h2>
+<p>If you develop iOS/macOS apps or need the full SDK:</p>
+<ol type="1">
+<li>App Store → search "Xcode" → Get</li>
+<li>Or: <code>xcode-select --install</code> then accept the license</li>
+</ol>
+<p>After installing full Xcode, run:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> xcode-select <span class="at">--switch</span> /Applications/Xcode.app/Contents/Developer</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> xcodebuild <span class="at">-license</span> accept</span></code></pre></div>
+<h2 id="update-command-line-tools">Update Command Line Tools</h2>
+<p>CLT updates appear in: <strong>System Settings → General → Software
+Update</strong></p>
+<p>Or via Terminal:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">softwareupdate</span> <span class="at">--list</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="st">&quot;Command Line&quot;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">softwareupdate</span> <span class="at">-i</span> <span class="st">&quot;Command Line Tools for Xcode-15.x&quot;</span></span></code></pre></div>
+<h2 id="switch-between-clt-and-full-xcode">Switch Between CLT and Full
+Xcode</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> xcode-select <span class="at">--switch</span> /Library/Developer/CommandLineTools</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> xcode-select <span class="at">--switch</span> /Applications/Xcode.app/Contents/Developer</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">xcode-select</span> <span class="at">-p</span></span></code></pre></div>
+<h2 id="fix-invalid-active-developer-path-error">Fix: "Invalid active
+developer path" Error</h2>
+<p>If you get this error after a macOS update:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> xcode-select <span class="at">--reset</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">xcode-select</span> <span class="at">--install</span></span></code></pre></div>
+<h2 id="fix-git-xcrun-error">Fix: Git "xcrun: error"</h2>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">xcode-select</span> <span class="at">--install</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> xcode-select <span class="at">--reset</span></span></code></pre></div>
+<h2 id="check-version">Check Version</h2>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pkgutil</span> <span class="at">--pkg-info</span><span class="op">=</span>com.apple.pkg.CLTools_Executables <span class="kw">|</span> <span class="fu">grep</span> version</span></code></pre></div>
+<h2 id="uninstall">Uninstall</h2>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> rm <span class="at">-rf</span> /Library/Developer/CommandLineTools</span></code></pre></div>
+<p>Then reinstall with <code>xcode-select --install</code> if
+needed.</p>

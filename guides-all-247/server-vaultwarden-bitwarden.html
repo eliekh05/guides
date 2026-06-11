@@ -1,0 +1,84 @@
+DATA:server:Self-Host Vaultwarden (Bitwarden) Password Manager:Server & Self-Hosting
+<h1>Self-Host Vaultwarden (Bitwarden) Password Manager</h1>
+<p>Vaultwarden is an unofficial, lightweight Bitwarden-compatible
+server. You host your own password manager — all your passwords stay on
+your own server, not Bitwarden's cloud.</p>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li>A server with Docker</li>
+<li>A domain name with SSL (HTTPS is required — browsers reject HTTP for
+password managers)</li>
+<li>See the <strong>Nginx Reverse Proxy</strong> and <strong>Certbot
+SSL</strong> guides first</li>
+</ul>
+<h2 id="install-with-docker-compose">Install with Docker Compose</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/vaultwarden <span class="kw">&amp;&amp;</span> <span class="bu">cd</span> ~/vaultwarden</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> docker-compose.yml</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">services</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">vaultwarden</span><span class="kw">:</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> vaultwarden/server:latest</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">container_name</span><span class="kw">:</span><span class="at"> vaultwarden</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">restart</span><span class="kw">:</span><span class="at"> unless-stopped</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> vaultwarden_data:/data</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">environment</span><span class="kw">:</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">DOMAIN</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;https://vault.yourdomain.com&quot;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">SIGNUPS_ALLOWED</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;true&quot;</span><span class="co">   # set to false after creating your account</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">ADMIN_TOKEN</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;your-strong-random-token&quot;</span><span class="co">  # openssl rand -base64 48</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">vaultwarden_data</span><span class="kw">:</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">-d</span></span></code></pre></div>
+<h2 id="nginx-config">Nginx Config</h2>
+<pre class="nginx"><code>server {
+    listen 443 ssl;
+    server_name vault.yourdomain.com;
+
+    ssl_certificate /etc/letsencrypt/live/vault.yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/vault.yourdomain.com/privkey.pem;
+
+    location / {
+        proxy_pass http://localhost:80;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /notifications/hub {
+        proxy_pass http://localhost:3012;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection &quot;upgrade&quot;;
+    }
+}</code></pre>
+<h2 id="first-login">First Login</h2>
+<ol type="1">
+<li>Go to <code>https://vault.yourdomain.com</code></li>
+<li><strong>Create Account</strong> — this is your Vaultwarden
+account</li>
+<li>After creating your account, set
+<code>SIGNUPS_ALLOWED: "false"</code> in the compose file and
+restart</li>
+</ol>
+<h2 id="admin-panel">Admin Panel</h2>
+<p>Access at <code>https://vault.yourdomain.com/admin</code> using your
+<code>ADMIN_TOKEN</code>. Lets you:</p>
+<ul>
+<li>View all users</li>
+<li>Send test emails</li>
+<li>Configure SMTP for email verification</li>
+<li>Enable/disable features</li>
+</ul>
+<h2 id="connect-bitwarden-apps">Connect Bitwarden Apps</h2>
+<p>Use the official Bitwarden apps — browser extension, iOS, Android,
+desktop. When logging in, click <strong>Self-hosted</strong> and enter
+your domain <code>https://vault.yourdomain.com</code>.</p>
+<h2 id="backup">Backup</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> cp vaultwarden:/data ./vaultwarden-backup</span></code></pre></div>
+<p>Back up the <code>data/</code> folder — it contains your encrypted
+vault database.</p>

@@ -1,0 +1,50 @@
+DATA:macos:macOS Keychain — "Wants to Use Your Confidential Information":macOS
+<h1>macOS Keychain — "Wants to Use Your Confidential Information"</h1>
+<h1
+id="macos-keychain--wants-to-use-your-confidential-information">macOS
+Keychain — "Wants to Use Your Confidential Information"</h1>
+<p>When an app on your Mac shows a popup like:</p>
+<blockquote>
+<p><strong>"[App Name] wants to use your confidential information stored
+in "[something]" in your keychain."</strong></p>
+</blockquote>
+<p>People panic. It sounds like the app is trying to steal data. It is
+not.</p>
+<h2 id="what-this-actually-means">What This Actually Means</h2>
+<p>Your Mac stores passwords, tokens, and credentials in a secure
+database called the Keychain. When an app needs to access something
+stored there — a saved login, an authentication token — macOS stops it
+and asks your permission first.</p>
+<p>The word "confidential" is Apple's wording for anything stored in the
+keychain. It does not mean the app is doing something shady. It means
+macOS is doing its job.</p>
+<p>The password it asks for is your <strong>Mac login password</strong>
+— the same one you use to unlock your screen. Not your email. Not an app
+password. Your Mac's own password.</p>
+<h2 id="what-to-do">What to Do</h2>
+<p>Click <strong>Allow</strong> if you recognise the app name and you
+were just doing something that makes sense — logging in, pushing to
+GitHub, opening your email.</p>
+<p>Click <strong>Always Allow</strong> to grant permanent access so the
+popup never appears for this app again. Fine for apps you trust and use
+regularly.</p>
+<p>Click <strong>Deny</strong> if the popup shows up for no reason and
+the app name looks unfamiliar. Then check what is running on your
+Mac.</p>
+<h2 id="why-it-keeps-appearing">Why It Keeps Appearing</h2>
+<ul>
+<li>You recently <strong>changed your Mac login password</strong> — apps
+lose keychain access when the password changes and need to
+re-authenticate</li>
+<li>Your <strong>keychain is locked</strong> — open Keychain Access
+(search with Spotlight), select the login keychain, choose Keychain
+Access → Unlock Keychain</li>
+<li>The <strong>app was reinstalled or updated</strong> — macOS revokes
+automatic access after reinstalls. Click Always Allow once and it
+stops</li>
+</ul>
+<blockquote>
+<p><strong>Summary:</strong> The popup wants your <strong>Mac login
+password</strong>. Click Allow if you recognise the app. This is macOS
+working correctly — not a breach, not an attack.</p>
+</blockquote>

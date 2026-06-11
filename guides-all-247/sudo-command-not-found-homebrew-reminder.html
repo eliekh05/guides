@@ -1,0 +1,60 @@
+DATA:macos:\"sudo: command not found\" After Installing With Homebrew:macOS
+<h1>\"sudo: command not found\" After Installing With Homebrew</h1>
+<h1 id="sudo-command-not-found-after-installing-with-homebrew">"sudo:
+command not found" After Installing With Homebrew</h1>
+<p>You install something with Homebrew and it installs without errors.
+Then you type:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> python3 script.py</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># or</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> node app.js</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># or</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> some-command</span></code></pre></div>
+<p>And get:</p>
+<pre><code>sudo: python3: command not found</code></pre>
+<p>But without sudo it works fine:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">--version</span>   <span class="co"># works</span></span></code></pre></div>
+<h2 id="why-this-happens">Why This Happens</h2>
+<p><code>sudo</code> runs commands as root. Root has its own PATH — a
+list of folders where it looks for commands. Root's PATH does not
+include <code>/opt/homebrew/bin</code> (where Homebrew installs things
+on Apple Silicon) or <code>/usr/local/bin</code> (Intel Mac).</p>
+<p>So when you run <code>sudo python3</code>, root looks in its own
+PATH, cannot find Python there, and says "command not found" — even
+though you can run <code>python3</code> as your own user.</p>
+<h2 id="the-fix">The Fix</h2>
+<p><strong>Option 1 — Use the full path:</strong></p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> python3</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># /opt/homebrew/bin/python3</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> /opt/homebrew/bin/python3 script.py</span></code></pre></div>
+<p><strong>Option 2 — Use sudo -E to preserve your
+environment:</strong></p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> <span class="at">-E</span> python3 script.py</span></code></pre></div>
+<p><strong>Option 3 — Use sudo env with PATH:</strong></p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> env <span class="st">&quot;PATH=</span><span class="va">$PATH</span><span class="st">&quot;</span> python3 script.py</span></code></pre></div>
+<p><strong>Option 4 — Edit sudoers to include Homebrew path (permanent
+fix):</strong></p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> visudo</span></code></pre></div>
+<p>Find the line <code>Defaults    secure_path</code> and add
+<code>/opt/homebrew/bin</code>:</p>
+<pre><code>Defaults    secure_path = /opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</code></pre>
+<h2 id="do-you-actually-need-sudo">Do You Actually Need sudo?</h2>
+<p>Most of the time the answer is no. Homebrew is specifically designed
+so you never need <code>sudo</code> — it installs everything into your
+user-owned directory. If a script or tutorial tells you to run
+<code>sudo brew install something</code>, that is wrong. Homebrew will
+refuse and tell you so.</p>
+<p>If you are running a server script or a system-level task that
+actually needs root, use the full path approach above.</p>
+<blockquote>
+<p><strong>Summary:</strong> sudo uses root's PATH which does not
+include Homebrew's bin folder. Use the full path
+(<code>/opt/homebrew/bin/command</code>) or
+<code>sudo env "PATH=$PATH" command</code> instead.</p>
+</blockquote>

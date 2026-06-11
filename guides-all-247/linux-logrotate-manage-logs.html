@@ -1,0 +1,65 @@
+DATA:system-users:Manage Log Files with logrotate on Linux:System & Users
+<h1>Manage Log Files with logrotate on Linux</h1>
+<p><code>logrotate</code> automatically rotates, compresses, and deletes
+log files on a schedule. Without it, log files grow indefinitely and
+fill your disk.</p>
+<h2 id="how-it-works">How It Works</h2>
+<p>logrotate runs daily via cron or systemd timer. It reads config files
+in <code>/etc/logrotate.d/</code> and <code>/etc/logrotate.conf</code>
+to decide what to do with each log.</p>
+<h2 id="check-what-logrotate-manages">Check What logrotate Manages</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> /etc/logrotate.d/     <span class="co"># per-application configs</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> /etc/logrotate.conf  <span class="co"># global defaults</span></span></code></pre></div>
+<h2 id="create-a-logrotate-config">Create a logrotate Config</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> nano /etc/logrotate.d/myapp</span></code></pre></div>
+<pre><code>/var/log/myapp/*.log {
+    daily               # rotate daily
+    missingok           # do not error if log is missing
+    rotate 14           # keep 14 days of logs
+    compress            # compress rotated logs with gzip
+    delaycompress       # compress the previous rotation, not the current one
+    notifempty          # do not rotate if file is empty
+    create 0640 appuser appgroup   # create new log with these permissions
+    postrotate
+        systemctl reload myapp &gt; /dev/null 2&gt;&amp;1 || true
+    endscript
+}</code></pre>
+<h2 id="common-options">Common Options</h2>
+<pre><code>daily / weekly / monthly   — rotation frequency
+rotate N                   — keep N old logs
+size 100M                  — rotate when file exceeds 100MB (instead of time-based)
+compress                   — gzip compressed logs
+delaycompress              — delay compression one rotation (so process can finish writing)
+missingok                  — no error if log file is missing
+notifempty                 — skip if file is empty
+copytruncate               — copy then truncate (for apps that keep file open)
+dateext                    — use date as suffix instead of numbers
+dateformat -%Y%m%d         — format for dateext
+maxage 30                  — delete logs older than 30 days regardless of count</code></pre>
+<h2 id="test-your-config">Test Your Config</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> logrotate <span class="at">--debug</span> /etc/logrotate.d/myapp</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> logrotate <span class="at">--force</span> /etc/logrotate.d/myapp</span></code></pre></div>
+<h2 id="run-manually">Run Manually</h2>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> logrotate /etc/logrotate.conf</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> logrotate <span class="at">-v</span> /etc/logrotate.conf</span></code></pre></div>
+<h2 id="view-rotation-status">View Rotation Status</h2>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> /var/lib/logrotate/status</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> /var/lib/logrotate.status</span></code></pre></div>
+<p>Shows last rotation date for each log file.</p>
+<h2 id="system-logs-rsyslog--journald">System Logs (rsyslog /
+journald)</h2>
+<p>System logs in <code>/var/log/syslog</code>,
+<code>/var/log/auth.log</code> etc. are managed by the
+<code>rsyslog</code> logrotate config already in
+<code>/etc/logrotate.d/rsyslog</code>.</p>
+<p>Journal logs are managed separately:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> journalctl <span class="at">--vacuum-time</span><span class="op">=</span>30d</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> journalctl <span class="at">--vacuum-size</span><span class="op">=</span>500M</span></code></pre></div>

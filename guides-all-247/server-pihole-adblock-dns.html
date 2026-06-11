@@ -1,0 +1,72 @@
+DATA:server:Set Up Pi-hole — Network-Wide Ad Blocking:Server & Self-Hosting
+<h1>Set Up Pi-hole — Network-Wide Ad Blocking</h1>
+<p>Pi-hole is a DNS server that blocks ads, tracking, and malware
+domains for every device on your network — no browser extensions needed.
+It runs on a Raspberry Pi, any Linux machine, or in Docker.</p>
+<h2 id="install-pi-hole">Install Pi-hole</h2>
+<p><strong>Direct install (recommended):</strong></p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-sSL</span> https://install.pi-hole.net <span class="kw">|</span> <span class="fu">bash</span></span></code></pre></div>
+<p>The installer walks you through interface selection, upstream DNS,
+and admin password.</p>
+<p><strong>Docker (easier to manage):</strong></p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/pihole/etc-pihole ~/pihole/etc-dnsmasq.d</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="dt">\</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--name</span> pihole <span class="dt">\</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-p</span> 53:53/tcp <span class="at">-p</span> 53:53/udp <span class="dt">\</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">-p</span> 8080:80 <span class="dt">\</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">-e</span> TZ=America/New_York <span class="dt">\</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">-e</span> WEBPASSWORD=yourpassword <span class="dt">\</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> ~/pihole/etc-pihole:/etc/pihole <span class="dt">\</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> ~/pihole/etc-dnsmasq.d:/etc/dnsmasq.d <span class="dt">\</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restart</span> unless-stopped <span class="dt">\</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  pihole/pihole:latest</span></code></pre></div>
+<p>Access the admin interface at
+<code>http://YOUR_SERVER_IP/admin</code>.</p>
+<h2 id="point-your-router-at-pi-hole">Point Your Router at Pi-hole</h2>
+<p>For network-wide blocking, set your router's DNS server to your
+Pi-hole's IP address. Location varies by router — look for <strong>DHCP
+settings</strong> or <strong>DNS settings</strong> in your router admin
+interface.</p>
+<p>Pi-hole's IP on the network:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> a <span class="kw">|</span> <span class="fu">grep</span> <span class="st">&quot;inet &quot;</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-v</span> 127</span></code></pre></div>
+<h2 id="add-blocklists">Add Blocklists</h2>
+<p>Pi-hole includes a default blocklist. Add more:</p>
+<ol type="1">
+<li>Admin interface → <strong>Adlists</strong></li>
+<li>Add list URLs. Recommended lists:
+<ul>
+<li><code>https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts</code>
+(default)</li>
+<li><code>https://someonewhocares.org/hosts/zero/hosts</code></li>
+<li><code>https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/multi.txt</code></li>
+</ul></li>
+<li>Click <strong>Add</strong> then <strong>Update Gravity</strong> to
+apply</li>
+</ol>
+<h2 id="whitelist-a-blocked-domain">Whitelist a Blocked Domain</h2>
+<p>If a site breaks, whitelist it:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pihole</span> <span class="at">-w</span> domain.com</span></code></pre></div>
+<h2 id="common-pi-hole-commands">Common Pi-hole Commands</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pihole</span> status           <span class="co"># check if running</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pihole</span> <span class="at">-g</span>               <span class="co"># update gravity (refresh blocklists)</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">pihole</span> <span class="at">-w</span> domain.com    <span class="co"># whitelist a domain</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">pihole</span> <span class="at">-b</span> domain.com    <span class="co"># blacklist a domain</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">pihole</span> <span class="at">-c</span>               <span class="co"># chronometer (stats)</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="ex">pihole</span> restartdns       <span class="co"># restart DNS service</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="ex">pihole</span> <span class="at">-d</span>               <span class="co"># generate debug log</span></span></code></pre></div>
+<h2 id="update-pi-hole">Update Pi-hole</h2>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pihole</span> <span class="at">-up</span></span></code></pre></div>
+<h2 id="useful-stats">Useful Stats</h2>
+<p>Admin interface → Dashboard shows:</p>
+<ul>
+<li>Total queries today</li>
+<li>Queries blocked (%)</li>
+<li>Top blocked domains</li>
+<li>Top clients</li>
+</ul>

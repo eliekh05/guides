@@ -1,0 +1,69 @@
+DATA:server:Set Up Uptime Kuma — Self-Hosted Monitoring:Server & Self-Hosting
+<h1>Set Up Uptime Kuma — Self-Hosted Monitoring</h1>
+<p>Uptime Kuma is a self-hosted monitoring tool with a clean UI. It
+monitors websites, services, ports, and Docker containers, and sends
+alerts when things go down.</p>
+<h2 id="install-with-docker">Install with Docker</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="dt">\</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--name</span> uptime-kuma <span class="dt">\</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">-p</span> 3001:3001 <span class="dt">\</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> uptime-kuma:/app/data <span class="dt">\</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restart</span> unless-stopped <span class="dt">\</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  louislam/uptime-kuma:latest</span></code></pre></div>
+<p>Open <code>http://YOUR_IP:3001</code> and create your admin
+account.</p>
+<h2 id="add-a-monitor">Add a Monitor</h2>
+<ol type="1">
+<li>Click <strong>+ Add New Monitor</strong></li>
+<li>Choose monitor type:
+<ul>
+<li><strong>HTTP(s)</strong> — checks a URL</li>
+<li><strong>TCP Port</strong> — checks if a port is open</li>
+<li><strong>Ping</strong> — ICMP ping</li>
+<li><strong>DNS</strong> — checks DNS resolution</li>
+<li><strong>Docker Container</strong> — checks if a container is
+running</li>
+<li><strong>Keyword</strong> — checks that a URL returns specific
+text</li>
+</ul></li>
+<li>Set URL/host, check interval, and timeout</li>
+<li>Click <strong>Save</strong></li>
+</ol>
+<h2 id="set-up-notifications">Set Up Notifications</h2>
+<ol type="1">
+<li><strong>Settings → Notifications → Setup Notification</strong></li>
+<li>Supported channels include Telegram, Discord, Slack, email,
+Pushover, ntfy, and many more</li>
+<li>Click <strong>Test</strong> to verify before saving</li>
+</ol>
+<h2 id="status-page">Status Page</h2>
+<p>Uptime Kuma can generate a public status page:</p>
+<ol type="1">
+<li><strong>Status Page → New Status Page</strong></li>
+<li>Name it and add monitors</li>
+<li>Share the URL — visitors see uptime history without admin
+access</li>
+</ol>
+<h2 id="docker-compose">Docker Compose</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">services</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">uptime-kuma</span><span class="kw">:</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">image</span><span class="kw">:</span><span class="at"> louislam/uptime-kuma:latest</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">container_name</span><span class="kw">:</span><span class="at"> uptime-kuma</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">&quot;3001:3001&quot;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> uptime-kuma:/app/data</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">restart</span><span class="kw">:</span><span class="at"> unless-stopped</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">volumes</span><span class="kw">:</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">uptime-kuma</span><span class="kw">:</span></span></code></pre></div>
+<h2 id="backup">Backup</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> cp uptime-kuma:/app/data ./uptime-kuma-backup</span></code></pre></div>
+<h2 id="update">Update</h2>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> pull louislam/uptime-kuma:latest</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> stop uptime-kuma</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> rm uptime-kuma</span></code></pre></div>

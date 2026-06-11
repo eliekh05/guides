@@ -1,0 +1,62 @@
+DATA:macos:Gatekeeper — \"Apple Cannot Verify This App\" Reminder:macOS
+<h1>Gatekeeper — \"Apple Cannot Verify This App\" Reminder</h1>
+<h1 id="gatekeeper--apple-cannot-verify-this-app-reminder">Gatekeeper —
+"Apple Cannot Verify This App" Reminder</h1>
+<p>When you try to open an app on macOS and get:</p>
+<blockquote>
+<p><strong>"[App Name] cannot be opened because Apple cannot verify it
+is free from malware."</strong></p>
+</blockquote>
+<p>or</p>
+<blockquote>
+<p><strong>"[App Name] is damaged and can't be opened."</strong></p>
+</blockquote>
+<p>This is Gatekeeper — macOS's built-in control that checks whether
+apps are notarised by Apple before running them.</p>
+<h2 id="what-gatekeeper-is-doing">What Gatekeeper Is Doing</h2>
+<p>Every app on the Mac App Store and most apps downloaded from
+developer websites are "notarised" — the developer submitted them to
+Apple, Apple scanned them for malware, and Apple cryptographically
+signed off that the app is clean.</p>
+<p>Gatekeeper checks for that signature when you open an app. If it is
+missing — because the app was not notarised, or because the file got
+flagged during download — Gatekeeper blocks it.</p>
+<p>This does not mean the app is malware. It means Apple has not
+verified it. There is a difference.</p>
+<h2 id="when-it-is-safe-to-open-anyway">When It Is Safe to Open
+Anyway</h2>
+<p>You downloaded the app directly from the developer's official
+website, the developer is well-known, and the file came from a URL you
+typed yourself or a link from the official docs. In this case,
+Gatekeeper is being overly cautious and you can override it.</p>
+<p>Examples where this is normal and expected: open-source apps, small
+utilities, developer tools, and apps distributed outside the App
+Store.</p>
+<h2 id="how-to-open-it-anyway">How to Open It Anyway</h2>
+<p><strong>Method 1 — Right-click:</strong> Right-click the app →
+<strong>Open</strong> → click <strong>Open</strong> in the dialog that
+appears. You only need to do this once — macOS remembers your
+choice.</p>
+<p><strong>Method 2 — System Settings:</strong> If the right-click
+method does not show the Open option, go to: <strong>System Settings →
+Privacy &amp; Security → scroll down</strong></p>
+<p>You will see a message saying "[App Name] was blocked" with an
+<strong>Open Anyway</strong> button. Click it, enter your Mac login
+password, and it opens.</p>
+<h2 id="the-app-is-damaged-and-cant-be-opened">"The App Is Damaged and
+Can't Be Opened"</h2>
+<p>This version of the error usually means the app was quarantined —
+macOS tagged it as downloaded from the internet and something went wrong
+with the quarantine flag. Fix it in Terminal:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">xattr</span> <span class="at">-rd</span> com.apple.quarantine /Applications/AppName.app</span></code></pre></div>
+<p>Replace <code>AppName.app</code> with the actual app name.</p>
+<h2 id="when-to-actually-be-careful">When to Actually Be Careful</h2>
+<p>If you got a link to an app from a pop-up, an unexpected email, or a
+website you do not know — do not override Gatekeeper. In that case the
+warning is doing its job.</p>
+<blockquote>
+<p><strong>Summary:</strong> This warning means the app was not
+notarised by Apple — not that it is infected. Right-click → Open to
+bypass it for apps you trust and downloaded from official sources.</p>
+</blockquote>

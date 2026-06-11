@@ -1,0 +1,82 @@
+DATA:server:Set Up WireGuard VPN Server on Linux:Server & Self-Hosting
+<h1>Set Up WireGuard VPN Server on Linux</h1>
+<p>WireGuard is a modern, fast, and simple VPN. Setting up a VPN server
+lets you access your home network remotely, route all your internet
+traffic through a server, and securely connect multiple sites.</p>
+<h2 id="install-wireguard">Install WireGuard</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install wireguard <span class="at">-y</span>     <span class="co"># Ubuntu/Debian</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dnf install wireguard-tools <span class="at">-y</span>  <span class="co"># Fedora/RHEL</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> pacman <span class="at">-S</span> wireguard-tools    <span class="co"># Arch</span></span></code></pre></div>
+<h2 id="generate-server-keys">Generate Server Keys</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /etc/wireguard</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">umask</span> 077</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">wg</span> genkey <span class="kw">|</span> <span class="fu">tee</span> server_private.key <span class="kw">|</span> <span class="ex">wg</span> pubkey <span class="op">&gt;</span> server_public.key</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> server_private.key    <span class="co"># save this</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> server_public.key     <span class="co"># share this with clients</span></span></code></pre></div>
+<h2 id="server-config-etcwireguardwg0conf">Server Config
+(/etc/wireguard/wg0.conf)</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> nano /etc/wireguard/wg0.conf</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode ini"><code class="sourceCode ini"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[Interface]</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="dt">Address </span><span class="ot">=</span><span class="st"> 10.0.0.1/24</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="dt">ListenPort </span><span class="ot">=</span><span class="st"> </span><span class="dv">51820</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="dt">PrivateKey </span><span class="ot">=</span><span class="st"> YOUR_SERVER_PRIVATE_KEY</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="dt">PostUp </span><span class="ot">=</span><span class="st"> iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="dt">PostDown </span><span class="ot">=</span><span class="st"> iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="kw">[Peer]</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="dt">PublicKey </span><span class="ot">=</span><span class="st"> CLIENT_PUBLIC_KEY</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="dt">AllowedIPs </span><span class="ot">=</span><span class="st"> 10.0.0.2/32</span></span></code></pre></div>
+<p>Enable IP forwarding:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;net.ipv4.ip_forward=1&quot;</span> <span class="kw">|</span> <span class="fu">sudo</span> tee <span class="at">-a</span> /etc/sysctl.conf</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> sysctl <span class="at">-p</span></span></code></pre></div>
+<p>Start and enable:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl enable <span class="at">--now</span> wg-quick@wg0</span></code></pre></div>
+<h2 id="generate-client-keys">Generate Client Keys</h2>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">wg</span> genkey <span class="kw">|</span> <span class="fu">tee</span> client_private.key <span class="kw">|</span> <span class="ex">wg</span> pubkey <span class="op">&gt;</span> client_public.key</span></code></pre></div>
+<h2 id="client-config">Client Config</h2>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode ini"><code class="sourceCode ini"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[Interface]</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="dt">Address </span><span class="ot">=</span><span class="st"> 10.0.0.2/24</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="dt">PrivateKey </span><span class="ot">=</span><span class="st"> CLIENT_PRIVATE_KEY</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="dt">DNS </span><span class="ot">=</span><span class="st"> 1.1.1.1</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="kw">[Peer]</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="dt">PublicKey </span><span class="ot">=</span><span class="st"> SERVER_PUBLIC_KEY</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="dt">Endpoint </span><span class="ot">=</span><span class="st"> YOUR_SERVER_IP:51820</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="dt">AllowedIPs </span><span class="ot">=</span><span class="st"> 0.0.0.0/0    # route ALL traffic through VPN</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="dt">PersistentKeepalive </span><span class="ot">=</span><span class="st"> </span><span class="dv">25</span></span></code></pre></div>
+<h2 id="add-clients-easily-with-wg-easy">Add Clients Easily with
+wg-easy</h2>
+<p><code>wg-easy</code> is a Docker container that provides a web UI for
+managing WireGuard clients:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="dt">\</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--name</span> wg-easy <span class="dt">\</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restart</span> unless-stopped <span class="dt">\</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-e</span> WG_HOST=YOUR_SERVER_IP <span class="dt">\</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">-e</span> PASSWORD=yourpassword <span class="dt">\</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> ~/.wg-easy:/etc/wireguard <span class="dt">\</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">-p</span> 51820:51820/udp <span class="dt">\</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">-p</span> 51821:51821/tcp <span class="dt">\</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">--cap-add</span> NET_ADMIN <span class="dt">\</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">--cap-add</span> SYS_MODULE <span class="dt">\</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">--sysctl</span> net.ipv4.ip_forward=1 <span class="dt">\</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  ghcr.io/wg-easy/wg-easy:latest</span></code></pre></div>
+<p>Access at <code>http://YOUR_IP:51821</code>. Generate QR codes for
+phone clients.</p>
+<h2 id="open-firewall">Open Firewall</h2>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ufw allow 51820/udp</span></code></pre></div>
+<h2 id="manage-the-server">Manage the Server</h2>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> wg show                     <span class="co"># show current connections</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> wg showconf wg0             <span class="co"># show current config</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl restart wg-quick@wg0  <span class="co"># restart WireGuard</span></span></code></pre></div>

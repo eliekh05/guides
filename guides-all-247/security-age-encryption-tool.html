@@ -1,0 +1,83 @@
+DATA:security:age — Simple File Encryption:Security & Apps
+<h1>age — Simple File Encryption</h1>
+<p><code>age</code> (Actually Good Encryption) is a modern, simple file
+encryption tool. It is easier than GPG for most use cases — encrypt to a
+recipient's public key or a passphrase.</p>
+<h2 id="install">Install</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install age            <span class="co"># macOS</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install age <span class="at">-y</span>     <span class="co"># Ubuntu/Debian 22.04+</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dnf install age <span class="at">-y</span>     <span class="co"># Fedora</span></span></code></pre></div>
+<h2 id="generate-a-key-pair">Generate a Key Pair</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">age-keygen</span> <span class="at">-o</span> ~/.age/key.txt</span></code></pre></div>
+<p>Output:</p>
+<pre><code>AGE-SECRET-KEY-1GFPYYSJZGFPYYSJZGFPYYSJZGFPYYSJZGFPYYSJZGFPYYSJZGFP...</code></pre>
+<p>The <code>age1...</code> string is your public key. The
+<code>AGE-SECRET-KEY-...</code> is your private key.</p>
+<h2 id="encrypt-a-file">Encrypt a File</h2>
+<p><strong>To a recipient's public key:</strong></p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">age</span> <span class="at">-r</span> age1ql3z7hjy54pw3... <span class="at">-o</span> secret.txt.age secret.txt</span></code></pre></div>
+<p><strong>With a passphrase:</strong></p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">age</span> <span class="at">-p</span> <span class="at">-o</span> secret.txt.age secret.txt</span></code></pre></div>
+<p><strong>Encrypt a directory:</strong></p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tar</span> czf <span class="at">-</span> documents/ <span class="kw">|</span> <span class="ex">age</span> <span class="at">-r</span> age1... <span class="at">-o</span> documents.tar.gz.age</span></code></pre></div>
+<h2 id="decrypt-a-file">Decrypt a File</h2>
+<p><strong>With private key:</strong></p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">age</span> <span class="at">-d</span> <span class="at">-i</span> ~/.age/key.txt <span class="at">-o</span> secret.txt secret.txt.age</span></code></pre></div>
+<p><strong>With passphrase:</strong></p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">age</span> <span class="at">-d</span> <span class="at">-o</span> secret.txt secret.txt.age</span></code></pre></div>
+<p><strong>Decrypt a directory:</strong></p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">age</span> <span class="at">-d</span> <span class="at">-i</span> ~/.age/key.txt documents.tar.gz.age <span class="kw">|</span> <span class="fu">tar</span> xzf <span class="at">-</span></span></code></pre></div>
+<h2 id="share-your-public-key">Share Your Public Key</h2>
+<p>Your public key (<code>age1...</code>) is safe to share publicly.
+Anyone who has it can encrypt files that only you can decrypt with your
+private key.</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">&quot;public key:&quot;</span> ~/.age/key.txt</span></code></pre></div>
+<h2 id="use-ssh-keys-as-age-keys">Use SSH Keys as age Keys</h2>
+<p>If you already have SSH keys, you can use them with age:</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">age</span> <span class="at">-r</span> <span class="st">&quot;</span><span class="va">$(</span><span class="fu">cat</span> ~/.ssh/id_ed25519.pub<span class="va">)</span><span class="st">&quot;</span> <span class="at">-o</span> file.age file</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ex">age</span> <span class="at">-d</span> <span class="at">-i</span> ~/.ssh/id_ed25519 <span class="at">-o</span> file file.age</span></code></pre></div>
+<h2 id="age-vs-gpg">age vs GPG</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>age</th>
+<th>GPG</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Simplicity</td>
+<td>✅ Very simple</td>
+<td>❌ Complex</td>
+</tr>
+<tr class="even">
+<td>Key management</td>
+<td>Minimal</td>
+<td>Complex web of trust</td>
+</tr>
+<tr class="odd">
+<td>Compatibility</td>
+<td>Limited</td>
+<td>Universal</td>
+</tr>
+<tr class="even">
+<td>Use case</td>
+<td>File encryption</td>
+<td>Signing, email, packages</td>
+</tr>
+</tbody>
+</table>
+<p>Use age for encrypting files and backups. Use GPG for signing
+releases and email (PGP).</p>

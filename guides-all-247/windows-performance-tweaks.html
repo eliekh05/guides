@@ -1,0 +1,70 @@
+DATA:windows:Windows 11 Performance Tweaks:Windows
+<h1>Windows 11 Performance Tweaks</h1>
+<h2 id="disable-startup-programs">Disable Startup Programs</h2>
+<p><strong>Task Manager (Ctrl+Shift+Esc) → Startup apps</strong></p>
+<p>Right-click and Disable anything you do not need at startup. Focus on
+programs with High startup impact.</p>
+<h2 id="set-power-plan-to-high-performance">Set Power Plan to High
+Performance</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>powercfg <span class="op">/</span>setactive 8c5e7fda<span class="op">-</span>e8bf<span class="op">-</span>4a96<span class="op">-</span>9a85<span class="op">-</span>a6e23a8c635c</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>powercfg <span class="op">-</span>duplicatescheme e9a42b02<span class="op">-</span>d5df<span class="op">-</span>448d<span class="op">-</span>aa00<span class="op">-</span>03f14749eb61</span></code></pre></div>
+<p>Or: Settings → System → Power → Power mode → Best Performance</p>
+<h2 id="disable-visual-effects">Disable Visual Effects</h2>
+<p><strong>Search: "Adjust the appearance and performance of
+Windows"</strong></p>
+<p>Select <strong>Adjust for best performance</strong> or manually
+uncheck:</p>
+<ul>
+<li>Animate controls and elements inside windows</li>
+<li>Animate windows when minimizing and maximizing</li>
+<li>Fade or slide menus into view</li>
+<li>Show shadows under windows</li>
+</ul>
+<h2 id="disable-transparency">Disable Transparency</h2>
+<p>Settings → Personalisation → Colours → Transparency effects → Off</p>
+<p>Reduces GPU load, makes taskbar and Start menu feel snappier.</p>
+<h2 id="clean-up-storage">Clean Up Storage</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>cleanmgr <span class="op">/</span>sageset<span class="op">:</span>1 <span class="op">/</span>d C<span class="op">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>cleanmgr <span class="op">/</span>sagerun<span class="op">:</span>1</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>net stop wuauserv</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">Remove-Item</span> <span class="st">&quot;C:\Windows\SoftwareDistribution\Download&quot;</span> <span class="op">-</span>Recurse <span class="op">-</span>Force</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>net <span class="fu">start</span> wuauserv</span></code></pre></div>
+<p>Settings → System → Storage → Temporary files → check items and
+Remove files</p>
+<h2 id="disable-windows-search-indexing-low-ram-systems">Disable Windows
+Search Indexing (Low-RAM Systems)</h2>
+<p>Services → Windows Search → Startup type: Disabled</p>
+<p>Reduces disk I/O constantly. Search still works but is slower.</p>
+<h2 id="adjust-virtual-memory">Adjust Virtual Memory</h2>
+<p>If you have low RAM:</p>
+<p>Search: "Adjust the appearance and performance of Windows" → Advanced
+→ Virtual memory → Change</p>
+<p>Uncheck "Automatically manage" → Custom size:</p>
+<ul>
+<li>Initial size: 1.5x RAM in MB (e.g., 6144 for 4GB RAM)</li>
+<li>Maximum size: 3x RAM in MB (e.g., 12288 for 4GB RAM)</li>
+</ul>
+<h2 id="disable-unnecessary-services">Disable Unnecessary Services</h2>
+<p>Open Services (services.msc). Set these to <strong>Manual</strong> if
+you do not use them:</p>
+<ul>
+<li><strong>Print Spooler</strong> — disable if no printer</li>
+<li><strong>Fax</strong> — almost never needed</li>
+<li><strong>Windows Error Reporting</strong> — disable for privacy</li>
+<li><strong>Xbox Game Bar, Xbox Live</strong> — disable if not
+gaming</li>
+</ul>
+<h2 id="game-mode">Game Mode</h2>
+<p>Settings → Gaming → Game Mode → On</p>
+<p>Prioritises CPU and GPU resources for the focused game. Also useful
+for video rendering.</p>
+<h2 id="storsense-ssd-health">StorSense (SSD Health)</h2>
+<p>Windows monitors SSD health via SMART:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>Get<span class="op">-</span>PhysicalDisk <span class="op">|</span> Get<span class="op">-</span>StorageReliabilityCounter <span class="op">|</span> <span class="fu">Select</span> DeviceId<span class="op">,</span> Temperature<span class="op">,</span> Wear</span></code></pre></div>
+<p>Settings → System → Storage → Drive health (if supported by your
+drive)</p>

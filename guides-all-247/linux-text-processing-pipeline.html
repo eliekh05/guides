@@ -1,0 +1,74 @@
+DATA:linux:Text Processing Pipelines in Linux:Linux
+<h1>Text Processing Pipelines in Linux</h1>
+<p>Linux pipes allow chaining commands together. The output of one
+command becomes the input of the next. This is how you process text,
+logs, and data without writing programs.</p>
+<h2 id="the-pipe-operator">The Pipe Operator</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">command1</span> <span class="kw">|</span> <span class="ex">command2</span> <span class="kw">|</span> <span class="ex">command3</span></span></code></pre></div>
+<p>Data flows left to right. Each command processes the output of the
+previous one.</p>
+<h2 id="essential-text-processing-tools">Essential Text Processing
+Tools</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>      — concatenate and print files</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>     — first N lines</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span>     — last N lines</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span>     — filter lines by pattern</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>     — sort lines</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">uniq</span>     — deduplicate adjacent lines</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">cut</span>      — extract columns</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">tr</span>       — translate characters</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">wc</span>       — count lines, words, chars</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">tee</span>      — duplicate output <span class="er">(</span><span class="ex">to</span> file and stdout<span class="kw">)</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">xargs</span>    — build commands from stdin</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>    — merge lines from files</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="fu">join</span>     — join files on a field</span></code></pre></div>
+<h2 id="practical-pipelines">Practical Pipelines</h2>
+<p><strong>Count occurrences of each unique value:</strong></p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> access.log <span class="kw">|</span> <span class="fu">awk</span> <span class="st">&#39;{print $1}&#39;</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-rn</span> <span class="kw">|</span> <span class="fu">head</span> <span class="at">-10</span></span></code></pre></div>
+<p><strong>Find top IP addresses in a log:</strong></p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">&quot;404&quot;</span> access.log <span class="kw">|</span> <span class="fu">awk</span> <span class="st">&#39;{print $1}&#39;</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">uniq</span> <span class="at">-c</span> <span class="kw">|</span> <span class="fu">sort</span> <span class="at">-rn</span> <span class="kw">|</span> <span class="fu">head</span> <span class="at">-20</span></span></code></pre></div>
+<p><strong>Extract specific columns from CSV:</strong></p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cut</span> <span class="at">-d</span><span class="st">&#39;,&#39;</span> <span class="at">-f1,3</span> data.csv          <span class="co"># columns 1 and 3</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="at">-F</span><span class="st">&#39;,&#39;</span> <span class="st">&#39;{print $1, $3}&#39;</span> data.csv  <span class="co"># same with awk</span></span></code></pre></div>
+<p><strong>Find files modified today, list sizes:</strong></p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> . <span class="at">-mtime</span> 0 <span class="at">-type</span> f <span class="at">-exec</span> ls <span class="at">-lh</span> {} <span class="dt">\;</span> <span class="kw">|</span> <span class="fu">awk</span> <span class="st">&#39;{print $5, $9}&#39;</span></span></code></pre></div>
+<p><strong>Remove blank lines and comments from a config:</strong></p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-v</span> <span class="st">&quot;^#&quot;</span> config.conf <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-v</span> <span class="st">&quot;^$&quot;</span></span></code></pre></div>
+<p><strong>Convert newlines to commas:</strong></p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> items.txt <span class="kw">|</span> <span class="fu">tr</span> <span class="st">&#39;\n&#39;</span> <span class="st">&#39;,&#39;</span></span></code></pre></div>
+<p><strong>Find and replace in a stream:</strong></p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> file.txt <span class="kw">|</span> <span class="fu">sed</span> <span class="st">&#39;s/old/new/g&#39;</span></span></code></pre></div>
+<p><strong>Count words in multiple files:</strong></p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="pp">*</span>.txt <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-w</span></span></code></pre></div>
+<p><strong>Monitor a log and filter for errors:</strong></p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span> <span class="at">-f</span> /var/log/syslog <span class="kw">|</span> <span class="fu">grep</span> <span class="at">--line-buffered</span> <span class="at">-i</span> <span class="st">&quot;error\|warn\|crit&quot;</span></span></code></pre></div>
+<h2 id="process-substitution">Process Substitution</h2>
+<p>Use command output as a file:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">diff</span> <span class="op">&lt;(</span><span class="fu">ls</span> dir1<span class="op">)</span> <span class="op">&lt;(</span><span class="fu">ls</span> dir2<span class="op">)</span>        <span class="co"># compare directory listings</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">comm</span> <span class="op">&lt;(</span><span class="fu">sort</span> list1<span class="op">)</span> <span class="op">&lt;(</span><span class="fu">sort</span> list2<span class="op">)</span>   <span class="co"># show lines unique to each file</span></span></code></pre></div>
+<h2 id="xargs--build-commands-from-input">xargs — Build Commands From
+Input</h2>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> . <span class="at">-name</span> <span class="st">&quot;*.tmp&quot;</span> <span class="kw">|</span> <span class="fu">xargs</span> rm</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> urls.txt <span class="kw">|</span> <span class="fu">xargs</span> <span class="at">-P</span> 4 <span class="at">-I{}</span> curl <span class="at">-O</span> {}</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;package1 package2 package3&quot;</span> <span class="kw">|</span> <span class="fu">xargs</span> sudo apt install <span class="at">-y</span></span></code></pre></div>
+<h2 id="here-documents-and-here-strings">Here Documents and Here
+Strings</h2>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&lt;&lt; EOF</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="st">line one</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="st">line two</span></span></code></pre></div>

@@ -1,0 +1,79 @@
+DATA:macos:QuickLook Plugins for macOS:macOS
+<h1>QuickLook Plugins for macOS</h1>
+<p>QuickLook lets you preview files by pressing Space in Finder. By
+default it works for images, PDFs, and common documents. Plugins extend
+it to code files, archives, fonts, and more.</p>
+<h2 id="install-via-homebrew">Install via Homebrew</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install <span class="at">--cask</span> qlcolorcode</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install <span class="at">--cask</span> qlmarkdown</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install <span class="at">--cask</span> qlstephen       <span class="co"># plain text files without extension</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install <span class="at">--cask</span> quicklook-json</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install <span class="at">--cask</span> apparency</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install <span class="at">--cask</span> betterzip       <span class="co"># paid, but best</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install <span class="at">--cask</span> suspicious-package  <span class="co"># .pkg installer contents</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install <span class="at">--cask</span> quicklook-csv</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install <span class="at">--cask</span> webpquicklook</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install <span class="at">--cask</span> qlimagesize     <span class="co"># image size and resolution</span></span></code></pre></div>
+<h2 id="after-installing">After Installing</h2>
+<p>On macOS Catalina and later, run:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">qlmanage</span> <span class="at">-r</span>        <span class="co"># reset QuickLook manager</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">qlmanage</span> <span class="at">-r</span> cache  <span class="co"># clear QuickLook cache</span></span></code></pre></div>
+<p>If plugins do not work: <strong>System Settings → Privacy &amp;
+Security → scroll down</strong> — you may need to allow each plugin.</p>
+<h2 id="macos-ventura-and-later--security-requirement">macOS Ventura and
+Later — Security Requirement</h2>
+<p>Plugins must be explicitly allowed:</p>
+<ol type="1">
+<li>Install the plugin</li>
+<li>Press Space on a file it should handle</li>
+<li>When it does not work, check System Settings → Privacy &amp;
+Security for a prompt to allow the extension</li>
+<li>Allow it</li>
+</ol>
+<h2 id="manual-installation">Manual Installation</h2>
+<p>Some plugins are <code>.qlgenerator</code> files. Install by placing
+them in:</p>
+<pre><code>~/Library/QuickLook/       # user only
+/Library/QuickLook/        # all users (needs sudo)</code></pre>
+<p>Then run <code>qlmanage -r</code>.</p>
+<h2 id="useful-quick-look-shortcuts">Useful Quick Look Shortcuts</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Shortcut</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Space</strong></td>
+<td>Open/close QuickLook</td>
+</tr>
+<tr class="even">
+<td><strong>Arrow keys</strong></td>
+<td>Navigate to next/previous file</td>
+</tr>
+<tr class="odd">
+<td><strong>Cmd + Enter</strong></td>
+<td>Open file in default app</td>
+</tr>
+<tr class="even">
+<td><strong>Cmd + L</strong></td>
+<td>Lock screen (while QuickLook open)</td>
+</tr>
+<tr class="odd">
+<td><strong>Fullscreen button</strong></td>
+<td>Expand to full screen</td>
+</tr>
+</tbody>
+</table>

@@ -1,0 +1,67 @@
+DATA:linux:SSH Config File — Advanced Tips:Linux
+<h1>SSH Config File — Advanced Tips</h1>
+<p>The SSH config file (<code>~/.ssh/config</code>) makes connecting to
+servers faster and more convenient.</p>
+<h2 id="basic-structure">Basic Structure</h2>
+<pre><code>Host alias
+    HostName actual-server.com
+    User username
+    Port 22
+    IdentityFile ~/.ssh/id_ed25519</code></pre>
+<p>Then just: <code>ssh alias</code></p>
+<h2 id="common-options">Common Options</h2>
+<pre><code>Host internal
+    HostName 10.0.0.5
+    User admin
+    ProxyJump jump.example.com
+
+Host github.com
+    IdentityFile ~/.ssh/github_key
+
+Host *
+    ControlMaster auto
+    ControlPath ~/.ssh/sockets/%r@%h:%p
+    ControlPersist 10m
+
+Host *
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+    TCPKeepAlive yes
+
+Host remote-server
+    Compression yes
+
+Host gui-server
+    ForwardX11 yes</code></pre>
+<h2 id="multiple-github-accounts">Multiple GitHub Accounts</h2>
+<pre><code>Host github-personal
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/personal_key
+
+Host github-work
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/work_key</code></pre>
+<p>Use:
+<code>git clone git@github-personal:yourusername/repo.git</code></p>
+<h2 id="connection-multiplexing">Connection Multiplexing</h2>
+<p>Multiplexing reuses one connection for multiple SSH sessions to the
+same host — no new handshake, much faster:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/.ssh/sockets</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Host</span> <span class="pp">*</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">ControlMaster</span> auto</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="ex">ControlPath</span> ~/.ssh/sockets/%r@%h:%p</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">ControlPersist</span> 10m</span></code></pre></div>
+<h2 id="ssh-agent-forwarding">SSH Agent Forwarding</h2>
+<p>Let remote servers use your local SSH keys (for git operations from a
+remote server):</p>
+<pre><code>Host myserver
+    ForwardAgent yes</code></pre>
+<p>Or on the command line: <code>ssh -A user@server</code></p>
+<h2 id="socks-proxy-through-ssh">SOCKS Proxy Through SSH</h2>
+<pre><code>Host myserver
+    DynamicForward 1080</code></pre>
+<p>Connects to myserver and opens a SOCKS proxy on local port 1080.</p>

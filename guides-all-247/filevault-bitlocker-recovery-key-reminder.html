@@ -1,0 +1,71 @@
+DATA:macos:FileVault / BitLocker Recovery Key Prompt — What It Means:macOS
+<h1>FileVault / BitLocker Recovery Key Prompt — What It Means</h1>
+<h1
+id="filevault--bitlocker-recovery-key-prompt--what-it-means">FileVault /
+BitLocker Recovery Key Prompt — What It Means</h1>
+<p>After a macOS update, a hardware change, or sometimes for no obvious
+reason, your Mac shows a screen at startup asking for a
+<strong>FileVault recovery key</strong>. On Windows the same thing
+happens with <strong>BitLocker</strong>.</p>
+<p>Most people have no idea what this key is or where it went.</p>
+<h2 id="what-is-a-recovery-key">What Is a Recovery Key</h2>
+<p>FileVault (macOS) and BitLocker (Windows) are full-disk encryption —
+everything on your drive is encrypted so nobody can read your files
+without authenticating. The recovery key is a long alphanumeric code
+generated when encryption was first turned on. It is a backup way to
+unlock the drive if the normal login method fails.</p>
+<h2 id="why-it-is-asking">Why It Is Asking</h2>
+<p><strong>macOS / FileVault reasons:</strong></p>
+<ul>
+<li>A macOS major version update</li>
+<li>You changed your Apple ID password and the Secure Token association
+broke</li>
+<li>You added or removed a user account</li>
+<li>Hardware was replaced — new logic board, new SSD</li>
+<li>Too many failed login attempts</li>
+</ul>
+<p><strong>Windows / BitLocker reasons:</strong></p>
+<ul>
+<li>A BIOS/UEFI firmware update</li>
+<li>Hardware change — new CPU, RAM, or motherboard</li>
+<li>TPM chip encountered an error</li>
+<li>Secure Boot settings changed</li>
+</ul>
+<h2 id="where-to-find-the-recovery-key">Where to Find the Recovery
+Key</h2>
+<p><strong>macOS FileVault:</strong> If you saved it to your Apple ID
+when FileVault was set up:</p>
+<ol type="1">
+<li>Go to <a href="https://iforgot.apple.com">iforgot.apple.com</a> from
+another device</li>
+<li>Sign in with your Apple ID</li>
+<li>Follow the steps to retrieve the FileVault recovery key</li>
+</ol>
+<p>If you saved it as a printed or written key — find that paper. Apple
+Support cannot recover it for you if you do not have it.</p>
+<p><strong>Windows BitLocker:</strong></p>
+<ul>
+<li>If the device is joined to a Microsoft account: go to <a
+href="https://account.microsoft.com/devices/recoverykey">account.microsoft.com/devices/recoverykey</a></li>
+<li>If it is work/school managed: contact your IT department — they have
+the key</li>
+<li>If you saved it to a USB or printed it: find that</li>
+</ul>
+<h2 id="if-you-cannot-find-the-key">If You Cannot Find the Key</h2>
+<p>If you cannot find the FileVault recovery key and cannot log in
+normally, the drive cannot be unlocked. This is by design — the
+encryption is working as intended. The only option is to erase the drive
+and reinstall macOS, losing all data that was not backed up.</p>
+<p>This is why backing up with Time Machine before updates matters.</p>
+<h2 id="prevent-this-from-happening-again">Prevent This From Happening
+Again</h2>
+<p>Save the recovery key somewhere you will actually find it. A password
+manager, a printed paper in a safe, iCloud — whatever you will reliably
+have access to when the screen appears and you cannot log into
+anything.</p>
+<blockquote>
+<p><strong>Summary:</strong> The recovery key is a backup code for your
+encrypted drive. Find it in your Apple ID account at iforgot.apple.com
+(macOS) or account.microsoft.com (Windows). If you cannot find it, the
+drive cannot be unlocked without erasing it.</p>
+</blockquote>

@@ -1,0 +1,110 @@
+DATA:macos:Automate Tasks with Automator on macOS:macOS
+<h1>Automate Tasks with Automator on macOS</h1>
+<p>Automator creates workflows that automate repetitive tasks without
+programming. You build workflows by dragging and connecting pre-built
+actions.</p>
+<h2 id="open-automator">Open Automator</h2>
+<p>Spotlight (Cmd+Space) → type Automator</p>
+<h2 id="document-types">Document Types</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Use case</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Workflow</strong></td>
+<td>Run from Automator only</td>
+</tr>
+<tr class="even">
+<td><strong>Application</strong></td>
+<td>Double-click to run, can be in Dock</td>
+</tr>
+<tr class="odd">
+<td><strong>Quick Action</strong></td>
+<td>Appears in right-click menu and Touch Bar</td>
+</tr>
+<tr class="even">
+<td><strong>Print Plugin</strong></td>
+<td>Appears in the Print dialog</td>
+</tr>
+<tr class="odd">
+<td><strong>Folder Action</strong></td>
+<td>Runs when files are added to a folder</td>
+</tr>
+<tr class="even">
+<td><strong>Calendar Alarm</strong></td>
+<td>Runs on a calendar event</td>
+</tr>
+<tr class="odd">
+<td><strong>Image Capture Plugin</strong></td>
+<td>Runs when a camera/scanner is connected</td>
+</tr>
+<tr class="even">
+<td><strong>Dictation Command</strong></td>
+<td>Triggered by voice</td>
+</tr>
+</tbody>
+</table>
+<h2 id="useful-quick-actions-right-click-menu">Useful Quick Actions
+(Right-Click Menu)</h2>
+<p><strong>Rename files in bulk:</strong></p>
+<ol type="1">
+<li>New Document → <strong>Quick Action</strong></li>
+<li>Set "Workflow receives" to <strong>files or folders</strong> in
+Finder</li>
+<li>Search for <strong>Rename Finder Items</strong> and drag it in</li>
+<li>Choose your renaming pattern (add text, replace text, number
+sequentially, etc.)</li>
+<li>File → Save → name it "Rename Files"</li>
+</ol>
+<p>Now right-click any files in Finder → Quick Actions → Rename
+Files.</p>
+<p><strong>Convert images to JPEG:</strong></p>
+<ol type="1">
+<li>New → Quick Action → receives files in Finder</li>
+<li>Add <strong>Change Type of Images</strong> → JPEG</li>
+<li>Save as "Convert to JPEG"</li>
+</ol>
+<h2 id="folder-action--auto-process-files">Folder Action — Auto-Process
+Files</h2>
+<p>A folder action runs automatically when files are added to a
+folder.</p>
+<p><strong>Example — auto-convert images dropped into a
+folder:</strong></p>
+<ol type="1">
+<li>New → <strong>Folder Action</strong></li>
+<li>At top: "Folder action receives files and folders added to" → select
+your folder</li>
+<li>Add <strong>Change Type of Images</strong> → JPEG</li>
+<li>Add <strong>Move Finder Items</strong> → select a destination
+folder</li>
+<li>Save</li>
+</ol>
+<p>Drop any image into the watched folder and it automatically converts
+and moves to the destination.</p>
+<h2 id="run-shell-scripts">Run Shell Scripts</h2>
+<p>Add a <strong>Run Shell Script</strong> action to any workflow:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> <span class="st">&quot;</span><span class="va">$@</span><span class="st">&quot;</span><span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">&quot;Processing: </span><span class="va">$f</span><span class="st">&quot;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># your commands here</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
+<p>Set <strong>Pass input</strong> to "as arguments".</p>
+<h2 id="combine-with-calendar">Combine with Calendar</h2>
+<ol type="1">
+<li>New → <strong>Calendar Alarm</strong></li>
+<li>Add actions (send email, run script, open files, etc.)</li>
+<li>Save — Automator creates a new Calendar event</li>
+<li>Set the event time in Calendar</li>
+</ol>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p><strong>Quick Action does not appear in Finder:</strong> System
+Settings → Privacy &amp; Security → Extensions → Finder Extensions →
+enable your workflow</p>
+<p><strong>Workflow fails silently:</strong> Add a <strong>Show
+Notification</strong> or <strong>Display Alert</strong> action to see
+where it stops.</p>

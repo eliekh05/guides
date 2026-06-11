@@ -1,0 +1,62 @@
+DATA:networking:Pi-hole with Unbound — Recursive DNS Setup:Networking & DNS
+<h1>Pi-hole with Unbound — Recursive DNS Setup</h1>
+<p>By default Pi-hole forwards DNS queries to an upstream resolver
+(Cloudflare, Google). With Unbound, Pi-hole queries DNS root servers
+directly — no third party sees your DNS requests.</p>
+<h2 id="install-unbound">Install Unbound</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install unbound <span class="at">-y</span></span></code></pre></div>
+<h2 id="configure-unbound-for-pi-hole">Configure Unbound for
+Pi-hole</h2>
+<p>Create <code>/etc/unbound/unbound.conf.d/pi-hole.conf</code>:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> nano /etc/unbound/unbound.conf.d/pi-hole.conf</span></code></pre></div>
+<p>Paste:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">server</span><span class="kw">:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">verbosity</span><span class="kw">:</span><span class="at"> </span><span class="dv">0</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">interface</span><span class="kw">:</span><span class="at"> </span><span class="fl">127.0.0.1</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">5335</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">do-ip4</span><span class="kw">:</span><span class="at"> </span><span class="ch">yes</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">do-udp</span><span class="kw">:</span><span class="at"> </span><span class="ch">yes</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">do-tcp</span><span class="kw">:</span><span class="at"> </span><span class="ch">yes</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">do-ip6</span><span class="kw">:</span><span class="at"> </span><span class="ch">no</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">prefer-ip6</span><span class="kw">:</span><span class="at"> </span><span class="ch">no</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">harden-glue</span><span class="kw">:</span><span class="at"> </span><span class="ch">yes</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">harden-dnssec-stripped</span><span class="kw">:</span><span class="at"> </span><span class="ch">yes</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">use-caps-for-id</span><span class="kw">:</span><span class="at"> </span><span class="ch">no</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">edns-buffer-size</span><span class="kw">:</span><span class="at"> </span><span class="dv">1472</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">prefetch</span><span class="kw">:</span><span class="at"> </span><span class="ch">yes</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">num-threads</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">private-address</span><span class="kw">:</span><span class="at"> 192.168.0.0/16</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">private-address</span><span class="kw">:</span><span class="at"> 169.254.0.0/16</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">private-address</span><span class="kw">:</span><span class="at"> 172.16.0.0/12</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">private-address</span><span class="kw">:</span><span class="at"> 10.0.0.0/8</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">private-address</span><span class="kw">:</span><span class="at"> fd00::/8</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">private-address</span><span class="kw">:</span><span class="at"> fe80::/10</span></span></code></pre></div>
+<p>Start and test:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl enable <span class="at">--now</span> unbound</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> pi-hole.net @127.0.0.1 <span class="at">-p</span> 5335    <span class="co"># should return an answer</span></span></code></pre></div>
+<h2 id="point-pi-hole-at-unbound">Point Pi-hole at Unbound</h2>
+<p>In Pi-hole admin: <strong>Settings → DNS</strong></p>
+<ul>
+<li>Uncheck all upstream DNS providers</li>
+<li>Under <strong>Custom 1 (IPv4):</strong> enter
+<code>127.0.0.1#5335</code></li>
+<li>Click <strong>Save</strong></li>
+</ul>
+<h2 id="verify">Verify</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> pi-hole.net @127.0.0.1</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">dig</span> example.com @127.0.0.1 <span class="at">-p</span> 5335</span></code></pre></div>
+<h2 id="troubleshoot">Troubleshoot</h2>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl status unbound</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> journalctl <span class="at">-u</span> unbound <span class="at">-f</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ss <span class="at">-tlnp</span> <span class="kw">|</span> <span class="fu">grep</span> 5335</span></code></pre></div>

@@ -1,0 +1,67 @@
+DATA:security:Set Up Two-Factor Authentication on Linux:Security & Apps
+<h1>Set Up Two-Factor Authentication on Linux</h1>
+<p>Add TOTP (Time-based One-Time Password) two-factor authentication to
+SSH and sudo logins.</p>
+<h2 id="install-google-authenticator-pam">Install Google Authenticator
+PAM</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install libpam-google-authenticator <span class="at">-y</span></span></code></pre></div>
+<h2 id="configure-for-your-user">Configure for Your User</h2>
+<p>Run as the user who will log in:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">google-authenticator</span></span></code></pre></div>
+<p>Answer the prompts:</p>
+<ul>
+<li><strong>Do you want authentication tokens to be time-based?</strong>
+→ y</li>
+<li>Scan the QR code with your authenticator app (Google Authenticator,
+Authy, 1Password, etc.)</li>
+<li>Write down the emergency scratch codes</li>
+<li><strong>Do you want me to update your "~/.google_authenticator"
+file?</strong> → y</li>
+<li><strong>Do you want to disallow multiple uses of the same
+token?</strong> → y</li>
+<li><strong>Do you want to increase the time window?</strong> → n</li>
+<li><strong>Do you want to enable rate limiting?</strong> → y</li>
+</ul>
+<h2 id="enable-2fa-for-ssh">Enable 2FA for SSH</h2>
+<p>Edit <code>/etc/pam.d/sshd</code>:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> nano /etc/pam.d/sshd</span></code></pre></div>
+<p>Add at the top:</p>
+<pre><code>auth required pam_google_authenticator.so</code></pre>
+<p>Edit <code>/etc/ssh/sshd_config</code>:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> nano /etc/ssh/sshd_config</span></code></pre></div>
+<p>Add or change:</p>
+<pre><code>ChallengeResponseAuthentication yes
+AuthenticationMethods publickey,keyboard-interactive</code></pre>
+<p>Restart SSH:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl restart sshd</span></code></pre></div>
+<p>Now login requires both your SSH key AND a TOTP code.</p>
+<h2 id="enable-2fa-for-sudo">Enable 2FA for sudo</h2>
+<p>Edit <code>/etc/pam.d/sudo</code>:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> nano /etc/pam.d/sudo</span></code></pre></div>
+<p>Add:</p>
+<pre><code>auth required pam_google_authenticator.so</code></pre>
+<p>Now every <code>sudo</code> command asks for a TOTP code.</p>
+<h2 id="exclude-specific-users-allow-access-without-2fa">Exclude
+Specific Users (Allow Access Without 2FA)</h2>
+<p>In <code>/etc/pam.d/sshd</code>, replace the line with:</p>
+<pre><code>auth required pam_google_authenticator.so nullok</code></pre>
+<p><code>nullok</code> allows users who have not set up 2FA to log in
+without it. Remove <code>nullok</code> once all users are enrolled.</p>
+<h2 id="backup-codes">Backup Codes</h2>
+<p>The <code>google-authenticator</code> setup gives you 5 emergency
+scratch codes. Store them securely — if you lose your phone, these are
+your only way in without the TOTP code.</p>
+<h2 id="other-totp-tools">Other TOTP Tools</h2>
+<ul>
+<li><strong>FreeOTP</strong> — fully open source</li>
+<li><strong>Aegis</strong> — Android, open source, encrypted backup</li>
+<li><strong>Authy</strong> — cross-platform, cloud backup</li>
+<li><strong>1Password</strong> — if you already use it for
+passwords</li>
+</ul>

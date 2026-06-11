@@ -1,0 +1,110 @@
+DATA:server:Caddy Web Server — Automatic HTTPS Setup:Server & Self-Hosting
+<h1>Caddy Web Server — Automatic HTTPS Setup</h1>
+<p>Caddy is a web server and reverse proxy that automatically obtains
+and renews Let's Encrypt SSL certificates. No Certbot, no certificate
+management — just point it at your domain and Caddy handles
+everything.</p>
+<h2 id="install">Install</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install <span class="at">-y</span> debian-keyring debian-archive-keyring apt-transport-https curl</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-1sLf</span> <span class="st">&#39;https://dl.cloudsmith.io/public/caddy/stable/gpg.key&#39;</span> <span class="kw">|</span> <span class="fu">sudo</span> gpg <span class="at">--dearmor</span> <span class="at">-o</span> /usr/share/keyrings/caddy-stable-archive-keyring.gpg</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-1sLf</span> <span class="st">&#39;https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt&#39;</span> <span class="kw">|</span> <span class="fu">sudo</span> tee /etc/apt/sources.list.d/caddy-stable.list</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt update <span class="kw">&amp;&amp;</span> <span class="fu">sudo</span> apt install caddy</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install caddy</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="at">-p</span> 80:80 <span class="at">-p</span> 443:443 <span class="at">-v</span> caddy_data:/data <span class="at">-v</span> <span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span>/Caddyfile:/etc/caddy/Caddyfile caddy</span></code></pre></div>
+<h2 id="the-caddyfile">The Caddyfile</h2>
+<p>Caddy is configured with a <code>Caddyfile</code>. The syntax is much
+simpler than Nginx.</p>
+<p><strong>Serve a static site with automatic HTTPS:</strong></p>
+<pre><code>example.com {
+    root * /var/www/html
+    file_server
+}</code></pre>
+<p>That is it. Caddy requests an SSL certificate, renews it
+automatically, and redirects HTTP to HTTPS.</p>
+<p><strong>Reverse proxy to an app:</strong></p>
+<pre><code>example.com {
+    reverse_proxy localhost:3000
+}</code></pre>
+<p><strong>Multiple sites:</strong></p>
+<pre><code>app.example.com {
+    reverse_proxy localhost:3000
+}
+
+api.example.com {
+    reverse_proxy localhost:8080
+}
+
+static.example.com {
+    root * /var/www/static
+    file_server
+}</code></pre>
+<p><strong>Add authentication:</strong></p>
+<pre><code>private.example.com {
+    basicauth {
+        admin $2a$14$Zkx19XLiW6VYouLHR5NmfOFU0z2GTNmpkT/5qqR7hx4IjWJPDhjvG
+    }
+    reverse_proxy localhost:3000
+}</code></pre>
+<p>Generate the password hash: <code>caddy hash-password</code></p>
+<h2 id="caddyfile-location">Caddyfile Location</h2>
+<ul>
+<li><code>/etc/caddy/Caddyfile</code> (systemd install)</li>
+<li><code>Caddyfile</code> in your current directory (manual run)</li>
+</ul>
+<h2 id="commands">Commands</h2>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl reload caddy     <span class="co"># reload config without restart</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl restart caddy    <span class="co"># full restart</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">caddy</span> fmt <span class="at">--overwrite</span> Caddyfile <span class="co"># format your Caddyfile</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">caddy</span> validate <span class="at">--config</span> Caddyfile  <span class="co"># check for errors</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">caddy</span> run                       <span class="co"># run in foreground (development)</span></span></code></pre></div>
+<h2 id="local-https-development">Local HTTPS (Development)</h2>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">caddy</span> trust</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">caddy</span> run  <span class="co"># with this Caddyfile:</span></span></code></pre></div>
+<pre><code>localhost {
+    reverse_proxy localhost:3000
+}</code></pre>
+<p>Caddy installs a local CA and generates a certificate — no browser
+warnings.</p>
+<h2 id="caddy-vs-nginx">Caddy vs Nginx</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Caddy</th>
+<th>Nginx</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Automatic HTTPS</td>
+<td>✅ Built-in</td>
+<td>❌ Needs Certbot</td>
+</tr>
+<tr class="even">
+<td>Config syntax</td>
+<td>Simple</td>
+<td>More verbose</td>
+</tr>
+<tr class="odd">
+<td>Performance</td>
+<td>Excellent</td>
+<td>Excellent</td>
+</tr>
+<tr class="even">
+<td>Plugin ecosystem</td>
+<td>Growing</td>
+<td>Massive</td>
+</tr>
+<tr class="odd">
+<td>Reload without downtime</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>

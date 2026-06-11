@@ -1,0 +1,67 @@
+DATA:networking:tcpdump — Capture and Analyse Network Packets:Networking & DNS
+<h1>tcpdump — Capture and Analyse Network Packets</h1>
+<p><code>tcpdump</code> captures network packets in real time or saves
+them to a file. Useful for debugging network issues, verifying traffic,
+and understanding what is actually happening on the wire.</p>
+<h2 id="install">Install</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install tcpdump <span class="at">-y</span>    <span class="co"># Ubuntu/Debian (usually pre-installed)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install tcpdump           <span class="co"># macOS</span></span></code></pre></div>
+<h2 id="basic-usage">Basic Usage</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump <span class="at">-i</span> eth0</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump <span class="at">-i</span> en0         <span class="co"># macOS WiFi</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump <span class="at">-D</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump <span class="at">-v</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump <span class="at">-vv</span>            <span class="co"># more verbose</span></span></code></pre></div>
+<h2 id="filter-traffic">Filter Traffic</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump host 192.168.1.1</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump src host 192.168.1.1     <span class="co"># source only</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump dst host 192.168.1.1     <span class="co"># destination only</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump port 80</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump port 80 or port 443</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump portrange 8000-8100</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump tcp</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump udp</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump icmp</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump host 192.168.1.1 and port 443</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump not port 22               <span class="co"># exclude SSH</span></span></code></pre></div>
+<h2 id="save-to-file-and-read-back">Save to File and Read Back</h2>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump <span class="at">-w</span> capture.pcap</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump <span class="at">-w</span> capture.pcap <span class="at">-c</span> 1000</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">tcpdump</span> <span class="at">-r</span> capture.pcap</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="ex">tcpdump</span> <span class="at">-r</span> capture.pcap port 80</span></code></pre></div>
+<p>The <code>.pcap</code> file can be opened in Wireshark for visual
+analysis.</p>
+<h2 id="show-packet-contents">Show Packet Contents</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump <span class="at">-A</span> port 80</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump <span class="at">-X</span> port 80</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump <span class="at">-n</span> port 53</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump <span class="at">-A</span> <span class="at">-s</span> 0 port 80 <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-E</span> <span class="st">&quot;GET|POST|HTTP&quot;</span></span></code></pre></div>
+<h2 id="practical-examples">Practical Examples</h2>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump <span class="at">-n</span> port 53</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump <span class="at">-n</span> <span class="at">-i</span> eth0 <span class="st">&#39;tcp port 443 and (tcp-syn)&#39;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump <span class="at">-n</span> host 10.0.0.1 and host 10.0.0.2</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump <span class="at">-n</span> port 22</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump <span class="at">-w</span> /tmp/capture-%Y%m%d-%H%M%S.pcap <span class="at">-G</span> 3600 <span class="at">-C</span> 100</span></code></pre></div>

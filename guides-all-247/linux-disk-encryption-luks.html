@@ -1,0 +1,64 @@
+DATA:security:LUKS Disk Encryption on Linux:Security & Apps
+<h1>LUKS Disk Encryption on Linux</h1>
+<p>LUKS (Linux Unified Key Setup) is the standard disk encryption for
+Linux. It encrypts entire partitions — the contents are unreadable
+without the passphrase.</p>
+<h2 id="encrypt-a-new-partition">Encrypt a New Partition</h2>
+<blockquote>
+<p>Encrypting a disk destroys existing data. Do this on a blank
+partition.</p>
+</blockquote>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install cryptsetup <span class="at">-y</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cryptsetup luksFormat /dev/sdb1</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cryptsetup open /dev/sdb1 encrypted_disk</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> mkfs.ext4 /dev/mapper/encrypted_disk</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> mkdir /mnt/secure</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> mount /dev/mapper/encrypted_disk /mnt/secure</span></code></pre></div>
+<h2 id="close-an-encrypted-volume">Close an Encrypted Volume</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> umount /mnt/secure</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cryptsetup close encrypted_disk</span></code></pre></div>
+<h2 id="auto-mount-at-boot-etccrypttab-and-etcfstab">Auto-Mount at Boot
+(/etc/crypttab and /etc/fstab)</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> blkid /dev/sdb1</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">encrypted_disk</span>  UUID=abc123  none     luks</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">/dev/mapper/encrypted_disk</span>  /mnt/secure  ext4  defaults  0  2</span></code></pre></div>
+<p>At boot it will ask for the passphrase. For automatic unlock, use a
+keyfile instead of <code>none</code>.</p>
+<h2 id="add-a-keyfile-for-automated-unlocking">Add a Keyfile (For
+Automated Unlocking)</h2>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dd if=/dev/urandom of=/etc/luks-keyfile bs=512 count=8</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> chmod 400 /etc/luks-keyfile</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cryptsetup luksAddKey /dev/sdb1 /etc/luks-keyfile</span></code></pre></div>
+<h2 id="luks-header-backup">LUKS Header Backup</h2>
+<p>The LUKS header stores encryption metadata. If it gets corrupted, all
+data is lost:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cryptsetup luksHeaderBackup /dev/sdb1 <span class="at">--header-backup-file</span> luks-header-backup.img</span></code></pre></div>
+<p>Restore header:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cryptsetup luksHeaderRestore /dev/sdb1 <span class="at">--header-backup-file</span> luks-header-backup.img</span></code></pre></div>
+<h2 id="manage-passphrases">Manage Passphrases</h2>
+<p>LUKS supports up to 8 passphrases/keyfiles (key slots):</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cryptsetup luksAddKey /dev/sdb1</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cryptsetup luksRemoveKey /dev/sdb1</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cryptsetup luksChangeKey /dev/sdb1</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cryptsetup luksDump /dev/sdb1</span></code></pre></div>
+<h2 id="check-luks-info">Check LUKS Info</h2>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cryptsetup luksDump /dev/sdb1     <span class="co"># full info</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> cryptsetup status encrypted_disk  <span class="co"># status when open</span></span></code></pre></div>

@@ -1,0 +1,100 @@
+DATA:macos:Disk Utility Advanced — APFS, Fusion, RAID:macOS
+<h1>Disk Utility Advanced — APFS, Fusion, RAID</h1>
+<p>Beyond the basics, Disk Utility manages complex storage setups.</p>
+<h2 id="apfs-vs-hfs--which-format-to-use">APFS vs HFS+ — Which Format to
+Use</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Format</th>
+<th>Use for</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>APFS</strong></td>
+<td>All internal SSDs (default, fast snapshots, space sharing)</td>
+</tr>
+<tr class="even">
+<td><strong>APFS (Encrypted)</strong></td>
+<td>Internal SSD with encryption (same as FileVault)</td>
+</tr>
+<tr class="odd">
+<td><strong>APFS (Case-sensitive)</strong></td>
+<td>Developer tools that require case sensitivity</td>
+</tr>
+<tr class="even">
+<td><strong>Mac OS Extended (HFS+)</strong></td>
+<td>External HDDs shared with older Macs</td>
+</tr>
+<tr class="odd">
+<td><strong>ExFAT</strong></td>
+<td>External drives shared with Windows</td>
+</tr>
+<tr class="even">
+<td><strong>MS-DOS (FAT32)</strong></td>
+<td>USB sticks for maximum compatibility, 4GB file size limit</td>
+</tr>
+</tbody>
+</table>
+<h2 id="apfs-volumes--multiple-volumes-sharing-space">APFS Volumes —
+Multiple Volumes Sharing Space</h2>
+<p>APFS lets multiple volumes share the same space pool. Unlike
+partitions, if one volume needs more space it automatically takes it
+from the pool.</p>
+<p><strong>Create a new APFS volume:</strong></p>
+<ol type="1">
+<li>Select the APFS container in Disk Utility</li>
+<li><strong>Edit → Add APFS Volume</strong></li>
+<li>Name it and choose format</li>
+<li>Set optional size limits (not required — volumes share by
+default)</li>
+</ol>
+<p><strong>Use case:</strong> Separate volumes for macOS, Data, and a
+scratch disk — all sharing one physical SSD without wasting space.</p>
+<h2 id="apfs-snapshots">APFS Snapshots</h2>
+<p>Time Machine and software updates use APFS snapshots:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">tmutil</span> listlocalsnapshots /</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">tmutil</span> localsnapshots /</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">tmutil</span> deletelocalsnapshots 2025-01-15-120000</span></code></pre></div>
+<h2 id="first-aid">First Aid</h2>
+<p>Run First Aid on any drive to check and repair filesystem errors:</p>
+<ol type="1">
+<li>Disk Utility → select the volume or container</li>
+<li>Click <strong>First Aid → Run</strong></li>
+</ol>
+<p>For a disk that cannot be unmounted (like the startup drive), boot
+into Recovery Mode (Cmd+R on Intel, hold power on Apple Silicon) and run
+First Aid from there.</p>
+<h2 id="create-a-ram-disk-fast-temp-storage">Create a RAM Disk (Fast
+Temp Storage)</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">diskutil</span> erasevolume HFS+ <span class="st">&quot;RamDisk&quot;</span> <span class="va">$(</span><span class="ex">hdiutil</span> attach <span class="at">-nomount</span> ram://2097152<span class="va">)</span></span></code></pre></div>
+<p>Everything on it is gone when you unmount or restart. Use for build
+caches and temp files that do not need to be fast on disk.</p>
+<h2 id="raid-software-raid">RAID (Software RAID)</h2>
+<p>Disk Utility can create software RAID sets:</p>
+<p><strong>View → Show All Devices</strong> first to see all disks.</p>
+<ul>
+<li><strong>RAID 0 (Striped)</strong> — speed, no redundancy (data lost
+if one disk fails)</li>
+<li><strong>RAID 1 (Mirrored)</strong> — redundancy, keeps working if
+one disk dies</li>
+<li><strong>JBOD (Concatenated)</strong> — multiple disks appear as one,
+no redundancy</li>
+</ul>
+<ol type="1">
+<li>Select the first disk in the RAID set</li>
+<li><strong>File → RAID Assistant</strong></li>
+<li>Follow the wizard</li>
+</ol>
+<h2 id="diskutil-commands">diskutil Commands</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">diskutil</span> list              <span class="co"># list all disks and partitions</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">diskutil</span> info /dev/disk0   <span class="co"># detailed info</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">diskutil</span> eraseDisk APFS <span class="st">&quot;MyDisk&quot;</span> /dev/disk2  <span class="co"># format a disk</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">diskutil</span> unmountDisk /dev/disk2              <span class="co"># unmount</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">diskutil</span> eject /dev/disk2                    <span class="co"># eject</span></span></code></pre></div>

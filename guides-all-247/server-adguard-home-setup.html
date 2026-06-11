@@ -1,0 +1,89 @@
+DATA:server:Set Up AdGuard Home — DNS Ad Blocking:Server & Self-Hosting
+<h1>Set Up AdGuard Home — DNS Ad Blocking</h1>
+<p>AdGuard Home is an alternative to Pi-hole with a more modern web
+interface, built-in DNS-over-HTTPS and DNS-over-TLS support, and
+parental controls. No separate database required.</p>
+<h2 id="install-docker">Install (Docker)</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/adguard/work ~/adguard/conf</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="dt">\</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--name</span> adguardhome <span class="dt">\</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">-p</span> 53:53/tcp <span class="at">-p</span> 53:53/udp <span class="dt">\</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">-p</span> 3000:3000/tcp <span class="dt">\</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> ~/adguard/work:/opt/adguardhome/work <span class="dt">\</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">-v</span> ~/adguard/conf:/opt/adguardhome/conf <span class="dt">\</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--restart</span> unless-stopped <span class="dt">\</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  adguard/adguardhome:latest</span></code></pre></div>
+<p>Open <code>http://YOUR_IP:3000</code> to complete setup.</p>
+<h2 id="install-direct">Install (Direct)</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-fsSL</span> https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh <span class="kw">|</span> <span class="fu">sh</span> <span class="at">-s</span> <span class="at">--</span> <span class="at">-v</span></span></code></pre></div>
+<h2 id="configure-dns-over-https">Configure DNS-over-HTTPS</h2>
+<ol type="1">
+<li><strong>Settings → DNS settings → Upstream DNS servers</strong></li>
+<li>Add: <code>https://1.1.1.1/dns-query</code> (Cloudflare) or
+<code>https://dns.google/dns-query</code></li>
+<li>Enable <strong>Parallel requests</strong> for faster resolution</li>
+</ol>
+<h2 id="add-blocklists">Add Blocklists</h2>
+<p><strong>Settings → Filters → DNS blocklists → Add
+blocklist</strong></p>
+<p>Recommended:</p>
+<ul>
+<li>AdGuard Base filter (included)</li>
+<li><code>https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/multi.txt</code></li>
+<li><code>https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts</code></li>
+</ul>
+<p>Click <strong>Update filters</strong> after adding.</p>
+<h2 id="whitelist-domains">Whitelist Domains</h2>
+<p><strong>Filters → Custom filtering rules → Add</strong></p>
+<pre><code>@@||domain.com^     # whitelist (the @@ prefix allows)
+||domain.com^       # block</code></pre>
+<h2 id="enable-dhcp-optional">Enable DHCP (Optional)</h2>
+<p>AdGuard Home can replace your router as the DHCP server — every
+device gets AdGuard as its DNS automatically:</p>
+<p><strong>Settings → DHCP settings → Enable DHCP server</strong></p>
+<p>Only do this if Pi-hole/AdGuard is on a stable machine that is always
+on.</p>
+<h2 id="adguard-vs-pi-hole">AdGuard vs Pi-hole</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Pi-hole</th>
+<th>AdGuard Home</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Interface</td>
+<td>Older, functional</td>
+<td>Modern, polished</td>
+</tr>
+<tr class="even">
+<td>DNS-over-HTTPS</td>
+<td>Requires separate setup</td>
+<td>Built-in</td>
+</tr>
+<tr class="odd">
+<td>DNS-over-TLS</td>
+<td>Requires setup</td>
+<td>Built-in</td>
+</tr>
+<tr class="even">
+<td>Parental controls</td>
+<td>Basic</td>
+<td>Built-in</td>
+</tr>
+<tr class="odd">
+<td>Performance</td>
+<td>Good</td>
+<td>Slightly better</td>
+</tr>
+<tr class="even">
+<td>Community</td>
+<td>Very large</td>
+<td>Growing</td>
+</tr>
+</tbody>
+</table>

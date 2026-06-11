@@ -1,0 +1,93 @@
+DATA:security:Linux Server Security Hardening Checklist:Security & Apps
+<h1>Linux Server Security Hardening Checklist</h1>
+<p>A practical checklist for securing a fresh Linux server. Work through
+these in order.</p>
+<h2 id="1-update-everything-first">1. Update Everything First</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt update <span class="kw">&amp;&amp;</span> <span class="fu">sudo</span> apt full-upgrade <span class="at">-y</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt autoremove <span class="at">-y</span></span></code></pre></div>
+<h2 id="2-create-a-non-root-user-with-sudo">2. Create a Non-Root User
+With sudo</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">adduser</span> yourusername</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">usermod</span> <span class="at">-aG</span> sudo yourusername</span></code></pre></div>
+<p>Do everything as this user from now on. Disable root SSH login in the
+next step.</p>
+<h2 id="3-harden-ssh">3. Harden SSH</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> nano /etc/ssh/sshd_config.d/99-hardening.conf</span></code></pre></div>
+<pre><code>PermitRootLogin no
+PasswordAuthentication no
+PubkeyAuthentication yes
+X11Forwarding no
+AllowUsers yourusername
+ClientAliveInterval 300
+ClientAliveCountMax 0</code></pre>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> sshd <span class="at">-t</span> <span class="kw">&amp;&amp;</span> <span class="fu">sudo</span> systemctl restart sshd</span></code></pre></div>
+<p>See the <strong>Harden SSH Server</strong> guide for full
+details.</p>
+<h2 id="4-set-up-ufw-firewall">4. Set Up UFW Firewall</h2>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ufw default deny incoming</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ufw default allow outgoing</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ufw allow ssh</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ufw enable</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ufw status</span></code></pre></div>
+<p>Only add rules for services you actually run.</p>
+<h2 id="5-install-and-configure-fail2ban">5. Install and Configure
+Fail2ban</h2>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install fail2ban <span class="at">-y</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl enable <span class="at">--now</span> fail2ban</span></code></pre></div>
+<p>Create <code>/etc/fail2ban/jail.local</code>:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode ini"><code class="sourceCode ini"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[DEFAULT]</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="dt">bantime </span><span class="ot">=</span><span class="st"> </span><span class="dv">3600</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="dt">maxretry </span><span class="ot">=</span><span class="st"> </span><span class="dv">3</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="dt">backend </span><span class="ot">=</span><span class="st"> systemd</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="kw">[sshd]</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="dt">enabled </span><span class="ot">=</span><span class="st"> </span><span class="kw">true</span></span></code></pre></div>
+<p>See the <strong>Protect SSH with Fail2ban</strong> guide.</p>
+<h2 id="6-disable-unused-services">6. Disable Unused Services</h2>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">systemctl</span> list-units <span class="at">--type</span><span class="op">=</span>service <span class="at">--state</span><span class="op">=</span>running</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl disable <span class="at">--now</span> apache2    <span class="co"># if not using Apache</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl disable <span class="at">--now</span> cups       <span class="co"># if no printer</span></span></code></pre></div>
+<h2 id="7-automatic-security-updates">7. Automatic Security Updates</h2>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install unattended-upgrades <span class="at">-y</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dpkg-reconfigure unattended-upgrades</span></code></pre></div>
+<p>Choose "Yes" to enable automatic security updates.</p>
+<h2 id="8-secure-shared-memory">8. Secure Shared Memory</h2>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> nano /etc/fstab</span></code></pre></div>
+<p>Add:</p>
+<pre><code>tmpfs /run/shm tmpfs defaults,noexec,nosuid 0 0</code></pre>
+<h2 id="9-limit-su-access">9. Limit su Access</h2>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dpkg-statoverride <span class="at">--update</span> <span class="at">--add</span> root sudo 4750 /bin/su</span></code></pre></div>
+<p>Only members of the <code>sudo</code> group can use
+<code>su</code>.</p>
+<h2 id="10-check-for-suid-files">10. Check for SUID Files</h2>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> / <span class="at">-perm</span> <span class="at">-4000</span> <span class="at">-type</span> f <span class="dv">2</span><span class="op">&gt;</span>/dev/null</span></code></pre></div>
+<p>Review the list. Any unexpected SUID binaries are a red flag.</p>
+<h2 id="11-audit-listening-services">11. Audit Listening Services</h2>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ss</span> <span class="at">-tlnp</span></span></code></pre></div>
+<p>Review every listening service. If you do not recognise it or do not
+need it, stop and disable it.</p>
+<h2 id="12-log-monitoring">12. Log Monitoring</h2>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">&quot;Failed password&quot;</span> /var/log/auth.log <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-20</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> journalctl <span class="at">-f</span> <span class="at">-u</span> sshd</span></code></pre></div>
+<h2 id="13-run-lynis-security-audit">13. Run Lynis Security Audit</h2>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install lynis <span class="at">-y</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> lynis audit system</span></code></pre></div>
+<p>Lynis gives you a score and specific recommendations for your
+system.</p>

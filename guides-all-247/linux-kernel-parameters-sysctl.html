@@ -1,0 +1,56 @@
+DATA:system-users:Tune Linux Kernel Parameters with sysctl:System & Users
+<h1>Tune Linux Kernel Parameters with sysctl</h1>
+<p><code>sysctl</code> reads and writes kernel parameters at runtime.
+Useful for networking performance, security hardening, and memory
+management.</p>
+<h2 id="read-current-value">Read Current Value</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">sysctl</span> vm.swappiness</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">sysctl</span> net.ipv4.ip_forward</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">sysctl</span> <span class="at">-a</span>                    <span class="co"># all parameters</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">sysctl</span> <span class="at">-a</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="st">&quot;net.core&quot;</span>  <span class="co"># filter</span></span></code></pre></div>
+<h2 id="set-temporarily-lost-on-reboot">Set Temporarily (Lost on
+Reboot)</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> sysctl vm.swappiness=10</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> sysctl net.ipv4.ip_forward=1</span></code></pre></div>
+<h2 id="set-permanently">Set Permanently</h2>
+<p>Edit <code>/etc/sysctl.conf</code> or create a file in
+<code>/etc/sysctl.d/</code>:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> nano /etc/sysctl.d/99-custom.conf</span></code></pre></div>
+<p>Add your settings:</p>
+<pre><code>vm.swappiness = 10
+
+net.ipv4.ip_forward = 1
+
+fs.file-max = 2097152
+
+net.core.rmem_max = 134217728
+net.core.wmem_max = 134217728</code></pre>
+<p>Apply without reboot:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> sysctl <span class="at">-p</span> /etc/sysctl.d/99-custom.conf</span></code></pre></div>
+<h2 id="common-parameters">Common Parameters</h2>
+<h3 id="memory">Memory</h3>
+<pre><code>vm.swappiness = 10            # prefer RAM over swap (0-100, default 60)
+vm.dirty_ratio = 15           # max % RAM used for dirty pages before writeback
+vm.overcommit_memory = 1      # allow overcommit (needed for Redis, some apps)</code></pre>
+<h3 id="networking">Networking</h3>
+<pre><code>net.ipv4.ip_forward = 1                  # enable IP routing/NAT
+net.ipv4.tcp_syncookies = 1              # protect against SYN flood attacks
+net.ipv4.conf.all.accept_redirects = 0  # ignore ICMP redirects (security)
+net.ipv4.tcp_fin_timeout = 30           # faster TIME_WAIT cleanup
+net.core.somaxconn = 65535              # max connections in listen queue
+net.ipv4.tcp_max_syn_backlog = 65535    # SYN backlog size</code></pre>
+<h3 id="security">Security</h3>
+<pre><code>kernel.dmesg_restrict = 1    # restrict dmesg to root
+kernel.kptr_restrict = 2     # hide kernel pointers
+net.ipv4.conf.all.rp_filter = 1   # enable reverse path filtering</code></pre>
+<h3 id="file-handles">File Handles</h3>
+<pre><code>fs.file-max = 2097152         # max open file handles system-wide
+fs.inotify.max_user_watches = 524288   # needed for VSCode, Webpack</code></pre>
+<h2 id="view-current-limits">View Current Limits</h2>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">ulimit</span> <span class="at">-n</span>              <span class="co"># per-process file descriptor limit</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> /proc/sys/fs/file-nr   <span class="co"># current open files: used / unused / max</span></span></code></pre></div>

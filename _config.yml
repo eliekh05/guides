@@ -1,0 +1,21 @@
+remote_theme: just-the-docs/just-the-docs
+title: OS & Installation Guides
+description: Practical guides for problems that are hard to find solutions for online.
+url: "https://eliekh05.github.io"
+baseurl: "/guides"
+nav_sort: case_insensitive
+search_enabled: true
+search:
+  heading_level: 2
+  previews: 3
+  preview_words_before: 8
+  preview_words_after: 16
+  rel_url: true
+  button: true
+aux_links:
+  "GitHub":
+    - "https://github.com/eliekh05/guides"
+aux_links_new_tab: true
+color_scheme: dark
+plugins:
+  - jekyll-remote-theme

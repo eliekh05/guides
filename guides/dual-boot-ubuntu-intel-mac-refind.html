@@ -103,8 +103,8 @@ DATA:installation:Dual Boot Ubuntu on an Intel Mac (with rEFInd):Installation Gu
 <p>Wi-Fi is the most common issue when running Linux on a Mac. Most Macs use <strong>Broadcom</strong> Wi-Fi chips which require a proprietary driver.</p>
 <h3>Check what's happening</h3>
 <p>Open Terminal in Ubuntu and run:</p>
-<div class="codehilite"><pre><span></span><code>lspci<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>Network
-</code></pre></div>
+<pre><code><code>lspci | grep Network
+</code></code></pre>
 
 <p>If you see <code>Broadcom</code> in the output, you need the <code>broadcom-sta</code> driver.</p>
 <h3>Fix with ethernet or iPhone hotspot first</h3>
@@ -112,17 +112,17 @@ DATA:installation:Dual Boot Ubuntu on an Intel Mac (with rEFInd):Installation Gu
 - USB ethernet adapter
 - iPhone: Settings → Personal Hotspot → enable <strong>USB only</strong>, connect with Lightning/USB-C cable</p>
 <h3>Install the driver</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>broadcom-sta-dkms<span class="w"> </span>-y
-sudo<span class="w"> </span>modprobe<span class="w"> </span>-r<span class="w"> </span>b43<span class="w"> </span>ssb<span class="w"> </span>wl<span class="w"> </span>brcmfmac<span class="w"> </span>brcmsmac<span class="w"> </span>bcma
-sudo<span class="w"> </span>modprobe<span class="w"> </span>wl
-</code></pre></div>
+<pre><code><code>sudo apt update
+sudo apt install broadcom-sta-dkms -y
+sudo modprobe -r b43 ssb wl brcmfmac brcmsmac bcma
+sudo modprobe wl
+</code></code></pre>
 
 <p>Restart Ubuntu. Wi-Fi should now appear in the network menu.</p>
 <p>If <code>broadcom-sta-dkms</code> doesn't fix it, try:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>firmware-b43-installer<span class="w"> </span>-y
-sudo<span class="w"> </span>reboot
-</code></pre></div>
+<pre><code><code>sudo apt install firmware-b43-installer -y
+sudo reboot
+</code></code></pre>
 
 <hr />
 <h2>Step 8 — Fix GRUB Hijacking macOS Boot (If It Happens)</h2>

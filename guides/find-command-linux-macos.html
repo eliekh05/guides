@@ -3,107 +3,107 @@ DATA:linux:find Command — Complete Guide (macOS and Linux):Linux
 <p><code>find</code> searches for files and folders by name, type, size, date, permissions, and more. It is one of the most powerful Terminal commands but the syntax trips up almost everyone.</p>
 <hr />
 <h2>Basic Syntax</h2>
-<div class="codehilite"><pre><span></span><code>find<span class="w"> </span><span class="o">[</span>where<span class="w"> </span>to<span class="w"> </span>search<span class="o">]</span><span class="w"> </span><span class="o">[</span>what<span class="w"> </span>to<span class="w"> </span>look<span class="w"> </span><span class="k">for</span><span class="o">]</span><span class="w"> </span><span class="o">[</span>what<span class="w"> </span>to<span class="w"> </span><span class="k">do</span><span class="w"> </span>with<span class="w"> </span>results<span class="o">]</span>
-</code></pre></div>
+<pre><code><code>find [where to search] [what to look for] [what to do with results]
+</code></code></pre>
 
 <hr />
 <h2>Find by Name</h2>
-<div class="codehilite"><pre><span></span><code>find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;file.txt&quot;</span><span class="w">              </span><span class="c1"># exact name, current folder and subfolders</span>
-find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.log&quot;</span><span class="w">                 </span><span class="c1"># all .log files</span>
-find<span class="w"> </span>.<span class="w"> </span>-iname<span class="w"> </span><span class="s2">&quot;*.log&quot;</span><span class="w">                </span><span class="c1"># case-insensitive</span>
-find<span class="w"> </span>/<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;config.json&quot;</span><span class="w">           </span><span class="c1"># search entire system</span>
-find<span class="w"> </span>~/Documents<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.pdf&quot;</span><span class="w">       </span><span class="c1"># search specific folder</span>
-</code></pre></div>
+<pre><code><code>find . -name &quot;file.txt&quot;              # exact name, current folder and subfolders
+find . -name &quot;*.log&quot;                 # all .log files
+find . -iname &quot;*.log&quot;                # case-insensitive
+find / -name &quot;config.json&quot;           # search entire system
+find ~/Documents -name &quot;*.pdf&quot;       # search specific folder
+</code></code></pre>
 
 <hr />
 <h2>Find by Type</h2>
-<div class="codehilite"><pre><span></span><code>find<span class="w"> </span>.<span class="w"> </span>-type<span class="w"> </span>f<span class="w">          </span><span class="c1"># files only</span>
-find<span class="w"> </span>.<span class="w"> </span>-type<span class="w"> </span>d<span class="w">          </span><span class="c1"># directories only</span>
-find<span class="w"> </span>.<span class="w"> </span>-type<span class="w"> </span>l<span class="w">          </span><span class="c1"># symbolic links only</span>
-</code></pre></div>
+<pre><code><code>find . -type f          # files only
+find . -type d          # directories only
+find . -type l          # symbolic links only
+</code></code></pre>
 
 <hr />
 <h2>Find by Size</h2>
-<div class="codehilite"><pre><span></span><code>find<span class="w"> </span>.<span class="w"> </span>-size<span class="w"> </span>+100M<span class="w">      </span><span class="c1"># larger than 100 MB</span>
-find<span class="w"> </span>.<span class="w"> </span>-size<span class="w"> </span>-1k<span class="w">        </span><span class="c1"># smaller than 1 KB</span>
-find<span class="w"> </span>.<span class="w"> </span>-size<span class="w"> </span>+1G<span class="w">        </span><span class="c1"># larger than 1 GB</span>
-find<span class="w"> </span>/<span class="w"> </span>-size<span class="w"> </span>+500M<span class="w">      </span><span class="c1"># files over 500 MB anywhere</span>
-</code></pre></div>
+<pre><code><code>find . -size +100M      # larger than 100 MB
+find . -size -1k        # smaller than 1 KB
+find . -size +1G        # larger than 1 GB
+find / -size +500M      # files over 500 MB anywhere
+</code></code></pre>
 
 <p>Units: <code>c</code> (bytes), <code>k</code> (KB), <code>M</code> (MB), <code>G</code> (GB)</p>
 <hr />
 <h2>Find by Date</h2>
-<div class="codehilite"><pre><span></span><code>find<span class="w"> </span>.<span class="w"> </span>-mtime<span class="w"> </span>-7<span class="w">        </span><span class="c1"># modified in last 7 days</span>
-find<span class="w"> </span>.<span class="w"> </span>-mtime<span class="w"> </span>+30<span class="w">       </span><span class="c1"># modified more than 30 days ago</span>
-find<span class="w"> </span>.<span class="w"> </span>-mtime<span class="w"> </span>-1<span class="w">        </span><span class="c1"># modified in last 24 hours</span>
-find<span class="w"> </span>.<span class="w"> </span>-newer<span class="w"> </span>file.txt<span class="w">  </span><span class="c1"># modified more recently than file.txt</span>
-</code></pre></div>
+<pre><code><code>find . -mtime -7        # modified in last 7 days
+find . -mtime +30       # modified more than 30 days ago
+find . -mtime -1        # modified in last 24 hours
+find . -newer file.txt  # modified more recently than file.txt
+</code></code></pre>
 
 <p><code>-mtime</code> = modification time, <code>-atime</code> = access time, <code>-ctime</code> = change time</p>
 <hr />
 <h2>Find by Permissions</h2>
-<div class="codehilite"><pre><span></span><code>find<span class="w"> </span>.<span class="w"> </span>-perm<span class="w"> </span><span class="m">777</span><span class="w">        </span><span class="c1"># exactly 777</span>
-find<span class="w"> </span>.<span class="w"> </span>-perm<span class="w"> </span>-644<span class="w">       </span><span class="c1"># at least 644 permissions</span>
-find<span class="w"> </span>.<span class="w"> </span>-perm<span class="w"> </span>/u+x<span class="w">       </span><span class="c1"># user-executable files</span>
-find<span class="w"> </span>/<span class="w"> </span>-perm<span class="w"> </span>-4000<span class="w">      </span><span class="c1"># setuid files (security audit)</span>
-</code></pre></div>
+<pre><code><code>find . -perm 777        # exactly 777
+find . -perm -644       # at least 644 permissions
+find . -perm /u+x       # user-executable files
+find / -perm -4000      # setuid files (security audit)
+</code></code></pre>
 
 <hr />
 <h2>Combine Conditions</h2>
-<div class="codehilite"><pre><span></span><code>find<span class="w"> </span>.<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.log&quot;</span><span class="w">                </span><span class="c1"># files ending in .log</span>
-find<span class="w"> </span>.<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-size<span class="w"> </span>+10M<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.zip&quot;</span><span class="w">     </span><span class="c1"># large zip files</span>
-find<span class="w"> </span>.<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-mtime<span class="w"> </span>-7<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.py&quot;</span><span class="w">       </span><span class="c1"># Python files modified recently</span>
-find<span class="w"> </span>.<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>!<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.txt&quot;</span><span class="w">              </span><span class="c1"># NOT .txt files</span>
-find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;a*&quot;</span><span class="w"> </span>-o<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;b*&quot;</span><span class="w">            </span><span class="c1"># name starts with a OR b</span>
-</code></pre></div>
+<pre><code><code>find . -type f -name &quot;*.log&quot;                # files ending in .log
+find . -type f -size +10M -name &quot;*.zip&quot;     # large zip files
+find . -type f -mtime -7 -name &quot;*.py&quot;       # Python files modified recently
+find . -type f ! -name &quot;*.txt&quot;              # NOT .txt files
+find . -name &quot;a*&quot; -o -name &quot;b*&quot;            # name starts with a OR b
+</code></code></pre>
 
 <hr />
 <h2>Do Something With Results</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Print each result (default)</span>
-find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.log&quot;</span><span class="w"> </span>-print
+<pre><code><code># Print each result (default)
+find . -name &quot;*.log&quot; -print
 
-<span class="c1"># Delete found files</span>
-find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.tmp&quot;</span><span class="w"> </span>-delete
+# Delete found files
+find . -name &quot;*.tmp&quot; -delete
 
-<span class="c1"># Run a command on each result</span>
-find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.sh&quot;</span><span class="w"> </span>-exec<span class="w"> </span>chmod<span class="w"> </span>+x<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+# Run a command on each result
+find . -name &quot;*.sh&quot; -exec chmod +x {} \;
 
-<span class="c1"># Run command on all results at once (faster)</span>
-find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.log&quot;</span><span class="w"> </span>-exec<span class="w"> </span>rm<span class="w"> </span><span class="o">{}</span><span class="w"> </span>+
+# Run command on all results at once (faster)
+find . -name &quot;*.log&quot; -exec rm {} +
 
-<span class="c1"># Ask before each deletion</span>
-find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.tmp&quot;</span><span class="w"> </span>-ok<span class="w"> </span>rm<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
-</code></pre></div>
+# Ask before each deletion
+find . -name &quot;*.tmp&quot; -ok rm {} \;
+</code></code></pre>
 
 <p>The <code>{}</code> is replaced by each found file. <code>\;</code> runs the command once per file. <code>+</code> passes all files at once.</p>
 <hr />
 <h2>Practical Examples</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Find all empty files</span>
-find<span class="w"> </span>.<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-empty
+<pre><code><code># Find all empty files
+find . -type f -empty
 
-<span class="c1"># Find all empty directories</span>
-find<span class="w"> </span>.<span class="w"> </span>-type<span class="w"> </span>d<span class="w"> </span>-empty
+# Find all empty directories
+find . -type d -empty
 
-<span class="c1"># Find files larger than 1GB and show size</span>
-find<span class="w"> </span>/<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-size<span class="w"> </span>+1G<span class="w"> </span>-exec<span class="w"> </span>du<span class="w"> </span>-sh<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null
+# Find files larger than 1GB and show size
+find / -type f -size +1G -exec du -sh {} \; 2&gt;/dev/null
 
-<span class="c1"># Find and delete files older than 30 days</span>
-find<span class="w"> </span>/tmp<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-mtime<span class="w"> </span>+30<span class="w"> </span>-delete
+# Find and delete files older than 30 days
+find /tmp -type f -mtime +30 -delete
 
-<span class="c1"># Find files you own</span>
-find<span class="w"> </span>/home<span class="w"> </span>-user<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span>-type<span class="w"> </span>f
+# Find files you own
+find /home -user $(whoami) -type f
 
-<span class="c1"># Find world-writable files (security check)</span>
-find<span class="w"> </span>/<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-perm<span class="w"> </span>-o+w<span class="w"> </span><span class="m">2</span>&gt;/dev/null
+# Find world-writable files (security check)
+find / -type f -perm -o+w 2&gt;/dev/null
 
-<span class="c1"># Find files containing text (combine with grep)</span>
-find<span class="w"> </span>.<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.py&quot;</span><span class="w"> </span>-exec<span class="w"> </span>grep<span class="w"> </span>-l<span class="w"> </span><span class="s2">&quot;import os&quot;</span><span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
-</code></pre></div>
+# Find files containing text (combine with grep)
+find . -type f -name &quot;*.py&quot; -exec grep -l &quot;import os&quot; {} \;
+</code></code></pre>
 
 <hr />
 <h2>Suppress Permission Denied Errors</h2>
-<div class="codehilite"><pre><span></span><code>find<span class="w"> </span>/<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.conf&quot;</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null
-</code></pre></div>
+<pre><code><code>find / -name &quot;*.conf&quot; 2&gt;/dev/null
+</code></code></pre>
 
 <p><code>2&gt;/dev/null</code> redirects error output (permission denied messages) to nothing.</p>
 <hr />
@@ -141,6 +141,6 @@ find<span class="w"> </span>.<span class="w"> </span>-type<span class="w"> </spa
 </tbody>
 </table>
 <p>For full GNU find on macOS:</p>
-<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>findutils
-<span class="c1"># then use gfind instead of find</span>
-</code></pre></div>
+<pre><code><code>brew install findutils
+# then use gfind instead of find
+</code></code></pre>

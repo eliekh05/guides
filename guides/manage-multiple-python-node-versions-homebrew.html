@@ -5,125 +5,125 @@ DATA:package-managers:Manage Multiple Python and Node Versions with Homebrew:Pac
 <h2>Python — Multiple Versions with pyenv</h2>
 <p><code>pyenv</code> lets you install and switch between any Python version with one command. It is the standard tool and works alongside Homebrew perfectly.</p>
 <h3>Install pyenv</h3>
-<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>pyenv
-</code></pre></div>
+<pre><code><code>brew install pyenv
+</code></code></pre>
 
 <p>Add pyenv to your shell (paste into Terminal and press Enter):</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;export PYENV_ROOT=&quot;$HOME/.pyenv&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
-<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;export PATH=&quot;$PYENV_ROOT/bin:$PATH&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
-<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;eval &quot;$(pyenv init -)&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
-<span class="nb">source</span><span class="w"> </span>~/.zprofile
-</code></pre></div>
+<pre><code><code>echo &#39;export PYENV_ROOT=&quot;$HOME/.pyenv&quot;&#39; &gt;&gt; ~/.zprofile
+echo &#39;export PATH=&quot;$PYENV_ROOT/bin:$PATH&quot;&#39; &gt;&gt; ~/.zprofile
+echo &#39;eval &quot;$(pyenv init -)&quot;&#39; &gt;&gt; ~/.zprofile
+source ~/.zprofile
+</code></code></pre>
 
 <h3>Install Python versions</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># See all available versions</span>
-pyenv<span class="w"> </span>install<span class="w"> </span>--list
+<pre><code><code># See all available versions
+pyenv install --list
 
-<span class="c1"># Install specific versions</span>
-pyenv<span class="w"> </span>install<span class="w"> </span><span class="m">3</span>.12.4
-pyenv<span class="w"> </span>install<span class="w"> </span><span class="m">3</span>.11.9
-pyenv<span class="w"> </span>install<span class="w"> </span><span class="m">3</span>.10.14
-</code></pre></div>
+# Install specific versions
+pyenv install 3.12.4
+pyenv install 3.11.9
+pyenv install 3.10.14
+</code></code></pre>
 
 <h3>Switch between versions</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Set global default (used everywhere)</span>
-pyenv<span class="w"> </span>global<span class="w"> </span><span class="m">3</span>.12.4
+<pre><code><code># Set global default (used everywhere)
+pyenv global 3.12.4
 
-<span class="c1"># Set version for current folder only (saved in .python-version file)</span>
-pyenv<span class="w"> </span><span class="nb">local</span><span class="w"> </span><span class="m">3</span>.11.9
+# Set version for current folder only (saved in .python-version file)
+pyenv local 3.11.9
 
-<span class="c1"># Set version for current terminal session only</span>
-pyenv<span class="w"> </span>shell<span class="w"> </span><span class="m">3</span>.10.14
+# Set version for current terminal session only
+pyenv shell 3.10.14
 
-<span class="c1"># Check active version</span>
-python<span class="w"> </span>--version
-pyenv<span class="w"> </span>version
-</code></pre></div>
+# Check active version
+python --version
+pyenv version
+</code></code></pre>
 
 <h3>List installed versions</h3>
-<div class="codehilite"><pre><span></span><code>pyenv<span class="w"> </span>versions
-</code></pre></div>
+<pre><code><code>pyenv versions
+</code></code></pre>
 
 <h3>Remove a version</h3>
-<div class="codehilite"><pre><span></span><code>pyenv<span class="w"> </span>uninstall<span class="w"> </span><span class="m">3</span>.10.14
-</code></pre></div>
+<pre><code><code>pyenv uninstall 3.10.14
+</code></code></pre>
 
 <hr />
 <h2>Node.js — Multiple Versions with fnm</h2>
 <p><code>fnm</code> (Fast Node Manager) is the modern replacement for <code>nvm</code>. It is faster, written in Rust, and works properly with Homebrew without polluting your PATH.</p>
 <h3>Install fnm</h3>
-<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>fnm
-</code></pre></div>
+<pre><code><code>brew install fnm
+</code></code></pre>
 
 <p>Add fnm to your shell:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;eval &quot;$(fnm env --use-on-cd)&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
-<span class="nb">source</span><span class="w"> </span>~/.zprofile
-</code></pre></div>
+<pre><code><code>echo &#39;eval &quot;$(fnm env --use-on-cd)&quot;&#39; &gt;&gt; ~/.zprofile
+source ~/.zprofile
+</code></code></pre>
 
 <h3>Install Node versions</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Install latest LTS</span>
-fnm<span class="w"> </span>install<span class="w"> </span>--lts
+<pre><code><code># Install latest LTS
+fnm install --lts
 
-<span class="c1"># Install specific version</span>
-fnm<span class="w"> </span>install<span class="w"> </span><span class="m">20</span>
-fnm<span class="w"> </span>install<span class="w"> </span><span class="m">18</span>.19.0
-fnm<span class="w"> </span>install<span class="w"> </span><span class="m">22</span>
-</code></pre></div>
+# Install specific version
+fnm install 20
+fnm install 18.19.0
+fnm install 22
+</code></code></pre>
 
 <h3>Switch between versions</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Use a version for current session</span>
-fnm<span class="w"> </span>use<span class="w"> </span><span class="m">20</span>
+<pre><code><code># Use a version for current session
+fnm use 20
 
-<span class="c1"># Set global default</span>
-fnm<span class="w"> </span>default<span class="w"> </span><span class="m">20</span>
+# Set global default
+fnm default 20
 
-<span class="c1"># Auto-switch based on .nvmrc or .node-version file in project folder</span>
-<span class="c1"># (enabled automatically by --use-on-cd in setup above)</span>
-</code></pre></div>
+# Auto-switch based on .nvmrc or .node-version file in project folder
+# (enabled automatically by --use-on-cd in setup above)
+</code></code></pre>
 
 <h3>List installed versions</h3>
-<div class="codehilite"><pre><span></span><code>fnm<span class="w"> </span>list
-fnm<span class="w"> </span>list-remote<span class="w">  </span><span class="c1"># See all available versions</span>
-</code></pre></div>
+<pre><code><code>fnm list
+fnm list-remote  # See all available versions
+</code></code></pre>
 
 <h3>Set version per project</h3>
 <p>Create a <code>.node-version</code> file in your project folder:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;20&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>.node-version
-</code></pre></div>
+<pre><code><code>echo &quot;20&quot; &gt; .node-version
+</code></code></pre>
 
 <p>fnm will automatically switch to Node 20 whenever you <code>cd</code> into that folder.</p>
 <hr />
 <h2>Using Different Versions Per Project (Python + Node Together)</h2>
 <p>For a project that needs Python 3.11 and Node 18:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>~/myproject
+<pre><code><code>cd ~/myproject
 
-<span class="c1"># Set Python version for this project</span>
-pyenv<span class="w"> </span><span class="nb">local</span><span class="w"> </span><span class="m">3</span>.11.9
+# Set Python version for this project
+pyenv local 3.11.9
 
-<span class="c1"># Set Node version for this project</span>
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;18&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>.node-version
+# Set Node version for this project
+echo &quot;18&quot; &gt; .node-version
 
-<span class="c1"># Verify</span>
-python<span class="w"> </span>--version<span class="w">   </span><span class="c1"># Should show 3.11.x</span>
-node<span class="w"> </span>--version<span class="w">     </span><span class="c1"># Should show 18.x</span>
-</code></pre></div>
+# Verify
+python --version   # Should show 3.11.x
+node --version     # Should show 18.x
+</code></code></pre>
 
 <p>Both files (<code>.python-version</code> and <code>.node-version</code>) should be committed to your project's git repo so everyone on the team uses the same versions automatically.</p>
 <hr />
 <h2>Troubleshooting</h2>
 <h3><code>python</code> still points to system Python</h3>
 <p>pyenv is not loaded in your shell. Run <code>source ~/.zprofile</code> and try again. If that fails, check that the pyenv lines are actually in <code>~/.zprofile</code>:</p>
-<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>~/.zprofile<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>pyenv
-</code></pre></div>
+<pre><code><code>cat ~/.zprofile | grep pyenv
+</code></code></pre>
 
 <h3><code>fnm use</code> resets after opening a new terminal</h3>
 <p>The <code>eval "$(fnm env --use-on-cd)"</code> line is not in your profile. Add it and run <code>source ~/.zprofile</code>.</p>
 <h3>pip installs packages globally instead of in a virtual environment</h3>
 <p>Always create a virtual environment for projects:</p>
-<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
-<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
-pip<span class="w"> </span>install<span class="w"> </span>requests
-</code></pre></div>
+<pre><code><code>python -m venv .venv
+source .venv/bin/activate
+pip install requests
+</code></code></pre>
 
 <h3>Node version does not switch automatically per project</h3>
 <p>Make sure you used <code>--use-on-cd</code> when setting up fnm, and that a <code>.node-version</code> file exists in the project folder.</p>

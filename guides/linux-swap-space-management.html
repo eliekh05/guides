@@ -3,76 +3,76 @@ DATA:system-users:Manage Swap Space on Linux:System & Users
 <p>Swap is disk space used as overflow when RAM is full. Modern Linux can use either a swap partition or a swap file — swap files are easier to create and resize.</p>
 <hr />
 <h2>Check Current Swap</h2>
-<div class="codehilite"><pre><span></span><code>swapon<span class="w"> </span>--show<span class="w">               </span><span class="c1"># detailed swap info</span>
-free<span class="w"> </span>-h<span class="w">                     </span><span class="c1"># shows swap alongside RAM</span>
-cat<span class="w"> </span>/proc/swaps<span class="w">             </span><span class="c1"># raw swap info</span>
-</code></pre></div>
+<pre><code><code>swapon --show               # detailed swap info
+free -h                     # shows swap alongside RAM
+cat /proc/swaps             # raw swap info
+</code></code></pre>
 
 <hr />
 <h2>Create a Swap File</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># 1. Create the file (2GB example)</span>
-sudo<span class="w"> </span>fallocate<span class="w"> </span>-l<span class="w"> </span>2G<span class="w"> </span>/swapfile
+<pre><code><code># 1. Create the file (2GB example)
+sudo fallocate -l 2G /swapfile
 
-<span class="c1"># If fallocate isn&#39;t available:</span>
-sudo<span class="w"> </span>dd<span class="w"> </span><span class="k">if</span><span class="o">=</span>/dev/zero<span class="w"> </span><span class="nv">of</span><span class="o">=</span>/swapfile<span class="w"> </span><span class="nv">bs</span><span class="o">=</span>1M<span class="w"> </span><span class="nv">count</span><span class="o">=</span><span class="m">2048</span>
+# If fallocate isn&#39;t available:
+sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
 
-<span class="c1"># 2. Set correct permissions (readable by root only)</span>
-sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>/swapfile
+# 2. Set correct permissions (readable by root only)
+sudo chmod 600 /swapfile
 
-<span class="c1"># 3. Format as swap</span>
-sudo<span class="w"> </span>mkswap<span class="w"> </span>/swapfile
+# 3. Format as swap
+sudo mkswap /swapfile
 
-<span class="c1"># 4. Enable the swap file</span>
-sudo<span class="w"> </span>swapon<span class="w"> </span>/swapfile
+# 4. Enable the swap file
+sudo swapon /swapfile
 
-<span class="c1"># 5. Verify</span>
-swapon<span class="w"> </span>--show
-free<span class="w"> </span>-h
-</code></pre></div>
+# 5. Verify
+swapon --show
+free -h
+</code></code></pre>
 
 <hr />
 <h2>Make Swap Permanent</h2>
 <p>Add to <code>/etc/fstab</code> so it activates at boot:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/fstab
-</code></pre></div>
+<pre><code><code>sudo nano /etc/fstab
+</code></code></pre>
 
 <p>Add this line:</p>
-<div class="codehilite"><pre><span></span><code>/swapfile  none  swap  sw  0  0
-</code></pre></div>
+<pre><code><code>/swapfile  none  swap  sw  0  0
+</code></code></pre>
 
 <hr />
 <h2>Resize Swap</h2>
 <p>To change swap size, disable it, delete the file, and recreate:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>swapoff<span class="w"> </span>/swapfile
-sudo<span class="w"> </span>rm<span class="w"> </span>/swapfile
-<span class="c1"># Create new size (e.g., 4GB)</span>
-sudo<span class="w"> </span>fallocate<span class="w"> </span>-l<span class="w"> </span>4G<span class="w"> </span>/swapfile
-sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>/swapfile
-sudo<span class="w"> </span>mkswap<span class="w"> </span>/swapfile
-sudo<span class="w"> </span>swapon<span class="w"> </span>/swapfile
-</code></pre></div>
+<pre><code><code>sudo swapoff /swapfile
+sudo rm /swapfile
+# Create new size (e.g., 4GB)
+sudo fallocate -l 4G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+</code></code></pre>
 
 <hr />
 <h2>Disable Swap Temporarily</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>swapoff<span class="w"> </span>/swapfile<span class="w">          </span><span class="c1"># disable specific swap file</span>
-sudo<span class="w"> </span>swapoff<span class="w"> </span>-a<span class="w">                 </span><span class="c1"># disable ALL swap</span>
-</code></pre></div>
+<pre><code><code>sudo swapoff /swapfile          # disable specific swap file
+sudo swapoff -a                 # disable ALL swap
+</code></code></pre>
 
 <hr />
 <h2>Swappiness — How Aggressively Linux Uses Swap</h2>
 <p>Swappiness (0–100) controls how readily Linux moves RAM contents to swap. Default is 60.</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Check current swappiness</span>
-cat<span class="w"> </span>/proc/sys/vm/swappiness
-sysctl<span class="w"> </span>vm.swappiness
+<pre><code><code># Check current swappiness
+cat /proc/sys/vm/swappiness
+sysctl vm.swappiness
 
-<span class="c1"># Change temporarily</span>
-sudo<span class="w"> </span>sysctl<span class="w"> </span>vm.swappiness<span class="o">=</span><span class="m">10</span>
+# Change temporarily
+sudo sysctl vm.swappiness=10
 
-<span class="c1"># Change permanently</span>
-sudo<span class="w"> </span>nano<span class="w"> </span>/etc/sysctl.conf
-<span class="c1"># Add or modify:</span>
-vm.swappiness<span class="o">=</span><span class="m">10</span>
-</code></pre></div>
+# Change permanently
+sudo nano /etc/sysctl.conf
+# Add or modify:
+vm.swappiness=10
+</code></code></pre>
 
 <p>Recommended values:
 - <code>10</code> — for desktops and workstations (use RAM more, swap less)

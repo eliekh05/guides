@@ -3,72 +3,72 @@ DATA:linux:locate and plocate — Fast File Search on Linux:Linux
 <p><code>locate</code> finds files instantly by searching a pre-built database instead of scanning the filesystem in real time like <code>find</code>. <code>plocate</code> is the modern, faster replacement for <code>mlocate</code> — it is the default on Ubuntu 22.04+ and Debian 12+.</p>
 <hr />
 <h2>Install</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Ubuntu/Debian (22.04+ already has plocate)</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>plocate<span class="w"> </span>-y
+<pre><code><code># Ubuntu/Debian (22.04+ already has plocate)
+sudo apt install plocate -y
 
-<span class="c1"># Older Ubuntu/Debian</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>mlocate<span class="w"> </span>-y
+# Older Ubuntu/Debian
+sudo apt install mlocate -y
 
-<span class="c1"># Fedora/RHEL</span>
-sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>mlocate<span class="w"> </span>-y
+# Fedora/RHEL
+sudo dnf install mlocate -y
 
-<span class="c1"># Arch</span>
-sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>mlocate
-</code></pre></div>
+# Arch
+sudo pacman -S mlocate
+</code></code></pre>
 
 <hr />
 <h2>Update the Database</h2>
 <p>The database must be updated to reflect recent file changes. It updates automatically via a daily cron job, but you can force it manually:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>updatedb
-</code></pre></div>
+<pre><code><code>sudo updatedb
+</code></code></pre>
 
 <p>On first install, run this before searching — the database will be empty otherwise.</p>
 <hr />
 <h2>Basic Usage</h2>
-<div class="codehilite"><pre><span></span><code>locate<span class="w"> </span>filename.txt
-locate<span class="w"> </span><span class="s2">&quot;*.conf&quot;</span>
-locate<span class="w"> </span>nginx
-</code></pre></div>
+<pre><code><code>locate filename.txt
+locate &quot;*.conf&quot;
+locate nginx
+</code></code></pre>
 
 <hr />
 <h2>Useful Flags</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Case-insensitive search</span>
-locate<span class="w"> </span>-i<span class="w"> </span>README
+<pre><code><code># Case-insensitive search
+locate -i README
 
-<span class="c1"># Limit number of results</span>
-locate<span class="w"> </span>-n<span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="s2">&quot;*.log&quot;</span>
+# Limit number of results
+locate -n 10 &quot;*.log&quot;
 
-<span class="c1"># Count matches only</span>
-locate<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;*.py&quot;</span>
+# Count matches only
+locate -c &quot;*.py&quot;
 
-<span class="c1"># Only show files that currently exist (verifies against filesystem)</span>
-locate<span class="w"> </span>-e<span class="w"> </span>filename.txt
+# Only show files that currently exist (verifies against filesystem)
+locate -e filename.txt
 
-<span class="c1"># Search with a regex pattern</span>
-locate<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;\.log</span>$<span class="s2">&quot;</span>
+# Search with a regex pattern
+locate -r &quot;\.log$&quot;
 
-<span class="c1"># Show only files in a specific path</span>
-locate<span class="w"> </span>/etc/<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>nginx
-</code></pre></div>
+# Show only files in a specific path
+locate /etc/ | grep nginx
+</code></code></pre>
 
 <hr />
 <h2>plocate vs mlocate</h2>
 <p><code>plocate</code> is significantly faster on large filesystems because it uses a compressed index with better algorithms. The commands are identical — <code>locate</code> on modern Ubuntu/Debian already uses plocate under the hood.</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Check which you have</span>
-locate<span class="w"> </span>--version
-</code></pre></div>
+<pre><code><code># Check which you have
+locate --version
+</code></code></pre>
 
 <hr />
 <h2>Configure What updatedb Indexes</h2>
 <p>Edit <code>/etc/updatedb.conf</code> to control what gets indexed:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/updatedb.conf
-</code></pre></div>
+<pre><code><code>sudo nano /etc/updatedb.conf
+</code></code></pre>
 
-<div class="codehilite"><pre><span></span><code><span class="n">PRUNE_BIND_MOUNTS</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span>
-<span class="n">PRUNEFS</span><span class="o">=</span><span class="s2">&quot;NFS nfs nfs4 rpc_pipefs afs binfmt_misc proc smbfs autofs iso9660 ncpfs coda devpts ftpfs devfs mfs shfs sysfs cifs lustre tmpfs usbfs udf fuse.glusterfs fuse.sshfs curlftpfs ecryptfs fusesmb fuse.gvfs-fuse-daemon&quot;</span>
-<span class="n">PRUNENAMES</span><span class="o">=</span><span class="s2">&quot;.git .bzr .hg .svn&quot;</span>
-<span class="n">PRUNEPATHS</span><span class="o">=</span><span class="s2">&quot;/tmp /var/spool /media /var/lib/os-prober /var/lib/ceph /home/.ecryptfs /var/lib/schroot&quot;</span>
-</code></pre></div>
+<pre><code><code>PRUNE_BIND_MOUNTS=&quot;yes&quot;
+PRUNEFS=&quot;NFS nfs nfs4 rpc_pipefs afs binfmt_misc proc smbfs autofs iso9660 ncpfs coda devpts ftpfs devfs mfs shfs sysfs cifs lustre tmpfs usbfs udf fuse.glusterfs fuse.sshfs curlftpfs ecryptfs fusesmb fuse.gvfs-fuse-daemon&quot;
+PRUNENAMES=&quot;.git .bzr .hg .svn&quot;
+PRUNEPATHS=&quot;/tmp /var/spool /media /var/lib/os-prober /var/lib/ceph /home/.ecryptfs /var/lib/schroot&quot;
+</code></code></pre>
 
 <ul>
 <li><code>PRUNEPATHS</code> — directories to exclude from indexing</li>
@@ -122,18 +122,18 @@ locate<span class="w"> </span>--version
 <p>Use <code>locate</code> for quick filename searches. Use <code>find</code> when you need real-time results or need to filter by attributes other than name.</p>
 <hr />
 <h2>Practical Examples</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Find all nginx config files</span>
-locate<span class="w"> </span>nginx.conf
+<pre><code><code># Find all nginx config files
+locate nginx.conf
 
-<span class="c1"># Find all Python files</span>
-locate<span class="w"> </span><span class="s2">&quot;*.py&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
+# Find all Python files
+locate &quot;*.py&quot; | head -20
 
-<span class="c1"># Find files in /etc containing &quot;ssh&quot;</span>
-locate<span class="w"> </span>/etc/<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>ssh
+# Find files in /etc containing &quot;ssh&quot;
+locate /etc/ | grep ssh
 
-<span class="c1"># Find all log files</span>
-locate<span class="w"> </span><span class="s2">&quot;*.log&quot;</span>
+# Find all log files
+locate &quot;*.log&quot;
 
-<span class="c1"># Check if a command exists anywhere on the system</span>
-locate<span class="w"> </span>-e<span class="w"> </span>/usr/bin/python3
-</code></pre></div>
+# Check if a command exists anywhere on the system
+locate -e /usr/bin/python3
+</code></code></pre>

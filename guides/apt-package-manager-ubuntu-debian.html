@@ -4,98 +4,98 @@ DATA:package-managers:apt — Package Manager for Ubuntu and Debian:Package Mana
 <hr />
 <h2>Essential Commands</h2>
 <h3>Update the package list (always run this before installing anything)</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update
-</code></pre></div>
+<pre><code><code>sudo apt update
+</code></code></pre>
 
 <p>This does not install anything — it just refreshes the list of available packages and versions.</p>
 <h3>Install a package</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>wget
-</code></pre></div>
+<pre><code><code>sudo apt install wget
+</code></code></pre>
 
 <p>Install multiple packages at once:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>wget<span class="w"> </span>curl<span class="w"> </span>git<span class="w"> </span>vim<span class="w"> </span>-y
-</code></pre></div>
+<pre><code><code>sudo apt install wget curl git vim -y
+</code></code></pre>
 
 <p>The <code>-y</code> flag automatically answers yes to all prompts.</p>
 <h3>Remove a package</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>remove<span class="w"> </span>wget
-</code></pre></div>
+<pre><code><code>sudo apt remove wget
+</code></code></pre>
 
 <p>Remove a package AND its configuration files:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>purge<span class="w"> </span>wget
-</code></pre></div>
+<pre><code><code>sudo apt purge wget
+</code></code></pre>
 
 <p>Remove a package, its config files, and any dependencies no longer needed:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>purge<span class="w"> </span>wget<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>autoremove
-</code></pre></div>
+<pre><code><code>sudo apt purge wget &amp;&amp; sudo apt autoremove
+</code></code></pre>
 
 <p>Remove no longer needed dependencies with config files</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>autoremove<span class="w"> </span>--purge
-</code></pre></div>
+<pre><code><code>sudo apt autoremove --purge
+</code></code></pre>
 
 <h3>Upgrade all installed packages</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>upgrade<span class="w"> </span>-y
-</code></pre></div>
+<pre><code><code>sudo apt update &amp;&amp; sudo apt upgrade -y
+</code></code></pre>
 
 <h3>Full system upgrade (includes packages that require removing old ones)</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>full-upgrade<span class="w"> </span>-y
-</code></pre></div>
+<pre><code><code>sudo apt update &amp;&amp; sudo apt full-upgrade -y
+</code></code></pre>
 
 <p>Use <code>full-upgrade</code> on major Ubuntu/Debian version upgrades. Use regular <code>upgrade</code> for day-to-day updates.</p>
 <hr />
 <h2>Searching and Getting Info</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Search for a package</span>
-apt<span class="w"> </span>search<span class="w"> </span>python3
+<pre><code><code># Search for a package
+apt search python3
 
-<span class="c1"># Get details about a package (version, description, dependencies)</span>
-apt<span class="w"> </span>show<span class="w"> </span>python3
+# Get details about a package (version, description, dependencies)
+apt show python3
 
-<span class="c1"># List all installed packages</span>
-apt<span class="w"> </span>list<span class="w"> </span>--installed
+# List all installed packages
+apt list --installed
 
-<span class="c1"># Check if a specific package is installed</span>
-apt<span class="w"> </span>list<span class="w"> </span>--installed<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>wget
+# Check if a specific package is installed
+apt list --installed | grep wget
 
-<span class="c1"># List packages that have available upgrades</span>
-apt<span class="w"> </span>list<span class="w"> </span>--upgradable
-</code></pre></div>
+# List packages that have available upgrades
+apt list --upgradable
+</code></code></pre>
 
 <hr />
 <h2>Cleaning Up</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Remove packages that were installed as dependencies but are no longer needed</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>autoremove<span class="w">  </span>
+<pre><code><code># Remove packages that were installed as dependencies but are no longer needed
+sudo apt autoremove  
 
-<span class="c1"># Remove no longer needed dependencies with config files</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>autoremove<span class="w"> </span>--purge
+# Remove no longer needed dependencies with config files
+sudo apt autoremove --purge
 
-<span class="c1"># Remove downloaded package files from cache (frees disk space)</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>clean
+# Remove downloaded package files from cache (frees disk space)
+sudo apt clean
 
-<span class="c1"># Remove old cached package files but keep the current versions</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>autoclean
-</code></pre></div>
+# Remove old cached package files but keep the current versions
+sudo apt autoclean
+</code></code></pre>
 
 <p>Run <code>autoremove</code> regularly — after major upgrades it often frees several hundred MB.</p>
 <hr />
 <h2>Adding External Repositories (PPAs)</h2>
 <p>Some software is not in the official Ubuntu/Debian repos. You can add third-party repositories:</p>
 <h3>Ubuntu PPA (Personal Package Archive)</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>add-apt-repository<span class="w"> </span>ppa:deadsnakes/ppa
-sudo<span class="w"> </span>apt<span class="w"> </span>update
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>python3.12
-</code></pre></div>
+<pre><code><code>sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt update
+sudo apt install python3.12
+</code></code></pre>
 
 <h3>Manual repository (using signed keys — the modern method)</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Download and install the signing key</span>
-curl<span class="w"> </span>-fsSL<span class="w"> </span>https://example.com/repo.key<span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>gpg<span class="w"> </span>--dearmor<span class="w"> </span>-o<span class="w"> </span>/etc/apt/keyrings/example.gpg
+<pre><code><code># Download and install the signing key
+curl -fsSL https://example.com/repo.key | sudo gpg --dearmor -o /etc/apt/keyrings/example.gpg
 
-<span class="c1"># Add the repository</span>
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;deb [arch=amd64 signed-by=/etc/apt/keyrings/example.gpg] https://repo.example.com/apt stable main&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/apt/sources.list.d/example.list
+# Add the repository
+echo &quot;deb [arch=amd64 signed-by=/etc/apt/keyrings/example.gpg] https://repo.example.com/apt stable main&quot; | sudo tee /etc/apt/sources.list.d/example.list
 
-<span class="c1"># Update and install</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>update
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>example-package
-</code></pre></div>
+# Update and install
+sudo apt update
+sudo apt install example-package
+</code></code></pre>
 
 <hr />
 <h2>apt vs apt-get</h2>
@@ -109,26 +109,26 @@ sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> <
 <h2>Common Errors and Fixes</h2>
 <h3><code>E: Unable to acquire the lock</code></h3>
 <p>Another apt process is running. Wait for it to finish. If you are sure nothing is running:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>rm<span class="w"> </span>/var/lib/apt/lists/lock
-sudo<span class="w"> </span>rm<span class="w"> </span>/var/cache/apt/archives/lock
-sudo<span class="w"> </span>rm<span class="w"> </span>/var/lib/dpkg/lock-frontend
-sudo<span class="w"> </span>dpkg<span class="w"> </span>--configure<span class="w"> </span>-a
-</code></pre></div>
+<pre><code><code>sudo rm /var/lib/apt/lists/lock
+sudo rm /var/cache/apt/archives/lock
+sudo rm /var/lib/dpkg/lock-frontend
+sudo dpkg --configure -a
+</code></code></pre>
 
 <h3><code>E: Package 'X' has no installation candidate</code></h3>
 <p>The package is not in your current repos. Either add the right repo or check the exact package name with <code>apt search</code>.</p>
 <h3><code>dpkg was interrupted</code> error</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dpkg<span class="w"> </span>--configure<span class="w"> </span>-a
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-f
-</code></pre></div>
+<pre><code><code>sudo dpkg --configure -a
+sudo apt install -f
+</code></code></pre>
 
 <h3><code>Hash Sum mismatch</code> error</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/var/lib/apt/lists/*
-sudo<span class="w"> </span>apt<span class="w"> </span>update
-</code></pre></div>
+<pre><code><code>sudo rm -rf /var/lib/apt/lists/*
+sudo apt update
+</code></code></pre>
 
 <h3>Package held back during upgrade</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>PACKAGE_NAME<span class="w">  </span><span class="c1"># Force upgrade of the specific package</span>
-<span class="c1"># or</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>full-upgrade<span class="w">  </span><span class="c1"># Allows dependency changes</span>
-</code></pre></div>
+<pre><code><code>sudo apt install PACKAGE_NAME  # Force upgrade of the specific package
+# or
+sudo apt full-upgrade  # Allows dependency changes
+</code></code></pre>

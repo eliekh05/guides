@@ -6,21 +6,21 @@ DATA:security:Re-enable Allow Apps from Anywhere in Gatekeeper (macOS):Security 
 </blockquote>
 <hr />
 <h2>Enable It via Terminal</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>spctl<span class="w"> </span>--master-disable
-</code></pre></div>
+<pre><code><code>sudo spctl --master-disable
+</code></code></pre>
 
 <p>Enter your password. That is it.</p>
 <p>Now go to <strong>System Settings</strong> → <strong>Privacy &amp; Security</strong> → scroll to the <strong>Security</strong> section. You will see a third option: <strong>Anywhere</strong> has returned.</p>
 <hr />
 <h2>Re-disable It (Restore Default)</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>spctl<span class="w"> </span>--master-enable
-</code></pre></div>
+<pre><code><code>sudo spctl --master-enable
+</code></code></pre>
 
 <p>The Anywhere option disappears again from the UI.</p>
 <hr />
 <h2>Check Current Status</h2>
-<div class="codehilite"><pre><span></span><code>spctl<span class="w"> </span>--status
-</code></pre></div>
+<pre><code><code>spctl --status
+</code></code></pre>
 
 <ul>
 <li><code>assessments enabled</code> — Gatekeeper is on (default, Anywhere is hidden)</li>
@@ -29,8 +29,8 @@ DATA:security:Re-enable Allow Apps from Anywhere in Gatekeeper (macOS):Security 
 <hr />
 <h2>Still Get Blocked After Enabling?</h2>
 <p>Some apps have a quarantine attribute that blocks them even with Gatekeeper off. Remove it:</p>
-<div class="codehilite"><pre><span></span><code>xattr<span class="w"> </span>-r<span class="w"> </span>-d<span class="w"> </span>com.apple.quarantine<span class="w"> </span>/Applications/AppName.app
-</code></pre></div>
+<pre><code><code>xattr -r -d com.apple.quarantine /Applications/AppName.app
+</code></code></pre>
 
 <p>Or right-click the app → <strong>Open</strong> → <strong>Open</strong> in the dialog that appears.</p>
 <hr />

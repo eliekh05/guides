@@ -105,31 +105,31 @@ Go to <strong>System</strong> → <strong>Administration</strong> → <strong>Ro
 <p>Click <strong>Save &amp; Apply</strong>.</p>
 <h3>Check internet is working</h3>
 <p>Open a terminal (SSH into the router):</p>
-<div class="codehilite"><pre><span></span><code>ssh<span class="w"> </span>root@192.168.1.1
-ping<span class="w"> </span>-c<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="m">1</span>.1.1.1
-</code></pre></div>
+<pre><code><code>ssh root@192.168.1.1
+ping -c 3 1.1.1.1
+</code></code></pre>
 
 <hr />
 <h2>Step 7 — Update Package Lists and Upgrade</h2>
-<div class="codehilite"><pre><span></span><code>ssh<span class="w"> </span>root@192.168.1.1
-opkg<span class="w"> </span>update
-opkg<span class="w"> </span>list-upgradable<span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-f<span class="w"> </span><span class="m">1</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39; &#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="w"> </span>opkg<span class="w"> </span>upgrade
-</code></pre></div>
+<pre><code><code>ssh root@192.168.1.1
+opkg update
+opkg list-upgradable | cut -f 1 -d &#39; &#39; | xargs opkg upgrade
+</code></code></pre>
 
 <hr />
 <h2>Step 8 — Install Useful Packages</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># AdGuard Home — network-wide ad blocking</span>
-opkg<span class="w"> </span>install<span class="w"> </span>adguardhome
+<pre><code><code># AdGuard Home — network-wide ad blocking
+opkg install adguardhome
 
-<span class="c1"># WireGuard VPN</span>
-opkg<span class="w"> </span>install<span class="w"> </span>wireguard-tools<span class="w"> </span>luci-proto-wireguard
+# WireGuard VPN
+opkg install wireguard-tools luci-proto-wireguard
 
-<span class="c1"># Statistics and traffic monitoring</span>
-opkg<span class="w"> </span>install<span class="w"> </span>luci-app-statistics<span class="w"> </span>collectd
+# Statistics and traffic monitoring
+opkg install luci-app-statistics collectd
 
-<span class="c1"># USB storage support</span>
-opkg<span class="w"> </span>install<span class="w"> </span>kmod-usb-storage<span class="w"> </span>block-mount
-</code></pre></div>
+# USB storage support
+opkg install kmod-usb-storage block-mount
+</code></code></pre>
 
 <p>Packages are managed via LuCI at <strong>System</strong> → <strong>Software</strong>, or via <code>opkg</code> on the command line.</p>
 <hr />
@@ -154,12 +154,12 @@ opkg<span class="w"> </span>install<span class="w"> </span>kmod-usb-storage<span
 </ol>
 <h3>Cannot access 192.168.1.1 after flash</h3>
 <p>Your computer may still have an IP address from the old firmware. Release and renew:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># macOS/Linux</span>
-sudo<span class="w"> </span>dhclient<span class="w"> </span>-r<span class="w"> </span>eth0<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>dhclient<span class="w"> </span>eth0
+<pre><code><code># macOS/Linux
+sudo dhclient -r eth0 &amp;&amp; sudo dhclient eth0
 
-<span class="c1"># Windows</span>
-ipconfig<span class="w"> </span>/release<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ipconfig<span class="w"> </span>/renew
-</code></pre></div>
+# Windows
+ipconfig /release &amp;&amp; ipconfig /renew
+</code></code></pre>
 
 <h3>Wi-Fi not working after flash</h3>
 <p>OpenWrt disables Wi-Fi by default on first boot for security. Enable it in LuCI: <strong>Network</strong> → <strong>Wireless</strong> → click <strong>Enable</strong> on each radio → <strong>Save &amp; Apply</strong>.</p>

@@ -35,8 +35,8 @@ DATA:system-users:Clone a Drive Using Disk Utility (macOS):System & Users
 <hr />
 <h2>Step 3 — Shrink the Image to Minimum Size (Optional)</h2>
 <p>If you cloned to a DMG image file instead of a physical drive, you can compact it to remove unused space:</p>
-<div class="codehilite"><pre><span></span><code>hdiutil<span class="w"> </span>resize<span class="w"> </span>-sectors<span class="w"> </span>min<span class="w"> </span>/path/to/yourimage.dmg
-</code></pre></div>
+<pre><code><code>hdiutil resize -sectors min /path/to/yourimage.dmg
+</code></code></pre>
 
 <p>Replace <code>/path/to/yourimage.dmg</code> with the actual path to your image file.</p>
 <hr />

@@ -62,8 +62,8 @@ DATA:networking:Set a Static IP Address on macOS:Networking & DNS
 </ol>
 <h3>Step 4 — Test the Connection</h3>
 <p>Open Terminal and run:</p>
-<div class="codehilite"><pre><span></span><code>ping<span class="w"> </span>-c<span class="w"> </span><span class="m">4</span><span class="w"> </span>google.com
-</code></pre></div>
+<pre><code><code>ping -c 4 google.com
+</code></code></pre>
 
 <p>If it responds, your static IP and DNS are working correctly.</p>
 <p>If ping fails, double-check the Router field — it must be your actual gateway IP, not your static IP.</p>
@@ -81,15 +81,15 @@ DATA:networking:Set a Static IP Address on macOS:Networking & DNS
 <p>DNS is missing or wrong. Go to the <strong>DNS</strong> tab in network settings and add <code>1.1.1.1</code> and <code>8.8.8.8</code>.</p>
 <h3>IP address conflict warning</h3>
 <p>Another device on the network already uses the IP you chose. Pick a different one. To find which IPs are in use, run in Terminal:</p>
-<div class="codehilite"><pre><span></span><code>arp<span class="w"> </span>-a
-</code></pre></div>
+<pre><code><code>arp -a
+</code></code></pre>
 
 <p>This lists all devices and their IPs on your local network.</p>
 <h3>Mac keeps reverting to DHCP</h3>
 <p>Some VPNs and network management tools override manual network settings. Check if any VPN or network management software is installed.</p>
 <h3>No internet after setting static IP</h3>
 <p>The Router (gateway) field is wrong. Open Terminal and run:</p>
-<div class="codehilite"><pre><span></span><code>netstat<span class="w"> </span>-nr<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>default
-</code></pre></div>
+<pre><code><code>netstat -nr | grep default
+</code></code></pre>
 
 <p>The IP next to <code>default</code> is your gateway. Use that value in the Router field.</p>

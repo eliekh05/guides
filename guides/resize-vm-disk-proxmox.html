@@ -13,54 +13,54 @@ DATA:installation:Resize a VM Disk in Proxmox:Installation Guides
 4. Enter how much to add (e.g. <code>20</code> to add 20 GB)
 5. Click <strong>Resize disk</strong></p>
 <p><strong>Via the Proxmox shell:</strong></p>
-<div class="codehilite"><pre><span></span><code>qm<span class="w"> </span>resize<span class="w"> </span>VMID<span class="w"> </span>virtio0<span class="w"> </span>+20G<span class="w">      </span><span class="c1"># add 20GB to virtio0</span>
-qm<span class="w"> </span>resize<span class="w"> </span>VMID<span class="w"> </span>scsi0<span class="w"> </span>+20G<span class="w">        </span><span class="c1"># for SCSI disk</span>
-</code></pre></div>
+<pre><code><code>qm resize VMID virtio0 +20G      # add 20GB to virtio0
+qm resize VMID scsi0 +20G        # for SCSI disk
+</code></code></pre>
 
 <p>Replace <code>VMID</code> with your VM's ID number and <code>virtio0</code>/<code>scsi0</code> with your disk name.</p>
 <hr />
 <h2>Step 2 — Expand Inside the VM (Linux)</h2>
 <p>Log into the VM and run:</p>
 <h3>Check the current state</h3>
-<div class="codehilite"><pre><span></span><code>lsblk<span class="w">                   </span><span class="c1"># see disk and partition layout</span>
-df<span class="w"> </span>-h<span class="w">                   </span><span class="c1"># see filesystem usage</span>
-</code></pre></div>
+<pre><code><code>lsblk                   # see disk and partition layout
+df -h                   # see filesystem usage
+</code></code></pre>
 
 <h3>For a simple partition + ext4 (most common)</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Install growpart if not present</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>cloud-guest-utils<span class="w"> </span>-y<span class="w">    </span><span class="c1"># Ubuntu/Debian</span>
-sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>cloud-utils-growpart<span class="w"> </span>-y<span class="w"> </span><span class="c1"># Fedora/RHEL</span>
+<pre><code><code># Install growpart if not present
+sudo apt install cloud-guest-utils -y    # Ubuntu/Debian
+sudo dnf install cloud-utils-growpart -y # Fedora/RHEL
 
-<span class="c1"># Grow the partition (replace sda and 1 with your disk and partition number)</span>
-sudo<span class="w"> </span>growpart<span class="w"> </span>/dev/sda<span class="w"> </span><span class="m">1</span>
+# Grow the partition (replace sda and 1 with your disk and partition number)
+sudo growpart /dev/sda 1
 
-<span class="c1"># Resize the ext4 filesystem</span>
-sudo<span class="w"> </span>resize2fs<span class="w"> </span>/dev/sda1
+# Resize the ext4 filesystem
+sudo resize2fs /dev/sda1
 
-<span class="c1"># Verify</span>
-df<span class="w"> </span>-h
-</code></pre></div>
+# Verify
+df -h
+</code></code></pre>
 
 <h3>For LVM</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Grow the physical volume</span>
-sudo<span class="w"> </span>pvresize<span class="w"> </span>/dev/sda3
+<pre><code><code># Grow the physical volume
+sudo pvresize /dev/sda3
 
-<span class="c1"># Extend the logical volume</span>
-sudo<span class="w"> </span>lvextend<span class="w"> </span>-l<span class="w"> </span>+100%FREE<span class="w"> </span>/dev/ubuntu-vg/ubuntu-lv
+# Extend the logical volume
+sudo lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
 
-<span class="c1"># Resize the filesystem</span>
-sudo<span class="w"> </span>resize2fs<span class="w"> </span>/dev/ubuntu-vg/ubuntu-lv
-</code></pre></div>
+# Resize the filesystem
+sudo resize2fs /dev/ubuntu-vg/ubuntu-lv
+</code></code></pre>
 
 <h3>For XFS filesystem</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>growpart<span class="w"> </span>/dev/sda<span class="w"> </span><span class="m">1</span>
-sudo<span class="w"> </span>xfs_growfs<span class="w"> </span>/<span class="w">          </span><span class="c1"># grow XFS on mounted filesystem</span>
-</code></pre></div>
+<pre><code><code>sudo growpart /dev/sda 1
+sudo xfs_growfs /          # grow XFS on mounted filesystem
+</code></code></pre>
 
 <h3>For Btrfs</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>growpart<span class="w"> </span>/dev/sda<span class="w"> </span><span class="m">1</span>
-sudo<span class="w"> </span>btrfs<span class="w"> </span>filesystem<span class="w"> </span>resize<span class="w"> </span>max<span class="w"> </span>/
-</code></pre></div>
+<pre><code><code>sudo growpart /dev/sda 1
+sudo btrfs filesystem resize max /
+</code></code></pre>
 
 <hr />
 <h2>Step 2 (Windows VM)</h2>

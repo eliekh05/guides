@@ -3,93 +3,93 @@ DATA:server:Set Up Nginx as a Reverse Proxy on Linux:Server & Self-Hosting
 <p>A reverse proxy sits in front of your application and forwards requests to it. This lets you run multiple apps on one server, add SSL, and handle domain routing — all through Nginx.</p>
 <hr />
 <h2>Install Nginx</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>nginx<span class="w"> </span>-y<span class="w">     </span><span class="c1"># Ubuntu/Debian</span>
-sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>nginx<span class="w"> </span>-y<span class="w">                         </span><span class="c1"># Fedora/RHEL</span>
-sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>nginx
-</code></pre></div>
+<pre><code><code>sudo apt update &amp;&amp; sudo apt install nginx -y     # Ubuntu/Debian
+sudo dnf install nginx -y                         # Fedora/RHEL
+sudo systemctl enable --now nginx
+</code></code></pre>
 
 <p>Test: open <code>http://YOUR_SERVER_IP</code> — you should see the Nginx welcome page.</p>
 <hr />
 <h2>Basic Config File Structure</h2>
 <p>All site configs go in <code>/etc/nginx/sites-available/</code> — then symlinked to <code>/etc/nginx/sites-enabled/</code> to activate.</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/nginx/sites-available/myapp
-</code></pre></div>
+<pre><code><code>sudo nano /etc/nginx/sites-available/myapp
+</code></code></pre>
 
 <hr />
 <h2>Reverse Proxy Config</h2>
-<div class="codehilite"><pre><span></span><code><span class="k">server</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kn">listen</span><span class="w"> </span><span class="mi">80</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">server_name</span><span class="w"> </span><span class="s">myapp.example.com</span><span class="p">;</span>
+<pre><code><code>server {
+    listen 80;
+    server_name myapp.example.com;
 
-<span class="w">    </span><span class="kn">location</span><span class="w"> </span><span class="s">/</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://localhost:3000</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_http_version</span><span class="w"> </span><span class="mi">1</span><span class="s">.1</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">Upgrade</span><span class="w"> </span><span class="nv">$http_upgrade</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">Connection</span><span class="w"> </span><span class="s">&#39;upgrade&#39;</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">Host</span><span class="w"> </span><span class="nv">$host</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">X-Real-IP</span><span class="w"> </span><span class="nv">$remote_addr</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">X-Forwarded-For</span><span class="w"> </span><span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">X-Forwarded-Proto</span><span class="w"> </span><span class="nv">$scheme</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_cache_bypass</span><span class="w"> </span><span class="nv">$http_upgrade</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div>
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection &#39;upgrade&#39;;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+</code></code></pre>
 
 <p>Replace <code>localhost:3000</code> with your app's actual address and port.</p>
 <p>Enable it:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>/etc/nginx/sites-available/myapp<span class="w"> </span>/etc/nginx/sites-enabled/
-sudo<span class="w"> </span>nginx<span class="w"> </span>-t<span class="w">         </span><span class="c1"># test config for errors</span>
-sudo<span class="w"> </span>systemctl<span class="w"> </span>reload<span class="w"> </span>nginx
-</code></pre></div>
+<pre><code><code>sudo ln -s /etc/nginx/sites-available/myapp /etc/nginx/sites-enabled/
+sudo nginx -t         # test config for errors
+sudo systemctl reload nginx
+</code></code></pre>
 
 <hr />
 <h2>Serve Static Files</h2>
-<div class="codehilite"><pre><span></span><code><span class="k">server</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kn">listen</span><span class="w"> </span><span class="mi">80</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">server_name</span><span class="w"> </span><span class="s">static.example.com</span><span class="p">;</span>
+<pre><code><code>server {
+    listen 80;
+    server_name static.example.com;
 
-<span class="w">    </span><span class="kn">root</span><span class="w"> </span><span class="s">/var/www/mysite</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">index</span><span class="w"> </span><span class="s">index.html</span><span class="p">;</span>
+    root /var/www/mysite;
+    index index.html;
 
-<span class="w">    </span><span class="kn">location</span><span class="w"> </span><span class="s">/</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="kn">try_files</span><span class="w"> </span><span class="nv">$uri</span><span class="w"> </span><span class="nv">$uri/</span><span class="w"> </span><span class="p">=</span><span class="mi">404</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div>
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+</code></code></pre>
 
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/var/www/mysite
-sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span>www-data:www-data<span class="w"> </span>/var/www/mysite
-</code></pre></div>
+<pre><code><code>sudo mkdir -p /var/www/mysite
+sudo chown -R www-data:www-data /var/www/mysite
+</code></code></pre>
 
 <hr />
 <h2>Multiple Apps on One Server</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># App 1 — myapp.example.com → port 3000</span>
-<span class="k">server</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kn">listen</span><span class="w"> </span><span class="mi">80</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">server_name</span><span class="w"> </span><span class="s">myapp.example.com</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">location</span><span class="w"> </span><span class="s">/</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://localhost:3000</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
+<pre><code><code># App 1 — myapp.example.com → port 3000
+server {
+    listen 80;
+    server_name myapp.example.com;
+    location / {
+        proxy_pass http://localhost:3000;
+    }
+}
 
-<span class="c1"># App 2 — api.example.com → port 8080</span>
-<span class="k">server</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kn">listen</span><span class="w"> </span><span class="mi">80</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">server_name</span><span class="w"> </span><span class="s">api.example.com</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">location</span><span class="w"> </span><span class="s">/</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://localhost:8080</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div>
+# App 2 — api.example.com → port 8080
+server {
+    listen 80;
+    server_name api.example.com;
+    location / {
+        proxy_pass http://localhost:8080;
+    }
+}
+</code></code></pre>
 
 <hr />
 <h2>Useful Commands</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nginx<span class="w"> </span>-t<span class="w">                        </span><span class="c1"># test config syntax</span>
-sudo<span class="w"> </span>systemctl<span class="w"> </span>reload<span class="w"> </span>nginx<span class="w">          </span><span class="c1"># apply config changes (no downtime)</span>
-sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>nginx<span class="w">         </span><span class="c1"># full restart</span>
-sudo<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/nginx/error.log<span class="w">    </span><span class="c1"># watch errors</span>
-sudo<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/nginx/access.log<span class="w">  </span><span class="c1"># watch requests</span>
-</code></pre></div>
+<pre><code><code>sudo nginx -t                        # test config syntax
+sudo systemctl reload nginx          # apply config changes (no downtime)
+sudo systemctl restart nginx         # full restart
+sudo tail -f /var/log/nginx/error.log    # watch errors
+sudo tail -f /var/log/nginx/access.log  # watch requests
+</code></code></pre>
 
 <hr />
 <h2>Next Step — Add SSL with Certbot</h2>

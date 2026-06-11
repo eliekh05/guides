@@ -4,70 +4,70 @@ DATA:package-managers:winget — Package Manager for Windows:Package Managers (A
 <hr />
 <h2>Check if winget is Installed</h2>
 <p>Open <strong>Command Prompt</strong> or <strong>PowerShell</strong> and run:</p>
-<div class="codehilite"><pre><span></span><code>winget --version
-</code></pre></div>
+<pre><code><code>winget --version
+</code></code></pre>
 
 <p>If you see a version number, you are ready. If not, install it from the Microsoft Store by searching for <strong>App Installer</strong>, or download from <a href="https://github.com/microsoft/winget-cli/releases">github.com/microsoft/winget-cli/releases</a>.</p>
 <hr />
 <h2>Essential Commands</h2>
 <h3>Install a package</h3>
-<div class="codehilite"><pre><span></span><code>winget install Mozilla.Firefox
+<pre><code><code>winget install Mozilla.Firefox
 winget install Google.Chrome
 winget install Microsoft.VisualStudioCode
 winget install 7zip.7zip
-</code></pre></div>
+</code></code></pre>
 
 <h3>Install silently (no prompts, no windows)</h3>
-<div class="codehilite"><pre><span></span><code>winget install Mozilla.Firefox --silent
-</code></pre></div>
+<pre><code><code>winget install Mozilla.Firefox --silent
+</code></code></pre>
 
 <h3>Search for a package</h3>
-<div class="codehilite"><pre><span></span><code>winget search firefox
+<pre><code><code>winget search firefox
 winget search &quot;visual studio&quot;
-</code></pre></div>
+</code></code></pre>
 
 <h3>Get info about a package</h3>
-<div class="codehilite"><pre><span></span><code><span class="nv">winget</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="nv">Mozilla</span>.<span class="nv">Firefox</span>
-</code></pre></div>
+<pre><code><code>winget show Mozilla.Firefox
+</code></code></pre>
 
 <h3>Upgrade a specific package</h3>
-<div class="codehilite"><pre><span></span><code>winget upgrade Mozilla.Firefox
-</code></pre></div>
+<pre><code><code>winget upgrade Mozilla.Firefox
+</code></code></pre>
 
 <h3>Upgrade ALL installed packages at once</h3>
-<div class="codehilite"><pre><span></span><code>winget upgrade --all
-</code></pre></div>
+<pre><code><code>winget upgrade --all
+</code></code></pre>
 
 <p>This is one of winget's most useful features — update every app on your system with one command.</p>
 <h3>Remove a package</h3>
-<div class="codehilite"><pre><span></span><code>winget uninstall Mozilla.Firefox
-</code></pre></div>
+<pre><code><code>winget uninstall Mozilla.Firefox
+</code></code></pre>
 
 <h3>List all installed apps (including non-winget apps)</h3>
-<div class="codehilite"><pre><span></span><code>winget list
-</code></pre></div>
+<pre><code><code>winget list
+</code></code></pre>
 
 <hr />
 <h2>Finding the Right Package ID</h2>
 <p>Package IDs are in <code>Publisher.AppName</code> format. If you are not sure of the exact ID:</p>
-<div class="codehilite"><pre><span></span><code>winget search firefox
-</code></pre></div>
+<pre><code><code>winget search firefox
+</code></code></pre>
 
 <p>Look for the <strong>ID</strong> column in the output — use that for install/upgrade/uninstall.</p>
 <hr />
 <h2>Export and Import (Backup Your App List)</h2>
 <p>Export a list of all installed apps:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">winget</span><span class="w"> </span><span class="k">export</span><span class="w"> </span><span class="o">-</span><span class="n">o</span><span class="w"> </span><span class="n">apps</span><span class="o">.</span><span class="n">json</span>
-</code></pre></div>
+<pre><code><code>winget export -o apps.json
+</code></code></pre>
 
 <p>Install everything from the list on a new machine:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">winget</span> <span class="kn">import</span><span class="w"> </span><span class="o">-</span><span class="n">i</span> <span class="n">apps</span><span class="o">.</span><span class="n">json</span> <span class="o">--</span><span class="n">ignore</span><span class="o">-</span><span class="n">unavailable</span>
-</code></pre></div>
+<pre><code><code>winget import -i apps.json --ignore-unavailable
+</code></code></pre>
 
 <p>This is the fastest way to set up a new Windows PC with all your apps.</p>
 <hr />
 <h2>Popular Packages Reference</h2>
-<div class="codehilite"><pre><span></span><code>winget install Microsoft.VisualStudioCode
+<pre><code><code>winget install Microsoft.VisualStudioCode
 winget install Git.Git
 winget install Python.Python.3.12
 winget install OpenJS.NodeJS.LTS
@@ -83,28 +83,28 @@ winget install Postman.Postman
 winget install Docker.DockerDesktop
 winget install Microsoft.WindowsTerminal
 winget install JanDeDobbeleer.OhMyPosh
-</code></pre></div>
+</code></code></pre>
 
 <hr />
 <h2>Common Errors and Fixes</h2>
 <h3><code>No package found matching input criteria</code></h3>
 <p>The package ID is wrong or does not exist in winget. Search first:</p>
-<div class="codehilite"><pre><span></span><code>winget search appname
-</code></pre></div>
+<pre><code><code>winget search appname
+</code></code></pre>
 
 <h3><code>Installer hash does not match</code></h3>
 <p>The downloaded installer's checksum failed — could be a network issue or the package was updated. Try again:</p>
-<div class="codehilite"><pre><span></span><code>winget install PACKAGE.ID --force
-</code></pre></div>
+<pre><code><code>winget install PACKAGE.ID --force
+</code></code></pre>
 
 <h3><code>Another version already installed</code></h3>
 <p>winget found a version already installed but cannot upgrade it. Try:</p>
-<div class="codehilite"><pre><span></span><code>winget upgrade PACKAGE.ID --force
-</code></pre></div>
+<pre><code><code>winget upgrade PACKAGE.ID --force
+</code></code></pre>
 
 <h3><code>Requires administrator privileges</code></h3>
 <p>Run Command Prompt or PowerShell as Administrator (right-click → Run as administrator), then retry.</p>
 <h3>winget is very slow to search</h3>
 <p>Run this to refresh the source:</p>
-<div class="codehilite"><pre><span></span><code>winget source update
-</code></pre></div>
+<pre><code><code>winget source update
+</code></code></pre>

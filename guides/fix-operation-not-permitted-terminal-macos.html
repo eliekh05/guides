@@ -1,10 +1,10 @@
 DATA:macos:Fix 'Operation Not Permitted' in Terminal (macOS):macOS
 <h1>Fix 'Operation Not Permitted' in Terminal (macOS)</h1>
 <p>Since macOS Catalina, Terminal commands that access certain files or folders produce this error even when run with <code>sudo</code>. The error looks like this:</p>
-<div class="codehilite"><pre><span></span><code>operation not permitted
+<pre><code><code>operation not permitted
 zsh: operation not permitted
 ls: .: Operation not permitted
-</code></pre></div>
+</code></code></pre>
 
 <p>This is <strong>not</strong> a password problem or a permissions problem on the files themselves. It is macOS's privacy system blocking Terminal from accessing protected locations.</p>
 <hr />
@@ -53,23 +53,23 @@ ls: .: Operation not permitted
 <hr />
 <h2>Fix 4 — Unlock a Specific Locked File</h2>
 <p>If the error is about a specific file rather than a folder, it may be locked:</p>
-<div class="codehilite"><pre><span></span><code>chflags<span class="w"> </span>nouchg<span class="w"> </span>/path/to/file
-</code></pre></div>
+<pre><code><code>chflags nouchg /path/to/file
+</code></code></pre>
 
 <p>Then try your command again. To unlock an entire folder recursively:</p>
-<div class="codehilite"><pre><span></span><code>chflags<span class="w"> </span>-R<span class="w"> </span>nouchg<span class="w"> </span>/path/to/folder
-</code></pre></div>
+<pre><code><code>chflags -R nouchg /path/to/folder
+</code></code></pre>
 
 <hr />
 <h2>Fix 5 — Reset User Permissions (For Persistent Permission Errors)</h2>
 <p>If you are getting permission denied errors across many files and folders and the above fixes did not help, your user's home directory permissions may be broken:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>diskutil<span class="w"> </span>resetUserPermissions<span class="w"> </span>/<span class="w"> </span><span class="k">$(</span>id<span class="w"> </span>-u<span class="k">)</span>
-</code></pre></div>
+<pre><code><code>sudo diskutil resetUserPermissions / $(id -u)
+</code></code></pre>
 
 <p>If this returns <strong>Error -69841</strong>, first run:</p>
-<div class="codehilite"><pre><span></span><code>chflags<span class="w"> </span>-R<span class="w"> </span>nouchg<span class="w"> </span>~
-sudo<span class="w"> </span>diskutil<span class="w"> </span>resetUserPermissions<span class="w"> </span>/<span class="w"> </span><span class="k">$(</span>id<span class="w"> </span>-u<span class="k">)</span>
-</code></pre></div>
+<pre><code><code>chflags -R nouchg ~
+sudo diskutil resetUserPermissions / $(id -u)
+</code></code></pre>
 
 <p>Restart your Mac after this completes.</p>
 <hr />

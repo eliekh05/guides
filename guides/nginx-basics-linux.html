@@ -3,18 +3,18 @@ DATA:networking:Nginx Basics on Linux:Networking & DNS
 <p>Nginx is a web server and reverse proxy. This guide covers installation, serving static files, reverse proxying to another service, and SSL with Let's Encrypt.</p>
 <hr />
 <h2>Install</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>nginx<span class="w"> </span>-y<span class="w">        </span><span class="c1"># Ubuntu/Debian</span>
-sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>nginx<span class="w"> </span>-y<span class="w">        </span><span class="c1"># Fedora/RHEL</span>
-sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>nginx<span class="w">             </span><span class="c1"># Arch</span>
-</code></pre></div>
+<pre><code><code>sudo apt install nginx -y        # Ubuntu/Debian
+sudo dnf install nginx -y        # Fedora/RHEL
+sudo pacman -S nginx             # Arch
+</code></code></pre>
 
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>nginx
-</code></pre></div>
+<pre><code><code>sudo systemctl enable --now nginx
+</code></code></pre>
 
 <p>Check it is running:</p>
-<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>status<span class="w"> </span>nginx
-curl<span class="w"> </span>localhost
-</code></pre></div>
+<pre><code><code>systemctl status nginx
+curl localhost
+</code></code></pre>
 
 <hr />
 <h2>File Locations</h2>
@@ -55,69 +55,69 @@ curl<span class="w"> </span>localhost
 <hr />
 <h2>Serve Static Files</h2>
 <p>Create <code>/etc/nginx/sites-available/mysite</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">server</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kn">listen</span><span class="w"> </span><span class="mi">80</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">server_name</span><span class="w"> </span><span class="s">mysite.com</span><span class="w"> </span><span class="s">www.mysite.com</span><span class="p">;</span>
+<pre><code><code>server {
+    listen 80;
+    server_name mysite.com www.mysite.com;
 
-<span class="w">    </span><span class="kn">root</span><span class="w"> </span><span class="s">/var/www/mysite</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">index</span><span class="w"> </span><span class="s">index.html</span><span class="p">;</span>
+    root /var/www/mysite;
+    index index.html;
 
-<span class="w">    </span><span class="kn">location</span><span class="w"> </span><span class="s">/</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="kn">try_files</span><span class="w"> </span><span class="nv">$uri</span><span class="w"> </span><span class="nv">$uri/</span><span class="w"> </span><span class="p">=</span><span class="mi">404</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div>
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+</code></code></pre>
 
 <p>Enable it:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>/etc/nginx/sites-available/mysite<span class="w"> </span>/etc/nginx/sites-enabled/
-sudo<span class="w"> </span>nginx<span class="w"> </span>-t<span class="w">                    </span><span class="c1"># test config for errors</span>
-sudo<span class="w"> </span>systemctl<span class="w"> </span>reload<span class="w"> </span>nginx
-</code></pre></div>
+<pre><code><code>sudo ln -s /etc/nginx/sites-available/mysite /etc/nginx/sites-enabled/
+sudo nginx -t                    # test config for errors
+sudo systemctl reload nginx
+</code></code></pre>
 
 <hr />
 <h2>Reverse Proxy</h2>
 <p>Forward requests from port 80 to an app running on port 3000:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">server</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kn">listen</span><span class="w"> </span><span class="mi">80</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">server_name</span><span class="w"> </span><span class="s">myapp.com</span><span class="p">;</span>
+<pre><code><code>server {
+    listen 80;
+    server_name myapp.com;
 
-<span class="w">    </span><span class="kn">location</span><span class="w"> </span><span class="s">/</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://localhost:3000</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_http_version</span><span class="w"> </span><span class="mi">1</span><span class="s">.1</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">Upgrade</span><span class="w"> </span><span class="nv">$http_upgrade</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">Connection</span><span class="w"> </span><span class="s">&#39;upgrade&#39;</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_set_header</span><span class="w"> </span><span class="s">Host</span><span class="w"> </span><span class="nv">$host</span><span class="p">;</span>
-<span class="w">        </span><span class="kn">proxy_cache_bypass</span><span class="w"> </span><span class="nv">$http_upgrade</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div>
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection &#39;upgrade&#39;;
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+</code></code></pre>
 
 <hr />
 <h2>SSL with Let's Encrypt (Certbot)</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>certbot<span class="w"> </span>python3-certbot-nginx<span class="w"> </span>-y
+<pre><code><code>sudo apt install certbot python3-certbot-nginx -y
 
-<span class="c1"># Get and install certificate (replaces Nginx config automatically)</span>
-sudo<span class="w"> </span>certbot<span class="w"> </span>--nginx<span class="w"> </span>-d<span class="w"> </span>mysite.com<span class="w"> </span>-d<span class="w"> </span>www.mysite.com
+# Get and install certificate (replaces Nginx config automatically)
+sudo certbot --nginx -d mysite.com -d www.mysite.com
 
-<span class="c1"># Test auto-renewal</span>
-sudo<span class="w"> </span>certbot<span class="w"> </span>renew<span class="w"> </span>--dry-run
-</code></pre></div>
+# Test auto-renewal
+sudo certbot renew --dry-run
+</code></code></pre>
 
 <p>Certbot sets up automatic renewal via a systemd timer or cron.</p>
 <hr />
 <h2>Common Commands</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nginx<span class="w"> </span>-t<span class="w">                    </span><span class="c1"># test config syntax</span>
-sudo<span class="w"> </span>systemctl<span class="w"> </span>reload<span class="w"> </span>nginx<span class="w">      </span><span class="c1"># reload config without dropping connections</span>
-sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>nginx<span class="w">     </span><span class="c1"># full restart</span>
-sudo<span class="w"> </span>nginx<span class="w"> </span>-s<span class="w"> </span>reload<span class="w">             </span><span class="c1"># alternative reload</span>
-tail<span class="w"> </span>-f<span class="w"> </span>/var/log/nginx/error.log<span class="w"> </span><span class="c1"># watch error log</span>
-</code></pre></div>
+<pre><code><code>sudo nginx -t                    # test config syntax
+sudo systemctl reload nginx      # reload config without dropping connections
+sudo systemctl restart nginx     # full restart
+sudo nginx -s reload             # alternative reload
+tail -f /var/log/nginx/error.log # watch error log
+</code></code></pre>
 
 <hr />
 <h2>Security Headers</h2>
 <p>Add inside <code>server {}</code> block:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">add_header</span><span class="w"> </span><span class="s">X-Frame-Options</span><span class="w"> </span><span class="s">&quot;SAMEORIGIN&quot;</span><span class="p">;</span>
-<span class="k">add_header</span><span class="w"> </span><span class="s">X-Content-Type-Options</span><span class="w"> </span><span class="s">&quot;nosniff&quot;</span><span class="p">;</span>
-<span class="k">add_header</span><span class="w"> </span><span class="s">X-XSS-Protection</span><span class="w"> </span><span class="s">&quot;1</span><span class="p">;</span><span class="w"> </span><span class="k">mode=block&quot;</span><span class="p">;</span>
-<span class="k">add_header</span><span class="w"> </span><span class="s">Strict-Transport-Security</span><span class="w"> </span><span class="s">&quot;max-age=31536000</span><span class="p">;</span><span class="w"> </span><span class="k">includeSubDomains&quot;</span><span class="p">;</span>
-</code></pre></div>
+<pre><code><code>add_header X-Frame-Options &quot;SAMEORIGIN&quot;;
+add_header X-Content-Type-Options &quot;nosniff&quot;;
+add_header X-XSS-Protection &quot;1; mode=block&quot;;
+add_header Strict-Transport-Security &quot;max-age=31536000; includeSubDomains&quot;;
+</code></code></pre>

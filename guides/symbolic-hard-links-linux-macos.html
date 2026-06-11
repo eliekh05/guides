@@ -3,31 +3,31 @@ DATA:linux:Symbolic Links and Hard Links on Linux and macOS:Linux
 <hr />
 <h2>Symbolic Links (Symlinks)</h2>
 <p>A symlink is a pointer to another file or directory. If the target is deleted, the symlink breaks.</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Create a symlink</span>
-ln<span class="w"> </span>-s<span class="w"> </span>/path/to/original<span class="w"> </span>/path/to/link
+<pre><code><code># Create a symlink
+ln -s /path/to/original /path/to/link
 
-<span class="c1"># Examples</span>
-ln<span class="w"> </span>-s<span class="w"> </span>/opt/myapp/bin/myapp<span class="w"> </span>/usr/local/bin/myapp<span class="w">     </span><span class="c1"># make a command available system-wide</span>
-ln<span class="w"> </span>-s<span class="w"> </span>/mnt/data/photos<span class="w"> </span>~/Photos<span class="w">                      </span><span class="c1"># link a folder</span>
-ln<span class="w"> </span>-s<span class="w"> </span>/etc/nginx/sites-available/mysite.conf<span class="w"> </span>/etc/nginx/sites-enabled/mysite.conf<span class="w">  </span><span class="c1"># Nginx config</span>
-</code></pre></div>
+# Examples
+ln -s /opt/myapp/bin/myapp /usr/local/bin/myapp     # make a command available system-wide
+ln -s /mnt/data/photos ~/Photos                      # link a folder
+ln -s /etc/nginx/sites-available/mysite.conf /etc/nginx/sites-enabled/mysite.conf  # Nginx config
+</code></code></pre>
 
 <h3>View symlinks</h3>
-<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>-la<span class="w">         </span><span class="c1"># shows -&gt; pointing to target</span>
-ls<span class="w"> </span>-la<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;^l&quot;</span><span class="w">   </span><span class="c1"># list only symlinks</span>
-readlink<span class="w"> </span>/usr/local/bin/myapp<span class="w">       </span><span class="c1"># show where a symlink points</span>
-readlink<span class="w"> </span>-f<span class="w"> </span>/usr/local/bin/myapp<span class="w">    </span><span class="c1"># follow all symlinks to final target</span>
-</code></pre></div>
+<pre><code><code>ls -la         # shows -&gt; pointing to target
+ls -la | grep &quot;^l&quot;   # list only symlinks
+readlink /usr/local/bin/myapp       # show where a symlink points
+readlink -f /usr/local/bin/myapp    # follow all symlinks to final target
+</code></code></pre>
 
 <h3>Update or overwrite a symlink</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># -f = force overwrite existing symlink</span>
-ln<span class="w"> </span>-sf<span class="w"> </span>/path/to/new/target<span class="w"> </span>/path/to/link
-</code></pre></div>
+<pre><code><code># -f = force overwrite existing symlink
+ln -sf /path/to/new/target /path/to/link
+</code></code></pre>
 
 <h3>Delete a symlink</h3>
-<div class="codehilite"><pre><span></span><code>rm<span class="w"> </span>/path/to/link<span class="w">         </span><span class="c1"># remove the link, not the target</span>
-unlink<span class="w"> </span>/path/to/link<span class="w">     </span><span class="c1"># same thing</span>
-</code></pre></div>
+<pre><code><code>rm /path/to/link         # remove the link, not the target
+unlink /path/to/link     # same thing
+</code></code></pre>
 
 <blockquote>
 <p><strong>Do not use <code>rm -r</code> on a symlink to a directory</strong> — it deletes the contents of the target directory, not just the link.</p>
@@ -35,13 +35,13 @@ unlink<span class="w"> </span>/path/to/link<span class="w">     </span><span cla
 <hr />
 <h2>Hard Links</h2>
 <p>A hard link is another name for the same file. Both names point to the same data on disk. Deleting one name leaves the data accessible through the other.</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Create a hard link</span>
-ln<span class="w"> </span>/path/to/original<span class="w"> </span>/path/to/hardlink
+<pre><code><code># Create a hard link
+ln /path/to/original /path/to/hardlink
 
-<span class="c1"># View hard link count (second column in ls -la)</span>
-ls<span class="w"> </span>-la<span class="w"> </span>file.txt
-<span class="c1"># -rw-r--r--  2  alice  staff  ...    &lt;- the 2 means 2 hard links</span>
-</code></pre></div>
+# View hard link count (second column in ls -la)
+ls -la file.txt
+# -rw-r--r--  2  alice  staff  ...    &lt;- the 2 means 2 hard links
+</code></code></pre>
 
 <h3>Hard link limitations</h3>
 <ul>
@@ -89,27 +89,27 @@ ls<span class="w"> </span>-la<span class="w"> </span>file.txt
 </table>
 <hr />
 <h2>Practical Use Cases</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Make Python 3 available as &quot;python&quot;</span>
-sudo<span class="w"> </span>ln<span class="w"> </span>-sf<span class="w"> </span>/usr/bin/python3<span class="w"> </span>/usr/local/bin/python
+<pre><code><code># Make Python 3 available as &quot;python&quot;
+sudo ln -sf /usr/bin/python3 /usr/local/bin/python
 
-<span class="c1"># Enable an Nginx site</span>
-sudo<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>/etc/nginx/sites-available/mysite<span class="w"> </span>/etc/nginx/sites-enabled/
+# Enable an Nginx site
+sudo ln -s /etc/nginx/sites-available/mysite /etc/nginx/sites-enabled/
 
-<span class="c1"># Create a shortcut to a deep path</span>
-ln<span class="w"> </span>-s<span class="w"> </span>~/Documents/Projects/client-work/2026/webapp<span class="w"> </span>~/Desktop/webapp
+# Create a shortcut to a deep path
+ln -s ~/Documents/Projects/client-work/2026/webapp ~/Desktop/webapp
 
-<span class="c1"># Link a config file to a managed location</span>
-ln<span class="w"> </span>-sf<span class="w"> </span>/opt/myapp/config/app.conf<span class="w"> </span>~/.config/app.conf
+# Link a config file to a managed location
+ln -sf /opt/myapp/config/app.conf ~/.config/app.conf
 
-<span class="c1"># Java version management (switch default Java)</span>
-sudo<span class="w"> </span>ln<span class="w"> </span>-sf<span class="w"> </span>/usr/lib/jvm/java-21/bin/java<span class="w"> </span>/usr/local/bin/java
-</code></pre></div>
+# Java version management (switch default Java)
+sudo ln -sf /usr/lib/jvm/java-21/bin/java /usr/local/bin/java
+</code></code></pre>
 
 <hr />
 <h2>Fix Broken Symlinks</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Find all broken symlinks in current directory</span>
-find<span class="w"> </span>.<span class="w"> </span>-type<span class="w"> </span>l<span class="w"> </span>!<span class="w"> </span>-exec<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-e<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span><span class="w"> </span>-print
+<pre><code><code># Find all broken symlinks in current directory
+find . -type l ! -exec test -e {} \; -print
 
-<span class="c1"># Find broken symlinks system-wide</span>
-find<span class="w"> </span>/<span class="w"> </span>-type<span class="w"> </span>l<span class="w"> </span>!<span class="w"> </span>-exec<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-e<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span><span class="w"> </span>-print<span class="w"> </span><span class="m">2</span>&gt;/dev/null
-</code></pre></div>
+# Find broken symlinks system-wide
+find / -type l ! -exec test -e {} \; -print 2&gt;/dev/null
+</code></code></pre>

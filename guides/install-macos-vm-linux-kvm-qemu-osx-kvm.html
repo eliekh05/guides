@@ -19,66 +19,66 @@ DATA:installation:Install macOS as a VM on Linux (KVM/QEMU with OSX-KVM):Install
 <hr />
 <h2>Step 1 — Install Dependencies</h2>
 <p><strong>Ubuntu / Debian:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>qemu-kvm<span class="w"> </span>qemu-utils<span class="w"> </span>libvirt-daemon-system<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>libvirt-clients<span class="w"> </span>bridge-utils<span class="w"> </span>virt-manager<span class="w"> </span>python3<span class="w"> </span>git<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>ovmf<span class="w"> </span>swtpm<span class="w"> </span>swtpm-tools
-</code></pre></div>
+<pre><code><code>sudo apt update
+sudo apt install -y qemu-kvm qemu-utils libvirt-daemon-system \
+  libvirt-clients bridge-utils virt-manager python3 git \
+  ovmf swtpm swtpm-tools
+</code></code></pre>
 
 <p><strong>Fedora:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>qemu-kvm<span class="w"> </span>libvirt<span class="w"> </span>virt-manager<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>python3<span class="w"> </span>git<span class="w"> </span>edk2-ovmf<span class="w"> </span>swtpm
-</code></pre></div>
+<pre><code><code>sudo dnf install -y qemu-kvm libvirt virt-manager \
+  python3 git edk2-ovmf swtpm
+</code></code></pre>
 
 <p><strong>Arch:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>qemu<span class="w"> </span>libvirt<span class="w"> </span>virt-manager<span class="w"> </span>python<span class="w"> </span>git<span class="w"> </span>ovmf<span class="w"> </span>swtpm
-</code></pre></div>
+<pre><code><code>sudo pacman -S qemu libvirt virt-manager python git ovmf swtpm
+</code></code></pre>
 
 <p>Enable and start libvirt:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>libvirtd
-sudo<span class="w"> </span>usermod<span class="w"> </span>-aG<span class="w"> </span>kvm,libvirt<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span>
-</code></pre></div>
+<pre><code><code>sudo systemctl enable --now libvirtd
+sudo usermod -aG kvm,libvirt $(whoami)
+</code></code></pre>
 
 <p><strong>Log out and back in</strong> for the group changes to take effect.</p>
 <hr />
 <h2>Step 2 — Enable MSR (Required for macOS)</h2>
 <p>macOS requires access to CPU Model Specific Registers. Enable this:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Load the KVM module with MSR access enabled</span>
-sudo<span class="w"> </span>modprobe<span class="w"> </span>kvm
-<span class="nb">echo</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/sys/module/kvm/parameters/ignore_msrs
+<pre><code><code># Load the KVM module with MSR access enabled
+sudo modprobe kvm
+echo 1 | sudo tee /sys/module/kvm/parameters/ignore_msrs
 
-<span class="c1"># Make it permanent across reboots</span>
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;options kvm ignore_msrs=1&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/modprobe.d/kvm.conf
-</code></pre></div>
+# Make it permanent across reboots
+echo &quot;options kvm ignore_msrs=1&quot; | sudo tee /etc/modprobe.d/kvm.conf
+</code></code></pre>
 
 <hr />
 <h2>Step 3 — Clone OSX-KVM</h2>
-<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>--depth<span class="w"> </span><span class="m">1</span><span class="w"> </span>--recursive<span class="w"> </span>https://github.com/kholia/OSX-KVM.git
-<span class="nb">cd</span><span class="w"> </span>OSX-KVM
-</code></pre></div>
+<pre><code><code>git clone --depth 1 --recursive https://github.com/kholia/OSX-KVM.git
+cd OSX-KVM
+</code></code></pre>
 
 <hr />
 <h2>Step 4 — Download the macOS Installer</h2>
-<div class="codehilite"><pre><span></span><code>./fetch-macOS-v2.py
-</code></pre></div>
+<pre><code><code>./fetch-macOS-v2.py
+</code></code></pre>
 
 <p>A menu will appear with macOS versions. Select the version you want — for Sequoia (15), choose that option. The script downloads a recovery image from Apple's servers directly (~700 MB).</p>
 <p>After downloading, convert the image:</p>
-<div class="codehilite"><pre><span></span><code>qemu-img<span class="w"> </span>convert<span class="w"> </span>BaseSystem.dmg<span class="w"> </span>-O<span class="w"> </span>raw<span class="w"> </span>BaseSystem.img
-</code></pre></div>
+<pre><code><code>qemu-img convert BaseSystem.dmg -O raw BaseSystem.img
+</code></code></pre>
 
 <hr />
 <h2>Step 5 — Create the VM Disk</h2>
 <p>Create a virtual disk where macOS will be installed:</p>
-<div class="codehilite"><pre><span></span><code>qemu-img<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>qcow2<span class="w"> </span>mac_hdd_ng.img<span class="w"> </span>128G
-</code></pre></div>
+<pre><code><code>qemu-img create -f qcow2 mac_hdd_ng.img 128G
+</code></code></pre>
 
 <p>128 GB is a comfortable size. You can increase or decrease this — macOS itself needs about 20 GB minimum but 50+ GB is recommended for actual use.</p>
 <hr />
 <h2>Step 6 — Boot the macOS Installer</h2>
 <p>Run the boot script:</p>
-<div class="codehilite"><pre><span></span><code>./OpenCore-Boot.sh
-</code></pre></div>
+<pre><code><code>./OpenCore-Boot.sh
+</code></code></pre>
 
 <p>A QEMU window will open and show the OpenCore boot picker. Select <strong>macOS Base System</strong> and press Enter.</p>
 <p>The macOS installer will load — this takes several minutes on first boot.</p>
@@ -102,49 +102,49 @@ sudo<span class="w"> </span>modprobe<span class="w"> </span>kvm
 <hr />
 <h2>Step 9 — Use virt-manager for Easier Management (Optional)</h2>
 <p>The default QEMU window works but virt-manager gives you a proper GUI. Set up file permissions first:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>setfacl<span class="w"> </span>-m<span class="w"> </span>u:libvirt-qemu:rx<span class="w"> </span>/home/<span class="nv">$USER</span>
-sudo<span class="w"> </span>setfacl<span class="w"> </span>-R<span class="w"> </span>-m<span class="w"> </span>u:libvirt-qemu:rx<span class="w"> </span>/home/<span class="nv">$USER</span>/OSX-KVM
-</code></pre></div>
+<pre><code><code>sudo setfacl -m u:libvirt-qemu:rx /home/$USER
+sudo setfacl -R -m u:libvirt-qemu:rx /home/$USER/OSX-KVM
+</code></code></pre>
 
 <p>Edit the libvirt XML file:</p>
-<div class="codehilite"><pre><span></span><code>sed<span class="w"> </span><span class="s2">&quot;s/CHANGEME/</span><span class="nv">$USER</span><span class="s2">/g&quot;</span><span class="w"> </span>macOS-libvirt-Catalina.xml<span class="w"> </span>&gt;<span class="w"> </span>macOS.xml
-virt-xml-validate<span class="w"> </span>macOS.xml
-virsh<span class="w"> </span>--connect<span class="w"> </span>qemu:///system<span class="w"> </span>define<span class="w"> </span>macOS.xml
-</code></pre></div>
+<pre><code><code>sed &quot;s/CHANGEME/$USER/g&quot; macOS-libvirt-Catalina.xml &gt; macOS.xml
+virt-xml-validate macOS.xml
+virsh --connect qemu:///system define macOS.xml
+</code></code></pre>
 
 <p>The VM will now appear in virt-manager.</p>
 <hr />
 <h2>AMD CPU — Extra Configuration</h2>
 <p>macOS does not officially support AMD and will kernel panic during boot without patching. Open <code>OpenCore-Boot.sh</code> in a text editor and find the <code>-cpu</code> line. Change it to:</p>
-<div class="codehilite"><pre><span></span><code>-cpu<span class="w"> </span>Penryn,kvm<span class="o">=</span>on,vendor<span class="o">=</span>GenuineIntel,+invtsc,vmware-cpuid-freq<span class="o">=</span>on,+ssse3,+sse4.2,+popcnt,+avx,+avx2,+aes,+xsave,+xsaveopt,check
-</code></pre></div>
+<pre><code><code>-cpu Penryn,kvm=on,vendor=GenuineIntel,+invtsc,vmware-cpuid-freq=on,+ssse3,+sse4.2,+popcnt,+avx,+avx2,+aes,+xsave,+xsaveopt,check
+</code></code></pre>
 
 <p>Also add these flags to the QEMU command:</p>
-<div class="codehilite"><pre><span></span><code>-cpu<span class="w"> </span>Penryn,kvm<span class="o">=</span>on,vendor<span class="o">=</span>GenuineIntel,...
-</code></pre></div>
+<pre><code><code>-cpu Penryn,kvm=on,vendor=GenuineIntel,...
+</code></code></pre>
 
 <p>AMD Ryzen 5000 series and newer generally work well. Older AMD CPUs may have more issues.</p>
 <hr />
 <h2>Improve Performance</h2>
 <p><strong>Give the VM more RAM and CPU in the boot script:</strong></p>
 <p>Edit <code>OpenCore-Boot.sh</code> and change:</p>
-<div class="codehilite"><pre><span></span><code><span class="nv">ALLOCATED_RAM</span><span class="o">=</span><span class="s2">&quot;8192&quot;</span><span class="w">   </span><span class="c1"># 8 GB</span>
-<span class="nv">CPU_SOCKETS</span><span class="o">=</span><span class="s2">&quot;1&quot;</span>
-<span class="nv">CPU_CORES</span><span class="o">=</span><span class="s2">&quot;4&quot;</span>
-<span class="nv">CPU_THREADS</span><span class="o">=</span><span class="s2">&quot;8&quot;</span>
-</code></pre></div>
+<pre><code><code>ALLOCATED_RAM=&quot;8192&quot;   # 8 GB
+CPU_SOCKETS=&quot;1&quot;
+CPU_CORES=&quot;4&quot;
+CPU_THREADS=&quot;8&quot;
+</code></code></pre>
 
 <p><strong>Enable CPU host passthrough for best performance</strong> (Intel only, AMD may cause issues):</p>
 <p>In the <code>-cpu</code> line, change to:</p>
-<div class="codehilite"><pre><span></span><code>-cpu<span class="w"> </span>host,kvm<span class="o">=</span>on,vendor<span class="o">=</span>GenuineIntel,...
-</code></pre></div>
+<pre><code><code>-cpu host,kvm=on,vendor=GenuineIntel,...
+</code></code></pre>
 
 <hr />
 <h2>Troubleshooting</h2>
 <h3>OpenCore boot picker does not appear — black screen</h3>
 <p>MSR is not enabled. Run:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/sys/module/kvm/parameters/ignore_msrs
-</code></pre></div>
+<pre><code><code>echo 1 | sudo tee /sys/module/kvm/parameters/ignore_msrs
+</code></code></pre>
 
 <h3>macOS installer crashes or kernel panics immediately</h3>
 <p>On AMD: the CPU flags are wrong. Use the AMD configuration above.</p>
@@ -152,8 +152,8 @@ virsh<span class="w"> </span>--connect<span class="w"> </span>qemu:///system<spa
 <p>Select the correct boot entry in OpenCore — choose your <code>Macintosh HD</code> volume, not the installer volume.</p>
 <h3>Very slow performance</h3>
 <p>Make sure KVM is actually enabled:</p>
-<div class="codehilite"><pre><span></span><code>kvm-ok
-</code></pre></div>
+<pre><code><code>kvm-ok
+</code></code></pre>
 
 <p>If it says KVM is not available, virtualisation is not enabled in BIOS, or the KVM modules are not loaded.</p>
 <h3>macOS installed but boots from installer every time</h3>

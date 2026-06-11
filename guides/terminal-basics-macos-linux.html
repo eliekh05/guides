@@ -13,8 +13,8 @@ DATA:linux:Terminal Basics for macOS and Linux:Linux
 <h2>How Terminal Works</h2>
 <p>Terminal is a text interface to your computer. You type a command, press <strong>Enter</strong>, and the computer runs it. The output appears below your command.</p>
 <p>The <strong>prompt</strong> is the line waiting for your input. It usually looks like:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">yourname</span><span class="nv">@macbook</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="o">%</span>
-</code></pre></div>
+<pre><code><code>yourname@macbook ~ %
+</code></code></pre>
 
 <ul>
 <li><code>yourname</code> — your username</li>
@@ -25,46 +25,46 @@ DATA:linux:Terminal Basics for macOS and Linux:Linux
 <hr />
 <h2>Navigating Folders</h2>
 <h3>Where am I?</h3>
-<div class="codehilite"><pre><span></span><code><span class="nb">pwd</span>
-</code></pre></div>
+<pre><code><code>pwd
+</code></code></pre>
 
 <p>Prints your current folder path (Print Working Directory).</p>
 <h3>What is in this folder?</h3>
-<div class="codehilite"><pre><span></span><code>ls
-</code></pre></div>
+<pre><code><code>ls
+</code></code></pre>
 
 <p>Lists files and folders. To show hidden files too:</p>
-<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>-a
-</code></pre></div>
+<pre><code><code>ls -a
+</code></code></pre>
 
 <p>To show details (permissions, size, date):</p>
-<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>-la
-</code></pre></div>
+<pre><code><code>ls -la
+</code></code></pre>
 
 <h3>Move into a folder</h3>
-<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>Documents
-</code></pre></div>
+<pre><code><code>cd Documents
+</code></code></pre>
 
 <p>Move into a subfolder:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>Documents/Projects/myproject
-</code></pre></div>
+<pre><code><code>cd Documents/Projects/myproject
+</code></code></pre>
 
 <p>Move up one level:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>..
-</code></pre></div>
+<pre><code><code>cd ..
+</code></code></pre>
 
 <p>Go back to your home folder from anywhere:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>~
-</code></pre></div>
+<pre><code><code>cd ~
+</code></code></pre>
 
 <p>Or just:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">cd</span>
-</code></pre></div>
+<pre><code><code>cd
+</code></code></pre>
 
 <p>Go to a full path:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>/Applications
-<span class="nb">cd</span><span class="w"> </span>/usr/local/bin
-</code></pre></div>
+<pre><code><code>cd /Applications
+cd /usr/local/bin
+</code></code></pre>
 
 <blockquote>
 <p><strong>Tip:</strong> Press <strong>Tab</strong> after typing part of a folder or file name to auto-complete it. Press Tab twice to see all options.</p>
@@ -72,54 +72,54 @@ DATA:linux:Terminal Basics for macOS and Linux:Linux
 <hr />
 <h2>Working with Files and Folders</h2>
 <h3>Create a folder</h3>
-<div class="codehilite"><pre><span></span><code>mkdir<span class="w"> </span>myfolder
-mkdir<span class="w"> </span>-p<span class="w"> </span>parent/child/grandchild<span class="w">   </span><span class="c1"># Create nested folders at once</span>
-</code></pre></div>
+<pre><code><code>mkdir myfolder
+mkdir -p parent/child/grandchild   # Create nested folders at once
+</code></code></pre>
 
 <h3>Create an empty file</h3>
-<div class="codehilite"><pre><span></span><code>touch<span class="w"> </span>myfile.txt
-</code></pre></div>
+<pre><code><code>touch myfile.txt
+</code></code></pre>
 
 <h3>Copy a file</h3>
-<div class="codehilite"><pre><span></span><code>cp<span class="w"> </span>source.txt<span class="w"> </span>destination.txt
-cp<span class="w"> </span>source.txt<span class="w"> </span>/path/to/destination/
-</code></pre></div>
+<pre><code><code>cp source.txt destination.txt
+cp source.txt /path/to/destination/
+</code></code></pre>
 
 <p>Copy a folder and everything inside it:</p>
-<div class="codehilite"><pre><span></span><code>cp<span class="w"> </span>-r<span class="w"> </span>myfolder<span class="w"> </span>/path/to/destination/
-</code></pre></div>
+<pre><code><code>cp -r myfolder /path/to/destination/
+</code></code></pre>
 
 <h3>Move or rename a file</h3>
-<div class="codehilite"><pre><span></span><code>mv<span class="w"> </span>oldname.txt<span class="w"> </span>newname.txt<span class="w">          </span><span class="c1"># Rename</span>
-mv<span class="w"> </span>myfile.txt<span class="w"> </span>/path/to/destination/<span class="w"> </span><span class="c1"># Move</span>
-</code></pre></div>
+<pre><code><code>mv oldname.txt newname.txt          # Rename
+mv myfile.txt /path/to/destination/ # Move
+</code></code></pre>
 
 <h3>Delete a file</h3>
-<div class="codehilite"><pre><span></span><code>rm<span class="w"> </span>myfile.txt
-</code></pre></div>
+<pre><code><code>rm myfile.txt
+</code></code></pre>
 
 <p>Delete a folder and everything inside it:</p>
-<div class="codehilite"><pre><span></span><code>rm<span class="w"> </span>-rf<span class="w"> </span>myfolder
-</code></pre></div>
+<pre><code><code>rm -rf myfolder
+</code></code></pre>
 
 <blockquote>
 <p>⚠️ <code>rm -rf</code> deletes permanently — there is no Trash. Double-check before running this.</p>
 </blockquote>
 <h3>View file contents</h3>
-<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>myfile.txt
-</code></pre></div>
+<pre><code><code>cat myfile.txt
+</code></code></pre>
 
 <p>For large files, scroll through page by page:</p>
-<div class="codehilite"><pre><span></span><code>less<span class="w"> </span>myfile.txt
-</code></pre></div>
+<pre><code><code>less myfile.txt
+</code></code></pre>
 
 <p>Press <strong>Q</strong> to quit less.</p>
 <hr />
 <h2>Running Commands as Administrator</h2>
 <p>Some commands need admin rights. Add <code>sudo</code> before them:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update
-sudo<span class="w"> </span>rm<span class="w"> </span>/protected-file
-</code></pre></div>
+<pre><code><code>sudo apt update
+sudo rm /protected-file
+</code></code></pre>
 
 <p>You will be prompted for your <strong>login password</strong> (not an email password). Nothing appears as you type — that is normal. Press Enter when done.</p>
 <hr />
@@ -172,27 +172,27 @@ sudo<span class="w"> </span>rm<span class="w"> </span>/protected-file
 <hr />
 <h2>The Pipe <code>|</code> — Chain Commands Together</h2>
 <p>The pipe sends the output of one command as the input to the next:</p>
-<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>-la<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;.txt&quot;</span><span class="w">      </span><span class="c1"># List files, then filter for .txt only</span>
-cat<span class="w"> </span>file.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>less<span class="w">        </span><span class="c1"># View a file page by page</span>
-</code></pre></div>
+<pre><code><code>ls -la | grep &quot;.txt&quot;      # List files, then filter for .txt only
+cat file.txt | less        # View a file page by page
+</code></code></pre>
 
 <hr />
 <h2>Redirect Output to a File</h2>
 <p>Save command output to a file instead of printing to screen:</p>
-<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>-la<span class="w"> </span>&gt;<span class="w"> </span>filelist.txt<span class="w">     </span><span class="c1"># Save to file (overwrites)</span>
-ls<span class="w"> </span>-la<span class="w"> </span>&gt;&gt;<span class="w"> </span>filelist.txt<span class="w">    </span><span class="c1"># Append to file</span>
-</code></pre></div>
+<pre><code><code>ls -la &gt; filelist.txt     # Save to file (overwrites)
+ls -la &gt;&gt; filelist.txt    # Append to file
+</code></code></pre>
 
 <p>Redirect errors separately:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">command</span><span class="w"> </span><span class="m">2</span>&gt;<span class="w"> </span>errors.txt<span class="w">          </span><span class="c1"># Save errors only</span>
-<span class="nb">command</span><span class="w"> </span>&gt;<span class="w"> </span>output.txt<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w">      </span><span class="c1"># Save both output and errors</span>
-</code></pre></div>
+<pre><code><code>command 2&gt; errors.txt          # Save errors only
+command &gt; output.txt 2&gt;&amp;1      # Save both output and errors
+</code></code></pre>
 
 <hr />
 <h2>Editing Files in Terminal</h2>
 <p><strong>nano</strong> is the easiest text editor — it works like a basic notepad:</p>
-<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>myfile.txt
-</code></pre></div>
+<pre><code><code>nano myfile.txt
+</code></code></pre>
 
 <ul>
 <li>Type to edit</li>
@@ -206,28 +206,28 @@ ls<span class="w"> </span>-la<span class="w"> </span>&gt;&gt;<span class="w"> </
 <hr />
 <h2>Finding Things</h2>
 <p>Find a file by name:</p>
-<div class="codehilite"><pre><span></span><code>find<span class="w"> </span>/<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;myfile.txt&quot;</span><span class="w">         </span><span class="c1"># Search entire system</span>
-find<span class="w"> </span>~<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;myfile.txt&quot;</span><span class="w">         </span><span class="c1"># Search your home folder</span>
-find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.log&quot;</span><span class="w">              </span><span class="c1"># Find all .log files in current folder</span>
-</code></pre></div>
+<pre><code><code>find / -name &quot;myfile.txt&quot;         # Search entire system
+find ~ -name &quot;myfile.txt&quot;         # Search your home folder
+find . -name &quot;*.log&quot;              # Find all .log files in current folder
+</code></code></pre>
 
 <p>Search inside a file for text:</p>
-<div class="codehilite"><pre><span></span><code>grep<span class="w"> </span><span class="s2">&quot;search term&quot;</span><span class="w"> </span>myfile.txt
-grep<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;search term&quot;</span><span class="w"> </span>/path/<span class="w">      </span><span class="c1"># Search recursively in all files</span>
-grep<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;search term&quot;</span><span class="w"> </span>myfile.txt<span class="w">  </span><span class="c1"># Case-insensitive search</span>
-</code></pre></div>
+<pre><code><code>grep &quot;search term&quot; myfile.txt
+grep -r &quot;search term&quot; /path/      # Search recursively in all files
+grep -i &quot;search term&quot; myfile.txt  # Case-insensitive search
+</code></code></pre>
 
 <hr />
 <h2>Get Help for Any Command</h2>
-<div class="codehilite"><pre><span></span><code>man<span class="w"> </span>ls<span class="w">          </span><span class="c1"># Manual page for ls</span>
-man<span class="w"> </span>brew
-man<span class="w"> </span>sudo
-</code></pre></div>
+<pre><code><code>man ls          # Manual page for ls
+man brew
+man sudo
+</code></code></pre>
 
 <p>Press <strong>Q</strong> to exit the manual. Or use <code>--help</code>:</p>
-<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>--help
-brew<span class="w"> </span>--help
-</code></pre></div>
+<pre><code><code>ls --help
+brew --help
+</code></code></pre>
 
 <hr />
 <h2>Common Beginner Mistakes</h2>

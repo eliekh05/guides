@@ -2,97 +2,97 @@ DATA:package-managers:Fix Broken Packages on Ubuntu and Debian:Package Managers 
 <h1>Fix Broken Packages on Ubuntu and Debian</h1>
 <hr />
 <h2>Quick Fix — Most Cases</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>--fix-broken<span class="w"> </span>install
-sudo<span class="w"> </span>dpkg<span class="w"> </span>--configure<span class="w"> </span>-a
-sudo<span class="w"> </span>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>upgrade<span class="w"> </span>-y
-</code></pre></div>
+<pre><code><code>sudo apt --fix-broken install
+sudo dpkg --configure -a
+sudo apt update &amp;&amp; sudo apt upgrade -y
+</code></code></pre>
 
 <p>Run these three in order. This resolves most broken package situations.</p>
 <hr />
 <h2>Common Error Messages</h2>
 <h3><code>dpkg was interrupted</code></h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dpkg<span class="w"> </span>--configure<span class="w"> </span>-a
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-f
-</code></pre></div>
+<pre><code><code>sudo dpkg --configure -a
+sudo apt install -f
+</code></code></pre>
 
 <h3><code>E: Unmet dependencies</code></h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>--fix-broken<span class="w"> </span>install
-</code></pre></div>
+<pre><code><code>sudo apt --fix-broken install
+</code></code></pre>
 
 <h3><code>dpkg: error: dpkg status database is locked</code></h3>
 <p>Another apt/dpkg process is running. Wait for it, or if nothing is running:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>rm<span class="w"> </span>/var/lib/dpkg/lock
-sudo<span class="w"> </span>rm<span class="w"> </span>/var/lib/dpkg/lock-frontend
-sudo<span class="w"> </span>rm<span class="w"> </span>/var/cache/apt/archives/lock
-sudo<span class="w"> </span>dpkg<span class="w"> </span>--configure<span class="w"> </span>-a
-</code></pre></div>
+<pre><code><code>sudo rm /var/lib/dpkg/lock
+sudo rm /var/lib/dpkg/lock-frontend
+sudo rm /var/cache/apt/archives/lock
+sudo dpkg --configure -a
+</code></code></pre>
 
 <h3><code>Hash Sum mismatch</code></h3>
 <p>Repository cache is corrupted:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/var/lib/apt/lists/*
-sudo<span class="w"> </span>apt<span class="w"> </span>update
-</code></pre></div>
+<pre><code><code>sudo rm -rf /var/lib/apt/lists/*
+sudo apt update
+</code></code></pre>
 
 <h3><code>Package X has no installation candidate</code></h3>
 <p>The package does not exist in your current sources. Check the package name or add the right repository.</p>
 <h3><code>Unable to correct problems, you have held broken packages</code></h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt-get<span class="w"> </span>check<span class="w">                  </span><span class="c1"># shows which packages are broken</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>--fix-broken<span class="w"> </span>install
-sudo<span class="w"> </span>apt<span class="w"> </span>autoremove
-</code></pre></div>
+<pre><code><code>sudo apt-get check                  # shows which packages are broken
+sudo apt --fix-broken install
+sudo apt autoremove
+</code></code></pre>
 
 <hr />
 <h2>Force Remove a Broken Package</h2>
 <p>If a package is stuck and blocking everything:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dpkg<span class="w"> </span>--remove<span class="w"> </span>--force-remove-reinstreq<span class="w"> </span>packagename
-sudo<span class="w"> </span>dpkg<span class="w"> </span>--purge<span class="w"> </span>--force-remove-reinstreq<span class="w"> </span>packagename<span class="w">    </span><span class="c1"># also removes config</span>
-</code></pre></div>
+<pre><code><code>sudo dpkg --remove --force-remove-reinstreq packagename
+sudo dpkg --purge --force-remove-reinstreq packagename    # also removes config
+</code></code></pre>
 
 <p>Then:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>--fix-broken<span class="w"> </span>install
-sudo<span class="w"> </span>apt<span class="w"> </span>update
-</code></pre></div>
+<pre><code><code>sudo apt --fix-broken install
+sudo apt update
+</code></code></pre>
 
 <hr />
 <h2>Reconfigure a Misbehaving Package</h2>
 <p>If a package installed but behaves incorrectly:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dpkg-reconfigure<span class="w"> </span>packagename
-</code></pre></div>
+<pre><code><code>sudo dpkg-reconfigure packagename
+</code></code></pre>
 
 <hr />
 <h2>Full Cleanup and Repair Sequence</h2>
 <p>For persistent problems, run this full sequence:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># 1. Remove locks</span>
-sudo<span class="w"> </span>rm<span class="w"> </span>-f<span class="w"> </span>/var/lib/dpkg/lock<span class="w"> </span>/var/lib/dpkg/lock-frontend
-sudo<span class="w"> </span>rm<span class="w"> </span>-f<span class="w"> </span>/var/cache/apt/archives/lock<span class="w"> </span>/var/lib/apt/lists/lock
+<pre><code><code># 1. Remove locks
+sudo rm -f /var/lib/dpkg/lock /var/lib/dpkg/lock-frontend
+sudo rm -f /var/cache/apt/archives/lock /var/lib/apt/lists/lock
 
-<span class="c1"># 2. Reconfigure interrupted installs</span>
-sudo<span class="w"> </span>dpkg<span class="w"> </span>--configure<span class="w"> </span>-a
+# 2. Reconfigure interrupted installs
+sudo dpkg --configure -a
 
-<span class="c1"># 3. Fix broken dependencies</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>--fix-broken<span class="w"> </span>install<span class="w"> </span>-y
+# 3. Fix broken dependencies
+sudo apt --fix-broken install -y
 
-<span class="c1"># 4. Clean cache</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>clean
-sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/var/lib/apt/lists/*
+# 4. Clean cache
+sudo apt clean
+sudo rm -rf /var/lib/apt/lists/*
 
-<span class="c1"># 5. Refresh and upgrade</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>update
-sudo<span class="w"> </span>apt<span class="w"> </span>upgrade<span class="w"> </span>-y
+# 5. Refresh and upgrade
+sudo apt update
+sudo apt upgrade -y
 
-<span class="c1"># 6. Remove orphaned packages</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>autoremove<span class="w"> </span>-y
-</code></pre></div>
+# 6. Remove orphaned packages
+sudo apt autoremove -y
+</code></code></pre>
 
 <hr />
 <h2>Check Package Database Integrity</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dpkg<span class="w"> </span>--audit<span class="w">                   </span><span class="c1"># show packages in bad state</span>
-sudo<span class="w"> </span>apt-cache<span class="w"> </span>check<span class="w">                </span><span class="c1"># check cache integrity</span>
-</code></pre></div>
+<pre><code><code>sudo dpkg --audit                   # show packages in bad state
+sudo apt-cache check                # check cache integrity
+</code></code></pre>
 
 <hr />
 <h2>Reinstall a Package</h2>
 <p>If a package is installed but broken:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>reinstall<span class="w"> </span>packagename
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>--reinstall<span class="w"> </span>packagename<span class="w">    </span><span class="c1"># older apt syntax</span>
-</code></pre></div>
+<pre><code><code>sudo apt reinstall packagename
+sudo apt install --reinstall packagename    # older apt syntax
+</code></code></pre>

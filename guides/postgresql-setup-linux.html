@@ -2,105 +2,105 @@ DATA:server:PostgreSQL Setup on Linux:Server & Self-Hosting
 <h1>PostgreSQL Setup on Linux</h1>
 <hr />
 <h2>Install</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>postgresql<span class="w"> </span>postgresql-contrib<span class="w"> </span>-y<span class="w">     </span><span class="c1"># Ubuntu/Debian</span>
-sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>postgresql-server<span class="w"> </span>postgresql-contrib<span class="w"> </span>-y<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>postgresql-setup<span class="w"> </span>--initdb<span class="w">  </span><span class="c1"># Fedora/RHEL</span>
-sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>postgresql<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>-u<span class="w"> </span>postgres<span class="w"> </span>initdb<span class="w"> </span>-D<span class="w"> </span>/var/lib/postgres/data<span class="w">  </span><span class="c1"># Arch</span>
+<pre><code><code>sudo apt install postgresql postgresql-contrib -y     # Ubuntu/Debian
+sudo dnf install postgresql-server postgresql-contrib -y &amp;&amp; sudo postgresql-setup --initdb  # Fedora/RHEL
+sudo pacman -S postgresql &amp;&amp; sudo -u postgres initdb -D /var/lib/postgres/data  # Arch
 
-sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>postgresql
-</code></pre></div>
+sudo systemctl enable --now postgresql
+</code></code></pre>
 
 <hr />
 <h2>Connect as the postgres superuser</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>-u<span class="w"> </span>postgres<span class="w"> </span>psql
-</code></pre></div>
+<pre><code><code>sudo -u postgres psql
+</code></code></pre>
 
 <p>You are now in the PostgreSQL shell (<code>postgres=#</code>).</p>
 <hr />
 <h2>Create a Database and User</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1">-- Create a user with a password</span>
-<span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="n">myuser</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">&#39;strongpassword&#39;</span><span class="p">;</span>
+<pre><code><code>-- Create a user with a password
+CREATE USER myuser WITH PASSWORD &#39;strongpassword&#39;;
 
-<span class="c1">-- Create a database owned by that user</span>
-<span class="k">CREATE</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">mydb</span><span class="w"> </span><span class="k">OWNER</span><span class="w"> </span><span class="n">myuser</span><span class="p">;</span>
+-- Create a database owned by that user
+CREATE DATABASE mydb OWNER myuser;
 
-<span class="c1">-- Grant all privileges</span>
-<span class="k">GRANT</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">PRIVILEGES</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">mydb</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">myuser</span><span class="p">;</span>
+-- Grant all privileges
+GRANT ALL PRIVILEGES ON DATABASE mydb TO myuser;
 
-<span class="c1">-- Exit</span>
-<span class="err">\</span><span class="n">q</span>
-</code></pre></div>
+-- Exit
+\q
+</code></code></pre>
 
 <hr />
 <h2>Connect as the new user</h2>
-<div class="codehilite"><pre><span></span><code>psql<span class="w"> </span>-U<span class="w"> </span>myuser<span class="w"> </span>-d<span class="w"> </span>mydb<span class="w"> </span>-h<span class="w"> </span>localhost
-<span class="c1"># Enter password when prompted</span>
-</code></pre></div>
+<pre><code><code>psql -U myuser -d mydb -h localhost
+# Enter password when prompted
+</code></code></pre>
 
 <hr />
 <h2>psql Quick Reference</h2>
-<div class="codehilite"><pre><span></span><code><span class="err">\</span><span class="n">l</span><span class="w">              </span><span class="c1">-- list databases</span>
-<span class="err">\</span><span class="k">c</span><span class="w"> </span><span class="n">mydb</span><span class="w">         </span><span class="c1">-- connect to database</span>
-<span class="err">\</span><span class="n">dt</span><span class="w">             </span><span class="c1">-- list tables</span>
-<span class="err">\</span><span class="n">d</span><span class="w"> </span><span class="n">tablename</span><span class="w">    </span><span class="c1">-- describe a table</span>
-<span class="err">\</span><span class="n">du</span><span class="w">             </span><span class="c1">-- list users/roles</span>
-<span class="err">\</span><span class="n">q</span><span class="w">              </span><span class="c1">-- quit</span>
-<span class="err">\</span><span class="o">?</span><span class="w">              </span><span class="c1">-- help</span>
-</code></pre></div>
+<pre><code><code>\l              -- list databases
+\c mydb         -- connect to database
+\dt             -- list tables
+\d tablename    -- describe a table
+\du             -- list users/roles
+\q              -- quit
+\?              -- help
+</code></code></pre>
 
 <hr />
 <h2>Allow Remote Connections</h2>
 <p>By default PostgreSQL only accepts local connections. To allow remote access:</p>
 <h3>Step 1 — Edit postgresql.conf</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/postgresql/*/main/postgresql.conf<span class="w">       </span><span class="c1"># Ubuntu/Debian</span>
-sudo<span class="w"> </span>nano<span class="w"> </span>/var/lib/pgsql/data/postgresql.conf<span class="w">          </span><span class="c1"># Fedora/RHEL</span>
-</code></pre></div>
+<pre><code><code>sudo nano /etc/postgresql/*/main/postgresql.conf       # Ubuntu/Debian
+sudo nano /var/lib/pgsql/data/postgresql.conf          # Fedora/RHEL
+</code></code></pre>
 
 <p>Find and change:</p>
-<div class="codehilite"><pre><span></span><code><span class="nx">listen_addresses</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="sc">&#39;*&#39;</span>
-</code></pre></div>
+<pre><code><code>listen_addresses = &#39;*&#39;
+</code></code></pre>
 
 <h3>Step 2 — Edit pg_hba.conf</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/postgresql/*/main/pg_hba.conf
-</code></pre></div>
+<pre><code><code>sudo nano /etc/postgresql/*/main/pg_hba.conf
+</code></code></pre>
 
 <p>Add a line at the bottom:</p>
-<div class="codehilite"><pre><span></span><code>host    mydb    myuser    192.168.1.0/24    md5
-</code></pre></div>
+<pre><code><code>host    mydb    myuser    192.168.1.0/24    md5
+</code></code></pre>
 
 <p>Format: <code>type  database  user  address  auth-method</code></p>
 <h3>Step 3 — Restart and open firewall</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>postgresql
-sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span><span class="m">5432</span>/tcp
-</code></pre></div>
+<pre><code><code>sudo systemctl restart postgresql
+sudo ufw allow 5432/tcp
+</code></code></pre>
 
 <hr />
 <h2>Backup and Restore</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Backup a single database</span>
-pg_dump<span class="w"> </span>-U<span class="w"> </span>myuser<span class="w"> </span>mydb<span class="w"> </span>&gt;<span class="w"> </span>backup.sql
+<pre><code><code># Backup a single database
+pg_dump -U myuser mydb &gt; backup.sql
 
-<span class="c1"># Backup all databases</span>
-pg_dumpall<span class="w"> </span>-U<span class="w"> </span>postgres<span class="w"> </span>&gt;<span class="w"> </span>all_databases.sql
+# Backup all databases
+pg_dumpall -U postgres &gt; all_databases.sql
 
-<span class="c1"># Restore a database</span>
-psql<span class="w"> </span>-U<span class="w"> </span>myuser<span class="w"> </span>mydb<span class="w"> </span>&lt;<span class="w"> </span>backup.sql
+# Restore a database
+psql -U myuser mydb &lt; backup.sql
 
-<span class="c1"># Restore with createdb</span>
-psql<span class="w"> </span>-U<span class="w"> </span>postgres<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;CREATE DATABASE mydb&quot;</span>
-psql<span class="w"> </span>-U<span class="w"> </span>myuser<span class="w"> </span>mydb<span class="w"> </span>&lt;<span class="w"> </span>backup.sql
-</code></pre></div>
+# Restore with createdb
+psql -U postgres -c &quot;CREATE DATABASE mydb&quot;
+psql -U myuser mydb &lt; backup.sql
+</code></code></pre>
 
 <hr />
 <h2>Check Status</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>postgresql
-sudo<span class="w"> </span>-u<span class="w"> </span>postgres<span class="w"> </span>psql<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;SELECT version();&quot;</span>
-sudo<span class="w"> </span>-u<span class="w"> </span>postgres<span class="w"> </span>psql<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;\l&quot;</span><span class="w">              </span><span class="c1"># list all databases</span>
-</code></pre></div>
+<pre><code><code>sudo systemctl status postgresql
+sudo -u postgres psql -c &quot;SELECT version();&quot;
+sudo -u postgres psql -c &quot;\l&quot;              # list all databases
+</code></code></pre>
 
 <hr />
 <h2>Common Issues</h2>
 <p><strong><code>FATAL: peer authentication failed</code></strong> — connecting as wrong OS user. Use <code>-h localhost</code>:</p>
-<div class="codehilite"><pre><span></span><code>psql<span class="w"> </span>-U<span class="w"> </span>myuser<span class="w"> </span>-d<span class="w"> </span>mydb<span class="w"> </span>-h<span class="w"> </span>localhost
-</code></pre></div>
+<pre><code><code>psql -U myuser -d mydb -h localhost
+</code></code></pre>
 
 <p><strong><code>FATAL: password authentication failed</code></strong> — wrong password or user does not exist. Check with <code>\du</code> in the postgres shell.</p>
 <p><strong>Cannot connect remotely</strong> — check <code>listen_addresses = '*'</code> in postgresql.conf and the pg_hba.conf rule. Also check firewall.</p>

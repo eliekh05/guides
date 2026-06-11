@@ -18,19 +18,19 @@ DATA:macos:Show Hidden Files and Folders on macOS:macOS
 <li>Finder will restart and show all hidden files from now on.</li>
 </ol>
 <p>To hide them again:</p>
-<div class="codehilite"><pre><span></span><code>defaults<span class="w"> </span>write<span class="w"> </span>com.apple.Finder<span class="w"> </span>AppleShowAllFiles<span class="w"> </span><span class="nb">false</span>
-killall<span class="w"> </span>Finder
-</code></pre></div>
+<pre><code><code>defaults write com.apple.Finder AppleShowAllFiles false
+killall Finder
+</code></code></pre>
 
 <hr />
 <h2>In Terminal — Show Hidden Files in a Folder Listing</h2>
 <p>The <code>ls</code> command hides dotfiles by default. Add the <code>-a</code> flag to show everything:</p>
-<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>-a<span class="w"> </span>~/
-</code></pre></div>
+<pre><code><code>ls -a ~/
+</code></code></pre>
 
 <p>To also show details (permissions, size, dates):</p>
-<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>-la<span class="w"> </span>~/
-</code></pre></div>
+<pre><code><code>ls -la ~/
+</code></code></pre>
 
 <p>Common hidden folders you will see:
 - <code>.ssh</code> — SSH keys and config
@@ -44,16 +44,16 @@ killall<span class="w"> </span>Finder
 <p><strong>In Finder:</strong>
 Hold <strong>Option (⌥)</strong> and click the <strong>Go</strong> menu in the menu bar. <strong>Library</strong> appears as an option while Option is held.</p>
 <p><strong>In Terminal:</strong></p>
-<div class="codehilite"><pre><span></span><code>open<span class="w"> </span>~/Library
-</code></pre></div>
+<pre><code><code>open ~/Library
+</code></code></pre>
 
 <p><strong>Make it permanently visible:</strong></p>
-<div class="codehilite"><pre><span></span><code>chflags<span class="w"> </span>nohidden<span class="w"> </span>~/Library
-</code></pre></div>
+<pre><code><code>chflags nohidden ~/Library
+</code></code></pre>
 
 <p>To hide it again:</p>
-<div class="codehilite"><pre><span></span><code>chflags<span class="w"> </span>hidden<span class="w"> </span>~/Library
-</code></pre></div>
+<pre><code><code>chflags hidden ~/Library
+</code></code></pre>
 
 <hr />
 <h2>In the Open/Save Dialog (In Any App)</h2>
@@ -61,10 +61,10 @@ Hold <strong>Option (⌥)</strong> and click the <strong>Go</strong> menu in the
 <hr />
 <h2>Show System Files (Beyond Just Dotfiles)</h2>
 <p>macOS also hides system-level files using a different mechanism. To show everything including those:</p>
-<div class="codehilite"><pre><span></span><code>defaults<span class="w"> </span>write<span class="w"> </span>com.apple.Finder<span class="w"> </span>AppleShowAllFiles<span class="w"> </span><span class="nb">true</span>
-defaults<span class="w"> </span>write<span class="w"> </span>NSGlobalDomain<span class="w"> </span>AppleShowAllExtensions<span class="w"> </span><span class="nb">true</span>
-killall<span class="w"> </span>Finder
-</code></pre></div>
+<pre><code><code>defaults write com.apple.Finder AppleShowAllFiles true
+defaults write NSGlobalDomain AppleShowAllExtensions true
+killall Finder
+</code></code></pre>
 
 <blockquote>
 <p><strong>Note:</strong> Revealing system files shows a lot of things you should not modify. Only do this if you know what you are looking for.</p>

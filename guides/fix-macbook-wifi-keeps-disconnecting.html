@@ -40,8 +40,8 @@ Hold <strong>Option (⌥)</strong> and click the Wi-Fi icon in your menu bar. Lo
 <h2>Fix 5 — Flush DNS Cache and Remove Old Keychain Entry</h2>
 <p>A corrupted DNS cache or outdated Wi-Fi password stored in Keychain can cause connection timeouts that look like disconnections.</p>
 <p><strong>Flush DNS:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dscacheutil<span class="w"> </span>-flushcache<span class="p">;</span><span class="w"> </span>sudo<span class="w"> </span>killall<span class="w"> </span>-HUP<span class="w"> </span>mDNSResponder
-</code></pre></div>
+<pre><code><code>sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder
+</code></code></pre>
 
 <p><strong>Remove old Keychain entry:</strong>
 1. Open <strong>Keychain Access</strong> (search with Spotlight).
@@ -60,14 +60,14 @@ Hold <strong>Option (⌥)</strong> and click the Wi-Fi icon in your menu bar. Lo
 <hr />
 <h2>Fix 7 — Reset Wi-Fi Module via Terminal</h2>
 <p>This clears the Wi-Fi module's state without rebooting:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>ifconfig<span class="w"> </span>en0<span class="w"> </span>down
-sudo<span class="w"> </span>ifconfig<span class="w"> </span>en0<span class="w"> </span>up
-</code></pre></div>
+<pre><code><code>sudo ifconfig en0 down
+sudo ifconfig en0 up
+</code></code></pre>
 
 <p>Or turn Wi-Fi off and on via menu bar. For a deeper reset:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>networksetup<span class="w"> </span>-setairportpower<span class="w"> </span>en0<span class="w"> </span>off
-sudo<span class="w"> </span>networksetup<span class="w"> </span>-setairportpower<span class="w"> </span>en0<span class="w"> </span>on
-</code></pre></div>
+<pre><code><code>sudo networksetup -setairportpower en0 off
+sudo networksetup -setairportpower en0 on
+</code></code></pre>
 
 <hr />
 <h2>Fix 8 — Check for Software Conflicts</h2>

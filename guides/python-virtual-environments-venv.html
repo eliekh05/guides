@@ -6,89 +6,89 @@ DATA:linux:Python Virtual Environments (venv):Linux
 <p>Without virtual environments, every project shares the same Python packages. If Project A needs requests 2.28 and Project B needs requests 2.31, they conflict. With virtual environments, each project has its own isolated packages.</p>
 <hr />
 <h2>Create and Use a Virtual Environment</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Create a virtual environment in your project folder</span>
-<span class="nb">cd</span><span class="w"> </span>myproject
-python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+<pre><code><code># Create a virtual environment in your project folder
+cd myproject
+python3 -m venv .venv
 
-<span class="c1"># Activate it (macOS / Linux)</span>
-<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+# Activate it (macOS / Linux)
+source .venv/bin/activate
 
-<span class="c1"># Activate it (Windows)</span>
-.venv<span class="se">\S</span>cripts<span class="se">\a</span>ctivate
+# Activate it (Windows)
+.venv\Scripts\activate
 
-<span class="c1"># You are now inside the virtual environment</span>
-<span class="c1"># Your prompt changes to show (.venv)</span>
-<span class="o">(</span>.venv<span class="o">)</span><span class="w"> </span>$
+# You are now inside the virtual environment
+# Your prompt changes to show (.venv)
+(.venv) $
 
-<span class="c1"># Install packages — goes into .venv, not system Python</span>
-pip<span class="w"> </span>install<span class="w"> </span>requests<span class="w"> </span>flask<span class="w"> </span>numpy
+# Install packages — goes into .venv, not system Python
+pip install requests flask numpy
 
-<span class="c1"># Deactivate when done</span>
+# Deactivate when done
 deactivate
-</code></pre></div>
+</code></code></pre>
 
 <hr />
 <h2>Working with Requirements</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Save all installed packages to a file</span>
-pip<span class="w"> </span>freeze<span class="w"> </span>&gt;<span class="w"> </span>requirements.txt
+<pre><code><code># Save all installed packages to a file
+pip freeze &gt; requirements.txt
 
-<span class="c1"># Install all packages from requirements.txt (for others to reproduce your environment)</span>
-pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+# Install all packages from requirements.txt (for others to reproduce your environment)
+pip install -r requirements.txt
 
-<span class="c1"># Install a specific version</span>
-pip<span class="w"> </span>install<span class="w"> </span><span class="nv">requests</span><span class="o">==</span><span class="m">2</span>.28.0
+# Install a specific version
+pip install requests==2.28.0
 
-<span class="c1"># Install latest</span>
-pip<span class="w"> </span>install<span class="w"> </span>requests
+# Install latest
+pip install requests
 
-<span class="c1"># Upgrade a package</span>
-pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>requests
+# Upgrade a package
+pip install --upgrade requests
 
-<span class="c1"># Uninstall</span>
-pip<span class="w"> </span>uninstall<span class="w"> </span>requests
-</code></pre></div>
+# Uninstall
+pip uninstall requests
+</code></code></pre>
 
 <hr />
 <h2>Check What is Installed</h2>
-<div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>list<span class="w">                            </span><span class="c1"># all installed packages</span>
-pip<span class="w"> </span>show<span class="w"> </span>requests<span class="w">                   </span><span class="c1"># info about a specific package</span>
-pip<span class="w"> </span>list<span class="w"> </span>--outdated<span class="w">                 </span><span class="c1"># packages with newer versions available</span>
-</code></pre></div>
+<pre><code><code>pip list                            # all installed packages
+pip show requests                   # info about a specific package
+pip list --outdated                 # packages with newer versions available
+</code></code></pre>
 
 <hr />
 <h2>Always Add .venv to .gitignore</h2>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;.venv&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>.gitignore
-</code></pre></div>
+<pre><code><code>echo &quot;.venv&quot; &gt;&gt; .gitignore
+</code></code></pre>
 
 <p>Never commit the <code>.venv</code> folder. It is large, platform-specific, and other developers recreate it from <code>requirements.txt</code>.</p>
 <hr />
 <h2>pyenv — Multiple Python Versions</h2>
 <p>If you need different Python versions per project, use pyenv instead of system Python:</p>
-<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>pyenv
+<pre><code><code>brew install pyenv
 
-<span class="c1"># Install a Python version</span>
-pyenv<span class="w"> </span>install<span class="w"> </span><span class="m">3</span>.12.4
+# Install a Python version
+pyenv install 3.12.4
 
-<span class="c1"># Set global default</span>
-pyenv<span class="w"> </span>global<span class="w"> </span><span class="m">3</span>.12.4
+# Set global default
+pyenv global 3.12.4
 
-<span class="c1"># Set version per project</span>
-<span class="nb">cd</span><span class="w"> </span>myproject
-pyenv<span class="w"> </span><span class="nb">local</span><span class="w"> </span><span class="m">3</span>.11.9<span class="w">   </span><span class="c1"># creates .python-version file</span>
-</code></pre></div>
+# Set version per project
+cd myproject
+pyenv local 3.11.9   # creates .python-version file
+</code></code></pre>
 
 <p>Then create virtual environments as normal — they will use the pyenv-managed Python version.</p>
 <hr />
 <h2>Common Issues</h2>
 <h3>"python3 -m venv" fails with error</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Ubuntu/Debian sometimes need this</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>python3-venv<span class="w"> </span>-y
-</code></pre></div>
+<pre><code><code># Ubuntu/Debian sometimes need this
+sudo apt install python3-venv -y
+</code></code></pre>
 
 <h3>pip installs packages globally even with venv active</h3>
 <p>Check the venv is actually active — your prompt should show <code>(.venv)</code>. Also check <code>which pip</code> — it should point inside your <code>.venv</code> folder.</p>
 <h3>Virtual environment has wrong Python version</h3>
 <p>Delete and recreate using the correct version:</p>
-<div class="codehilite"><pre><span></span><code>rm<span class="w"> </span>-rf<span class="w"> </span>.venv
-python3.12<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv<span class="w">    </span><span class="c1"># explicitly use Python 3.12</span>
-</code></pre></div>
+<pre><code><code>rm -rf .venv
+python3.12 -m venv .venv    # explicitly use Python 3.12
+</code></code></pre>

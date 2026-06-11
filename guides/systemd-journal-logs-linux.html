@@ -3,115 +3,115 @@ DATA:server:Read and Manage System Logs with journalctl:Server & Self-Hosting
 <p><code>journalctl</code> reads logs from systemd's journal — the central log system on all modern Linux distributions. It replaces checking scattered log files in <code>/var/log/</code>.</p>
 <hr />
 <h2>Basic Usage</h2>
-<div class="codehilite"><pre><span></span><code>journalctl<span class="w">                          </span><span class="c1"># all logs (oldest first, opens in pager)</span>
-journalctl<span class="w"> </span>-r<span class="w">                       </span><span class="c1"># newest first</span>
-journalctl<span class="w"> </span>-f<span class="w">                       </span><span class="c1"># follow in real time (like tail -f)</span>
-journalctl<span class="w"> </span>-n<span class="w"> </span><span class="m">50</span><span class="w">                    </span><span class="c1"># last 50 lines</span>
-</code></pre></div>
+<pre><code><code>journalctl                          # all logs (oldest first, opens in pager)
+journalctl -r                       # newest first
+journalctl -f                       # follow in real time (like tail -f)
+journalctl -n 50                    # last 50 lines
+</code></code></pre>
 
 <hr />
 <h2>Filter by Service</h2>
-<div class="codehilite"><pre><span></span><code>journalctl<span class="w"> </span>-u<span class="w"> </span>nginx<span class="w">                 </span><span class="c1"># all nginx logs</span>
-journalctl<span class="w"> </span>-u<span class="w"> </span>nginx<span class="w"> </span>-f<span class="w">              </span><span class="c1"># follow nginx logs</span>
-journalctl<span class="w"> </span>-u<span class="w"> </span>nginx<span class="w"> </span>-n<span class="w"> </span><span class="m">100</span><span class="w">         </span><span class="c1"># last 100 lines for nginx</span>
-journalctl<span class="w"> </span>-u<span class="w"> </span>nginx<span class="w"> </span>-u<span class="w"> </span>mysql<span class="w">       </span><span class="c1"># multiple services</span>
-</code></pre></div>
+<pre><code><code>journalctl -u nginx                 # all nginx logs
+journalctl -u nginx -f              # follow nginx logs
+journalctl -u nginx -n 100         # last 100 lines for nginx
+journalctl -u nginx -u mysql       # multiple services
+</code></code></pre>
 
 <hr />
 <h2>Filter by Time</h2>
-<div class="codehilite"><pre><span></span><code>journalctl<span class="w"> </span>--since<span class="w"> </span><span class="s2">&quot;1 hour ago&quot;</span>
-journalctl<span class="w"> </span>--since<span class="w"> </span>today
-journalctl<span class="w"> </span>--since<span class="w"> </span><span class="s2">&quot;2025-01-15 09:00:00&quot;</span>
-journalctl<span class="w"> </span>--until<span class="w"> </span><span class="s2">&quot;2025-01-15 10:00:00&quot;</span>
-journalctl<span class="w"> </span>--since<span class="w"> </span><span class="s2">&quot;2025-01-15 09:00:00&quot;</span><span class="w"> </span>--until<span class="w"> </span><span class="s2">&quot;2025-01-15 10:00:00&quot;</span>
-journalctl<span class="w"> </span>--since<span class="w"> </span>yesterday
-</code></pre></div>
+<pre><code><code>journalctl --since &quot;1 hour ago&quot;
+journalctl --since today
+journalctl --since &quot;2025-01-15 09:00:00&quot;
+journalctl --until &quot;2025-01-15 10:00:00&quot;
+journalctl --since &quot;2025-01-15 09:00:00&quot; --until &quot;2025-01-15 10:00:00&quot;
+journalctl --since yesterday
+</code></code></pre>
 
 <hr />
 <h2>Filter by Priority</h2>
-<div class="codehilite"><pre><span></span><code>journalctl<span class="w"> </span>-p<span class="w"> </span>err<span class="w">                   </span><span class="c1"># errors and above</span>
-journalctl<span class="w"> </span>-p<span class="w"> </span>warning<span class="w">               </span><span class="c1"># warnings and above</span>
-journalctl<span class="w"> </span>-p<span class="w"> </span>debug<span class="w">                 </span><span class="c1"># everything including debug</span>
+<pre><code><code>journalctl -p err                   # errors and above
+journalctl -p warning               # warnings and above
+journalctl -p debug                 # everything including debug
 
-<span class="c1"># Priority levels: emerg, alert, crit, err, warning, notice, info, debug</span>
-</code></pre></div>
+# Priority levels: emerg, alert, crit, err, warning, notice, info, debug
+</code></code></pre>
 
 <hr />
 <h2>Filter by Boot</h2>
-<div class="codehilite"><pre><span></span><code>journalctl<span class="w"> </span>-b<span class="w">                       </span><span class="c1"># current boot</span>
-journalctl<span class="w"> </span>-b<span class="w"> </span>-1<span class="w">                    </span><span class="c1"># previous boot</span>
-journalctl<span class="w"> </span>-b<span class="w"> </span>-2<span class="w">                    </span><span class="c1"># two boots ago</span>
-journalctl<span class="w"> </span>--list-boots<span class="w">             </span><span class="c1"># list all recorded boots</span>
-</code></pre></div>
+<pre><code><code>journalctl -b                       # current boot
+journalctl -b -1                    # previous boot
+journalctl -b -2                    # two boots ago
+journalctl --list-boots             # list all recorded boots
+</code></code></pre>
 
 <hr />
 <h2>Filter by Process / PID</h2>
-<div class="codehilite"><pre><span></span><code>journalctl<span class="w"> </span><span class="nv">_PID</span><span class="o">=</span><span class="m">1234</span>
-journalctl<span class="w"> </span><span class="nv">_COMM</span><span class="o">=</span>nginx<span class="w">              </span><span class="c1"># by process name</span>
-journalctl<span class="w"> </span><span class="nv">_UID</span><span class="o">=</span><span class="m">1000</span><span class="w">                </span><span class="c1"># by user ID</span>
-</code></pre></div>
+<pre><code><code>journalctl _PID=1234
+journalctl _COMM=nginx              # by process name
+journalctl _UID=1000                # by user ID
+</code></code></pre>
 
 <hr />
 <h2>Output Formats</h2>
-<div class="codehilite"><pre><span></span><code>journalctl<span class="w"> </span>-o<span class="w"> </span>short<span class="w">                 </span><span class="c1"># default</span>
-journalctl<span class="w"> </span>-o<span class="w"> </span>verbose<span class="w">               </span><span class="c1"># all fields</span>
-journalctl<span class="w"> </span>-o<span class="w"> </span>json<span class="w">                  </span><span class="c1"># JSON</span>
-journalctl<span class="w"> </span>-o<span class="w"> </span>json-pretty<span class="w">           </span><span class="c1"># formatted JSON</span>
-journalctl<span class="w"> </span>-o<span class="w"> </span>cat<span class="w">                   </span><span class="c1"># message only, no metadata</span>
-</code></pre></div>
+<pre><code><code>journalctl -o short                 # default
+journalctl -o verbose               # all fields
+journalctl -o json                  # JSON
+journalctl -o json-pretty           # formatted JSON
+journalctl -o cat                   # message only, no metadata
+</code></code></pre>
 
 <hr />
 <h2>Kernel Messages</h2>
-<div class="codehilite"><pre><span></span><code>journalctl<span class="w"> </span>-k<span class="w">                       </span><span class="c1"># kernel messages (like dmesg)</span>
-journalctl<span class="w"> </span>-k<span class="w"> </span>-b<span class="w">                    </span><span class="c1"># kernel messages from current boot</span>
-dmesg<span class="w">                               </span><span class="c1"># also shows kernel ring buffer</span>
-dmesg<span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-20<span class="w">                    </span><span class="c1"># last 20 kernel messages</span>
-dmesg<span class="w"> </span>-T<span class="w">                            </span><span class="c1"># with human-readable timestamps</span>
-</code></pre></div>
+<pre><code><code>journalctl -k                       # kernel messages (like dmesg)
+journalctl -k -b                    # kernel messages from current boot
+dmesg                               # also shows kernel ring buffer
+dmesg | tail -20                    # last 20 kernel messages
+dmesg -T                            # with human-readable timestamps
+</code></code></pre>
 
 <hr />
 <h2>Manage Journal Size</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Check current disk usage</span>
-journalctl<span class="w"> </span>--disk-usage
+<pre><code><code># Check current disk usage
+journalctl --disk-usage
 
-<span class="c1"># Vacuum old logs</span>
-journalctl<span class="w"> </span>--vacuum-time<span class="o">=</span>7d<span class="w">         </span><span class="c1"># delete logs older than 7 days</span>
-journalctl<span class="w"> </span>--vacuum-size<span class="o">=</span>500M<span class="w">       </span><span class="c1"># keep only 500MB of logs</span>
+# Vacuum old logs
+journalctl --vacuum-time=7d         # delete logs older than 7 days
+journalctl --vacuum-size=500M       # keep only 500MB of logs
 
-<span class="c1"># Rotate logs now</span>
-sudo<span class="w"> </span>journalctl<span class="w"> </span>--rotate
-</code></pre></div>
+# Rotate logs now
+sudo journalctl --rotate
+</code></code></pre>
 
 <hr />
 <h2>Persistent Logs</h2>
 <p>By default, journals may not persist across reboots on some distros. Enable persistent storage:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/var/log/journal
-sudo<span class="w"> </span>systemd-tmpfiles<span class="w"> </span>--create<span class="w"> </span>--prefix<span class="w"> </span>/var/log/journal
-sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>systemd-journald
-</code></pre></div>
+<pre><code><code>sudo mkdir -p /var/log/journal
+sudo systemd-tmpfiles --create --prefix /var/log/journal
+sudo systemctl restart systemd-journald
+</code></code></pre>
 
 <p>Or edit <code>/etc/systemd/journald.conf</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">[Journal]</span>
-<span class="na">Storage</span><span class="o">=</span><span class="s">persistent</span>
-</code></pre></div>
+<pre><code><code>[Journal]
+Storage=persistent
+</code></code></pre>
 
 <hr />
 <h2>Practical Debugging Examples</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># What crashed on last boot?</span>
-journalctl<span class="w"> </span>-b<span class="w"> </span>-1<span class="w"> </span>-p<span class="w"> </span>err
+<pre><code><code># What crashed on last boot?
+journalctl -b -1 -p err
 
-<span class="c1"># Did SSH fail recently?</span>
-journalctl<span class="w"> </span>-u<span class="w"> </span>sshd<span class="w"> </span>--since<span class="w"> </span><span class="s2">&quot;30 minutes ago&quot;</span>
+# Did SSH fail recently?
+journalctl -u sshd --since &quot;30 minutes ago&quot;
 
-<span class="c1"># What was happening when the system rebooted unexpectedly?</span>
-journalctl<span class="w"> </span>-b<span class="w"> </span>-1<span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-50
+# What was happening when the system rebooted unexpectedly?
+journalctl -b -1 | tail -50
 
-<span class="c1"># Find OOM (out of memory) kills</span>
-journalctl<span class="w"> </span>-k<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;killed process&quot;</span>
+# Find OOM (out of memory) kills
+journalctl -k | grep -i &quot;killed process&quot;
 
-<span class="c1"># All failed services since boot</span>
-systemctl<span class="w"> </span>--failed
-</code></pre></div>
+# All failed services since boot
+systemctl --failed
+</code></code></pre>
 
 <hr />
 <h2>Traditional Log Files</h2>
@@ -154,6 +154,6 @@ systemctl<span class="w"> </span>--failed
 </tr>
 </tbody>
 </table>
-<div class="codehilite"><pre><span></span><code>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/syslog
-cat<span class="w"> </span>/var/log/auth.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;Failed&quot;</span>
-</code></pre></div>
+<pre><code><code>tail -f /var/log/syslog
+cat /var/log/auth.log | grep &quot;Failed&quot;
+</code></code></pre>

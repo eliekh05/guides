@@ -33,88 +33,88 @@ DATA:installation:Proxmox GPU Passthrough to a Windows VM:Installation Guides
 <hr />
 <h2>Step 2 — Enable IOMMU in the Proxmox Bootloader</h2>
 <h3>Check which bootloader Proxmox is using</h3>
-<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>/etc/kernel/proxmox-boot-uuids<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;systemd-boot&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;GRUB&quot;</span>
-</code></pre></div>
+<pre><code><code>ls /etc/kernel/proxmox-boot-uuids 2&gt;/dev/null &amp;&amp; echo &quot;systemd-boot&quot; || echo &quot;GRUB&quot;
+</code></code></pre>
 
 <h3>If using GRUB:</h3>
-<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>/etc/default/grub
-</code></pre></div>
+<pre><code><code>nano /etc/default/grub
+</code></code></pre>
 
 <p>Find <code>GRUB_CMDLINE_LINUX_DEFAULT</code> and add the IOMMU flags:</p>
 <p><strong>Intel:</strong></p>
-<div class="codehilite"><pre><span></span><code>GRUB_CMDLINE_LINUX_DEFAULT=&quot;quiet intel_iommu=on iommu=pt&quot;
-</code></pre></div>
+<pre><code><code>GRUB_CMDLINE_LINUX_DEFAULT=&quot;quiet intel_iommu=on iommu=pt&quot;
+</code></code></pre>
 
 <p><strong>AMD:</strong></p>
-<div class="codehilite"><pre><span></span><code>GRUB_CMDLINE_LINUX_DEFAULT=&quot;quiet iommu=pt&quot;
-</code></pre></div>
+<pre><code><code>GRUB_CMDLINE_LINUX_DEFAULT=&quot;quiet iommu=pt&quot;
+</code></code></pre>
 
 <blockquote>
 <p><strong>Correct for AMD:</strong> <code>amd_iommu=on</code> is <strong>not needed and not valid</strong> on modern kernels — AMD IOMMU is enabled by default. Many guides incorrectly include it. <code>iommu=pt</code> (passthrough mode) is all you need.</p>
 </blockquote>
 <p>Apply and reboot:</p>
-<div class="codehilite"><pre><span></span><code>update-grub
+<pre><code><code>update-grub
 reboot
-</code></pre></div>
+</code></code></pre>
 
 <h3>If using systemd-boot:</h3>
-<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>/etc/kernel/cmdline
-</code></pre></div>
+<pre><code><code>nano /etc/kernel/cmdline
+</code></code></pre>
 
 <p><strong>Intel:</strong></p>
-<div class="codehilite"><pre><span></span><code>root=ZFS=rpool/ROOT/pve-1 boot=zfs intel_iommu=on iommu=pt
-</code></pre></div>
+<pre><code><code>root=ZFS=rpool/ROOT/pve-1 boot=zfs intel_iommu=on iommu=pt
+</code></code></pre>
 
 <p><strong>AMD:</strong></p>
-<div class="codehilite"><pre><span></span><code>root=ZFS=rpool/ROOT/pve-1 boot=zfs iommu=pt
-</code></pre></div>
+<pre><code><code>root=ZFS=rpool/ROOT/pve-1 boot=zfs iommu=pt
+</code></code></pre>
 
 <p>Apply and reboot:</p>
-<div class="codehilite"><pre><span></span><code>proxmox-boot-tool<span class="w"> </span>refresh
+<pre><code><code>proxmox-boot-tool refresh
 reboot
-</code></pre></div>
+</code></code></pre>
 
 <hr />
 <h2>Step 3 — Verify IOMMU Is Active</h2>
 <p>After rebooting:</p>
-<div class="codehilite"><pre><span></span><code>dmesg<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-e<span class="w"> </span>DMAR<span class="w"> </span>-e<span class="w"> </span>IOMMU<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-5
-</code></pre></div>
+<pre><code><code>dmesg | grep -e DMAR -e IOMMU | head -5
+</code></code></pre>
 
 <p>You should see lines containing <code>IOMMU enabled</code> or <code>DMAR: IOMMU enabled</code>. If nothing appears, IOMMU is not active — check your BIOS settings.</p>
 <hr />
 <h2>Step 4 — Load VFIO Modules</h2>
 <p>VFIO is the kernel framework that lets VMs claim PCI devices.</p>
-<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>/etc/modules
-</code></pre></div>
+<pre><code><code>nano /etc/modules
+</code></code></pre>
 
 <p>Add these lines:</p>
-<div class="codehilite"><pre><span></span><code><span class="nx">vfio</span>
-<span class="nx">vfio_iommu_type1</span>
-<span class="nx">vfio_pci</span>
-</code></pre></div>
+<pre><code><code>vfio
+vfio_iommu_type1
+vfio_pci
+</code></code></pre>
 
 <blockquote>
 <p><strong>Do not add <code>vfio_virqfd</code></strong> — it was removed as a separate module in Proxmox VE 8 (kernel 6.2+). Adding it causes a module load error.</p>
 </blockquote>
 <p>Update initramfs and reboot:</p>
-<div class="codehilite"><pre><span></span><code>update-initramfs<span class="w"> </span>-u<span class="w"> </span>-k<span class="w"> </span>all
+<pre><code><code>update-initramfs -u -k all
 reboot
-</code></pre></div>
+</code></code></pre>
 
 <hr />
 <h2>Step 5 — Check IOMMU Groups</h2>
 <p>After rebooting, verify your GPU is in its own IOMMU group (or shares only with its own audio/USB functions):</p>
-<div class="codehilite"><pre><span></span><code><span class="k">for</span><span class="w"> </span>d<span class="w"> </span><span class="k">in</span><span class="w"> </span>/sys/kernel/iommu_groups/*/devices/*<span class="p">;</span><span class="w"> </span><span class="k">do</span>
-<span class="w">  </span><span class="nv">n</span><span class="o">=</span><span class="si">${</span><span class="nv">d</span><span class="p">#*/iommu_groups/*</span><span class="si">}</span><span class="p">;</span><span class="w"> </span><span class="nv">n</span><span class="o">=</span><span class="si">${</span><span class="nv">n</span><span class="p">%%/*</span><span class="si">}</span>
-<span class="w">  </span><span class="nb">printf</span><span class="w"> </span><span class="s1">&#39;IOMMU Group %s &#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$n</span><span class="s2">&quot;</span>
-<span class="w">  </span>lspci<span class="w"> </span>-nns<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">d</span><span class="p">##*/</span><span class="si">}</span><span class="s2">&quot;</span>
-<span class="k">done</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;vga\|display\|3d\|audio\|nvidia\|amd\|radeon\|intel&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-V
-</code></pre></div>
+<pre><code><code>for d in /sys/kernel/iommu_groups/*/devices/*; do
+  n=${d#*/iommu_groups/*}; n=${n%%/*}
+  printf &#39;IOMMU Group %s &#39; &quot;$n&quot;
+  lspci -nns &quot;${d##*/}&quot;
+done | grep -i &quot;vga\|display\|3d\|audio\|nvidia\|amd\|radeon\|intel&quot; | sort -V
+</code></code></pre>
 
 <p>You will see output like:</p>
-<div class="codehilite"><pre><span></span><code>IOMMU Group 14 01:00.0 VGA compatible controller [0300]: NVIDIA Corporation GA104 [RTX 3070] [10de:2484]
+<pre><code><code>IOMMU Group 14 01:00.0 VGA compatible controller [0300]: NVIDIA Corporation GA104 [RTX 3070] [10de:2484]
 IOMMU Group 14 01:00.1 Audio device [0403]: NVIDIA Corporation GA104 High Definition Audio [10de:228b]
-</code></pre></div>
+</code></code></pre>
 
 <p>The GPU (VGA) and its HDMI audio (Audio) being in the same group is fine and expected. Other devices in the same group are a problem — see the ACS override troubleshooting section at the end.</p>
 <p>Note the <strong>PCI IDs</strong> (the numbers in brackets like <code>10de:2484</code> and <code>10de:228b</code>) — you need them in the next step.</p>
@@ -122,46 +122,46 @@ IOMMU Group 14 01:00.1 Audio device [0403]: NVIDIA Corporation GA104 High Defini
 <h2>Step 6 — Bind the GPU to VFIO</h2>
 <p>Tell the kernel to give the GPU to VFIO instead of the host driver.</p>
 <h3>Method A — via vfio.conf (Recommended)</h3>
-<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>/etc/modprobe.d/vfio.conf
-</code></pre></div>
+<pre><code><code>nano /etc/modprobe.d/vfio.conf
+</code></code></pre>
 
 <p>Add (replacing with your actual PCI IDs from Step 5):</p>
-<div class="codehilite"><pre><span></span><code>options vfio-pci ids=10de:2484,10de:228b
-</code></pre></div>
+<pre><code><code>options vfio-pci ids=10de:2484,10de:228b
+</code></code></pre>
 
 <h3>Blacklist the GPU's host driver</h3>
 <p>Create a blacklist file so the host never loads its own driver for the passed-through GPU:</p>
 <p><strong>NVIDIA:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;blacklist nouveau&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>/etc/modprobe.d/blacklist-gpu.conf
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;blacklist nvidia&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>/etc/modprobe.d/blacklist-gpu.conf
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;blacklist nvidiafb&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>/etc/modprobe.d/blacklist-gpu.conf
-</code></pre></div>
+<pre><code><code>echo &quot;blacklist nouveau&quot; &gt; /etc/modprobe.d/blacklist-gpu.conf
+echo &quot;blacklist nvidia&quot; &gt;&gt; /etc/modprobe.d/blacklist-gpu.conf
+echo &quot;blacklist nvidiafb&quot; &gt;&gt; /etc/modprobe.d/blacklist-gpu.conf
+</code></code></pre>
 
 <p><strong>AMD:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;blacklist amdgpu&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>/etc/modprobe.d/blacklist-gpu.conf
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;blacklist radeon&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>/etc/modprobe.d/blacklist-gpu.conf
-</code></pre></div>
+<pre><code><code>echo &quot;blacklist amdgpu&quot; &gt; /etc/modprobe.d/blacklist-gpu.conf
+echo &quot;blacklist radeon&quot; &gt;&gt; /etc/modprobe.d/blacklist-gpu.conf
+</code></code></pre>
 
 <blockquote>
 <p><strong>Exception:</strong> If your AMD system uses iGPU (integrated graphics) for the host display and a discrete AMD GPU for passthrough, do <strong>not</strong> blacklist <code>amdgpu</code> — it will break your host display. Use the softdep method instead.</p>
 </blockquote>
 <h3>softdep method (AMD systems with both iGPU and dGPU)</h3>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;softdep amdgpu pre: vfio-pci&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>/etc/modprobe.d/amdgpu.conf
-</code></pre></div>
+<pre><code><code>echo &quot;softdep amdgpu pre: vfio-pci&quot; &gt; /etc/modprobe.d/amdgpu.conf
+</code></code></pre>
 
 <p>This ensures <code>vfio-pci</code> loads before <code>amdgpu</code>, so it claims the discrete GPU first, leaving <code>amdgpu</code> for the integrated GPU.</p>
 <p>Update initramfs and reboot:</p>
-<div class="codehilite"><pre><span></span><code>update-initramfs<span class="w"> </span>-u<span class="w"> </span>-k<span class="w"> </span>all
+<pre><code><code>update-initramfs -u -k all
 reboot
-</code></pre></div>
+</code></code></pre>
 
 <h3>Verify the GPU is bound to VFIO</h3>
-<div class="codehilite"><pre><span></span><code>lspci<span class="w"> </span>-k<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="s2">&quot;VGA\|3D&quot;</span>
-</code></pre></div>
+<pre><code><code>lspci -k | grep -A 3 &quot;VGA\|3D&quot;
+</code></code></pre>
 
 <p>Look for:</p>
-<div class="codehilite"><pre><span></span><code>Kernel driver in use: vfio-pci
-</code></pre></div>
+<pre><code><code>Kernel driver in use: vfio-pci
+</code></code></pre>
 
 <p>If it still shows <code>nvidia</code>, <code>amdgpu</code>, or <code>nouveau</code>, the blacklist or vfio.conf is not being applied. Check your files and rerun <code>update-initramfs -u -k all</code>.</p>
 <hr />
@@ -185,12 +185,12 @@ Set RAM to a fixed amount — no ballooning. Example: 8192 MB.</p>
 <h2>Step 8 — Hide the Hypervisor from NVIDIA (If Using NVIDIA GPU)</h2>
 <p>NVIDIA drivers detect they are in a VM and refuse to install. Hide this:</p>
 <p>Edit the VM config file on the Proxmox shell:</p>
-<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>/etc/pve/qemu-server/VMID.conf
-</code></pre></div>
+<pre><code><code>nano /etc/pve/qemu-server/VMID.conf
+</code></code></pre>
 
 <p>Find the <code>cpu:</code> line and change it to:</p>
-<div class="codehilite"><pre><span></span><code>cpu: host,hidden=1,flags=+pcid
-</code></pre></div>
+<pre><code><code>cpu: host,hidden=1,flags=+pcid
+</code></code></pre>
 
 <p>This hides the KVM hypervisor signature from the NVIDIA driver.</p>
 <blockquote>
@@ -210,9 +210,9 @@ Set RAM to a fixed amount — no ballooning. Example: 8192 MB.</p>
 <h2>Troubleshooting</h2>
 <h3>GPU still shows <code>nvidia</code> or <code>amdgpu</code> as kernel driver (not <code>vfio-pci</code>)</h3>
 <p>The blacklist or vfio.conf is not being applied early enough. Run:</p>
-<div class="codehilite"><pre><span></span><code>update-initramfs<span class="w"> </span>-u<span class="w"> </span>-k<span class="w"> </span>all
+<pre><code><code>update-initramfs -u -k all
 reboot
-</code></pre></div>
+</code></code></pre>
 
 <h3>VM starts but monitor stays black</h3>
 <ul>
@@ -224,8 +224,8 @@ reboot
 <p>The hypervisor is not hidden. Add <code>cpu: host,hidden=1</code> to the VM config (Step 8).</p>
 <h3>AMD GPU reset bug (RX 5xxx, 6xxx, 7xxx)</h3>
 <p>Some AMD GPUs fail to reset properly between VM shutdowns. Install the <code>vendor-reset</code> kernel module:</p>
-<div class="codehilite"><pre><span></span><code>apt<span class="w"> </span>install<span class="w"> </span>vendor-reset<span class="w"> </span>-y
-</code></pre></div>
+<pre><code><code>apt install vendor-reset -y
+</code></code></pre>
 
 <p>Also set <code>reset_method=device_specific</code> for the GPU in the VFIO config.</p>
 <h3>IOMMU groups are not isolated (GPU shares a group with other devices)</h3>

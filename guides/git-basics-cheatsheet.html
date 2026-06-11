@@ -2,106 +2,106 @@ DATA:linux:Git Basics — Commands You Actually Use:Linux
 <h1>Git Basics — Commands You Actually Use</h1>
 <hr />
 <h2>First-Time Setup</h2>
-<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>user.name<span class="w"> </span><span class="s2">&quot;Your Name&quot;</span>
-git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>user.email<span class="w"> </span><span class="s2">&quot;you@example.com&quot;</span>
-</code></pre></div>
+<pre><code><code>git config --global user.name &quot;Your Name&quot;
+git config --global user.email &quot;you@example.com&quot;
+</code></code></pre>
 
 <hr />
 <h2>Starting a Project</h2>
-<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>init<span class="w">                                          </span><span class="c1"># Track current folder</span>
-git<span class="w"> </span>clone<span class="w"> </span>https://github.com/user/repo.git<span class="w">        </span><span class="c1"># Download a repo</span>
-git<span class="w"> </span>clone<span class="w"> </span>https://github.com/user/repo.git<span class="w"> </span>folder<span class="w"> </span><span class="c1"># Clone into named folder</span>
-</code></pre></div>
+<pre><code><code>git init                                          # Track current folder
+git clone https://github.com/user/repo.git        # Download a repo
+git clone https://github.com/user/repo.git folder # Clone into named folder
+</code></code></pre>
 
 <hr />
 <h2>Daily Workflow</h2>
-<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>status<span class="w">                    </span><span class="c1"># See what changed</span>
-git<span class="w"> </span>add<span class="w"> </span>filename.txt<span class="w">          </span><span class="c1"># Stage a file</span>
-git<span class="w"> </span>add<span class="w"> </span>.<span class="w">                     </span><span class="c1"># Stage everything</span>
-git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Fix bug&quot;</span><span class="w">       </span><span class="c1"># Commit with message</span>
-git<span class="w"> </span>commit<span class="w"> </span>-am<span class="w"> </span><span class="s2">&quot;Fix bug&quot;</span><span class="w">      </span><span class="c1"># Stage tracked files + commit in one step</span>
-git<span class="w"> </span>push<span class="w">                      </span><span class="c1"># Push to remote</span>
-git<span class="w"> </span>pull<span class="w">                      </span><span class="c1"># Pull latest from remote</span>
-</code></pre></div>
+<pre><code><code>git status                    # See what changed
+git add filename.txt          # Stage a file
+git add .                     # Stage everything
+git commit -m &quot;Fix bug&quot;       # Commit with message
+git commit -am &quot;Fix bug&quot;      # Stage tracked files + commit in one step
+git push                      # Push to remote
+git pull                      # Pull latest from remote
+</code></code></pre>
 
 <hr />
 <h2>History</h2>
-<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>log<span class="w">                       </span><span class="c1"># Full history</span>
-git<span class="w"> </span>log<span class="w"> </span>--oneline<span class="w">             </span><span class="c1"># Compact one-line view</span>
-git<span class="w"> </span>log<span class="w"> </span>--oneline<span class="w"> </span>--graph<span class="w"> </span>--all<span class="w">  </span><span class="c1"># Branch graph</span>
-git<span class="w"> </span>diff<span class="w">                      </span><span class="c1"># Changes not yet staged</span>
-git<span class="w"> </span>diff<span class="w"> </span>--staged<span class="w">             </span><span class="c1"># Changes staged but not committed</span>
-</code></pre></div>
+<pre><code><code>git log                       # Full history
+git log --oneline             # Compact one-line view
+git log --oneline --graph --all  # Branch graph
+git diff                      # Changes not yet staged
+git diff --staged             # Changes staged but not committed
+</code></code></pre>
 
 <hr />
 <h2>Undoing Things</h2>
-<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>restore<span class="w"> </span>filename.txt<span class="w">          </span><span class="c1"># Discard changes to a file</span>
-git<span class="w"> </span>restore<span class="w"> </span>--staged<span class="w"> </span>filename.txt<span class="w"> </span><span class="c1"># Unstage a file (keep changes)</span>
-git<span class="w"> </span>reset<span class="w"> </span>--soft<span class="w"> </span>HEAD~1<span class="w">           </span><span class="c1"># Undo last commit, keep changes staged</span>
-git<span class="w"> </span>reset<span class="w"> </span>--mixed<span class="w"> </span>HEAD~1<span class="w">          </span><span class="c1"># Undo last commit, unstage changes</span>
-git<span class="w"> </span>reset<span class="w"> </span>--hard<span class="w"> </span>HEAD~1<span class="w">           </span><span class="c1"># Undo last commit, DISCARD changes</span>
-git<span class="w"> </span>revert<span class="w"> </span>abc1234<span class="w">                </span><span class="c1"># Safely undo a commit (creates new commit)</span>
-</code></pre></div>
+<pre><code><code>git restore filename.txt          # Discard changes to a file
+git restore --staged filename.txt # Unstage a file (keep changes)
+git reset --soft HEAD~1           # Undo last commit, keep changes staged
+git reset --mixed HEAD~1          # Undo last commit, unstage changes
+git reset --hard HEAD~1           # Undo last commit, DISCARD changes
+git revert abc1234                # Safely undo a commit (creates new commit)
+</code></code></pre>
 
 <blockquote>
 <p>Use <code>revert</code> on shared branches. Use <code>reset</code> only on your own local branches.</p>
 </blockquote>
 <hr />
 <h2>Branches</h2>
-<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>branch<span class="w">                    </span><span class="c1"># List branches</span>
-git<span class="w"> </span>switch<span class="w"> </span>-c<span class="w"> </span>feature-login<span class="w">   </span><span class="c1"># Create and switch to new branch</span>
-git<span class="w"> </span>switch<span class="w"> </span>main<span class="w">               </span><span class="c1"># Switch to existing branch</span>
-git<span class="w"> </span>merge<span class="w"> </span>feature-login<span class="w">       </span><span class="c1"># Merge branch into current</span>
-git<span class="w"> </span>branch<span class="w"> </span>-d<span class="w"> </span>feature-login<span class="w">   </span><span class="c1"># Delete merged branch</span>
-git<span class="w"> </span>branch<span class="w"> </span>-D<span class="w"> </span>feature-login<span class="w">   </span><span class="c1"># Force delete</span>
-</code></pre></div>
+<pre><code><code>git branch                    # List branches
+git switch -c feature-login   # Create and switch to new branch
+git switch main               # Switch to existing branch
+git merge feature-login       # Merge branch into current
+git branch -d feature-login   # Delete merged branch
+git branch -D feature-login   # Force delete
+</code></code></pre>
 
 <hr />
 <h2>Remote</h2>
-<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>remote<span class="w"> </span>-v<span class="w">                              </span><span class="c1"># See linked remotes</span>
-git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>origin<span class="w"> </span>https://github.com/user/repo.git<span class="w">  </span><span class="c1"># Link a remote</span>
-git<span class="w"> </span>push<span class="w"> </span>-u<span class="w"> </span>origin<span class="w"> </span>feature-login<span class="w">          </span><span class="c1"># Push new branch first time</span>
-git<span class="w"> </span>push<span class="w">                                   </span><span class="c1"># After that</span>
-git<span class="w"> </span>pull<span class="w"> </span>--rebase<span class="w">                         </span><span class="c1"># Pull with cleaner history</span>
-</code></pre></div>
+<pre><code><code>git remote -v                              # See linked remotes
+git remote add origin https://github.com/user/repo.git  # Link a remote
+git push -u origin feature-login          # Push new branch first time
+git push                                   # After that
+git pull --rebase                         # Pull with cleaner history
+</code></code></pre>
 
 <hr />
 <h2>Stash</h2>
-<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>stash<span class="w">                        </span><span class="c1"># Save current changes temporarily</span>
-git<span class="w"> </span>stash<span class="w"> </span>pop<span class="w">                    </span><span class="c1"># Apply and remove latest stash</span>
-git<span class="w"> </span>stash<span class="w"> </span>list<span class="w">                   </span><span class="c1"># See all stashes</span>
-git<span class="w"> </span>stash<span class="w"> </span>push<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;half-done&quot;</span><span class="w">   </span><span class="c1"># Named stash</span>
-</code></pre></div>
+<pre><code><code>git stash                        # Save current changes temporarily
+git stash pop                    # Apply and remove latest stash
+git stash list                   # See all stashes
+git stash push -m &quot;half-done&quot;   # Named stash
+</code></code></pre>
 
 <hr />
 <h2>.gitignore</h2>
 <p>Create <code>.gitignore</code> in project root:</p>
-<div class="codehilite"><pre><span></span><code><span class="nf">node_modules</span><span class="err">/</span>
-<span class="na">.env</span>
-<span class="na">.DS_Store</span>
-<span class="nf">__pycache__</span><span class="err">/</span>
-<span class="err">*</span><span class="na">.log</span>
-<span class="na">.venv</span><span class="err">/</span>
-<span class="nf">dist</span><span class="err">/</span>
-</code></pre></div>
+<pre><code><code>node_modules/
+.env
+.DS_Store
+__pycache__/
+*.log
+.venv/
+dist/
+</code></code></pre>
 
 <p>Stop tracking an already-tracked file:</p>
-<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>rm<span class="w"> </span>--cached<span class="w"> </span>filename
-</code></pre></div>
+<pre><code><code>git rm --cached filename
+</code></code></pre>
 
 <hr />
 <h2>Common Mistakes Fixed</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Committed to wrong branch</span>
-git<span class="w"> </span>reset<span class="w"> </span>--soft<span class="w"> </span>HEAD~1<span class="w">     </span><span class="c1"># undo commit</span>
-git<span class="w"> </span>switch<span class="w"> </span>-c<span class="w"> </span>correct-branch
-git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;message&quot;</span>
+<pre><code><code># Committed to wrong branch
+git reset --soft HEAD~1     # undo commit
+git switch -c correct-branch
+git commit -m &quot;message&quot;
 
-<span class="c1"># Need to fix last commit message</span>
-git<span class="w"> </span>commit<span class="w"> </span>--amend<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Correct message&quot;</span>
+# Need to fix last commit message
+git commit --amend -m &quot;Correct message&quot;
 
-<span class="c1"># Accidentally deleted a file</span>
-git<span class="w"> </span>restore<span class="w"> </span>deleted-file.txt
+# Accidentally deleted a file
+git restore deleted-file.txt
 
-<span class="c1"># Everything broke, go back to last commit</span>
-git<span class="w"> </span>restore<span class="w"> </span>.
-</code></pre></div>
+# Everything broke, go back to last commit
+git restore .
+</code></code></pre>

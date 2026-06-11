@@ -19,54 +19,54 @@ DATA:security:Enable and Configure macOS Firewall:Security & Apps
 <li>Check <strong>Enable stealth mode</strong>.</li>
 </ol>
 <p>Or via Terminal:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--setstealthmode<span class="w"> </span>on
-</code></pre></div>
+<pre><code><code>sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
+</code></code></pre>
 
 <hr />
 <h2>Control the Firewall via Terminal (socketfilterfw)</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Check current status</span>
-sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--getglobalstate
+<pre><code><code># Check current status
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
 
-<span class="c1"># Enable the firewall</span>
-sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--setglobalstate<span class="w"> </span>on
+# Enable the firewall
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
 
-<span class="c1"># Disable the firewall</span>
-sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--setglobalstate<span class="w"> </span>off
+# Disable the firewall
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
 
-<span class="c1"># Enable stealth mode</span>
-sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--setstealthmode<span class="w"> </span>on
+# Enable stealth mode
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
 
-<span class="c1"># Block all incoming connections</span>
-sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--setblockall<span class="w"> </span>on
+# Block all incoming connections
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setblockall on
 
-<span class="c1"># List all rules (which apps are allowed or blocked)</span>
-sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--listapps
-</code></pre></div>
+# List all rules (which apps are allowed or blocked)
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --listapps
+</code></code></pre>
 
 <hr />
 <h2>Allow or Block a Specific App</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Allow an app through the firewall</span>
-sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--add<span class="w"> </span>/Applications/AppName.app
+<pre><code><code># Allow an app through the firewall
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --add /Applications/AppName.app
 
-<span class="c1"># Block an app</span>
-sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--blockapp<span class="w"> </span>/Applications/AppName.app
+# Block an app
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --blockapp /Applications/AppName.app
 
-<span class="c1"># Remove a rule</span>
-sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--remove<span class="w"> </span>/Applications/AppName.app
-</code></pre></div>
+# Remove a rule
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --remove /Applications/AppName.app
+</code></code></pre>
 
 <hr />
 <h2>Recommended Settings for Most Users</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Enable firewall</span>
-sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--setglobalstate<span class="w"> </span>on
+<pre><code><code># Enable firewall
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on
 
-<span class="c1"># Enable stealth mode</span>
-sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--setstealthmode<span class="w"> </span>on
+# Enable stealth mode
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
 
-<span class="c1"># Allow signed apps automatically (keeps things working)</span>
-sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--setallowsigned<span class="w"> </span>on
-sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--setallowsignedapp<span class="w"> </span>on
-</code></pre></div>
+# Allow signed apps automatically (keeps things working)
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setallowsigned on
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setallowsignedapp on
+</code></code></pre>
 
 <hr />
 <blockquote>

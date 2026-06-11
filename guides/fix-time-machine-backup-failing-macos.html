@@ -11,32 +11,32 @@ DATA:system-users:Fix Time Machine Backup Failing or Not Running:System & Users
 </ol>
 <hr />
 <h2>Fix 2 — Force a backup from Terminal</h2>
-<div class="codehilite"><pre><span></span><code>tmutil<span class="w"> </span>startbackup
-</code></pre></div>
+<pre><code><code>tmutil startbackup
+</code></code></pre>
 
 <p>Watch it run:</p>
-<div class="codehilite"><pre><span></span><code>tmutil<span class="w"> </span>status
-</code></pre></div>
+<pre><code><code>tmutil status
+</code></code></pre>
 
 <hr />
 <h2>Fix 3 — Clear the Time Machine lock file</h2>
 <p>If Time Machine says "Backup in progress" but nothing is happening, a stale lock file is the cause:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/Volumes/YOUR_BACKUP_DRIVE/Backups.backupdb/.inProgress
-</code></pre></div>
+<pre><code><code>sudo rm -rf /Volumes/YOUR_BACKUP_DRIVE/Backups.backupdb/.inProgress
+</code></code></pre>
 
 <p>Replace <code>YOUR_BACKUP_DRIVE</code> with your actual backup drive name. Then try again.</p>
 <hr />
 <h2>Fix 4 — Delete the corrupted snapshot and start fresh</h2>
 <p>If backups keep failing mid-way:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># List local snapshots</span>
-tmutil<span class="w"> </span>listlocalsnapshots<span class="w"> </span>/
+<pre><code><code># List local snapshots
+tmutil listlocalsnapshots /
 
-<span class="c1"># Delete a specific failing snapshot (replace date)</span>
-tmutil<span class="w"> </span>deletelocalsnapshots<span class="w"> </span><span class="m">2025</span>-05-01
+# Delete a specific failing snapshot (replace date)
+tmutil deletelocalsnapshots 2025-05-01
 
-<span class="c1"># Or delete ALL local snapshots</span>
-tmutil<span class="w"> </span>deletelocalsnapshots<span class="w"> </span>/
-</code></pre></div>
+# Or delete ALL local snapshots
+tmutil deletelocalsnapshots /
+</code></code></pre>
 
 <hr />
 <h2>Fix 5 — Repair the backup disk</h2>
@@ -49,22 +49,22 @@ tmutil<span class="w"> </span>deletelocalsnapshots<span class="w"> </span>/
 <hr />
 <h2>Fix 6 — Check available space</h2>
 <p>Time Machine needs free space on both your Mac and the backup drive.</p>
-<div class="codehilite"><pre><span></span><code>df<span class="w"> </span>-h
-</code></pre></div>
+<pre><code><code>df -h
+</code></code></pre>
 
 <p>If the backup drive is full, Time Machine should automatically delete old backups — but if that mechanism is broken:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># List all backups</span>
-tmutil<span class="w"> </span>listbackups
+<pre><code><code># List all backups
+tmutil listbackups
 
-<span class="c1"># Delete the oldest backup manually (replace path with actual path from listbackups)</span>
-sudo<span class="w"> </span>tmutil<span class="w"> </span>delete<span class="w"> </span>/Volumes/BackupDrive/Backups.backupdb/MyMac/2024-01-01-120000
-</code></pre></div>
+# Delete the oldest backup manually (replace path with actual path from listbackups)
+sudo tmutil delete /Volumes/BackupDrive/Backups.backupdb/MyMac/2024-01-01-120000
+</code></code></pre>
 
 <hr />
 <h2>Fix 7 — Reset Time Machine completely (last resort)</h2>
 <p>Keeps your existing backups but resets all settings:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>defaults<span class="w"> </span>delete<span class="w"> </span>/Library/Preferences/com.apple.TimeMachine.plist
-</code></pre></div>
+<pre><code><code>sudo defaults delete /Library/Preferences/com.apple.TimeMachine.plist
+</code></code></pre>
 
 <p>Restart your Mac, then re-add your backup disk.</p>
 <hr />

@@ -83,23 +83,23 @@ DATA:scheduling:Automate Scripts with Windows Task Scheduler:Task Scheduling
 <p>Click <strong>OK</strong> and enter your Windows password to save.</p>
 <hr />
 <h2>Create a Task via PowerShell (Faster for Repeat Setup)</h2>
-<div class="codehilite"><pre><span></span><code><span class="nv">$action</span> <span class="p">=</span> <span class="nb">New-ScheduledTaskAction</span> <span class="n">-Execute</span> <span class="s2">&quot;powershell.exe&quot;</span> <span class="p">`</span>
-  <span class="n">-Argument</span> <span class="s1">&#39;-ExecutionPolicy Bypass -File &quot;C:\Scripts\myscript.ps1&quot;&#39;</span>
+<pre><code><code>$action = New-ScheduledTaskAction -Execute &quot;powershell.exe&quot; `
+  -Argument &#39;-ExecutionPolicy Bypass -File &quot;C:\Scripts\myscript.ps1&quot;&#39;
 
-<span class="nv">$trigger</span> <span class="p">=</span> <span class="nb">New-ScheduledTaskTrigger</span> <span class="n">-Daily</span> <span class="n">-At</span> <span class="s2">&quot;9:00AM&quot;</span>
+$trigger = New-ScheduledTaskTrigger -Daily -At &quot;9:00AM&quot;
 
-<span class="nv">$settings</span> <span class="p">=</span> <span class="nb">New-ScheduledTaskSettingsSet</span> <span class="p">`</span>
-  <span class="n">-RunOnlyIfNetworkAvailable</span> <span class="nv">$false</span> <span class="p">`</span>
-  <span class="n">-WakeToRun</span> <span class="nv">$false</span> <span class="p">`</span>
-  <span class="n">-ExecutionTimeLimit</span> <span class="p">(</span><span class="nb">New-TimeSpan</span> <span class="n">-Hours</span> <span class="n">1</span><span class="p">)</span>
+$settings = New-ScheduledTaskSettingsSet `
+  -RunOnlyIfNetworkAvailable $false `
+  -WakeToRun $false `
+  -ExecutionTimeLimit (New-TimeSpan -Hours 1)
 
-<span class="nb">Register-ScheduledTask</span> <span class="n">-TaskName</span> <span class="s2">&quot;Daily Backup&quot;</span> <span class="p">`</span>
-  <span class="n">-Action</span> <span class="nv">$action</span> <span class="p">`</span>
-  <span class="n">-Trigger</span> <span class="nv">$trigger</span> <span class="p">`</span>
-  <span class="n">-Settings</span> <span class="nv">$settings</span> <span class="p">`</span>
-  <span class="n">-RunLevel</span> <span class="n">Highest</span> <span class="p">`</span>
-  <span class="n">-Force</span>
-</code></pre></div>
+Register-ScheduledTask -TaskName &quot;Daily Backup&quot; `
+  -Action $action `
+  -Trigger $trigger `
+  -Settings $settings `
+  -RunLevel Highest `
+  -Force
+</code></code></pre>
 
 <hr />
 <h2>Why Tasks Silently Fail (And How to Fix Each)</h2>
@@ -124,15 +124,15 @@ DATA:scheduling:Automate Scripts with Windows Task Scheduler:Task Scheduling
 <h3>Task runs but produces no output / cannot see errors</h3>
 <p>Add logging to your script:</p>
 <p><strong>PowerShell:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nb">Start-Transcript</span> <span class="n">-Path</span> <span class="s2">&quot;C:\Logs\myscript-log.txt&quot;</span> <span class="n">-Append</span>
-<span class="c"># your script here</span>
-<span class="nb">Stop-Transcript</span>
-</code></pre></div>
+<pre><code><code>Start-Transcript -Path &quot;C:\Logs\myscript-log.txt&quot; -Append
+# your script here
+Stop-Transcript
+</code></code></pre>
 
 <p><strong>Batch file:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="p">@</span><span class="k">echo</span> off
-<span class="k">call</span> myscript.bat <span class="p">&gt;&gt;</span> C:\Logs\myscript-log.txt <span class="mi">2</span><span class="p">&gt;&amp;</span><span class="mi">1</span>
-</code></pre></div>
+<pre><code><code>@echo off
+call myscript.bat &gt;&gt; C:\Logs\myscript-log.txt 2&gt;&amp;1
+</code></code></pre>
 
 <p>Then check the log file after the task runs.</p>
 <hr />
@@ -150,9 +150,9 @@ DATA:scheduling:Automate Scripts with Windows Task Scheduler:Task Scheduling
 <p><strong>Import a task:</strong></p>
 <p>In the right panel → <strong>Import Task</strong> → select the XML file.</p>
 <p><strong>Export via PowerShell:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nb">Export-ScheduledTask</span> <span class="n">-TaskName</span> <span class="s2">&quot;Daily Backup&quot;</span> <span class="p">|</span> <span class="nb">Out-File</span> <span class="s2">&quot;C:\Backup\DailyBackup.xml&quot;</span>
-</code></pre></div>
+<pre><code><code>Export-ScheduledTask -TaskName &quot;Daily Backup&quot; | Out-File &quot;C:\Backup\DailyBackup.xml&quot;
+</code></code></pre>
 
 <p><strong>Import via PowerShell:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nb">Register-ScheduledTask</span> <span class="n">-Xml</span> <span class="p">(</span><span class="nb">Get-Content</span> <span class="s2">&quot;C:\Backup\DailyBackup.xml&quot;</span> <span class="p">|</span> <span class="nb">Out-String</span><span class="p">)</span> <span class="n">-TaskName</span> <span class="s2">&quot;Daily Backup&quot;</span> <span class="n">-Force</span>
-</code></pre></div>
+<pre><code><code>Register-ScheduledTask -Xml (Get-Content &quot;C:\Backup\DailyBackup.xml&quot; | Out-String) -TaskName &quot;Daily Backup&quot; -Force
+</code></code></pre>

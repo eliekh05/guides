@@ -3,71 +3,71 @@ DATA:system-users:User and Group Management on Linux:System & Users
 <hr />
 <h2>Users</h2>
 <h3>Create a user</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Create user with home directory</span>
-sudo<span class="w"> </span>useradd<span class="w"> </span>-m<span class="w"> </span>username
+<pre><code><code># Create user with home directory
+sudo useradd -m username
 
-<span class="c1"># Create with specific shell</span>
-sudo<span class="w"> </span>useradd<span class="w"> </span>-m<span class="w"> </span>-s<span class="w"> </span>/bin/bash<span class="w"> </span>username
+# Create with specific shell
+sudo useradd -m -s /bin/bash username
 
-<span class="c1"># Create with comment/full name</span>
-sudo<span class="w"> </span>useradd<span class="w"> </span>-m<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;John Smith&quot;</span><span class="w"> </span>-s<span class="w"> </span>/bin/bash<span class="w"> </span>john
+# Create with comment/full name
+sudo useradd -m -c &quot;John Smith&quot; -s /bin/bash john
 
-<span class="c1"># Set password</span>
-sudo<span class="w"> </span>passwd<span class="w"> </span>username
-</code></pre></div>
+# Set password
+sudo passwd username
+</code></code></pre>
 
 <h3>Delete a user</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>userdel<span class="w"> </span>username<span class="w">           </span><span class="c1"># delete user, keep home directory</span>
-sudo<span class="w"> </span>userdel<span class="w"> </span>-r<span class="w"> </span>username<span class="w">        </span><span class="c1"># delete user AND home directory</span>
-</code></pre></div>
+<pre><code><code>sudo userdel username           # delete user, keep home directory
+sudo userdel -r username        # delete user AND home directory
+</code></code></pre>
 
 <h3>Modify a user</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>usermod<span class="w"> </span>-s<span class="w"> </span>/bin/zsh<span class="w"> </span>username<span class="w">      </span><span class="c1"># change shell</span>
-sudo<span class="w"> </span>usermod<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;New Name&quot;</span><span class="w"> </span>username<span class="w">    </span><span class="c1"># change comment</span>
-sudo<span class="w"> </span>usermod<span class="w"> </span>-l<span class="w"> </span>newname<span class="w"> </span>oldname<span class="w">        </span><span class="c1"># rename user</span>
-sudo<span class="w"> </span>usermod<span class="w"> </span>-d<span class="w"> </span>/new/home<span class="w"> </span>username<span class="w">     </span><span class="c1"># change home directory</span>
-sudo<span class="w"> </span>usermod<span class="w"> </span>-aG<span class="w"> </span>groupname<span class="w"> </span>username<span class="w">    </span><span class="c1"># add to group (keep existing groups)</span>
-sudo<span class="w"> </span>usermod<span class="w"> </span>-L<span class="w"> </span>username<span class="w">               </span><span class="c1"># lock account</span>
-sudo<span class="w"> </span>usermod<span class="w"> </span>-U<span class="w"> </span>username<span class="w">               </span><span class="c1"># unlock account</span>
-</code></pre></div>
+<pre><code><code>sudo usermod -s /bin/zsh username      # change shell
+sudo usermod -c &quot;New Name&quot; username    # change comment
+sudo usermod -l newname oldname        # rename user
+sudo usermod -d /new/home username     # change home directory
+sudo usermod -aG groupname username    # add to group (keep existing groups)
+sudo usermod -L username               # lock account
+sudo usermod -U username               # unlock account
+</code></code></pre>
 
 <h3>View user info</h3>
-<div class="codehilite"><pre><span></span><code>id<span class="w"> </span>username<span class="w">                    </span><span class="c1"># UID, GID, and groups</span>
-whoami<span class="w">                         </span><span class="c1"># current user</span>
-who<span class="w">                            </span><span class="c1"># logged-in users</span>
-w<span class="w">                              </span><span class="c1"># logged-in users with activity</span>
-last<span class="w">                           </span><span class="c1"># login history</span>
-cat<span class="w"> </span>/etc/passwd<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>username<span class="w">  </span><span class="c1"># user entry</span>
-</code></pre></div>
+<pre><code><code>id username                    # UID, GID, and groups
+whoami                         # current user
+who                            # logged-in users
+w                              # logged-in users with activity
+last                           # login history
+cat /etc/passwd | grep username  # user entry
+</code></code></pre>
 
 <hr />
 <h2>Groups</h2>
 <h3>Create a group</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>groupadd<span class="w"> </span>groupname
-sudo<span class="w"> </span>groupadd<span class="w"> </span>-g<span class="w"> </span><span class="m">1500</span><span class="w"> </span>groupname<span class="w">    </span><span class="c1"># with specific GID</span>
-</code></pre></div>
+<pre><code><code>sudo groupadd groupname
+sudo groupadd -g 1500 groupname    # with specific GID
+</code></code></pre>
 
 <h3>Delete a group</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>groupdel<span class="w"> </span>groupname
-</code></pre></div>
+<pre><code><code>sudo groupdel groupname
+</code></code></pre>
 
 <h3>Add user to a group</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>usermod<span class="w"> </span>-aG<span class="w"> </span>groupname<span class="w"> </span>username<span class="w">     </span><span class="c1"># -a = append, -G = supplementary groups</span>
-sudo<span class="w"> </span>gpasswd<span class="w"> </span>-a<span class="w"> </span>username<span class="w"> </span>groupname<span class="w">      </span><span class="c1"># alternative</span>
-</code></pre></div>
+<pre><code><code>sudo usermod -aG groupname username     # -a = append, -G = supplementary groups
+sudo gpasswd -a username groupname      # alternative
+</code></code></pre>
 
 <blockquote>
 <p><strong>Important:</strong> The <code>-a</code> flag is critical. Without it, <code>-G</code> replaces ALL the user's groups with just the one specified.</p>
 </blockquote>
 <h3>Remove user from a group</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>gpasswd<span class="w"> </span>-d<span class="w"> </span>username<span class="w"> </span>groupname
-</code></pre></div>
+<pre><code><code>sudo gpasswd -d username groupname
+</code></code></pre>
 
 <h3>View group membership</h3>
-<div class="codehilite"><pre><span></span><code>groups<span class="w"> </span>username<span class="w">                </span><span class="c1"># groups a user belongs to</span>
-getent<span class="w"> </span>group<span class="w"> </span>groupname<span class="w">         </span><span class="c1"># members of a group</span>
-cat<span class="w"> </span>/etc/group<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>groupname
-</code></pre></div>
+<pre><code><code>groups username                # groups a user belongs to
+getent group groupname         # members of a group
+cat /etc/group | grep groupname
+</code></code></pre>
 
 <hr />
 <h2>Important System Files</h2>
@@ -99,39 +99,39 @@ cat<span class="w"> </span>/etc/group<span class="w"> </span><span class="p">|</
 </table>
 <hr />
 <h2>Password Policy</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Set password expiry</span>
-sudo<span class="w"> </span>chage<span class="w"> </span>-M<span class="w"> </span><span class="m">90</span><span class="w"> </span>username<span class="w">       </span><span class="c1"># max 90 days before expiry</span>
-sudo<span class="w"> </span>chage<span class="w"> </span>-W<span class="w"> </span><span class="m">7</span><span class="w"> </span>username<span class="w">        </span><span class="c1"># warn 7 days before expiry</span>
-sudo<span class="w"> </span>chage<span class="w"> </span>-l<span class="w"> </span>username<span class="w">          </span><span class="c1"># view current policy</span>
+<pre><code><code># Set password expiry
+sudo chage -M 90 username       # max 90 days before expiry
+sudo chage -W 7 username        # warn 7 days before expiry
+sudo chage -l username          # view current policy
 
-<span class="c1"># Force password change on next login</span>
-sudo<span class="w"> </span>chage<span class="w"> </span>-d<span class="w"> </span><span class="m">0</span><span class="w"> </span>username
-</code></pre></div>
+# Force password change on next login
+sudo chage -d 0 username
+</code></code></pre>
 
 <hr />
 <h2>Switch Users</h2>
-<div class="codehilite"><pre><span></span><code>su<span class="w"> </span>-<span class="w"> </span>username<span class="w">           </span><span class="c1"># switch to user with their environment</span>
-su<span class="w"> </span>-<span class="w">                    </span><span class="c1"># switch to root</span>
-sudo<span class="w"> </span>-u<span class="w"> </span>username<span class="w"> </span>cmd<span class="w">    </span><span class="c1"># run single command as another user</span>
-sudo<span class="w"> </span>-i<span class="w">                 </span><span class="c1"># open root shell</span>
-</code></pre></div>
+<pre><code><code>su - username           # switch to user with their environment
+su -                    # switch to root
+sudo -u username cmd    # run single command as another user
+sudo -i                 # open root shell
+</code></code></pre>
 
 <hr />
 <h2>/etc/passwd and /etc/group Format</h2>
 <p><strong><code>/etc/passwd</code> fields:</strong></p>
-<div class="codehilite"><pre><span></span><code>username:x:UID:GID:comment:home:shell
+<pre><code><code>username:x:UID:GID:comment:home:shell
 root:x:0:0:root:/root:/bin/bash
 john:x:1001:1001:John Smith:/home/john:/bin/bash
-</code></pre></div>
+</code></code></pre>
 
 <p><strong><code>/etc/group</code> fields:</strong></p>
-<div class="codehilite"><pre><span></span><code>groupname:x:GID:member1,member2
+<pre><code><code>groupname:x:GID:member1,member2
 sudo:x:27:john,alice
-</code></pre></div>
+</code></code></pre>
 
 <hr />
 <h2>System Users vs Regular Users</h2>
 <p>UIDs below 1000 are reserved for system users (services like <code>www-data</code>, <code>postgres</code>, <code>nobody</code>). Regular user accounts start at UID 1000.</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Create a system user (for a service, no login)</span>
-sudo<span class="w"> </span>useradd<span class="w"> </span>--system<span class="w"> </span>--no-create-home<span class="w"> </span>--shell<span class="w"> </span>/usr/sbin/nologin<span class="w"> </span>serviceuser
-</code></pre></div>
+<pre><code><code># Create a system user (for a service, no login)
+sudo useradd --system --no-create-home --shell /usr/sbin/nologin serviceuser
+</code></code></pre>

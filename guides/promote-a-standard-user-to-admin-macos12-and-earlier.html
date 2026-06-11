@@ -15,16 +15,16 @@ DATA:system-users:Promote User to Admin (macOS 12 and Earlier):System & Users
 <p>In the menu bar, go to <strong>Utilities → Terminal</strong>.</p>
 <h3>3 — Remove the Setup Done Flag</h3>
 <p>Run the following command to trigger the macOS Setup Assistant on the next boot:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>/Volumes/Macintosh<span class="se">\ </span>HD/var/db<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>rm<span class="w"> </span>.AppleSetupDone
-</code></pre></div>
+<pre><code><code>cd /Volumes/Macintosh\ HD/var/db &amp;&amp; rm .AppleSetupDone
+</code></code></pre>
 
 <p>If the combined command does not work, run each part separately:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>/
-<span class="nb">cd</span><span class="w"> </span>Volumes/
-<span class="nb">cd</span><span class="w"> </span>Macintosh<span class="se">\ </span>HD
-<span class="nb">cd</span><span class="w"> </span>var/db
-rm<span class="w"> </span>.AppleSetupDone
-</code></pre></div>
+<pre><code><code>cd /
+cd Volumes/
+cd Macintosh\ HD
+cd var/db
+rm .AppleSetupDone
+</code></code></pre>
 
 <h3>4 — Reboot and Complete Setup</h3>
 <p>Restart your Mac. The <strong>Setup Assistant</strong> will launch automatically. Follow the on-screen instructions. When you reach the user creation step, create a new <strong>Admin</strong> account and finish setup.</p>

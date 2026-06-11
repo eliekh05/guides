@@ -9,30 +9,30 @@ DATA:macos:Create a .app Shortcut on macOS:macOS
 <li>Write your script. Examples:</li>
 </ol>
 <p><strong>Open a specific website in the default browser:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nb">open location</span> <span class="s2">&quot;https://example.com&quot;</span>
-</code></pre></div>
+<pre><code><code>open location &quot;https://example.com&quot;
+</code></code></pre>
 
 <p><strong>Open a folder in Finder:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Finder&quot;</span>
-    <span class="nb">open</span> <span class="nv">POSIX</span> <span class="nv">file</span> <span class="s2">&quot;/Users/yourname/Documents/MyProject&quot;</span>
-    <span class="nb">activate</span>
-<span class="k">end</span> <span class="k">tell</span>
-</code></pre></div>
+<pre><code><code>tell application &quot;Finder&quot;
+    open POSIX file &quot;/Users/yourname/Documents/MyProject&quot;
+    activate
+end tell
+</code></code></pre>
 
 <p><strong>Run a shell command:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nb">do shell script</span> <span class="s2">&quot;your-command-here&quot;</span>
-</code></pre></div>
+<pre><code><code>do shell script &quot;your-command-here&quot;
+</code></code></pre>
 
 <p><strong>Run a shell command with admin rights:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nb">do shell script</span> <span class="s2">&quot;your-command-here&quot;</span> <span class="nv">with</span> <span class="nv">administrator</span> <span class="nv">privileges</span>
-</code></pre></div>
+<pre><code><code>do shell script &quot;your-command-here&quot; with administrator privileges
+</code></code></pre>
 
 <p><strong>Launch an app and open a file:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Visual Studio Code&quot;</span>
-    <span class="nb">open</span> <span class="s2">&quot;/Users/yourname/Projects/myproject&quot;</span>
-    <span class="nb">activate</span>
-<span class="k">end</span> <span class="k">tell</span>
-</code></pre></div>
+<pre><code><code>tell application &quot;Visual Studio Code&quot;
+    open &quot;/Users/yourname/Projects/myproject&quot;
+    activate
+end tell
+</code></code></pre>
 
 <ol>
 <li>Press <strong>Command + R</strong> to test the script.</li>
@@ -100,8 +100,8 @@ DATA:macos:Create a .app Shortcut on macOS:macOS
 <li><strong>File</strong> → <strong>Save</strong> → save as a <code>.app</code>.</li>
 </ol>
 <p>Example — a one-click Homebrew update app:</p>
-<div class="codehilite"><pre><span></span><code>/opt/homebrew/bin/brew<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>/opt/homebrew/bin/brew<span class="w"> </span>upgrade<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>/opt/homebrew/bin/brew<span class="w"> </span>cleanup
-</code></pre></div>
+<pre><code><code>/opt/homebrew/bin/brew update &amp;&amp; /opt/homebrew/bin/brew upgrade &amp;&amp; /opt/homebrew/bin/brew cleanup
+</code></code></pre>
 
 <blockquote>
 <p>Always use full paths in Automator shell scripts — <code>/opt/homebrew/bin/brew</code> not just <code>brew</code> — because Automator does not load your shell PATH.</p>
@@ -129,13 +129,13 @@ DATA:macos:Create a .app Shortcut on macOS:macOS
 <h2>Troubleshooting</h2>
 <h3>App opens then immediately closes</h3>
 <p>The script ran and finished — this is normal if the script has no UI. If you want it to stay open, add a dialog at the end:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">display dialog</span> <span class="s2">&quot;Done!&quot;</span> <span class="nb">buttons</span> <span class="p">{</span><span class="s2">&quot;OK&quot;</span><span class="p">}</span> <span class="nv">default</span> <span class="nb">button</span> <span class="s2">&quot;OK&quot;</span>
-</code></pre></div>
+<pre><code><code>display dialog &quot;Done!&quot; buttons {&quot;OK&quot;} default button &quot;OK&quot;
+</code></code></pre>
 
 <h3>"App is damaged and can't be opened"</h3>
 <p>Your app was saved to a location that got quarantined. Run in Terminal:</p>
-<div class="codehilite"><pre><span></span><code>xattr<span class="w"> </span>-r<span class="w"> </span>-d<span class="w"> </span>com.apple.quarantine<span class="w"> </span>/path/to/YourApp.app
-</code></pre></div>
+<pre><code><code>xattr -r -d com.apple.quarantine /path/to/YourApp.app
+</code></code></pre>
 
 <h3>Shell commands not found in Automator</h3>
 <p>Use full paths: <code>/opt/homebrew/bin/brew</code>, <code>/usr/bin/python3</code>, <code>/usr/local/bin/node</code> etc.</p>

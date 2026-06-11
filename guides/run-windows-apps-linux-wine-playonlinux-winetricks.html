@@ -50,41 +50,41 @@ DATA:installation:Run Windows Apps on Linux with Wine, PlayOnLinux, and Winetric
 <h2>Part 1 — Install Wine</h2>
 <h3>Ubuntu / Debian (Latest Wine from WineHQ)</h3>
 <p>The distro package is usually outdated. Install from WineHQ's official repo for the latest version:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Enable 32-bit support (required for most Windows apps)</span>
-sudo<span class="w"> </span>dpkg<span class="w"> </span>--add-architecture<span class="w"> </span>i386
-sudo<span class="w"> </span>apt<span class="w"> </span>update
+<pre><code><code># Enable 32-bit support (required for most Windows apps)
+sudo dpkg --add-architecture i386
+sudo apt update
 
-<span class="c1"># Add WineHQ signing key</span>
-wget<span class="w"> </span>-O-<span class="w"> </span>https://dl.winehq.org/wine-builds/winehq.key<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>gpg<span class="w"> </span>--dearmor<span class="w"> </span>-o<span class="w"> </span>/usr/share/keyrings/winehq-archive.key
+# Add WineHQ signing key
+wget -O- https://dl.winehq.org/wine-builds/winehq.key \
+  | sudo gpg --dearmor -o /usr/share/keyrings/winehq-archive.key
 
-<span class="c1"># Add the repository (replace noble with your Ubuntu version codename)</span>
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;deb [arch=amd64,i386 signed-by=/usr/share/keyrings/winehq-archive.key] \</span>
-<span class="s2">  https://dl.winehq.org/wine-builds/ubuntu/ </span><span class="k">$(</span>lsb_release<span class="w"> </span>-cs<span class="k">)</span><span class="s2"> main&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/apt/sources.list.d/winehq.list
+# Add the repository (replace noble with your Ubuntu version codename)
+echo &quot;deb [arch=amd64,i386 signed-by=/usr/share/keyrings/winehq-archive.key] \
+  https://dl.winehq.org/wine-builds/ubuntu/ $(lsb_release -cs) main&quot; \
+  | sudo tee /etc/apt/sources.list.d/winehq.list
 
-<span class="c1"># Install Wine stable</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>--install-recommends<span class="w"> </span>winehq-stable<span class="w"> </span>-y
-</code></pre></div>
+# Install Wine stable
+sudo apt update &amp;&amp; sudo apt install --install-recommends winehq-stable -y
+</code></code></pre>
 
 <p>Verify:</p>
-<div class="codehilite"><pre><span></span><code>wine<span class="w"> </span>--version
-</code></pre></div>
+<pre><code><code>wine --version
+</code></code></pre>
 
 <h3>Fedora / RHEL:</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>winehq-stable
-</code></pre></div>
+<pre><code><code>sudo dnf install winehq-stable
+</code></code></pre>
 
 <h3>Arch Linux:</h3>
 <p>Enable the <code>multilib</code> repository in <code>/etc/pacman.conf</code> (uncomment <code>[multilib]</code> section), then:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>wine<span class="w"> </span>wine-gecko<span class="w"> </span>wine-mono
-</code></pre></div>
+<pre><code><code>sudo pacman -S wine wine-gecko wine-mono
+</code></code></pre>
 
 <hr />
 <h2>Part 2 — First-Time Wine Setup</h2>
 <p>On first run, Wine creates a "wineprefix" — a fake Windows environment in <code>~/.wine</code>. Set it up:</p>
-<div class="codehilite"><pre><span></span><code>winecfg
-</code></pre></div>
+<pre><code><code>winecfg
+</code></code></pre>
 
 <p>A dialog will appear asking to install <code>wine-gecko</code> (for Internet Explorer) and <code>wine-mono</code> (for .NET apps) — accept both.</p>
 <p>In the <strong>winecfg</strong> window:
@@ -94,76 +94,76 @@ sudo<span class="w"> </span>apt<span class="w"> </span>update<span class="w"> </
 <hr />
 <h2>Part 3 — Install a Windows App</h2>
 <p>Download the Windows <code>.exe</code> installer and run it with Wine:</p>
-<div class="codehilite"><pre><span></span><code>wine<span class="w"> </span>~/Downloads/setup.exe
-</code></pre></div>
+<pre><code><code>wine ~/Downloads/setup.exe
+</code></code></pre>
 
 <p>Wine will run the installer as if it were on Windows. Follow it normally.</p>
 <p>Installed apps appear in <code>~/.wine/drive_c/Program Files/</code>.</p>
 <p>To run an installed app:</p>
-<div class="codehilite"><pre><span></span><code>wine<span class="w"> </span>~/.wine/drive_c/Program<span class="se">\ </span>Files/AppName/AppName.exe
-</code></pre></div>
+<pre><code><code>wine ~/.wine/drive_c/Program\ Files/AppName/AppName.exe
+</code></code></pre>
 
 <p>Or right-click the <code>.exe</code> in your file manager and select <strong>Open with Wine</strong>.</p>
 <hr />
 <h2>Part 4 — Install Winetricks</h2>
 <p>Winetricks installs Windows libraries and runtimes that many apps need — .NET Framework, Visual C++ redistributables, DirectX, fonts, and more.</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Install winetricks</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>winetricks<span class="w"> </span>-y<span class="w">  </span><span class="c1"># Ubuntu/Debian</span>
+<pre><code><code># Install winetricks
+sudo apt install winetricks -y  # Ubuntu/Debian
 
-<span class="c1"># Or download the latest version directly (recommended — distro version often outdated)</span>
-wget<span class="w"> </span>https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
-chmod<span class="w"> </span>+x<span class="w"> </span>winetricks
-sudo<span class="w"> </span>mv<span class="w"> </span>winetricks<span class="w"> </span>/usr/local/bin/
-</code></pre></div>
+# Or download the latest version directly (recommended — distro version often outdated)
+wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
+chmod +x winetricks
+sudo mv winetricks /usr/local/bin/
+</code></code></pre>
 
 <h3>Install common dependencies with Winetricks</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># .NET Framework 4.8 (needed by many apps)</span>
-winetricks<span class="w"> </span>dotnet48
+<pre><code><code># .NET Framework 4.8 (needed by many apps)
+winetricks dotnet48
 
-<span class="c1"># Visual C++ 2019 runtime (needed by most modern apps)</span>
-winetricks<span class="w"> </span>vcrun2019
+# Visual C++ 2019 runtime (needed by most modern apps)
+winetricks vcrun2019
 
-<span class="c1"># DirectX 9 (older games)</span>
-winetricks<span class="w"> </span>d3dx9
+# DirectX 9 (older games)
+winetricks d3dx9
 
-<span class="c1"># Core Windows fonts (fixes font rendering issues)</span>
-winetricks<span class="w"> </span>corefonts
+# Core Windows fonts (fixes font rendering issues)
+winetricks corefonts
 
-<span class="c1"># Multiple things at once</span>
-winetricks<span class="w"> </span>dotnet48<span class="w"> </span>vcrun2019<span class="w"> </span>vcrun2022<span class="w"> </span>corefonts<span class="w"> </span>d3dx9
-</code></pre></div>
+# Multiple things at once
+winetricks dotnet48 vcrun2019 vcrun2022 corefonts d3dx9
+</code></code></pre>
 
 <h3>Open Winetricks GUI</h3>
-<div class="codehilite"><pre><span></span><code>winetricks<span class="w"> </span>--gui
-</code></pre></div>
+<pre><code><code>winetricks --gui
+</code></code></pre>
 
 <p>A menu appears where you can select and install components without memorising names.</p>
 <hr />
 <h2>Part 5 — Wine Prefixes (Run Different Apps in Isolation)</h2>
 <p>Each app may need different Windows settings or library versions. Wine <strong>prefixes</strong> are isolated Windows environments — like separate Windows installations for each app.</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Create a prefix for a specific app</span>
-<span class="nv">WINEPREFIX</span><span class="o">=</span>~/.wine-myapp<span class="w"> </span>winecfg
+<pre><code><code># Create a prefix for a specific app
+WINEPREFIX=~/.wine-myapp winecfg
 
-<span class="c1"># Install an app into that prefix</span>
-<span class="nv">WINEPREFIX</span><span class="o">=</span>~/.wine-myapp<span class="w"> </span>wine<span class="w"> </span>setup.exe
+# Install an app into that prefix
+WINEPREFIX=~/.wine-myapp wine setup.exe
 
-<span class="c1"># Install Winetricks components into that prefix</span>
-<span class="nv">WINEPREFIX</span><span class="o">=</span>~/.wine-myapp<span class="w"> </span>winetricks<span class="w"> </span>dotnet48
+# Install Winetricks components into that prefix
+WINEPREFIX=~/.wine-myapp winetricks dotnet48
 
-<span class="c1"># Run the app from that prefix</span>
-<span class="nv">WINEPREFIX</span><span class="o">=</span>~/.wine-myapp<span class="w"> </span>wine<span class="w"> </span>~/.wine-myapp/drive_c/Program<span class="se">\ </span>Files/MyApp/myapp.exe
-</code></pre></div>
+# Run the app from that prefix
+WINEPREFIX=~/.wine-myapp wine ~/.wine-myapp/drive_c/Program\ Files/MyApp/myapp.exe
+</code></code></pre>
 
 <p>This is essential when one app needs .NET 4.8 and another needs .NET 3.5 — they would conflict in the same prefix.</p>
 <hr />
 <h2>Part 6 — PlayOnLinux (GUI for Wine)</h2>
 <p>PlayOnLinux provides a friendly GUI that manages Wine versions and prefixes automatically. It has pre-configured installation scripts for many popular apps.</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>playonlinux<span class="w"> </span>-y<span class="w">  </span><span class="c1"># Ubuntu/Debian</span>
-</code></pre></div>
+<pre><code><code>sudo apt install playonlinux -y  # Ubuntu/Debian
+</code></code></pre>
 
 <p>Launch it:</p>
-<div class="codehilite"><pre><span></span><code>playonlinux
-</code></pre></div>
+<pre><code><code>playonlinux
+</code></code></pre>
 
 <p><strong>Install an app:</strong>
 1. Click <strong>Install a program</strong> → search for your app
@@ -173,10 +173,10 @@ winetricks<span class="w"> </span>dotnet48<span class="w"> </span>vcrun2019<span
 <hr />
 <h2>Part 7 — Bottles (Modern Alternative to PlayOnLinux)</h2>
 <p>Bottles is a newer, more polished Wine prefix manager available as a Flatpak. It has a cleaner UI than PlayOnLinux and is actively maintained.</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Install via Flatpak (works on any distro)</span>
-flatpak<span class="w"> </span>install<span class="w"> </span>flathub<span class="w"> </span>com.usebottles.bottles
-flatpak<span class="w"> </span>run<span class="w"> </span>com.usebottles.bottles
-</code></pre></div>
+<pre><code><code># Install via Flatpak (works on any distro)
+flatpak install flathub com.usebottles.bottles
+flatpak run com.usebottles.bottles
+</code></code></pre>
 
 <p><strong>Create a bottle:</strong>
 1. Click <strong>+</strong> → name it → choose an environment:
@@ -187,21 +187,21 @@ flatpak<span class="w"> </span>run<span class="w"> </span>com.usebottles.bottles
 <hr />
 <h2>Part 8 — DXVK for DirectX Gaming</h2>
 <p>DXVK translates DirectX 9/10/11 calls to Vulkan, dramatically improving gaming performance in Wine.</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Install DXVK into your default wine prefix</span>
-winetricks<span class="w"> </span>dxvk
-</code></pre></div>
+<pre><code><code># Install DXVK into your default wine prefix
+winetricks dxvk
+</code></code></pre>
 
 <p>Or install it manually:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Download DXVK</span>
-wget<span class="w"> </span>https://github.com/doitsujin/dxvk/releases/latest/download/dxvk-*.tar.gz
-tar<span class="w"> </span>xf<span class="w"> </span>dxvk-*.tar.gz
-<span class="nb">cd</span><span class="w"> </span>dxvk-*/
-./setup_dxvk.sh<span class="w"> </span>install
-</code></pre></div>
+<pre><code><code># Download DXVK
+wget https://github.com/doitsujin/dxvk/releases/latest/download/dxvk-*.tar.gz
+tar xf dxvk-*.tar.gz
+cd dxvk-*/
+./setup_dxvk.sh install
+</code></code></pre>
 
 <p>For DirectX 12 games, use <strong>VKD3D-Proton</strong>:</p>
-<div class="codehilite"><pre><span></span><code>winetricks<span class="w"> </span>vkd3d
-</code></pre></div>
+<pre><code><code>winetricks vkd3d
+</code></code></pre>
 
 <hr />
 <h2>Check App Compatibility Before Installing</h2>
@@ -240,32 +240,32 @@ tar<span class="w"> </span>xf<span class="w"> </span>dxvk-*.tar.gz
 <h2>Troubleshooting</h2>
 <h3>App crashes immediately with no error</h3>
 <p>Run from terminal to see the error output:</p>
-<div class="codehilite"><pre><span></span><code>wine<span class="w"> </span>/path/to/app.exe<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>less
-</code></pre></div>
+<pre><code><code>wine /path/to/app.exe 2&gt;&amp;1 | less
+</code></code></pre>
 
 <h3>Missing DLL errors</h3>
 <p>Install the missing library via Winetricks:</p>
-<div class="codehilite"><pre><span></span><code>winetricks<span class="w"> </span>--search<span class="w"> </span>dll_name
-<span class="c1"># Then install it</span>
-winetricks<span class="w"> </span>vcrun2019<span class="w">  </span><span class="c1"># or whatever matches</span>
-</code></pre></div>
+<pre><code><code>winetricks --search dll_name
+# Then install it
+winetricks vcrun2019  # or whatever matches
+</code></code></pre>
 
 <h3>App window is tiny (DPI issue)</h3>
 <p>In <code>winecfg</code> → <strong>Graphics</strong> tab → increase <strong>Screen Resolution (DPI)</strong> to match your display.</p>
 <h3>Font rendering looks bad</h3>
-<div class="codehilite"><pre><span></span><code>winetricks<span class="w"> </span>corefonts
-winetricks<span class="w"> </span>tahoma
-</code></pre></div>
+<pre><code><code>winetricks corefonts
+winetricks tahoma
+</code></code></pre>
 
 <h3>App needs a different Windows version</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># In winecfg, or set per-app:</span>
-<span class="nv">WINEPREFIX</span><span class="o">=</span>~/.wine-myapp<span class="w"> </span>winetricks<span class="w"> </span>winxp<span class="w">  </span><span class="c1"># for very old apps</span>
-<span class="nv">WINEPREFIX</span><span class="o">=</span>~/.wine-myapp<span class="w"> </span>winetricks<span class="w"> </span>win7<span class="w">   </span><span class="c1"># for apps that need Win7</span>
-<span class="nv">WINEPREFIX</span><span class="o">=</span>~/.wine-myapp<span class="w"> </span>winetricks<span class="w"> </span>win10<span class="w">  </span><span class="c1"># default, for modern apps</span>
-</code></pre></div>
+<pre><code><code># In winecfg, or set per-app:
+WINEPREFIX=~/.wine-myapp winetricks winxp  # for very old apps
+WINEPREFIX=~/.wine-myapp winetricks win7   # for apps that need Win7
+WINEPREFIX=~/.wine-myapp winetricks win10  # default, for modern apps
+</code></code></pre>
 
 <h3>Sound not working</h3>
-<div class="codehilite"><pre><span></span><code>winetricks<span class="w"> </span><span class="nv">sound</span><span class="o">=</span>alsa
-<span class="c1"># or</span>
-winetricks<span class="w"> </span><span class="nv">sound</span><span class="o">=</span>pulse
-</code></pre></div>
+<pre><code><code>winetricks sound=alsa
+# or
+winetricks sound=pulse
+</code></code></pre>

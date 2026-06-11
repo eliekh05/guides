@@ -5,115 +5,115 @@ DATA:macos:Star Wars in Your Terminal — May the 4th Be With You:macOS
 <h2>Watch Star Wars Episode IV in ASCII Art</h2>
 <p>The original <code>telnet towel.blinkenlights.nl</code> server is no longer active. Use these working alternatives instead:</p>
 <h3>Option A — via netcat (works on macOS and Linux, no install needed)</h3>
-<div class="codehilite"><pre><span></span><code>nc<span class="w"> </span>towel.blinkenlights.nl<span class="w"> </span><span class="m">23</span>
-</code></pre></div>
+<pre><code><code>nc towel.blinkenlights.nl 23
+</code></code></pre>
 
 <p><code>nc</code> (netcat) is built into macOS and most Linux distros. No install needed.</p>
 <h3>Option B — via telehack.com (browser or telnet)</h3>
 <p>Go to <a href="https://telehack.com">telehack.com</a> in your browser, then type:</p>
-<div class="codehilite"><pre><span></span><code>starwars
-</code></pre></div>
+<pre><code><code>starwars
+</code></code></pre>
 
 <p>Or via Terminal:</p>
-<div class="codehilite"><pre><span></span><code>telnet<span class="w"> </span>telehack.com
-<span class="c1"># then type: starwars</span>
-</code></pre></div>
+<pre><code><code>telnet telehack.com
+# then type: starwars
+</code></code></pre>
 
 <p>Press <strong>Ctrl + C</strong> or close the terminal to exit.</p>
 <hr />
 <h2>Play the Imperial March in Terminal (macOS)</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># The Imperial March via the `say` command and pitch control</span>
-say<span class="w"> </span>-v<span class="w"> </span>Cellos<span class="w"> </span><span class="s2">&quot;Dun dun dun dun da dun dun da dun&quot;</span>
-</code></pre></div>
+<pre><code><code># The Imperial March via the `say` command and pitch control
+say -v Cellos &quot;Dun dun dun dun da dun dun da dun&quot;
+</code></code></pre>
 
 <p>Or use <code>afplay</code> with a downloaded audio file:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># If you have a Star Wars sound file</span>
-afplay<span class="w"> </span>/path/to/imperial-march.mp3
-</code></pre></div>
+<pre><code><code># If you have a Star Wars sound file
+afplay /path/to/imperial-march.mp3
+</code></code></pre>
 
 <hr />
 <h2>Print a Lightsaber in Terminal</h2>
 <p><strong>Red (Sith):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;\033[31m|===========&gt;\033[0m&quot;</span>
-</code></pre></div>
+<pre><code><code>echo -e &quot;\033[31m|===========&gt;\033[0m&quot;
+</code></code></pre>
 
 <p><strong>Green (Jedi):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;\033[32m|===========&gt;\033[0m&quot;</span>
-</code></pre></div>
+<pre><code><code>echo -e &quot;\033[32m|===========&gt;\033[0m&quot;
+</code></code></pre>
 
 <p><strong>Blue (Jedi):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;\033[34m&lt;===========|\033[0m&quot;</span>
-</code></pre></div>
+<pre><code><code>echo -e &quot;\033[34m&lt;===========|\033[0m&quot;
+</code></code></pre>
 
 <p><strong>Purple (Mace Windu):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;\033[35m|===========&gt;\033[0m&quot;</span>
-</code></pre></div>
+<pre><code><code>echo -e &quot;\033[35m|===========&gt;\033[0m&quot;
+</code></code></pre>
 
 <hr />
 <h2>Add a Star Wars Greeting to Your Terminal</h2>
 <p>Add this to <code>~/.zshrc</code> or <code>~/.bashrc</code> so it appears every time you open a terminal today:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;\033[33m</span>
-<span class="s2">     ___           ___                 ___         ___           ___     </span>
-<span class="s2">    /  /\         /  /\               /  /\       /  /\         /  /\    </span>
-<span class="s2">   /  /::|       /  /::\             /  /:/_      \  \:\       /  /::|   </span>
-<span class="s2">  /  /:/:|      /  /:/\:\           /  /:/ /\      \  \:\     /  /:/:|   </span>
-<span class="s2"> /  /:/|:|__   /  /:/~/::\         /  /:/ /::\     /  /::\   /  /:/|:|__ </span>
-<span class="s2">/__/:/ |:| /\ /__/:/ /:/\:\ _____ /__/:/ /:/\:\   /  /:/\:\ /__/:/ |:| /\\</span>
-<span class="s2">\__\/  |:|/:/ \  \:\/:/__\/ \____\\  \:\/:/~/:/ /  /:/__\/ \__\/  |:|/:/</span>
-<span class="s2">     __|:|/:/   \  \::/            \  \::/ /:/  /__/:/            |:|:/  </span>
-<span class="s2">    /__/:/        \  \:\            \__\/ /:/   \__\/             |:|/   </span>
-<span class="s2">    \__\/          \  \:\             /__/:/                      |:/    </span>
-<span class="s2">                    \__\/             \__\/                       |/     </span>
-<span class="s2">\033[0m&quot;</span>
-<span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;\033[36mMay the 4th be with you.\033[0m&quot;</span>
-<span class="nb">echo</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;\033[33mMay the Force be with you.\033[0m&quot;</span>
-</code></pre></div>
+<pre><code><code>echo -e &quot;\033[33m
+     ___           ___                 ___         ___           ___     
+    /  /\         /  /\               /  /\       /  /\         /  /\    
+   /  /::|       /  /::\             /  /:/_      \  \:\       /  /::|   
+  /  /:/:|      /  /:/\:\           /  /:/ /\      \  \:\     /  /:/:|   
+ /  /:/|:|__   /  /:/~/::\         /  /:/ /::\     /  /::\   /  /:/|:|__ 
+/__/:/ |:| /\ /__/:/ /:/\:\ _____ /__/:/ /:/\:\   /  /:/\:\ /__/:/ |:| /\\
+\__\/  |:|/:/ \  \:\/:/__\/ \____\\  \:\/:/~/:/ /  /:/__\/ \__\/  |:|/:/
+     __|:|/:/   \  \::/            \  \::/ /:/  /__/:/            |:|:/  
+    /__/:/        \  \:\            \__\/ /:/   \__\/             |:|/   
+    \__\/          \  \:\             /__/:/                      |:/    
+                    \__\/             \__\/                       |/     
+\033[0m&quot;
+echo -e &quot;\033[36mMay the 4th be with you.\033[0m&quot;
+echo -e &quot;\033[33mMay the Force be with you.\033[0m&quot;
+</code></code></pre>
 
 <p>Apply it:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">source</span><span class="w"> </span>~/.zshrc
-</code></pre></div>
+<pre><code><code>source ~/.zshrc
+</code></code></pre>
 
 <hr />
 <h2>Set a Star Wars Prompt for Today</h2>
 <p>Temporarily change your Terminal prompt to something more fitting:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Add to ~/.zshrc temporarily</span>
-<span class="nv">PROMPT</span><span class="o">=</span><span class="s1">&#39;⚔️  %F{yellow}Jedi%f %~ %# &#39;</span>
-</code></pre></div>
+<pre><code><code># Add to ~/.zshrc temporarily
+PROMPT=&#39;⚔️  %F{yellow}Jedi%f %~ %# &#39;
+</code></code></pre>
 
 <p>Apply:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">source</span><span class="w"> </span>~/.zshrc
-</code></pre></div>
+<pre><code><code>source ~/.zshrc
+</code></code></pre>
 
 <p>Change it back tomorrow by removing that line and running <code>source ~/.zshrc</code> again.</p>
 <hr />
 <h2>Star Wars Quotes via fortune (Linux)</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Install fortune</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>fortune<span class="w"> </span>fortunes<span class="w"> </span>-y
+<pre><code><code># Install fortune
+sudo apt install fortune fortunes -y
 
-<span class="c1"># Get a random Star Wars-style wisdom quote</span>
+# Get a random Star Wars-style wisdom quote
 fortune
-</code></pre></div>
+</code></code></pre>
 
 <p>Or add your own Star Wars quotes. Create a file <code>~/.starwars-quotes</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">May</span><span class="w"> </span><span class="s">the</span><span class="w"> </span><span class="s">Force</span><span class="w"> </span><span class="s">be</span><span class="w"> </span><span class="s">with</span><span class="w"> </span><span class="s">you.</span>
-<span class="c">%</span>
-<span class="n">Do</span><span class="p">.</span><span class="w"> </span><span class="n">Or</span><span class="w"> </span><span class="n">do</span><span class="w"> </span><span class="n">not</span><span class="p">.</span><span class="w"> </span><span class="n">There</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">no</span><span class="w"> </span><span class="k">try</span><span class="p">.</span>
-<span class="c">%</span>
-<span class="n">I</span><span class="w"> </span><span class="s">find</span><span class="w"> </span><span class="s">your</span><span class="w"> </span><span class="s">lack</span><span class="w"> </span><span class="s">of</span><span class="w"> </span><span class="s">faith</span><span class="w"> </span><span class="s">disturbing.</span>
-<span class="c">%</span>
-<span class="n">In</span><span class="w"> </span><span class="s">my</span><span class="w"> </span><span class="s">experience,</span><span class="w"> </span><span class="s">there</span><span class="w"> </span><span class="s">is</span><span class="w"> </span><span class="s">no</span><span class="w"> </span><span class="s">such</span><span class="w"> </span><span class="s">thing</span><span class="w"> </span><span class="s">as</span><span class="w"> </span><span class="s">luck.</span>
-<span class="c">%</span>
-<span class="n">Never</span><span class="w"> </span><span class="s">tell</span><span class="w"> </span><span class="s">me</span><span class="w"> </span><span class="s">the</span><span class="w"> </span><span class="s">odds.</span>
-<span class="c">%</span>
-<span class="n">The</span><span class="w"> </span><span class="s">Force</span><span class="w"> </span><span class="s">will</span><span class="w"> </span><span class="s">be</span><span class="w"> </span><span class="s">with</span><span class="w"> </span><span class="s">you.</span><span class="w"> </span><span class="s">Always.</span>
-<span class="c">%</span>
-</code></pre></div>
+<pre><code><code>May the Force be with you.
+%
+Do. Or do not. There is no try.
+%
+I find your lack of faith disturbing.
+%
+In my experience, there is no such thing as luck.
+%
+Never tell me the odds.
+%
+The Force will be with you. Always.
+%
+</code></code></pre>
 
 <p>Then:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>fortune<span class="w"> </span>-y
-strfile<span class="w"> </span>~/.starwars-quotes<span class="w"> </span>~/.starwars-quotes.dat
-fortune<span class="w"> </span>~/.starwars-quotes
-</code></pre></div>
+<pre><code><code>sudo apt install fortune -y
+strfile ~/.starwars-quotes ~/.starwars-quotes.dat
+fortune ~/.starwars-quotes
+</code></code></pre>
 
 <hr />
 <blockquote>

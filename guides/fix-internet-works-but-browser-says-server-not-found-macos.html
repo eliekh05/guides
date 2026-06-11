@@ -4,8 +4,8 @@ DATA:networking:Fix Internet Works But Browser Doesn't:Networking & DNS
 <hr />
 <h2>Step 1 — Flush the DNS Cache</h2>
 <p>The most common cause is a stale or corrupted DNS cache. Run the following in Terminal:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dscacheutil<span class="w"> </span>-flushcache<span class="p">;</span><span class="w"> </span>sudo<span class="w"> </span>killall<span class="w"> </span>-HUP<span class="w"> </span>mDNSResponder
-</code></pre></div>
+<pre><code><code>sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder
+</code></code></pre>
 
 <p>Enter your login password when prompted. Then <strong>restart your browser</strong> (not just a new tab — quit and reopen it).</p>
 <p>If that does not fix it, continue to the steps below.</p>
@@ -32,14 +32,14 @@ Safari uses the system DNS cache. Flushing the macOS cache (Step 1) is sufficien
 <li>Click <strong>+</strong> and add one of the following:</li>
 </ol>
 <p><strong>Cloudflare (fast, privacy-focused):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="mf">1.1.1.1</span>
-<span class="mf">1.0.0.1</span>
-</code></pre></div>
+<pre><code><code>1.1.1.1
+1.0.0.1
+</code></code></pre>
 
 <p><strong>Google:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="mf">8.8.8.8</span>
-<span class="mf">8.8.4.4</span>
-</code></pre></div>
+<pre><code><code>8.8.8.8
+8.8.4.4
+</code></code></pre>
 
 <ol>
 <li>Remove any existing DNS entries that are not working (select them and click <strong>−</strong>).</li>
@@ -48,8 +48,8 @@ Safari uses the system DNS cache. Flushing the macOS cache (Step 1) is sufficien
 <hr />
 <h2>Step 4 — Restart mDNSResponder</h2>
 <p><code>mDNSResponder</code> is the macOS service that handles DNS lookups. Restarting it can clear issues that a cache flush alone does not fix:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>killall<span class="w"> </span>-HUP<span class="w"> </span>mDNSResponder
-</code></pre></div>
+<pre><code><code>sudo killall -HUP mDNSResponder
+</code></code></pre>
 
 <hr />
 <h2>Step 5 — Check for a Proxy or VPN Conflict</h2>

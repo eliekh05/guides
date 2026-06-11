@@ -17,23 +17,23 @@ DATA:system-users:Force Delete Files That Won't Delete on macOS:System & Users
 2. Go to <strong>File</strong> → <strong>Open Files and Ports</strong> or use the search bar to search for the filename.
 3. Quit the process that has the file open.</p>
 <p>Or use Terminal to find and kill the process:</p>
-<div class="codehilite"><pre><span></span><code>lsof<span class="w"> </span>/path/to/file
-</code></pre></div>
+<pre><code><code>lsof /path/to/file
+</code></code></pre>
 
 <p>This shows which process has the file open. Note the PID (process ID) and kill it:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">kill</span><span class="w"> </span>-9<span class="w"> </span>PID_NUMBER
-</code></pre></div>
+<pre><code><code>kill -9 PID_NUMBER
+</code></code></pre>
 
 <p>Then delete the file normally.</p>
 <hr />
 <h2>Fix 3 — Delete via Terminal</h2>
 <p>Finder sometimes refuses to delete files that Terminal can remove without issue:</p>
-<div class="codehilite"><pre><span></span><code>rm<span class="w"> </span>/path/to/file
-</code></pre></div>
+<pre><code><code>rm /path/to/file
+</code></code></pre>
 
 <p>For a folder and everything inside it:</p>
-<div class="codehilite"><pre><span></span><code>rm<span class="w"> </span>-rf<span class="w"> </span>/path/to/folder
-</code></pre></div>
+<pre><code><code>rm -rf /path/to/folder
+</code></code></pre>
 
 <blockquote>
 <p><strong>Warning:</strong> <code>rm -rf</code> deletes permanently with no Trash. Double-check the path before running.</p>
@@ -42,35 +42,35 @@ DATA:system-users:Force Delete Files That Won't Delete on macOS:System & Users
 <hr />
 <h2>Fix 4 — File Is Locked — Remove the Lock Flag</h2>
 <p>macOS has a "locked" flag that prevents deletion. To remove it:</p>
-<div class="codehilite"><pre><span></span><code>chflags<span class="w"> </span>nouchg<span class="w"> </span>/path/to/file
-</code></pre></div>
+<pre><code><code>chflags nouchg /path/to/file
+</code></code></pre>
 
 <p>For a folder recursively:</p>
-<div class="codehilite"><pre><span></span><code>chflags<span class="w"> </span>-R<span class="w"> </span>nouchg<span class="w"> </span>/path/to/folder
-</code></pre></div>
+<pre><code><code>chflags -R nouchg /path/to/folder
+</code></code></pre>
 
 <p>Then try deleting again. You can also unlock files in Finder: right-click the file → <strong>Get Info</strong> → uncheck <strong>Locked</strong>.</p>
 <hr />
 <h2>Fix 5 — Wrong Permissions — Take Ownership</h2>
 <p>If the file is owned by another user or by root, you may not have permission to delete it:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span>/path/to/file
-sudo<span class="w"> </span>rm<span class="w"> </span>/path/to/file
-</code></pre></div>
+<pre><code><code>sudo chown $(whoami) /path/to/file
+sudo rm /path/to/file
+</code></code></pre>
 
 <p>For a folder:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span>/path/to/folder
-sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/path/to/folder
-</code></pre></div>
+<pre><code><code>sudo chown -R $(whoami) /path/to/folder
+sudo rm -rf /path/to/folder
+</code></code></pre>
 
 <hr />
 <h2>Fix 6 — File Name Has Special Characters</h2>
 <p>Files with invisible characters, spaces, or special symbols in their name can be impossible to delete by name. Use the inode number instead:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Get the inode number</span>
-ls<span class="w"> </span>-i<span class="w"> </span>/path/to/problematic/folder/
+<pre><code><code># Get the inode number
+ls -i /path/to/problematic/folder/
 
-<span class="c1"># Delete by inode (replace 12345 with actual inode number)</span>
-find<span class="w"> </span>/path/to/folder<span class="w"> </span>-inum<span class="w"> </span><span class="m">12345</span><span class="w"> </span>-delete
-</code></pre></div>
+# Delete by inode (replace 12345 with actual inode number)
+find /path/to/folder -inum 12345 -delete
+</code></code></pre>
 
 <hr />
 <h2>Fix 7 — File Is in Use by macOS Itself</h2>
@@ -86,8 +86,8 @@ find<span class="w"> </span>/path/to/folder<span class="w"> </span>-inum<span cl
 <hr />
 <h2>Fix 9 — External Drive File Permissions Issue</h2>
 <p>Files copied from NTFS drives, network shares, or external drives sometimes have permissions that prevent deletion on APFS:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/path/to/file
-</code></pre></div>
+<pre><code><code>sudo rm -rf /path/to/file
+</code></code></pre>
 
 <p>If the external drive is NTFS, macOS mounts it read-only by default. You may need to install <strong>Paragon NTFS</strong> or <strong>Tuxera NTFS</strong> for write access, or delete the file on a Windows machine.</p>
 <hr />

@@ -44,12 +44,12 @@ DATA:linux:Fix Broken File Permissions After Copying Drives:Linux
 <hr />
 <h2>Fix 1 — Restore Execute Permission on Scripts</h2>
 <p>If shell scripts or binaries no longer run after copying, they have lost their execute bit:</p>
-<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span>+x<span class="w"> </span>/path/to/script.sh
-</code></pre></div>
+<pre><code><code>chmod +x /path/to/script.sh
+</code></code></pre>
 
 <p>To fix an entire folder of scripts recursively:</p>
-<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span>-R<span class="w"> </span>+x<span class="w"> </span>/path/to/folder/
-</code></pre></div>
+<pre><code><code>chmod -R +x /path/to/folder/
+</code></code></pre>
 
 <blockquote>
 <p><strong>Use with care on folders containing mixed content.</strong> This gives execute permission to every file, including data files that do not need it. For a more targeted approach, use Fix 2.</p>
@@ -57,43 +57,43 @@ DATA:linux:Fix Broken File Permissions After Copying Drives:Linux
 <hr />
 <h2>Fix 2 — Restore Permissions to a Specific Pattern</h2>
 <p>To restore execute permission only on <code>.sh</code> files inside a folder:</p>
-<div class="codehilite"><pre><span></span><code>find<span class="w"> </span>/path/to/folder<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.sh&quot;</span><span class="w"> </span>-exec<span class="w"> </span>chmod<span class="w"> </span>+x<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
-</code></pre></div>
+<pre><code><code>find /path/to/folder -name &quot;*.sh&quot; -exec chmod +x {} \;
+</code></code></pre>
 
 <p>To fix only directories (so you can navigate into them):</p>
-<div class="codehilite"><pre><span></span><code>find<span class="w"> </span>/path/to/folder<span class="w"> </span>-type<span class="w"> </span>d<span class="w"> </span>-exec<span class="w"> </span>chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
-</code></pre></div>
+<pre><code><code>find /path/to/folder -type d -exec chmod 755 {} \;
+</code></code></pre>
 
 <p>To fix only regular files (not directories):</p>
-<div class="codehilite"><pre><span></span><code>find<span class="w"> </span>/path/to/folder<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-exec<span class="w"> </span>chmod<span class="w"> </span><span class="m">644</span><span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
-</code></pre></div>
+<pre><code><code>find /path/to/folder -type f -exec chmod 644 {} \;
+</code></code></pre>
 
 <hr />
 <h2>Fix 3 — Restore Ownership</h2>
 <p>If files were copied as root or from another user account, they may be owned by the wrong user. Your account will not be able to edit them:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span>/path/to/folder
-</code></pre></div>
+<pre><code><code>sudo chown -R $(whoami) /path/to/folder
+</code></code></pre>
 
 <p>This sets you as the owner of the folder and everything inside it.</p>
 <hr />
 <h2>Fix 4 — Remove Quarantine Attributes Added During Copy</h2>
 <p>macOS sometimes applies quarantine attributes to files copied from external drives, even if they are not downloads. This can cause apps to be blocked:</p>
-<div class="codehilite"><pre><span></span><code>xattr<span class="w"> </span>-r<span class="w"> </span>-d<span class="w"> </span>com.apple.quarantine<span class="w"> </span>/path/to/app.app
-</code></pre></div>
+<pre><code><code>xattr -r -d com.apple.quarantine /path/to/app.app
+</code></code></pre>
 
 <p>To check what extended attributes are on a file:</p>
-<div class="codehilite"><pre><span></span><code>xattr<span class="w"> </span>-l<span class="w"> </span>/path/to/file
-</code></pre></div>
+<pre><code><code>xattr -l /path/to/file
+</code></code></pre>
 
 <p>To remove all extended attributes from a file (use with caution):</p>
-<div class="codehilite"><pre><span></span><code>xattr<span class="w"> </span>-c<span class="w"> </span>/path/to/file
-</code></pre></div>
+<pre><code><code>xattr -c /path/to/file
+</code></code></pre>
 
 <hr />
 <h2>Fix 5 — Use <code>rsync</code> Instead of Finder for Copying</h2>
 <p>The Finder copy does not preserve Unix permissions when copying to or from exFAT or NTFS. Using <code>rsync</code> with the right flags preserves permissions, timestamps, and symbolic links:</p>
-<div class="codehilite"><pre><span></span><code>rsync<span class="w"> </span>-av<span class="w"> </span>--progress<span class="w"> </span>/source/folder/<span class="w"> </span>/destination/folder/
-</code></pre></div>
+<pre><code><code>rsync -av --progress /source/folder/ /destination/folder/
+</code></code></pre>
 
 <table>
 <thead>

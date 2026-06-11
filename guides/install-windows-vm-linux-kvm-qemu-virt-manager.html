@@ -12,30 +12,30 @@ DATA:installation:Install Windows as a VM on Linux (KVM/QEMU with virt-manager):
 </ul>
 <hr />
 <h2>Step 1 — Check Virtualisation Support</h2>
-<div class="codehilite"><pre><span></span><code>kvm-ok
-</code></pre></div>
+<pre><code><code>kvm-ok
+</code></code></pre>
 
 <p>If it says <code>KVM acceleration can be used</code>, you are ready. If not, enable VT-x or AMD-V in your BIOS settings.</p>
 <hr />
 <h2>Step 2 — Install KVM and virt-manager</h2>
 <p><strong>Ubuntu / Debian:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>qemu-kvm<span class="w"> </span>libvirt-daemon-system<span class="w"> </span>libvirt-clients<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>bridge-utils<span class="w"> </span>virt-manager<span class="w"> </span>ovmf<span class="w"> </span>swtpm<span class="w"> </span>swtpm-tools
-</code></pre></div>
+<pre><code><code>sudo apt update
+sudo apt install -y qemu-kvm libvirt-daemon-system libvirt-clients \
+  bridge-utils virt-manager ovmf swtpm swtpm-tools
+</code></code></pre>
 
 <p><strong>Fedora:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>@virtualization
-</code></pre></div>
+<pre><code><code>sudo dnf install -y @virtualization
+</code></code></pre>
 
 <p><strong>Arch:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>qemu<span class="w"> </span>libvirt<span class="w"> </span>virt-manager<span class="w"> </span>ovmf<span class="w"> </span>swtpm<span class="w"> </span>bridge-utils
-</code></pre></div>
+<pre><code><code>sudo pacman -S qemu libvirt virt-manager ovmf swtpm bridge-utils
+</code></code></pre>
 
 <p>Add your user to the required groups and start libvirt:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>usermod<span class="w"> </span>-aG<span class="w"> </span>kvm,libvirt<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span>
-sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>libvirtd
-</code></pre></div>
+<pre><code><code>sudo usermod -aG kvm,libvirt $(whoami)
+sudo systemctl enable --now libvirtd
+</code></code></pre>
 
 <p><strong>Log out and back in</strong> for group changes to take effect.</p>
 <hr />
@@ -44,13 +44,13 @@ sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">en
 Go to <a href="https://www.microsoft.com/software-download/windows11">microsoft.com/software-download/windows11</a> and download the 64-bit ISO.</p>
 <p><strong>VirtIO Drivers ISO:</strong>
 Download the latest stable ISO from:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">fedorapeople</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">groups</span><span class="o">/</span><span class="n">virt</span><span class="o">/</span><span class="n">virtio</span><span class="o">-</span><span class="n">win</span><span class="o">/</span><span class="n">direct</span><span class="o">-</span><span class="n">downloads</span><span class="o">/</span><span class="n">stable</span><span class="o">-</span><span class="n">virtio</span><span class="o">/</span><span class="n">virtio</span><span class="o">-</span><span class="n">win</span><span class="o">.</span><span class="n">iso</span>
-</code></pre></div>
+<pre><code><code>https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso
+</code></code></pre>
 
 <p>Move both ISOs somewhere accessible:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>mv<span class="w"> </span>~/Downloads/Win11_*.iso<span class="w"> </span>/var/lib/libvirt/images/
-sudo<span class="w"> </span>mv<span class="w"> </span>~/Downloads/virtio-win.iso<span class="w"> </span>/var/lib/libvirt/images/
-</code></pre></div>
+<pre><code><code>sudo mv ~/Downloads/Win11_*.iso /var/lib/libvirt/images/
+sudo mv ~/Downloads/virtio-win.iso /var/lib/libvirt/images/
+</code></code></pre>
 
 <hr />
 <h2>Step 4 — Enable XML Editing in virt-manager</h2>
@@ -116,22 +116,22 @@ sudo<span class="w"> </span>mv<span class="w"> </span>~/Downloads/virtio-win.iso
 </ul>
 <h3>Add Hyper-V Enlightenments (Improves Performance)</h3>
 <p>Click the <strong>XML</strong> tab for the VM overview and find the <code>&lt;features&gt;</code> section. Add the Hyper-V block inside it:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&lt;hyperv&gt;</span>
-<span class="w">  </span><span class="nt">&lt;relaxed</span><span class="w"> </span><span class="na">state=</span><span class="s">&quot;on&quot;</span><span class="nt">/&gt;</span>
-<span class="w">  </span><span class="nt">&lt;vapic</span><span class="w"> </span><span class="na">state=</span><span class="s">&quot;on&quot;</span><span class="nt">/&gt;</span>
-<span class="w">  </span><span class="nt">&lt;spinlocks</span><span class="w"> </span><span class="na">state=</span><span class="s">&quot;on&quot;</span><span class="w"> </span><span class="na">retries=</span><span class="s">&quot;8191&quot;</span><span class="nt">/&gt;</span>
-<span class="w">  </span><span class="nt">&lt;vendor_id</span><span class="w"> </span><span class="na">state=</span><span class="s">&quot;on&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;KVM Hv&quot;</span><span class="nt">/&gt;</span>
-<span class="w">  </span><span class="nt">&lt;vpindex</span><span class="w"> </span><span class="na">state=</span><span class="s">&quot;on&quot;</span><span class="nt">/&gt;</span>
-<span class="w">  </span><span class="nt">&lt;runtime</span><span class="w"> </span><span class="na">state=</span><span class="s">&quot;on&quot;</span><span class="nt">/&gt;</span>
-<span class="w">  </span><span class="nt">&lt;synic</span><span class="w"> </span><span class="na">state=</span><span class="s">&quot;on&quot;</span><span class="nt">/&gt;</span>
-<span class="w">  </span><span class="nt">&lt;stimer</span><span class="w"> </span><span class="na">state=</span><span class="s">&quot;on&quot;</span><span class="nt">&gt;</span>
-<span class="w">    </span><span class="nt">&lt;direct</span><span class="w"> </span><span class="na">state=</span><span class="s">&quot;on&quot;</span><span class="nt">/&gt;</span>
-<span class="w">  </span><span class="nt">&lt;/stimer&gt;</span>
-<span class="w">  </span><span class="nt">&lt;frequencies</span><span class="w"> </span><span class="na">state=</span><span class="s">&quot;on&quot;</span><span class="nt">/&gt;</span>
-<span class="w">  </span><span class="nt">&lt;reset</span><span class="w"> </span><span class="na">state=</span><span class="s">&quot;on&quot;</span><span class="nt">/&gt;</span>
-<span class="w">  </span><span class="nt">&lt;tlbflush</span><span class="w"> </span><span class="na">state=</span><span class="s">&quot;on&quot;</span><span class="nt">/&gt;</span>
-<span class="nt">&lt;/hyperv&gt;</span>
-</code></pre></div>
+<pre><code><code>&lt;hyperv&gt;
+  &lt;relaxed state=&quot;on&quot;/&gt;
+  &lt;vapic state=&quot;on&quot;/&gt;
+  &lt;spinlocks state=&quot;on&quot; retries=&quot;8191&quot;/&gt;
+  &lt;vendor_id state=&quot;on&quot; value=&quot;KVM Hv&quot;/&gt;
+  &lt;vpindex state=&quot;on&quot;/&gt;
+  &lt;runtime state=&quot;on&quot;/&gt;
+  &lt;synic state=&quot;on&quot;/&gt;
+  &lt;stimer state=&quot;on&quot;&gt;
+    &lt;direct state=&quot;on&quot;/&gt;
+  &lt;/stimer&gt;
+  &lt;frequencies state=&quot;on&quot;/&gt;
+  &lt;reset state=&quot;on&quot;/&gt;
+  &lt;tlbflush state=&quot;on&quot;/&gt;
+&lt;/hyperv&gt;
+</code></code></pre>
 
 <p>Click <strong>Apply</strong>.</p>
 <hr />
@@ -153,8 +153,8 @@ sudo<span class="w"> </span>mv<span class="w"> </span>~/Downloads/virtio-win.iso
 <p>Your virtual disk will now appear. Select it and click <strong>Next</strong>.</p>
 <h3>Skip the Microsoft account requirement:</h3>
 <p>When you reach <strong>"Let's connect you to a network"</strong>, press <strong>Shift + F10</strong> and run:</p>
-<div class="codehilite"><pre><span></span><code>oobe\bypassnro
-</code></pre></div>
+<pre><code><code>oobe\bypassnro
+</code></code></pre>
 
 <p>The VM restarts. Select <strong>I don't have internet</strong> → create a local account.</p>
 <blockquote>
@@ -175,8 +175,8 @@ start ms-cxh:localonly</code></p>
 <h2>Step 9 — Performance Tuning</h2>
 <h3>Disable Windows platform clock (reduces CPU overhead):</h3>
 <p>Open PowerShell as Administrator in the Windows VM:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">bcdedit</span> <span class="p">/</span><span class="nb">set </span><span class="n">useplatformclock</span> <span class="n">No</span>
-</code></pre></div>
+<pre><code><code>bcdedit /set useplatformclock No
+</code></code></pre>
 
 <p>Restart the VM.</p>
 <h3>Enable Remote Desktop for daily use:</h3>

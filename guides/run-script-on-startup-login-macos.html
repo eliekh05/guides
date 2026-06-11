@@ -47,66 +47,66 @@ DATA:scheduling:Run a Script at Startup or Login on macOS:Task Scheduling
 <p>LaunchAgents run after you log in, as your own user. They can run on a schedule or be triggered by events.</p>
 <h3>Create the plist file</h3>
 <p>Create a file at <code>~/Library/LaunchAgents/com.yourname.scriptname.plist</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
-<span class="cp">&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot;</span>
-<span class="cp">  &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;</span>
-<span class="nt">&lt;plist</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
-<span class="nt">&lt;dict&gt;</span>
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>Label<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;string&gt;</span>com.yourname.scriptname<span class="nt">&lt;/string&gt;</span>
+<pre><code><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot;
+  &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;
+&lt;plist version=&quot;1.0&quot;&gt;
+&lt;dict&gt;
+    &lt;key&gt;Label&lt;/key&gt;
+    &lt;string&gt;com.yourname.scriptname&lt;/string&gt;
 
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>ProgramArguments<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;array&gt;</span>
-<span class="w">        </span><span class="nt">&lt;string&gt;</span>/bin/zsh<span class="nt">&lt;/string&gt;</span>
-<span class="w">        </span><span class="nt">&lt;string&gt;</span>/Users/yourname/scripts/myscript.zsh<span class="nt">&lt;/string&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/array&gt;</span>
+    &lt;key&gt;ProgramArguments&lt;/key&gt;
+    &lt;array&gt;
+        &lt;string&gt;/bin/zsh&lt;/string&gt;
+        &lt;string&gt;/Users/yourname/scripts/myscript.zsh&lt;/string&gt;
+    &lt;/array&gt;
 
-<span class="w">    </span><span class="cm">&lt;!-- Run once at login --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>RunAtLoad<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;true/&gt;</span>
+    &lt;!-- Run once at login --&gt;
+    &lt;key&gt;RunAtLoad&lt;/key&gt;
+    &lt;true/&gt;
 
-<span class="w">    </span><span class="cm">&lt;!-- Optional: also run on a schedule (9 AM daily) --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>StartCalendarInterval<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;dict&gt;</span>
-<span class="w">        </span><span class="nt">&lt;key&gt;</span>Hour<span class="nt">&lt;/key&gt;</span>
-<span class="w">        </span><span class="nt">&lt;integer&gt;</span>9<span class="nt">&lt;/integer&gt;</span>
-<span class="w">        </span><span class="nt">&lt;key&gt;</span>Minute<span class="nt">&lt;/key&gt;</span>
-<span class="w">        </span><span class="nt">&lt;integer&gt;</span>0<span class="nt">&lt;/integer&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/dict&gt;</span>
+    &lt;!-- Optional: also run on a schedule (9 AM daily) --&gt;
+    &lt;key&gt;StartCalendarInterval&lt;/key&gt;
+    &lt;dict&gt;
+        &lt;key&gt;Hour&lt;/key&gt;
+        &lt;integer&gt;9&lt;/integer&gt;
+        &lt;key&gt;Minute&lt;/key&gt;
+        &lt;integer&gt;0&lt;/integer&gt;
+    &lt;/dict&gt;
 
-<span class="w">    </span><span class="cm">&lt;!-- Log output for debugging --&gt;</span>
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>StandardOutPath<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;string&gt;</span>/tmp/myscript.log<span class="nt">&lt;/string&gt;</span>
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>StandardErrorPath<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;string&gt;</span>/tmp/myscript-error.log<span class="nt">&lt;/string&gt;</span>
+    &lt;!-- Log output for debugging --&gt;
+    &lt;key&gt;StandardOutPath&lt;/key&gt;
+    &lt;string&gt;/tmp/myscript.log&lt;/string&gt;
+    &lt;key&gt;StandardErrorPath&lt;/key&gt;
+    &lt;string&gt;/tmp/myscript-error.log&lt;/string&gt;
 
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>EnvironmentVariables<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;dict&gt;</span>
-<span class="w">        </span><span class="nt">&lt;key&gt;</span>PATH<span class="nt">&lt;/key&gt;</span>
-<span class="w">        </span><span class="nt">&lt;string&gt;</span>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin<span class="nt">&lt;/string&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/dict&gt;</span>
-<span class="nt">&lt;/dict&gt;</span>
-<span class="nt">&lt;/plist&gt;</span>
-</code></pre></div>
+    &lt;key&gt;EnvironmentVariables&lt;/key&gt;
+    &lt;dict&gt;
+        &lt;key&gt;PATH&lt;/key&gt;
+        &lt;string&gt;/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin&lt;/string&gt;
+    &lt;/dict&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+</code></code></pre>
 
 <p>Replace <code>yourname</code> and <code>scriptname</code> with your own values. Replace the script path with your actual script path.</p>
 <h3>Load it</h3>
-<div class="codehilite"><pre><span></span><code>launchctl<span class="w"> </span>load<span class="w"> </span>~/Library/LaunchAgents/com.yourname.scriptname.plist
-</code></pre></div>
+<pre><code><code>launchctl load ~/Library/LaunchAgents/com.yourname.scriptname.plist
+</code></code></pre>
 
 <h3>Verify it loaded</h3>
-<div class="codehilite"><pre><span></span><code>launchctl<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>com.yourname.scriptname
-</code></pre></div>
+<pre><code><code>launchctl list | grep com.yourname.scriptname
+</code></code></pre>
 
 <p>The three columns are: PID, exit code, label. Exit code <code>0</code> = ran successfully.</p>
 <h3>Unload it</h3>
-<div class="codehilite"><pre><span></span><code>launchctl<span class="w"> </span>unload<span class="w"> </span>~/Library/LaunchAgents/com.yourname.scriptname.plist
-</code></pre></div>
+<pre><code><code>launchctl unload ~/Library/LaunchAgents/com.yourname.scriptname.plist
+</code></code></pre>
 
 <h3>Reload after changes</h3>
-<div class="codehilite"><pre><span></span><code>launchctl<span class="w"> </span>unload<span class="w"> </span>~/Library/LaunchAgents/com.yourname.scriptname.plist
-launchctl<span class="w"> </span>load<span class="w"> </span>~/Library/LaunchAgents/com.yourname.scriptname.plist
-</code></pre></div>
+<pre><code><code>launchctl unload ~/Library/LaunchAgents/com.yourname.scriptname.plist
+launchctl load ~/Library/LaunchAgents/com.yourname.scriptname.plist
+</code></code></pre>
 
 <hr />
 <h2>Method 3 — launchd System Daemon (Boot-time, Runs as Root)</h2>
@@ -123,14 +123,14 @@ launchctl<span class="w"> </span>load<span class="w"> </span>~/Library/LaunchAge
 <p>Since macOS Catalina, scripts that access Desktop, Documents, Downloads, or iCloud via launchd need Full Disk Access granted to <code>/bin/zsh</code>:</p>
 <p><strong>System Settings → Privacy &amp; Security → Full Disk Access → + → /bin/zsh</strong></p>
 <h3>Check what went wrong</h3>
-<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>/tmp/myscript-error.log
-</code></pre></div>
+<pre><code><code>cat /tmp/myscript-error.log
+</code></code></pre>
 
 <hr />
 <h2>Remove a Login Item or Agent</h2>
 <p><strong>Login Items (Method 1):</strong>
 System Settings → General → Login Items → select it → click <strong>−</strong></p>
 <p><strong>launchd Agent (Method 2):</strong></p>
-<div class="codehilite"><pre><span></span><code>launchctl<span class="w"> </span>unload<span class="w"> </span>~/Library/LaunchAgents/com.yourname.scriptname.plist
-rm<span class="w"> </span>~/Library/LaunchAgents/com.yourname.scriptname.plist
-</code></pre></div>
+<pre><code><code>launchctl unload ~/Library/LaunchAgents/com.yourname.scriptname.plist
+rm ~/Library/LaunchAgents/com.yourname.scriptname.plist
+</code></code></pre>

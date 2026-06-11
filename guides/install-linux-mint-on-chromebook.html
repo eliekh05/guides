@@ -97,13 +97,13 @@ DATA:installation:Install Linux on a Chromebook (Replacing ChromeOS):Installatio
 <h3>Step 7 — First Setup in Linux Mint</h3>
 <p>Linux Mint will boot to a full desktop. After login:</p>
 <p><strong>Update the system:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>upgrade<span class="w"> </span>-y
-</code></pre></div>
+<pre><code><code>sudo apt update &amp;&amp; sudo apt upgrade -y
+</code></code></pre>
 
 <p><strong>Fix Wi-Fi if not connecting</strong> (some Broadcom chips):</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>broadcom-sta-dkms<span class="w"> </span>-y
-sudo<span class="w"> </span>modprobe<span class="w"> </span>wl
-</code></pre></div>
+<pre><code><code>sudo apt install broadcom-sta-dkms -y
+sudo modprobe wl
+</code></code></pre>
 
 <p><strong>Enable touchpad tap-to-click:</strong>
 Go to <strong>Menu</strong> → <strong>Settings</strong> → <strong>Mouse and Touchpad</strong> → <strong>Touchpad</strong> tab → enable <strong>Tap touchpad to click</strong>.</p>

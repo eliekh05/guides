@@ -24,9 +24,9 @@ DATA:windows:Fix Windows 11 Slow Boot:Windows
 <h2>Fix 3 — Run SFC and DISM</h2>
 <p>Corrupted system files cause slow boots. Fix them:</p>
 <p>Open <strong>Command Prompt as Administrator</strong>:</p>
-<div class="codehilite"><pre><span></span><code>DISM /Online /Cleanup-Image /RestoreHealth
+<pre><code><code>DISM /Online /Cleanup-Image /RestoreHealth
 sfc /scannow
-</code></pre></div>
+</code></code></pre>
 
 <p>Restart after both complete.</p>
 <hr />
@@ -43,13 +43,13 @@ sfc /scannow
 <h2>Fix 5 — Check SSD Health</h2>
 <p>A failing or degraded SSD slows everything — boot, app launches, and file access.</p>
 <p>Open <strong>PowerShell as Administrator</strong>:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">Get-PhysicalDisk</span> <span class="p">|</span> <span class="nb">Select </span><span class="n">FriendlyName</span><span class="p">,</span> <span class="n">HealthStatus</span><span class="p">,</span> <span class="n">OperationalStatus</span>
-</code></pre></div>
+<pre><code><code>Get-PhysicalDisk | Select FriendlyName, HealthStatus, OperationalStatus
+</code></code></pre>
 
 <p>If HealthStatus shows anything other than <strong>Healthy</strong>, the drive is failing.</p>
 <p>Also check with:</p>
-<div class="codehilite"><pre><span></span><code>wmic diskdrive get status
-</code></pre></div>
+<pre><code><code>wmic diskdrive get status
+</code></code></pre>
 
 <hr />
 <h2>Fix 6 — Update or Roll Back Display / Storage Drivers</h2>
@@ -72,11 +72,11 @@ sfc /scannow
 <p>If Windows boots fast in clean boot, re-enable services and startup items in batches to find the culprit.</p>
 <hr />
 <h2>Measure Actual Boot Time</h2>
-<div class="codehilite"><pre><span></span><code><span class="gh">#</span> Check last boot time
+<pre><code><code># Check last boot time
 systeminfo | find &quot;Boot Time&quot;
 
-<span class="gh">#</span> Or in PowerShell
+# Or in PowerShell
 (Get-Date) - (gcim Win32_OperatingSystem).LastBootUpTime
-</code></pre></div>
+</code></code></pre>
 
 <p>For detailed boot analysis, open <strong>Event Viewer</strong> → <strong>Applications and Services Logs</strong> → <strong>Microsoft</strong> → <strong>Windows</strong> → <strong>Diagnostics-Performance</strong> → <strong>Operational</strong>. Event ID <strong>100</strong> shows total boot time.</p>

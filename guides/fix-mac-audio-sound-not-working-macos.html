@@ -4,15 +4,15 @@ DATA:system-users:Fix Mac Audio Not Working:System & Users
 <hr />
 <h2>Fix 1 — Restart the Audio Process (Fixes 90% of Cases)</h2>
 <p>macOS runs audio through a process called <code>coreaudiod</code>. Killing it forces it to restart cleanly:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>killall<span class="w"> </span>coreaudiod
-</code></pre></div>
+<pre><code><code>sudo killall coreaudiod
+</code></code></pre>
 
 <p>Enter your password when prompted. Audio will cut out for a second and come back. Test immediately.</p>
 <p>If that does not work, also restart the related process:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>killall<span class="w"> </span>-9<span class="w"> </span>coreaudiod
-sudo<span class="w"> </span>launchctl<span class="w"> </span>stop<span class="w"> </span>com.apple.audio.coreaudiod
-sudo<span class="w"> </span>launchctl<span class="w"> </span>start<span class="w"> </span>com.apple.audio.coreaudiod
-</code></pre></div>
+<pre><code><code>sudo killall -9 coreaudiod
+sudo launchctl stop com.apple.audio.coreaudiod
+sudo launchctl start com.apple.audio.coreaudiod
+</code></code></pre>
 
 <hr />
 <h2>Fix 2 — Check Output Device Selection</h2>
@@ -36,9 +36,9 @@ sudo<span class="w"> </span>launchctl<span class="w"> </span>start<span class="w
 <hr />
 <h2>Fix 4 — Reset Core Audio via Terminal (Full Reset)</h2>
 <p>If Fix 1 did not work, try a full audio subsystem reset:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span>/System/Library/LaunchDaemons/com.apple.audio.coreaudiod.plist
-sudo<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span>/System/Library/LaunchDaemons/com.apple.audio.coreaudiod.plist
-</code></pre></div>
+<pre><code><code>sudo launchctl unload /System/Library/LaunchDaemons/com.apple.audio.coreaudiod.plist
+sudo launchctl load /System/Library/LaunchDaemons/com.apple.audio.coreaudiod.plist
+</code></code></pre>
 
 <hr />
 <h2>Fix 5 — Delete Audio Preference Files (Clears Corrupted Config)</h2>

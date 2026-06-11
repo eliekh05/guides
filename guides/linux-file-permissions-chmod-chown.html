@@ -2,8 +2,8 @@ DATA:linux:Linux File Permissions — chmod, chown, chgrp Explained:Linux
 <h1>Linux File Permissions — chmod, chown, chgrp Explained</h1>
 <hr />
 <h2>Read the Permission String</h2>
-<div class="codehilite"><pre><span></span><code>-rwxr-xr--  1  alice  staff  4096  Jan 1  file.txt
-</code></pre></div>
+<pre><code><code>-rwxr-xr--  1  alice  staff  4096  Jan 1  file.txt
+</code></code></pre>
 
 <table>
 <thead>
@@ -42,13 +42,13 @@ DATA:linux:Linux File Permissions — chmod, chown, chgrp Explained:Linux
 <hr />
 <h2>chmod — Change Permissions</h2>
 <h3>Symbolic mode (easier to read)</h3>
-<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span>u+x<span class="w"> </span>file.sh<span class="w">          </span><span class="c1"># add execute for owner</span>
-chmod<span class="w"> </span>g-w<span class="w"> </span>file.txt<span class="w">         </span><span class="c1"># remove write from group</span>
-chmod<span class="w"> </span><span class="nv">o</span><span class="o">=</span>r<span class="w"> </span>file.txt<span class="w">         </span><span class="c1"># set others to read only</span>
-chmod<span class="w"> </span>a+r<span class="w"> </span>file.txt<span class="w">         </span><span class="c1"># add read for all (u+g+o)</span>
-chmod<span class="w"> </span>u+x,g+r<span class="w"> </span>file.sh<span class="w">      </span><span class="c1"># multiple changes at once</span>
-chmod<span class="w"> </span>-R<span class="w"> </span><span class="m">755</span><span class="w"> </span>/var/www/<span class="w">     </span><span class="c1"># recursive</span>
-</code></pre></div>
+<pre><code><code>chmod u+x file.sh          # add execute for owner
+chmod g-w file.txt         # remove write from group
+chmod o=r file.txt         # set others to read only
+chmod a+r file.txt         # add read for all (u+g+o)
+chmod u+x,g+r file.sh      # multiple changes at once
+chmod -R 755 /var/www/     # recursive
+</code></code></pre>
 
 <ul>
 <li><code>u</code> = user (owner)</li>
@@ -60,12 +60,12 @@ chmod<span class="w"> </span>-R<span class="w"> </span><span class="m">755</span
 <h3>Numeric mode (faster once you know it)</h3>
 <p>Each permission has a value: <code>r=4</code>, <code>w=2</code>, <code>x=1</code></p>
 <p>Add them up for each category: owner / group / others</p>
-<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span>file<span class="w">    </span><span class="c1"># rwxr-xr-x  (owner: all, group: r+x, others: r+x)</span>
-chmod<span class="w"> </span><span class="m">644</span><span class="w"> </span>file<span class="w">    </span><span class="c1"># rw-r--r--  (owner: r+w, group: r, others: r)</span>
-chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>file<span class="w">    </span><span class="c1"># rw-------  (owner: r+w only)</span>
-chmod<span class="w"> </span><span class="m">777</span><span class="w"> </span>file<span class="w">    </span><span class="c1"># rwxrwxrwx  (everyone everything — avoid this)</span>
-chmod<span class="w"> </span><span class="m">700</span><span class="w"> </span>dir/<span class="w">    </span><span class="c1"># rwx------  (owner only, required for SSH keys folder)</span>
-</code></pre></div>
+<pre><code><code>chmod 755 file    # rwxr-xr-x  (owner: all, group: r+x, others: r+x)
+chmod 644 file    # rw-r--r--  (owner: r+w, group: r, others: r)
+chmod 600 file    # rw-------  (owner: r+w only)
+chmod 777 file    # rwxrwxrwx  (everyone everything — avoid this)
+chmod 700 dir/    # rwx------  (owner only, required for SSH keys folder)
+</code></code></pre>
 
 <p>Common values:
 - <code>7</code> = rwx (4+2+1)
@@ -74,57 +74,57 @@ chmod<span class="w"> </span><span class="m">700</span><span class="w"> </span>d
 - <code>4</code> = r-- (4)
 - <code>0</code> = --- (none)</p>
 <h3>Recursive</h3>
-<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span>-R<span class="w"> </span><span class="m">755</span><span class="w"> </span>/var/www/
-chmod<span class="w"> </span>-R<span class="w"> </span>u+rwX,go+rX<span class="w"> </span>/shared/<span class="w">   </span><span class="c1"># Capital X = execute only on directories</span>
-</code></pre></div>
+<pre><code><code>chmod -R 755 /var/www/
+chmod -R u+rwX,go+rX /shared/   # Capital X = execute only on directories
+</code></code></pre>
 
 <hr />
 <h2>chown — Change Owner</h2>
-<div class="codehilite"><pre><span></span><code>chown<span class="w"> </span>alice<span class="w"> </span>file.txt<span class="w">               </span><span class="c1"># change owner to alice</span>
-chown<span class="w"> </span>alice:staff<span class="w"> </span>file.txt<span class="w">         </span><span class="c1"># change owner and group</span>
-chown<span class="w"> </span>:staff<span class="w"> </span>file.txt<span class="w">              </span><span class="c1"># change group only</span>
-chown<span class="w"> </span>-R<span class="w"> </span>alice<span class="w"> </span>/home/alice/<span class="w">        </span><span class="c1"># recursive</span>
-sudo<span class="w"> </span>chown<span class="w"> </span>root:root<span class="w"> </span>/etc/hosts<span class="w">    </span><span class="c1"># system files need sudo</span>
-</code></pre></div>
+<pre><code><code>chown alice file.txt               # change owner to alice
+chown alice:staff file.txt         # change owner and group
+chown :staff file.txt              # change group only
+chown -R alice /home/alice/        # recursive
+sudo chown root:root /etc/hosts    # system files need sudo
+</code></code></pre>
 
 <hr />
 <h2>chgrp — Change Group</h2>
-<div class="codehilite"><pre><span></span><code>chgrp<span class="w"> </span>developers<span class="w"> </span>file.txt
-chgrp<span class="w"> </span>-R<span class="w"> </span>developers<span class="w"> </span>/project/
-</code></pre></div>
+<pre><code><code>chgrp developers file.txt
+chgrp -R developers /project/
+</code></code></pre>
 
 <hr />
 <h2>Special Permissions</h2>
 <h3>Setuid (s on owner execute bit)</h3>
 <p>Executable runs as the file's owner, not the user who ran it:</p>
-<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span>u+s<span class="w"> </span>/usr/bin/program
-<span class="c1"># Shows as: -rwsr-xr-x</span>
-</code></pre></div>
+<pre><code><code>chmod u+s /usr/bin/program
+# Shows as: -rwsr-xr-x
+</code></code></pre>
 
 <h3>Setgid (s on group execute bit)</h3>
 <p>On a directory: new files inherit the directory's group instead of creator's group:</p>
-<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span>g+s<span class="w"> </span>/shared/project/
-<span class="c1"># Shows as: drwxr-sr-x</span>
-</code></pre></div>
+<pre><code><code>chmod g+s /shared/project/
+# Shows as: drwxr-sr-x
+</code></code></pre>
 
 <h3>Sticky bit (t on others execute bit)</h3>
 <p>On a directory: only the file owner can delete their own files:</p>
-<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span>+t<span class="w"> </span>/tmp
-chmod<span class="w"> </span><span class="m">1777</span><span class="w"> </span>/tmp
-<span class="c1"># Shows as: drwxrwxrwt</span>
-</code></pre></div>
+<pre><code><code>chmod +t /tmp
+chmod 1777 /tmp
+# Shows as: drwxrwxrwt
+</code></code></pre>
 
 <hr />
 <h2>Default Permissions — umask</h2>
 <p><code>umask</code> sets the default permissions subtracted from <code>666</code> for files and <code>777</code> for directories.</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">umask</span><span class="w">          </span><span class="c1"># view current umask</span>
-<span class="nb">umask</span><span class="w"> </span><span class="m">022</span><span class="w">      </span><span class="c1"># common default: files=644, dirs=755</span>
-<span class="nb">umask</span><span class="w"> </span><span class="m">002</span><span class="w">      </span><span class="c1"># group-write friendly: files=664, dirs=775</span>
-</code></pre></div>
+<pre><code><code>umask          # view current umask
+umask 022      # common default: files=644, dirs=755
+umask 002      # group-write friendly: files=664, dirs=775
+</code></code></pre>
 
 <p>Set permanently in <code>~/.zprofile</code> or <code>~/.bashrc</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;umask 022&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
-</code></pre></div>
+<pre><code><code>echo &quot;umask 022&quot; &gt;&gt; ~/.zprofile
+</code></code></pre>
 
 <hr />
 <h2>Quick Reference</h2>

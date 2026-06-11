@@ -3,54 +3,54 @@ DATA:package-managers:Fix Homebrew Permission Errors:Package Managers (All OSes)
 <p>Homebrew permission errors are some of the most frustrating — they block installs, upgrades, and even <code>brew doctor</code>. They usually appear after macOS updates, permission changes, or installing Homebrew as root. Here are all the fixes.</p>
 <hr />
 <h2>Common Permission Error Messages</h2>
-<div class="codehilite"><pre><span></span><code>Error: /opt/homebrew is not writable
+<pre><code><code>Error: /opt/homebrew is not writable
 Error: /usr/local/Cellar is not writable
 Error: Could not symlink bin/wget
 /usr/local/bin is not writable
 Permission denied @ rb_sysopen
-</code></pre></div>
+</code></code></pre>
 
 <hr />
 <h2>Fix 1 — Fix Homebrew Directory Ownership (Most Common)</h2>
 <p>Homebrew should be owned by your user, not root. Reset ownership:</p>
 <p><strong>Apple Silicon:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span>/opt/homebrew
-</code></pre></div>
+<pre><code><code>sudo chown -R $(whoami) /opt/homebrew
+</code></code></pre>
 
 <p><strong>Intel Mac:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span>/usr/local/Homebrew<span class="w"> </span>/usr/local/Cellar<span class="w"> </span>/usr/local/bin<span class="w"> </span>/usr/local/lib<span class="w"> </span>/usr/local/share
-</code></pre></div>
+<pre><code><code>sudo chown -R $(whoami) /usr/local/Homebrew /usr/local/Cellar /usr/local/bin /usr/local/lib /usr/local/share
+</code></code></pre>
 
 <p>Then run <code>brew doctor</code> to confirm everything is fixed.</p>
 <hr />
 <h2>Fix 2 — Fix a Specific Broken Symlink</h2>
 <p>If only one package has a symlink error like:</p>
-<div class="codehilite"><pre><span></span><code>Error: Could not symlink bin/wget
+<pre><code><code>Error: Could not symlink bin/wget
 /usr/local/bin is not writable
-</code></pre></div>
+</code></code></pre>
 
 <p>Fix that specific package:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span>/usr/local/bin
-brew<span class="w"> </span>link<span class="w"> </span>wget
-</code></pre></div>
+<pre><code><code>sudo chown -R $(whoami) /usr/local/bin
+brew link wget
+</code></code></pre>
 
 <p>If a symlink conflict is causing the issue:</p>
-<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>link<span class="w"> </span>--overwrite<span class="w"> </span>wget
-</code></pre></div>
+<pre><code><code>brew link --overwrite wget
+</code></code></pre>
 
 <hr />
 <h2>Fix 3 — Fix Homebrew After Running as Root (Never Run brew as root or sudo)</h2>
 <p>Running <code>sudo brew install</code> breaks Homebrew's permissions because it creates files owned by root that your user cannot modify. Fix it:</p>
 <p><strong>Apple Silicon:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span>/opt/homebrew
-sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span><span class="k">$(</span>brew<span class="w"> </span>--prefix<span class="k">)</span>/var/homebrew
-</code></pre></div>
+<pre><code><code>sudo chown -R $(whoami) /opt/homebrew
+sudo chown -R $(whoami) $(brew --prefix)/var/homebrew
+</code></code></pre>
 
 <p><strong>Intel:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span>/usr/local/Homebrew
-sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span>/usr/local/Cellar
-sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span>/usr/local/var
-</code></pre></div>
+<pre><code><code>sudo chown -R $(whoami) /usr/local/Homebrew
+sudo chown -R $(whoami) /usr/local/Cellar
+sudo chown -R $(whoami) /usr/local/var
+</code></code></pre>
 
 <blockquote>
 <p><strong>Important:</strong> Never run <code>sudo brew</code> again. Homebrew is specifically designed to run without sudo. If a package asks you to run <code>sudo brew</code>, that package has a bug.</p>
@@ -58,33 +58,33 @@ sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </sp
 <hr />
 <h2>Fix 4 — Fix /tmp Permissions</h2>
 <p>Some Homebrew build failures are caused by wrong <code>/tmp</code> permissions:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">1777</span><span class="w"> </span>/tmp
-</code></pre></div>
+<pre><code><code>sudo chmod 1777 /tmp
+</code></code></pre>
 
 <hr />
 <h2>Fix 5 — Fix Homebrew Cache Permissions</h2>
 <p>If downloads keep failing with permission errors:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span><span class="k">$(</span>brew<span class="w"> </span>--cache<span class="k">)</span>
-chmod<span class="w"> </span>-R<span class="w"> </span>u+rw<span class="w"> </span><span class="k">$(</span>brew<span class="w"> </span>--cache<span class="k">)</span>
-</code></pre></div>
+<pre><code><code>sudo chown -R $(whoami) $(brew --cache)
+chmod -R u+rw $(brew --cache)
+</code></code></pre>
 
 <hr />
 <h2>Fix 6 — Full Permissions Reset</h2>
 <p>If nothing above works, reset all Homebrew directory permissions at once:</p>
 <p><strong>Apple Silicon:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span>/opt/homebrew
-find<span class="w"> </span>/opt/homebrew<span class="w"> </span>-type<span class="w"> </span>d<span class="w"> </span>-exec<span class="w"> </span>chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
-find<span class="w"> </span>/opt/homebrew<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-exec<span class="w"> </span>chmod<span class="w"> </span><span class="m">644</span><span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
-find<span class="w"> </span>/opt/homebrew/bin<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-exec<span class="w"> </span>chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
-</code></pre></div>
+<pre><code><code>sudo chown -R $(whoami) /opt/homebrew
+find /opt/homebrew -type d -exec chmod 755 {} \;
+find /opt/homebrew -type f -exec chmod 644 {} \;
+find /opt/homebrew/bin -type f -exec chmod 755 {} \;
+</code></code></pre>
 
 <p><strong>Intel:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span>/usr/local/Homebrew<span class="w"> </span>/usr/local/Cellar<span class="w"> </span>/usr/local/bin<span class="w"> </span>/usr/local/lib<span class="w"> </span>/usr/local/share<span class="w"> </span>/usr/local/var
-</code></pre></div>
+<pre><code><code>sudo chown -R $(whoami) /usr/local/Homebrew /usr/local/Cellar /usr/local/bin /usr/local/lib /usr/local/share /usr/local/var
+</code></code></pre>
 
 <p>Then run:</p>
-<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>brew<span class="w"> </span>doctor
-</code></pre></div>
+<pre><code><code>brew update &amp;&amp; brew doctor
+</code></code></pre>
 
 <hr />
 <h2>Prevention</h2>

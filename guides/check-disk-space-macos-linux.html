@@ -6,59 +6,59 @@ DATA:macos:Check Disk Space on macOS and Linux:macOS
 <p>Click the <strong>Apple menu ()</strong> → <strong>About This Mac</strong> → <strong>More Info</strong> → <strong>Storage</strong>.</p>
 <p>Or in Finder: hold <strong>Option (⌥)</strong> and click the <strong>Go</strong> menu → <strong>Computer</strong> → right-click your drive → <strong>Get Info</strong>.</p>
 <h3>In Terminal</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Disk usage summary for all mounted volumes</span>
-df<span class="w"> </span>-h
+<pre><code><code># Disk usage summary for all mounted volumes
+df -h
 
-<span class="c1"># How much space a specific folder uses</span>
-du<span class="w"> </span>-sh<span class="w"> </span>~/Downloads
-du<span class="w"> </span>-sh<span class="w"> </span>~/Desktop
+# How much space a specific folder uses
+du -sh ~/Downloads
+du -sh ~/Desktop
 
-<span class="c1"># Top 10 largest folders in your home directory</span>
-du<span class="w"> </span>-sh<span class="w"> </span>~/*<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-rh<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-10
+# Top 10 largest folders in your home directory
+du -sh ~/* | sort -rh | head -10
 
-<span class="c1"># Find the largest files on the whole system</span>
-sudo<span class="w"> </span>du<span class="w"> </span>-sh<span class="w"> </span>/*<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-rh<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
-</code></pre></div>
+# Find the largest files on the whole system
+sudo du -sh /* 2&gt;/dev/null | sort -rh | head -20
+</code></code></pre>
 
 <h3>Free up space quickly</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Clear Homebrew cache</span>
-brew<span class="w"> </span>cleanup<span class="w"> </span>-s
+<pre><code><code># Clear Homebrew cache
+brew cleanup -s
 
-<span class="c1"># Clear system and user caches</span>
-sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>~/Library/Caches/*
-sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/Library/Caches/*
-</code></pre></div>
+# Clear system and user caches
+sudo rm -rf ~/Library/Caches/*
+sudo rm -rf /Library/Caches/*
+</code></code></pre>
 
 <hr />
 <h2>Linux</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Disk usage for all mounted filesystems</span>
-df<span class="w"> </span>-h
+<pre><code><code># Disk usage for all mounted filesystems
+df -h
 
-<span class="c1"># Size of a specific folder</span>
-du<span class="w"> </span>-sh<span class="w"> </span>/var/log
+# Size of a specific folder
+du -sh /var/log
 
-<span class="c1"># Find the largest directories from root</span>
-sudo<span class="w"> </span>du<span class="w"> </span>-sh<span class="w"> </span>/*<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-rh<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
+# Find the largest directories from root
+sudo du -sh /* 2&gt;/dev/null | sort -rh | head -20
 
-<span class="c1"># Find files over 1 GB</span>
-sudo<span class="w"> </span>find<span class="w"> </span>/<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-size<span class="w"> </span>+1G<span class="w"> </span><span class="m">2</span>&gt;/dev/null
+# Find files over 1 GB
+sudo find / -type f -size +1G 2&gt;/dev/null
 
-<span class="c1"># Interactive disk usage browser (install first)</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>ncdu<span class="w"> </span>-y<span class="w">    </span><span class="c1"># Ubuntu/Debian</span>
-sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>ncdu<span class="w"> </span>-y<span class="w">    </span><span class="c1"># Fedora</span>
+# Interactive disk usage browser (install first)
+sudo apt install ncdu -y    # Ubuntu/Debian
+sudo dnf install ncdu -y    # Fedora
 
-ncdu<span class="w"> </span>/<span class="w">    </span><span class="c1"># Browse disk usage interactively</span>
-</code></pre></div>
+ncdu /    # Browse disk usage interactively
+</code></code></pre>
 
 <p><code>ncdu</code> is the most useful tool here — it lets you navigate into folders, see what is using space, and delete things directly from the interface.</p>
 <h3>Free up space on Ubuntu/Debian</h3>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Remove old packages</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>autoremove<span class="w"> </span>-y
-sudo<span class="w"> </span>apt<span class="w"> </span>clean
+<pre><code><code># Remove old packages
+sudo apt autoremove -y
+sudo apt clean
 
-<span class="c1"># Remove old kernels (keeps current + one previous)</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>autoremove<span class="w"> </span>--purge<span class="w"> </span>-y
+# Remove old kernels (keeps current + one previous)
+sudo apt autoremove --purge -y
 
-<span class="c1"># Clean journal logs older than 7 days</span>
-sudo<span class="w"> </span>journalctl<span class="w"> </span>--vacuum-time<span class="o">=</span>7d
-</code></pre></div>
+# Clean journal logs older than 7 days
+sudo journalctl --vacuum-time=7d
+</code></code></pre>

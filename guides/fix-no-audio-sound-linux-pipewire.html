@@ -3,8 +3,8 @@ DATA:linux:Fix No Audio / Sound Not Working on Linux (PipeWire):Linux
 <p>PipeWire is the default audio server on Ubuntu 22.10+, Debian 13, Fedora 34+, and most modern Linux distros. Most audio troubleshooting guides online still reference PulseAudio which is outdated and does not apply to current systems. This guide is for PipeWire.</p>
 <hr />
 <h2>Step 1 — Check What Audio System You Are Running</h2>
-<div class="codehilite"><pre><span></span><code>pactl<span class="w"> </span>info<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;Server Name&quot;</span>
-</code></pre></div>
+<pre><code><code>pactl info | grep &quot;Server Name&quot;
+</code></code></pre>
 
 <p>Output will be one of:
 - <code>Server Name: PulseAudio (on PipeWire x.x.x)</code> — you are on PipeWire (correct for modern systems)
@@ -12,141 +12,141 @@ DATA:linux:Fix No Audio / Sound Not Working on Linux (PipeWire):Linux
 <p>If you are on PipeWire, continue with this guide. If on PulseAudio, the fixes are the same but substitute <code>systemctl --user restart pulseaudio</code> where this guide says restart PipeWire.</p>
 <hr />
 <h2>Step 2 — Check If PipeWire Services Are Running</h2>
-<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>--user<span class="w"> </span>status<span class="w"> </span>pipewire<span class="w"> </span>pipewire-pulse<span class="w"> </span>wireplumber
-</code></pre></div>
+<pre><code><code>systemctl --user status pipewire pipewire-pulse wireplumber
+</code></code></pre>
 
 <p>All three should show <code>active (running)</code>. If any show <code>failed</code> or <code>inactive</code>:</p>
-<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>--user<span class="w"> </span>restart<span class="w"> </span>pipewire<span class="w"> </span>pipewire-pulse<span class="w"> </span>wireplumber
-</code></pre></div>
+<pre><code><code>systemctl --user restart pipewire pipewire-pulse wireplumber
+</code></code></pre>
 
 <p>Then test audio again. If this fixes it but the problem returns on next login, enable the services to start automatically:</p>
-<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>--user<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>pipewire<span class="w"> </span>pipewire-pulse<span class="w"> </span>wireplumber
-</code></pre></div>
+<pre><code><code>systemctl --user enable pipewire pipewire-pulse wireplumber
+</code></code></pre>
 
 <hr />
 <h2>Step 3 — Check If a Device Is Being Detected</h2>
-<div class="codehilite"><pre><span></span><code>wpctl<span class="w"> </span>status
-</code></pre></div>
+<pre><code><code>wpctl status
+</code></code></pre>
 
 <p>Under <strong>Audio → Sinks</strong>, you should see your audio output device listed. If the list is empty or only shows <code>Dummy Output</code>, your audio hardware is not being detected.</p>
 <p>Also check:</p>
-<div class="codehilite"><pre><span></span><code>aplay<span class="w"> </span>-l
-</code></pre></div>
+<pre><code><code>aplay -l
+</code></code></pre>
 
 <p>This lists all ALSA-detected sound cards. If nothing appears here, the issue is at the hardware/driver level, not PipeWire.</p>
 <hr />
 <h2>Step 4 — Check Volume and Mute Status</h2>
-<div class="codehilite"><pre><span></span><code>wpctl<span class="w"> </span>get-volume<span class="w"> </span>@DEFAULT_AUDIO_SINK@
-</code></pre></div>
+<pre><code><code>wpctl get-volume @DEFAULT_AUDIO_SINK@
+</code></code></pre>
 
 <p>If it shows <code>MUTED</code>, unmute:</p>
-<div class="codehilite"><pre><span></span><code>wpctl<span class="w"> </span>set-mute<span class="w"> </span>@DEFAULT_AUDIO_SINK@<span class="w"> </span><span class="m">0</span>
-</code></pre></div>
+<pre><code><code>wpctl set-mute @DEFAULT_AUDIO_SINK@ 0
+</code></code></pre>
 
 <p>Set volume to 100%:</p>
-<div class="codehilite"><pre><span></span><code>wpctl<span class="w"> </span>set-volume<span class="w"> </span>@DEFAULT_AUDIO_SINK@<span class="w"> </span><span class="m">1</span>.0
-</code></pre></div>
+<pre><code><code>wpctl set-volume @DEFAULT_AUDIO_SINK@ 1.0
+</code></code></pre>
 
 <p>You can also use <code>pavucontrol</code> (PulseAudio Volume Control — works with PipeWire) for a GUI:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>pavucontrol<span class="w"> </span>-y
+<pre><code><code>sudo apt install pavucontrol -y
 pavucontrol
-</code></pre></div>
+</code></code></pre>
 
 <p>In pavucontrol, check the <strong>Output Devices</strong> tab — make sure nothing is muted and the correct device is set as default.</p>
 <hr />
 <h2>Step 5 — Set the Correct Default Output Device</h2>
 <p>If you have multiple audio devices (HDMI, headphones, USB DAC), PipeWire may be outputting to the wrong one.</p>
 <p>List available sinks:</p>
-<div class="codehilite"><pre><span></span><code>pactl<span class="w"> </span>list<span class="w"> </span>short<span class="w"> </span>sinks
-</code></pre></div>
+<pre><code><code>pactl list short sinks
+</code></code></pre>
 
 <p>Set the default to the correct one (replace <code>alsa_output.pci-0000_00_1f.3.analog-stereo</code> with your actual sink name):</p>
-<div class="codehilite"><pre><span></span><code>pactl<span class="w"> </span>set-default-sink<span class="w"> </span>alsa_output.pci-0000_00_1f.3.analog-stereo
-</code></pre></div>
+<pre><code><code>pactl set-default-sink alsa_output.pci-0000_00_1f.3.analog-stereo
+</code></code></pre>
 
 <p>Or use <code>wpctl</code>:</p>
-<div class="codehilite"><pre><span></span><code>wpctl<span class="w"> </span>set-default<span class="w"> </span>SINK_ID_NUMBER
-</code></pre></div>
+<pre><code><code>wpctl set-default SINK_ID_NUMBER
+</code></code></pre>
 
 <p>Get the sink ID number from <code>wpctl status</code>.</p>
 <hr />
 <h2>Fix — No Sound After Installing PipeWire (Ubuntu 22.04)</h2>
 <p>Ubuntu 22.04 ships with PulseAudio by default but PipeWire is available. If you installed PipeWire manually and audio broke:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Install the full PipeWire audio stack</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>pipewire<span class="w"> </span>pipewire-audio<span class="w"> </span>pipewire-pulse<span class="w"> </span>pipewire-alsa<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>libspa-0.2-bluetooth<span class="w"> </span>wireplumber<span class="w"> </span>-y
+<pre><code><code># Install the full PipeWire audio stack
+sudo apt install pipewire pipewire-audio pipewire-pulse pipewire-alsa \
+  libspa-0.2-bluetooth wireplumber -y
 
-<span class="c1"># Disable PulseAudio</span>
-systemctl<span class="w"> </span>--user<span class="w"> </span>disable<span class="w"> </span>pulseaudio.service<span class="w"> </span>pulseaudio.socket
-systemctl<span class="w"> </span>--user<span class="w"> </span>mask<span class="w"> </span>pulseaudio.service<span class="w"> </span>pulseaudio.socket
-systemctl<span class="w"> </span>--user<span class="w"> </span>stop<span class="w"> </span>pulseaudio.service<span class="w"> </span>pulseaudio.socket
+# Disable PulseAudio
+systemctl --user disable pulseaudio.service pulseaudio.socket
+systemctl --user mask pulseaudio.service pulseaudio.socket
+systemctl --user stop pulseaudio.service pulseaudio.socket
 
-<span class="c1"># Enable PipeWire</span>
-systemctl<span class="w"> </span>--user<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>pipewire<span class="w"> </span>pipewire-pulse<span class="w"> </span>wireplumber
-systemctl<span class="w"> </span>--user<span class="w"> </span>start<span class="w"> </span>pipewire<span class="w"> </span>pipewire-pulse<span class="w"> </span>wireplumber
+# Enable PipeWire
+systemctl --user enable pipewire pipewire-pulse wireplumber
+systemctl --user start pipewire pipewire-pulse wireplumber
 
-<span class="c1"># Verify</span>
-pactl<span class="w"> </span>info<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;Server Name&quot;</span>
-</code></pre></div>
+# Verify
+pactl info | grep &quot;Server Name&quot;
+</code></code></pre>
 
 <p>Log out and back in. Audio should now work through PipeWire.</p>
 <hr />
 <h2>Fix — Bluetooth Audio Not Working</h2>
 <p>Bluetooth audio needs an extra package:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>libspa-0.2-bluetooth<span class="w"> </span>-y
-sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>bluetooth
-systemctl<span class="w"> </span>--user<span class="w"> </span>restart<span class="w"> </span>wireplumber
-</code></pre></div>
+<pre><code><code>sudo apt install libspa-0.2-bluetooth -y
+sudo systemctl restart bluetooth
+systemctl --user restart wireplumber
+</code></code></pre>
 
 <p>If Bluetooth audio connects but sounds terrible (mono, low quality):</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Check which codec is being used</span>
-pactl<span class="w"> </span>list<span class="w"> </span>cards<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A<span class="w"> </span><span class="m">20</span><span class="w"> </span><span class="s2">&quot;bluetooth&quot;</span>
-</code></pre></div>
+<pre><code><code># Check which codec is being used
+pactl list cards | grep -A 20 &quot;bluetooth&quot;
+</code></code></pre>
 
 <p>High quality codecs (aptX, LDAC, AAC) require:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>libspa-0.2-bluetooth<span class="w"> </span>pipewire-audio<span class="w"> </span>-y
-</code></pre></div>
+<pre><code><code>sudo apt install libspa-0.2-bluetooth pipewire-audio -y
+</code></code></pre>
 
 <p>Then reconnect the Bluetooth device — it should now negotiate a better codec.</p>
 <hr />
 <h2>Fix — Audio Crackling or Distortion</h2>
 <p>Crackling is usually a sample rate mismatch or buffer issue.</p>
 <p>Check the current sample rate:</p>
-<div class="codehilite"><pre><span></span><code>pw-cli<span class="w"> </span>info<span class="w"> </span>all<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;clock.rate&quot;</span>
-</code></pre></div>
+<pre><code><code>pw-cli info all | grep &quot;clock.rate&quot;
+</code></code></pre>
 
 <p>To force 48000Hz (most common fix):</p>
-<div class="codehilite"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>~/.config/pipewire
-cp<span class="w"> </span>/usr/share/pipewire/pipewire.conf<span class="w"> </span>~/.config/pipewire/
-nano<span class="w"> </span>~/.config/pipewire/pipewire.conf
-</code></pre></div>
+<pre><code><code>mkdir -p ~/.config/pipewire
+cp /usr/share/pipewire/pipewire.conf ~/.config/pipewire/
+nano ~/.config/pipewire/pipewire.conf
+</code></code></pre>
 
 <p>Find <code>default.clock.rate</code> and set it to <code>48000</code>. Save and restart:</p>
-<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>--user<span class="w"> </span>restart<span class="w"> </span>pipewire<span class="w"> </span>pipewire-pulse<span class="w"> </span>wireplumber
-</code></pre></div>
+<pre><code><code>systemctl --user restart pipewire pipewire-pulse wireplumber
+</code></code></pre>
 
 <hr />
 <h2>Fix — HDMI Audio Not Working</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># List all HDMI sinks</span>
-pactl<span class="w"> </span>list<span class="w"> </span>short<span class="w"> </span>sinks<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>hdmi
+<pre><code><code># List all HDMI sinks
+pactl list short sinks | grep hdmi
 
-<span class="c1"># Set HDMI as default</span>
-pactl<span class="w"> </span>set-default-sink<span class="w"> </span>alsa_output.pci-XXXX.hdmi-stereo
-</code></pre></div>
+# Set HDMI as default
+pactl set-default-sink alsa_output.pci-XXXX.hdmi-stereo
+</code></code></pre>
 
 <p>If no HDMI sinks appear, the GPU driver may not be exposing the HDMI audio device. Check:</p>
-<div class="codehilite"><pre><span></span><code>aplay<span class="w"> </span>-l<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>HDMI
-</code></pre></div>
+<pre><code><code>aplay -l | grep HDMI
+</code></code></pre>
 
 <p>If it appears in <code>aplay</code> but not in PipeWire, restart PipeWire:</p>
-<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>--user<span class="w"> </span>restart<span class="w"> </span>pipewire<span class="w"> </span>wireplumber
-</code></pre></div>
+<pre><code><code>systemctl --user restart pipewire wireplumber
+</code></code></pre>
 
 <hr />
 <h2>Check Logs for Errors</h2>
-<div class="codehilite"><pre><span></span><code>journalctl<span class="w"> </span>--user<span class="w"> </span>-u<span class="w"> </span>pipewire<span class="w"> </span>--since<span class="w"> </span><span class="s2">&quot;10 minutes ago&quot;</span>
-journalctl<span class="w"> </span>--user<span class="w"> </span>-u<span class="w"> </span>wireplumber<span class="w"> </span>-f
-</code></pre></div>
+<pre><code><code>journalctl --user -u pipewire --since &quot;10 minutes ago&quot;
+journalctl --user -u wireplumber -f
+</code></code></pre>
 
 <p>Look for lines containing <code>error</code> or <code>failed</code> — these often point directly to the problem.</p>
 <hr />

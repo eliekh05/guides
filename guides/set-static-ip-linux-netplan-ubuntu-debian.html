@@ -7,8 +7,8 @@ DATA:networking:Set a Static IP on Linux Using Netplan (Ubuntu/Debian):Networkin
 <hr />
 <h2>Find Your Network Interface Name</h2>
 <p>Before editing anything, find the exact name of your network interface:</p>
-<div class="codehilite"><pre><span></span><code>ip<span class="w"> </span>a
-</code></pre></div>
+<pre><code><code>ip a
+</code></code></pre>
 
 <p>Look for:
 - <strong>Ethernet:</strong> usually <code>eth0</code>, <code>enp3s0</code>, <code>enp0s3</code>, or similar (<code>en</code> prefix)
@@ -17,10 +17,10 @@ DATA:networking:Set a Static IP on Linux Using Netplan (Ubuntu/Debian):Networkin
 <hr />
 <h2>Find Your Current Network Details</h2>
 <p>If the machine is currently connected via DHCP, note the current values:</p>
-<div class="codehilite"><pre><span></span><code>ip<span class="w"> </span>a<span class="w"> </span>show<span class="w"> </span>enp3s0<span class="w">        </span><span class="c1"># Replace with your interface name</span>
-ip<span class="w"> </span>route<span class="w"> </span>show
-cat<span class="w"> </span>/etc/resolv.conf
-</code></pre></div>
+<pre><code><code>ip a show enp3s0        # Replace with your interface name
+ip route show
+cat /etc/resolv.conf
+</code></code></pre>
 
 <p>Note:
 - Current IP and prefix (e.g. <code>192.168.1.45/24</code>)
@@ -29,82 +29,82 @@ cat<span class="w"> </span>/etc/resolv.conf
 <hr />
 <h2>Step 1 — Find the Netplan Config File</h2>
 <p>Netplan config files live in <code>/etc/netplan/</code>. List them:</p>
-<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>/etc/netplan/
-</code></pre></div>
+<pre><code><code>ls /etc/netplan/
+</code></code></pre>
 
 <p>You will see one file, usually named something like:
 - <code>00-installer-config.yaml</code>
 - <code>01-netcfg.yaml</code>
 - <code>50-cloud-init.yaml</code></p>
 <p>Open it to see the current config:</p>
-<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>/etc/netplan/00-installer-config.yaml
-</code></pre></div>
+<pre><code><code>cat /etc/netplan/00-installer-config.yaml
+</code></code></pre>
 
 <hr />
 <h2>Step 2 — Back Up the Current Config</h2>
 <p>Always back up before editing:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>cp<span class="w"> </span>/etc/netplan/00-installer-config.yaml<span class="w"> </span>/etc/netplan/00-installer-config.yaml.bak
-</code></pre></div>
+<pre><code><code>sudo cp /etc/netplan/00-installer-config.yaml /etc/netplan/00-installer-config.yaml.bak
+</code></code></pre>
 
 <hr />
 <h2>Step 3 — Edit the Config File</h2>
 <p>Open the file with nano:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/netplan/00-installer-config.yaml
-</code></pre></div>
+<pre><code><code>sudo nano /etc/netplan/00-installer-config.yaml
+</code></code></pre>
 
 <h3>Static IP for Ethernet (most common — servers, Proxmox, etc.)</h3>
 <p>Replace the entire contents with:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">network</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-<span class="w">  </span><span class="nt">renderer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">networkd</span>
-<span class="w">  </span><span class="nt">ethernets</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">enp3s0</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">dhcp4</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no</span>
-<span class="w">      </span><span class="nt">addresses</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.1.10/24</span>
-<span class="w">      </span><span class="nt">routes</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">to</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
-<span class="w">          </span><span class="nt">via</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.1.1</span>
-<span class="w">      </span><span class="nt">nameservers</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">addresses</span><span class="p">:</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.1.1.1</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8.8.8.8</span>
-</code></pre></div>
+<pre><code><code>network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    enp3s0:
+      dhcp4: no
+      addresses:
+        - 192.168.1.10/24
+      routes:
+        - to: default
+          via: 192.168.1.1
+      nameservers:
+        addresses:
+          - 1.1.1.1
+          - 8.8.8.8
+</code></code></pre>
 
 <p>Replace:
 - <code>enp3s0</code> with your actual interface name
 - <code>192.168.1.10/24</code> with your chosen static IP and subnet prefix
 - <code>192.168.1.1</code> with your gateway (router IP)</p>
 <h3>Static IP for Wi-Fi</h3>
-<div class="codehilite"><pre><span></span><code><span class="nt">network</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-<span class="w">  </span><span class="nt">renderer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NetworkManager</span>
-<span class="w">  </span><span class="nt">wifis</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">wlp2s0</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">dhcp4</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no</span>
-<span class="w">      </span><span class="nt">access-points</span><span class="p">:</span>
-<span class="w">        </span><span class="s">&quot;YOUR_WIFI_NAME&quot;</span><span class="p p-Indicator">:</span>
-<span class="w">          </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;YOUR_WIFI_PASSWORD&quot;</span>
-<span class="w">      </span><span class="nt">addresses</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.1.10/24</span>
-<span class="w">      </span><span class="nt">routes</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">to</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
-<span class="w">          </span><span class="nt">via</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.1.1</span>
-<span class="w">      </span><span class="nt">nameservers</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">addresses</span><span class="p">:</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.1.1.1</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8.8.8.8</span>
-</code></pre></div>
+<pre><code><code>network:
+  version: 2
+  renderer: NetworkManager
+  wifis:
+    wlp2s0:
+      dhcp4: no
+      access-points:
+        &quot;YOUR_WIFI_NAME&quot;:
+          password: &quot;YOUR_WIFI_PASSWORD&quot;
+      addresses:
+        - 192.168.1.10/24
+      routes:
+        - to: default
+          via: 192.168.1.1
+      nameservers:
+        addresses:
+          - 1.1.1.1
+          - 8.8.8.8
+</code></code></pre>
 
 <p>Replace <code>wlp2s0</code> with your Wi-Fi interface name, and fill in your Wi-Fi credentials.</p>
 <h3>DHCP (to revert back to automatic IP)</h3>
-<div class="codehilite"><pre><span></span><code><span class="nt">network</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-<span class="w">  </span><span class="nt">renderer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">networkd</span>
-<span class="w">  </span><span class="nt">ethernets</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">enp3s0</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">dhcp4</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
-</code></pre></div>
+<pre><code><code>network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    enp3s0:
+      dhcp4: yes
+</code></code></pre>
 
 <hr />
 <h2>YAML Indentation Rules (Critical)</h2>
@@ -119,27 +119,27 @@ cat<span class="w"> </span>/etc/resolv.conf
 <hr />
 <h2>Step 4 — Validate the Config Before Applying</h2>
 <p>Always validate first — this catches syntax errors before they disconnect you:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>netplan<span class="w"> </span>try
-</code></pre></div>
+<pre><code><code>sudo netplan try
+</code></code></pre>
 
 <p>This applies the config temporarily for 120 seconds. If you do not confirm within that time, it automatically reverts. If nothing breaks:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>netplan<span class="w"> </span>apply
-</code></pre></div>
+<pre><code><code>sudo netplan apply
+</code></code></pre>
 
 <p>Or do both in one step:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>netplan<span class="w"> </span>generate<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>netplan<span class="w"> </span>apply
-</code></pre></div>
+<pre><code><code>sudo netplan generate &amp;&amp; sudo netplan apply
+</code></code></pre>
 
 <hr />
 <h2>Step 5 — Verify It Worked</h2>
 <p>Check the new IP:</p>
-<div class="codehilite"><pre><span></span><code>ip<span class="w"> </span>a<span class="w"> </span>show<span class="w"> </span>enp3s0
-</code></pre></div>
+<pre><code><code>ip a show enp3s0
+</code></code></pre>
 
 <p>Test internet access:</p>
-<div class="codehilite"><pre><span></span><code>ping<span class="w"> </span>-c<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">1</span>.1.1.1
-ping<span class="w"> </span>-c<span class="w"> </span><span class="m">4</span><span class="w"> </span>google.com
-</code></pre></div>
+<pre><code><code>ping -c 4 1.1.1.1
+ping -c 4 google.com
+</code></code></pre>
 
 <p>If the first ping works but the second does not, DNS is misconfigured. Check your <code>nameservers</code> section.</p>
 <hr />
@@ -151,8 +151,8 @@ ping<span class="w"> </span>-c<span class="w"> </span><span class="m">4</span><s
 3. Run <code>sudo netplan generate</code> first and check for errors</p>
 <h3><code>Invalid YAML</code> error</h3>
 <p>A tab character snuck in, or indentation is off. Open the file in nano, press <strong>Ctrl+C</strong> to show line numbers, and carefully check each line's spacing. Run:</p>
-<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>-A<span class="w"> </span>/etc/netplan/00-installer-config.yaml
-</code></pre></div>
+<pre><code><code>cat -A /etc/netplan/00-installer-config.yaml
+</code></code></pre>
 
 <p>Any <code>^I</code> in the output is a tab — replace with spaces.</p>
 <h3>Config applies but internet does not work</h3>

@@ -58,26 +58,26 @@ DATA:macos:Take Screenshots on macOS and Linux:macOS
 </table>
 <p>Screenshots save to <code>~/Pictures/Screenshots/</code>.</p>
 <h3>Install a more capable tool</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>flameshot<span class="w"> </span>-y<span class="w">   </span><span class="c1"># Ubuntu/Debian</span>
-sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>flameshot<span class="w"> </span>-y<span class="w">   </span><span class="c1"># Fedora</span>
-</code></pre></div>
+<pre><code><code>sudo apt install flameshot -y   # Ubuntu/Debian
+sudo dnf install flameshot -y   # Fedora
+</code></code></pre>
 
 <p>Run it:</p>
-<div class="codehilite"><pre><span></span><code>flameshot<span class="w"> </span>gui
-</code></pre></div>
+<pre><code><code>flameshot gui
+</code></code></pre>
 
 <p>Flameshot lets you annotate, draw arrows, blur areas, and copy directly to clipboard — much better than the default tool.</p>
 <hr />
 <h2>Linux (terminal — no GUI)</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Install scrot</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>scrot<span class="w"> </span>-y
+<pre><code><code># Install scrot
+sudo apt install scrot -y
 
-<span class="c1"># Full screen, saved to current folder</span>
-scrot<span class="w"> </span>screenshot.png
+# Full screen, saved to current folder
+scrot screenshot.png
 
-<span class="c1"># 5-second delay then capture</span>
-scrot<span class="w"> </span>-d<span class="w"> </span><span class="m">5</span><span class="w"> </span>screenshot.png
+# 5-second delay then capture
+scrot -d 5 screenshot.png
 
-<span class="c1"># Select area interactively</span>
-scrot<span class="w"> </span>-s<span class="w"> </span>screenshot.png
-</code></pre></div>
+# Select area interactively
+scrot -s screenshot.png
+</code></code></pre>

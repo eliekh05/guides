@@ -3,89 +3,89 @@ DATA:security:Protect SSH with Fail2ban on Linux:Security & Apps
 <p>Fail2ban watches your logs for failed login attempts and automatically bans IPs that exceed a threshold. It does not replace a firewall — it sits on top of one, adding ban rules automatically.</p>
 <hr />
 <h2>Install</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>fail2ban<span class="w"> </span>-y<span class="w">     </span><span class="c1"># Ubuntu/Debian</span>
-sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>fail2ban<span class="w"> </span>-y<span class="w">     </span><span class="c1"># Fedora/RHEL</span>
-sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>fail2ban<span class="w">          </span><span class="c1"># Arch</span>
-</code></pre></div>
+<pre><code><code>sudo apt install fail2ban -y     # Ubuntu/Debian
+sudo dnf install fail2ban -y     # Fedora/RHEL
+sudo pacman -S fail2ban          # Arch
+</code></code></pre>
 
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>fail2ban
-</code></pre></div>
+<pre><code><code>sudo systemctl enable --now fail2ban
+</code></code></pre>
 
 <hr />
 <h2>Configure SSH Protection</h2>
 <p><strong>Never edit <code>/etc/fail2ban/jail.conf</code> directly</strong> — it gets overwritten on updates. Create a local override:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/fail2ban/jail.local
-</code></pre></div>
+<pre><code><code>sudo nano /etc/fail2ban/jail.local
+</code></code></pre>
 
 <p>Paste:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">[DEFAULT]</span>
-<span class="na">bantime</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">3600</span><span class="w">         </span><span class="c1"># ban for 1 hour</span>
-<span class="na">findtime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">600</span><span class="w">          </span><span class="c1"># within 10 minutes</span>
-<span class="na">maxretry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">3</span><span class="w">            </span><span class="c1"># after 3 failures</span>
-<span class="na">backend</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">systemd</span><span class="w">      </span><span class="c1"># works on all modern distros</span>
+<pre><code><code>[DEFAULT]
+bantime  = 3600         # ban for 1 hour
+findtime = 600          # within 10 minutes
+maxretry = 3            # after 3 failures
+backend  = systemd      # works on all modern distros
 
-<span class="k">[sshd]</span>
-<span class="na">enabled</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
-<span class="na">port</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="s">ssh</span><span class="w">          </span><span class="c1"># or 2222 if you changed the SSH port</span>
-<span class="na">logpath</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">%(sshd_log)s</span>
-<span class="na">maxretry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">3</span>
-<span class="na">bantime</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">7200</span><span class="w">         </span><span class="c1"># ban SSH attackers for 2 hours</span>
-</code></pre></div>
+[sshd]
+enabled  = true
+port     = ssh          # or 2222 if you changed the SSH port
+logpath  = %(sshd_log)s
+maxretry = 3
+bantime  = 7200         # ban SSH attackers for 2 hours
+</code></code></pre>
 
 <p>Restart:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>fail2ban
-</code></pre></div>
+<pre><code><code>sudo systemctl restart fail2ban
+</code></code></pre>
 
 <hr />
 <h2>Check Status</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>fail2ban-client<span class="w"> </span>status<span class="w">          </span><span class="c1"># list all active jails</span>
-sudo<span class="w"> </span>fail2ban-client<span class="w"> </span>status<span class="w"> </span>sshd<span class="w">     </span><span class="c1"># see sshd jail: banned IPs, stats</span>
-sudo<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/fail2ban.log<span class="w">   </span><span class="c1"># watch bans in real time</span>
-</code></pre></div>
+<pre><code><code>sudo fail2ban-client status          # list all active jails
+sudo fail2ban-client status sshd     # see sshd jail: banned IPs, stats
+sudo tail -f /var/log/fail2ban.log   # watch bans in real time
+</code></code></pre>
 
 <hr />
 <h2>Manually Ban / Unban IPs</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Ban an IP</span>
-sudo<span class="w"> </span>fail2ban-client<span class="w"> </span><span class="nb">set</span><span class="w"> </span>sshd<span class="w"> </span>banip<span class="w"> </span><span class="m">1</span>.2.3.4
+<pre><code><code># Ban an IP
+sudo fail2ban-client set sshd banip 1.2.3.4
 
-<span class="c1"># Unban an IP</span>
-sudo<span class="w"> </span>fail2ban-client<span class="w"> </span><span class="nb">set</span><span class="w"> </span>sshd<span class="w"> </span>unbanip<span class="w"> </span><span class="m">1</span>.2.3.4
+# Unban an IP
+sudo fail2ban-client set sshd unbanip 1.2.3.4
 
-<span class="c1"># List banned IPs</span>
-sudo<span class="w"> </span>fail2ban-client<span class="w"> </span>get<span class="w"> </span>sshd<span class="w"> </span>banned
-</code></pre></div>
+# List banned IPs
+sudo fail2ban-client get sshd banned
+</code></code></pre>
 
 <hr />
 <h2>Whitelist Your Own IP</h2>
 <p>Add to <code>[DEFAULT]</code> in <code>jail.local</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="na">ignoreip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">127.0.0.1/8 ::1 192.168.1.0/24 YOUR.IP.HERE</span>
-</code></pre></div>
+<pre><code><code>ignoreip = 127.0.0.1/8 ::1 192.168.1.0/24 YOUR.IP.HERE
+</code></code></pre>
 
 <p>Restart fail2ban after changes.</p>
 <hr />
 <h2>Protect Nginx, Apache, or Other Services</h2>
-<div class="codehilite"><pre><span></span><code><span class="k">[nginx-http-auth]</span>
-<span class="na">enabled</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
-<span class="na">logpath</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">/var/log/nginx/error.log</span>
-<span class="na">maxretry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">5</span>
+<pre><code><code>[nginx-http-auth]
+enabled  = true
+logpath  = /var/log/nginx/error.log
+maxretry = 5
 
-<span class="k">[apache-auth]</span>
-<span class="na">enabled</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
-<span class="na">logpath</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">/var/log/apache2/error.log</span>
-<span class="na">maxretry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">5</span>
-</code></pre></div>
+[apache-auth]
+enabled  = true
+logpath  = /var/log/apache2/error.log
+maxretry = 5
+</code></code></pre>
 
 <hr />
 <h2>Fix: Fail2ban Not Banning When Docker is Running</h2>
 <p>Docker-bound services run in the FORWARD chain. Fail2ban bans in the INPUT chain — bans have no effect on Docker-exposed ports.</p>
 <p>Fix in <code>jail.local</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">[DEFAULT]</span>
-<span class="na">chain</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">DOCKER-USER</span>
-</code></pre></div>
+<pre><code><code>[DEFAULT]
+chain = DOCKER-USER
+</code></code></pre>
 
 <p>Or use the Docker-specific action:</p>
-<div class="codehilite"><pre><span></span><code><span class="na">banaction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">iptables-multiport</span>
-</code></pre></div>
+<pre><code><code>banaction = iptables-multiport
+</code></code></pre>
 
 <hr />
 <h2>Fail2ban vs CrowdSec</h2>

@@ -73,12 +73,12 @@ DATA:installation:Install Windows 11 on Unsupported PC (No TPM, No Secure Boot):
 </ol>
 <h3>Step 3 — Edit the Registry</h3>
 <p>In Command Prompt, type:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">regedit</span>
-</code></pre></div>
+<pre><code><code>regedit
+</code></code></pre>
 
 <p>Navigate to:</p>
-<div class="codehilite"><pre><span></span><code>HKEY_LOCAL_MACHINE\SYSTEM\Setup
-</code></pre></div>
+<pre><code><code>HKEY_LOCAL_MACHINE\SYSTEM\Setup
+</code></code></pre>
 
 <p>Right-click <strong>Setup</strong> → <strong>New</strong> → <strong>Key</strong> → name it <strong>LabConfig</strong>.</p>
 <p>Inside <strong>LabConfig</strong>, create the following DWORD (32-bit) values — right-click in the right panel → <strong>New</strong> → <strong>DWORD (32-bit) Value</strong>:</p>

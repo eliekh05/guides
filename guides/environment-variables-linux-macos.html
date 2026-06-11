@@ -3,54 +3,54 @@ DATA:linux:Environment Variables on macOS and Linux:Linux
 <p>Environment variables are named values that programs and the shell use for configuration — things like where to find executable programs (PATH), which text editor to use (EDITOR), your home directory (HOME), and many more.</p>
 <hr />
 <h2>View Variables</h2>
-<div class="codehilite"><pre><span></span><code>env<span class="w">                              </span><span class="c1"># all environment variables</span>
-printenv<span class="w">                         </span><span class="c1"># same</span>
-printenv<span class="w"> </span>PATH<span class="w">                    </span><span class="c1"># specific variable</span>
-<span class="nb">echo</span><span class="w"> </span><span class="nv">$PATH</span><span class="w">                       </span><span class="c1"># print value of PATH</span>
-<span class="nb">echo</span><span class="w"> </span><span class="nv">$HOME</span><span class="w">                       </span><span class="c1"># print home directory</span>
-<span class="nb">echo</span><span class="w"> </span><span class="nv">$USER</span><span class="w">                       </span><span class="c1"># current username</span>
-<span class="nb">echo</span><span class="w"> </span><span class="nv">$SHELL</span><span class="w">                      </span><span class="c1"># current shell</span>
-</code></pre></div>
+<pre><code><code>env                              # all environment variables
+printenv                         # same
+printenv PATH                    # specific variable
+echo $PATH                       # print value of PATH
+echo $HOME                       # print home directory
+echo $USER                       # current username
+echo $SHELL                      # current shell
+</code></code></pre>
 
 <hr />
 <h2>Set a Variable for the Current Session</h2>
-<div class="codehilite"><pre><span></span><code><span class="nv">MY_VAR</span><span class="o">=</span><span class="s2">&quot;hello&quot;</span>
-<span class="nb">echo</span><span class="w"> </span><span class="nv">$MY_VAR</span><span class="w">                     </span><span class="c1"># prints: hello</span>
-</code></pre></div>
+<pre><code><code>MY_VAR=&quot;hello&quot;
+echo $MY_VAR                     # prints: hello
+</code></code></pre>
 
 <p>This only lasts until you close the terminal.</p>
 <hr />
 <h2>Export a Variable (Make It Available to Programs)</h2>
-<div class="codehilite"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">MY_VAR</span><span class="o">=</span><span class="s2">&quot;hello&quot;</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">DATABASE_URL</span><span class="o">=</span><span class="s2">&quot;postgres://localhost/mydb&quot;</span>
-</code></pre></div>
+<pre><code><code>export MY_VAR=&quot;hello&quot;
+export DATABASE_URL=&quot;postgres://localhost/mydb&quot;
+</code></code></pre>
 
 <p>Without <code>export</code>, the variable exists in your shell but programs you launch from it cannot see it.</p>
 <hr />
 <h2>Make Variables Permanent</h2>
 <p>Add to <code>~/.zprofile</code> (macOS/zsh) or <code>~/.bashrc</code> (bash/Linux):</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;export MY_VAR=&quot;hello&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
-<span class="nb">source</span><span class="w"> </span>~/.zprofile<span class="w">               </span><span class="c1"># apply immediately</span>
-</code></pre></div>
+<pre><code><code>echo &#39;export MY_VAR=&quot;hello&quot;&#39; &gt;&gt; ~/.zprofile
+source ~/.zprofile               # apply immediately
+</code></code></pre>
 
 <hr />
 <h2>PATH — The Most Important Variable</h2>
 <p>PATH is a colon-separated list of folders. When you type a command, the shell looks through each folder in PATH to find the executable.</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="nv">$PATH</span>
-<span class="c1"># /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</span>
-</code></pre></div>
+<pre><code><code>echo $PATH
+# /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+</code></code></pre>
 
 <p><strong>Add a folder to PATH permanently:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;export PATH=&quot;/my/custom/bin:$PATH&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
-<span class="nb">source</span><span class="w"> </span>~/.zprofile
-</code></pre></div>
+<pre><code><code>echo &#39;export PATH=&quot;/my/custom/bin:$PATH&quot;&#39; &gt;&gt; ~/.zprofile
+source ~/.zprofile
+</code></code></pre>
 
 <p>The <code>:$PATH</code> at the end appends your folder to the existing PATH. Without it, you would replace the entire PATH and break most commands.</p>
 <p><strong>Check where a command comes from:</strong></p>
-<div class="codehilite"><pre><span></span><code>which<span class="w"> </span>python3
-which<span class="w"> </span>brew
-<span class="nb">type</span><span class="w"> </span>-a<span class="w"> </span>python3<span class="w">                  </span><span class="c1"># shows all locations</span>
-</code></pre></div>
+<pre><code><code>which python3
+which brew
+type -a python3                  # shows all locations
+</code></code></pre>
 
 <hr />
 <h2>Common Environment Variables</h2>
@@ -107,40 +107,40 @@ which<span class="w"> </span>brew
 <hr />
 <h2>Useful Patterns</h2>
 <p><strong>Set variable only for one command:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nv">NODE_ENV</span><span class="o">=</span>production<span class="w"> </span>node<span class="w"> </span>app.js
-<span class="nv">DEBUG</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span>./myscript.sh
-</code></pre></div>
+<pre><code><code>NODE_ENV=production node app.js
+DEBUG=true ./myscript.sh
+</code></code></pre>
 
 <p><strong>Pass variable to sudo (sudo drops most env vars):</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>-E<span class="w"> </span>node<span class="w"> </span>app.js<span class="w">              </span><span class="c1"># preserve environment</span>
-sudo<span class="w"> </span><span class="nv">MY_VAR</span><span class="o">=</span>hello<span class="w"> </span>node<span class="w"> </span>app.js<span class="w">   </span><span class="c1"># pass specific variable</span>
-</code></pre></div>
+<pre><code><code>sudo -E node app.js              # preserve environment
+sudo MY_VAR=hello node app.js   # pass specific variable
+</code></code></pre>
 
 <p><strong>Store secrets in variables, not files:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">API_KEY</span><span class="o">=</span><span class="s2">&quot;mysecretkey&quot;</span>
-<span class="c1"># In your script: curl -H &quot;Authorization: $API_KEY&quot; https://api.example.com</span>
-</code></pre></div>
+<pre><code><code>export API_KEY=&quot;mysecretkey&quot;
+# In your script: curl -H &quot;Authorization: $API_KEY&quot; https://api.example.com
+</code></code></pre>
 
 <p><strong>Check if a variable is set:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-z<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MY_VAR</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;MY_VAR is not set&quot;</span>
-<span class="k">fi</span>
-</code></pre></div>
+<pre><code><code>if [ -z &quot;$MY_VAR&quot; ]; then
+    echo &quot;MY_VAR is not set&quot;
+fi
+</code></code></pre>
 
 <hr />
 <h2>.env Files (For Projects)</h2>
 <p>Many projects use a <code>.env</code> file to store environment variables:</p>
-<div class="codehilite"><pre><span></span><code>DATABASE_URL=postgres://localhost/mydb
+<pre><code><code>DATABASE_URL=postgres://localhost/mydb
 API_KEY=secret123
 DEBUG=true
-</code></pre></div>
+</code></code></pre>
 
 <p>Load them into the current shell:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="k">$(</span>cat<span class="w"> </span>.env<span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="k">)</span>
-</code></pre></div>
+<pre><code><code>export $(cat .env | xargs)
+</code></code></pre>
 
 <p>Or use a tool like <code>direnv</code> which automatically loads <code>.env</code> files when you <code>cd</code> into a project folder:</p>
-<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>direnv<span class="w">     </span><span class="c1"># macOS</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>direnv<span class="w"> </span><span class="c1"># Ubuntu/Debian</span>
-<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;eval &quot;$(direnv hook zsh)&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zshrc
-</code></pre></div>
+<pre><code><code>brew install direnv     # macOS
+sudo apt install direnv # Ubuntu/Debian
+echo &#39;eval &quot;$(direnv hook zsh)&quot;&#39; &gt;&gt; ~/.zshrc
+</code></code></pre>

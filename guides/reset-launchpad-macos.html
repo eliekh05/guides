@@ -3,8 +3,8 @@ DATA:system-users:Reset Launchpad on macOS:System & Users
 <p>Launchpad gets cluttered with ghost icons from deleted apps, broken installs, or apps that no longer exist. This guide covers how to reset it back to default — the right method depending on your macOS version.</p>
 <hr />
 <h2>Method 1 — Terminal Command (macOS Ventura and earlier)</h2>
-<div class="codehilite"><pre><span></span><code>defaults<span class="w"> </span>write<span class="w"> </span>com.apple.dock<span class="w"> </span>ResetLaunchPad<span class="w"> </span>-bool<span class="w"> </span>true<span class="p">;</span><span class="w"> </span>killall<span class="w"> </span>Dock
-</code></pre></div>
+<pre><code><code>defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock
+</code></code></pre>
 
 <p>The Dock restarts, Launchpad resets to default layout — Apple apps on the first page, third-party apps on subsequent pages.</p>
 <blockquote>
@@ -13,8 +13,8 @@ DATA:system-users:Reset Launchpad on macOS:System & Users
 <hr />
 <h2>Method 2 — Delete the Launchpad Database (macOS Sequoia 15.2+)</h2>
 <p>The <code>defaults write</code> command stopped working reliably on macOS Sequoia 15.2+. Use this instead:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>find<span class="w"> </span>/private/var/folders/<span class="w"> </span>-type<span class="w"> </span>d<span class="w"> </span>-name<span class="w"> </span>com.apple.dock.launchpad<span class="w"> </span>-exec<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span><span class="o">{}</span><span class="w"> </span>+<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="p">;</span><span class="w"> </span>killall<span class="w"> </span>Dock
-</code></pre></div>
+<pre><code><code>sudo find /private/var/folders/ -type d -name com.apple.dock.launchpad -exec rm -rf {} + 2&gt;/dev/null; killall Dock
+</code></code></pre>
 
 <p>This finds and deletes the Launchpad database files directly, then restarts the Dock which rebuilds them fresh.</p>
 <hr />
@@ -29,10 +29,10 @@ DATA:system-users:Reset Launchpad on macOS:System & Users
 <hr />
 <h2>Reset Rows and Columns to Default</h2>
 <p>If you changed the grid size and want to go back to the default (5 rows × 7 columns):</p>
-<div class="codehilite"><pre><span></span><code>defaults<span class="w"> </span>write<span class="w"> </span>com.apple.dock<span class="w"> </span>springboard-rows<span class="w"> </span>-int<span class="w"> </span><span class="m">5</span>
-defaults<span class="w"> </span>write<span class="w"> </span>com.apple.dock<span class="w"> </span>springboard-columns<span class="w"> </span>-int<span class="w"> </span><span class="m">7</span>
-killall<span class="w"> </span>Dock
-</code></pre></div>
+<pre><code><code>defaults write com.apple.dock springboard-rows -int 5
+defaults write com.apple.dock springboard-columns -int 7
+killall Dock
+</code></code></pre>
 
 <hr />
 <h2>Fix Ghost Icons That Won't Go Away</h2>

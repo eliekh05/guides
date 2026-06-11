@@ -3,14 +3,14 @@ DATA:security:GPG — Encrypt, Decrypt, and Sign Files:Security & Apps
 <p>GPG (GNU Privacy Guard) lets you encrypt files, sign them to prove authenticity, and verify signatures from others.</p>
 <hr />
 <h2>Install</h2>
-<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>gnupg<span class="w">          </span><span class="c1"># macOS</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>gnupg<span class="w"> </span>-y<span class="w">   </span><span class="c1"># Ubuntu/Debian (usually pre-installed)</span>
-</code></pre></div>
+<pre><code><code>brew install gnupg          # macOS
+sudo apt install gnupg -y   # Ubuntu/Debian (usually pre-installed)
+</code></code></pre>
 
 <hr />
 <h2>Generate a Key Pair</h2>
-<div class="codehilite"><pre><span></span><code>gpg<span class="w"> </span>--gen-key
-</code></pre></div>
+<pre><code><code>gpg --gen-key
+</code></code></pre>
 
 <p>Choose:
 - <strong>Key type:</strong> RSA and RSA (default) or Ed25519 (modern, recommended)
@@ -20,96 +20,96 @@ sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> <
 - <strong>Passphrase:</strong> use a strong one</p>
 <hr />
 <h2>List Keys</h2>
-<div class="codehilite"><pre><span></span><code>gpg<span class="w"> </span>--list-keys<span class="w">                    </span><span class="c1"># public keys</span>
-gpg<span class="w"> </span>--list-secret-keys<span class="w">             </span><span class="c1"># private keys</span>
-</code></pre></div>
+<pre><code><code>gpg --list-keys                    # public keys
+gpg --list-secret-keys             # private keys
+</code></code></pre>
 
 <hr />
 <h2>Encrypt a File</h2>
 <h3>Encrypt for a recipient (they can decrypt with their private key)</h3>
-<div class="codehilite"><pre><span></span><code>gpg<span class="w"> </span>--encrypt<span class="w"> </span>--recipient<span class="w"> </span>recipient@email.com<span class="w"> </span>file.txt
-<span class="c1"># Creates file.txt.gpg</span>
-</code></pre></div>
+<pre><code><code>gpg --encrypt --recipient recipient@email.com file.txt
+# Creates file.txt.gpg
+</code></code></pre>
 
 <h3>Encrypt with a passphrase (symmetric, no keys needed)</h3>
-<div class="codehilite"><pre><span></span><code>gpg<span class="w"> </span>--symmetric<span class="w"> </span>file.txt
-<span class="c1"># Asks for a passphrase, creates file.txt.gpg</span>
-</code></pre></div>
+<pre><code><code>gpg --symmetric file.txt
+# Asks for a passphrase, creates file.txt.gpg
+</code></code></pre>
 
 <hr />
 <h2>Decrypt a File</h2>
-<div class="codehilite"><pre><span></span><code>gpg<span class="w"> </span>--decrypt<span class="w"> </span>file.txt.gpg<span class="w"> </span>&gt;<span class="w"> </span>file.txt
-<span class="c1"># or</span>
-gpg<span class="w"> </span>--output<span class="w"> </span>file.txt<span class="w"> </span>--decrypt<span class="w"> </span>file.txt.gpg
-</code></pre></div>
+<pre><code><code>gpg --decrypt file.txt.gpg &gt; file.txt
+# or
+gpg --output file.txt --decrypt file.txt.gpg
+</code></code></pre>
 
 <hr />
 <h2>Sign a File (Prove It Came From You)</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Detached signature (original file unchanged, .sig created alongside)</span>
-gpg<span class="w"> </span>--detach-sign<span class="w"> </span>file.txt
-<span class="c1"># Creates file.txt.sig</span>
+<pre><code><code># Detached signature (original file unchanged, .sig created alongside)
+gpg --detach-sign file.txt
+# Creates file.txt.sig
 
-<span class="c1"># Inline signature (signs and creates a .gpg file)</span>
-gpg<span class="w"> </span>--sign<span class="w"> </span>file.txt
+# Inline signature (signs and creates a .gpg file)
+gpg --sign file.txt
 
-<span class="c1"># Clear-sign (readable text + signature, good for text files)</span>
-gpg<span class="w"> </span>--clearsign<span class="w"> </span>message.txt
-</code></pre></div>
+# Clear-sign (readable text + signature, good for text files)
+gpg --clearsign message.txt
+</code></code></pre>
 
 <hr />
 <h2>Verify a Signature</h2>
-<div class="codehilite"><pre><span></span><code>gpg<span class="w"> </span>--verify<span class="w"> </span>file.txt.sig<span class="w"> </span>file.txt
-</code></pre></div>
+<pre><code><code>gpg --verify file.txt.sig file.txt
+</code></code></pre>
 
 <hr />
 <h2>Export and Import Keys</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Export your public key (share with others)</span>
-gpg<span class="w"> </span>--export<span class="w"> </span>--armor<span class="w"> </span>your@email.com<span class="w"> </span>&gt;<span class="w"> </span>publickey.asc
+<pre><code><code># Export your public key (share with others)
+gpg --export --armor your@email.com &gt; publickey.asc
 
-<span class="c1"># Export your private key (backup — keep this safe)</span>
-gpg<span class="w"> </span>--export-secret-keys<span class="w"> </span>--armor<span class="w"> </span>your@email.com<span class="w"> </span>&gt;<span class="w"> </span>privatekey.asc
+# Export your private key (backup — keep this safe)
+gpg --export-secret-keys --armor your@email.com &gt; privatekey.asc
 
-<span class="c1"># Import someone else&#39;s public key</span>
-gpg<span class="w"> </span>--import<span class="w"> </span>theirkey.asc
+# Import someone else&#39;s public key
+gpg --import theirkey.asc
 
-<span class="c1"># Import from a keyserver</span>
-gpg<span class="w"> </span>--keyserver<span class="w"> </span>keyserver.ubuntu.com<span class="w"> </span>--recv-keys<span class="w"> </span>KEYID
-</code></pre></div>
+# Import from a keyserver
+gpg --keyserver keyserver.ubuntu.com --recv-keys KEYID
+</code></code></pre>
 
 <hr />
 <h2>Trust a Key</h2>
 <p>After importing a key, mark it as trusted:</p>
-<div class="codehilite"><pre><span></span><code>gpg<span class="w"> </span>--edit-key<span class="w"> </span>their@email.com
-<span class="c1"># Inside the editor:</span>
+<pre><code><code>gpg --edit-key their@email.com
+# Inside the editor:
 trust
-<span class="c1"># Choose: 5 (ultimate trust for your own keys, 4 for others you fully trust)</span>
+# Choose: 5 (ultimate trust for your own keys, 4 for others you fully trust)
 quit
-</code></pre></div>
+</code></code></pre>
 
 <hr />
 <h2>Key Management</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Delete a public key</span>
-gpg<span class="w"> </span>--delete-key<span class="w"> </span>email@example.com
+<pre><code><code># Delete a public key
+gpg --delete-key email@example.com
 
-<span class="c1"># Delete a key pair (public + private)</span>
-gpg<span class="w"> </span>--delete-secret-and-public-key<span class="w"> </span>email@example.com
+# Delete a key pair (public + private)
+gpg --delete-secret-and-public-key email@example.com
 
-<span class="c1"># Edit key (change expiry, add UID, etc.)</span>
-gpg<span class="w"> </span>--edit-key<span class="w"> </span>email@example.com
-</code></pre></div>
+# Edit key (change expiry, add UID, etc.)
+gpg --edit-key email@example.com
+</code></code></pre>
 
 <hr />
 <h2>Practical Use Cases</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Encrypt a backup</span>
-tar<span class="w"> </span>-czf<span class="w"> </span>-<span class="w"> </span>/important/folder<span class="w"> </span><span class="p">|</span><span class="w"> </span>gpg<span class="w"> </span>--symmetric<span class="w"> </span>&gt;<span class="w"> </span>backup.tar.gz.gpg
+<pre><code><code># Encrypt a backup
+tar -czf - /important/folder | gpg --symmetric &gt; backup.tar.gz.gpg
 
-<span class="c1"># Decrypt it</span>
-gpg<span class="w"> </span>--decrypt<span class="w"> </span>backup.tar.gz.gpg<span class="w"> </span><span class="p">|</span><span class="w"> </span>tar<span class="w"> </span>-xzf<span class="w"> </span>-
+# Decrypt it
+gpg --decrypt backup.tar.gz.gpg | tar -xzf -
 
-<span class="c1"># Sign a release file (common in open source projects)</span>
-gpg<span class="w"> </span>--detach-sign<span class="w"> </span>--armor<span class="w"> </span>release-v1.0.tar.gz
-<span class="c1"># Creates release-v1.0.tar.gz.asc</span>
+# Sign a release file (common in open source projects)
+gpg --detach-sign --armor release-v1.0.tar.gz
+# Creates release-v1.0.tar.gz.asc
 
-<span class="c1"># Verify a signed download</span>
-gpg<span class="w"> </span>--verify<span class="w"> </span>release-v1.0.tar.gz.asc<span class="w"> </span>release-v1.0.tar.gz
-</code></pre></div>
+# Verify a signed download
+gpg --verify release-v1.0.tar.gz.asc release-v1.0.tar.gz
+</code></code></pre>

@@ -14,19 +14,19 @@ DATA:scheduling:Fix cron Jobs Not Running:Task Scheduling
 <hr />
 <h2>Fix 1 — Use Full Paths in Your cron Commands</h2>
 <p>Replace every command with its full path:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Wrong — may fail in cron</span>
-<span class="m">0</span><span class="w"> </span><span class="m">9</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>brew<span class="w"> </span>update
+<pre><code><code># Wrong — may fail in cron
+0 9 * * * brew update
 
-<span class="c1"># Correct</span>
-<span class="m">0</span><span class="w"> </span><span class="m">9</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/opt/homebrew/bin/brew<span class="w"> </span>update<span class="w">       </span><span class="c1"># Apple Silicon</span>
-<span class="m">0</span><span class="w"> </span><span class="m">9</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/usr/local/bin/brew<span class="w"> </span>update<span class="w">          </span><span class="c1"># Intel Mac</span>
-</code></pre></div>
+# Correct
+0 9 * * * /opt/homebrew/bin/brew update       # Apple Silicon
+0 9 * * * /usr/local/bin/brew update          # Intel Mac
+</code></code></pre>
 
 <p>To find the full path of any command:</p>
-<div class="codehilite"><pre><span></span><code>which<span class="w"> </span>brew
-which<span class="w"> </span>python3
-which<span class="w"> </span>node
-</code></pre></div>
+<pre><code><code>which brew
+which python3
+which node
+</code></code></pre>
 
 <hr />
 <h2>Fix 2 — Grant Full Disk Access to cron</h2>
@@ -41,74 +41,74 @@ which<span class="w"> </span>node
 <hr />
 <h2>Fix 3 — Add a Shell and PATH to Your crontab</h2>
 <p>At the top of your crontab, explicitly define the shell and PATH:</p>
-<div class="codehilite"><pre><span></span><code><span class="nv">SHELL</span><span class="o">=</span>/bin/zsh
-<span class="nv">PATH</span><span class="o">=</span>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+<pre><code><code>SHELL=/bin/zsh
+PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 
-<span class="c1"># Your jobs below</span>
-<span class="m">0</span><span class="w"> </span><span class="m">9</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/path/to/your/script.sh
-</code></pre></div>
+# Your jobs below
+0 9 * * * /path/to/your/script.sh
+</code></code></pre>
 
 <p>Open your crontab to edit it:</p>
-<div class="codehilite"><pre><span></span><code>crontab<span class="w"> </span>-e
-</code></pre></div>
+<pre><code><code>crontab -e
+</code></code></pre>
 
 <hr />
 <h2>Fix 4 — Add Logging to See What Is Failing</h2>
 <p>Redirect output to a log file so you can see what is happening:</p>
-<div class="codehilite"><pre><span></span><code><span class="m">0</span><span class="w"> </span><span class="m">9</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/path/to/script.sh<span class="w"> </span>&gt;&gt;<span class="w"> </span>/tmp/myjob.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
-</code></pre></div>
+<pre><code><code>0 9 * * * /path/to/script.sh &gt;&gt; /tmp/myjob.log 2&gt;&amp;1
+</code></code></pre>
 
 <ul>
 <li><code>&gt;&gt;</code> appends output to the log file</li>
 <li><code>2&gt;&amp;1</code> redirects error messages to the same log</li>
 </ul>
 <p>After the scheduled time, check the log:</p>
-<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>/tmp/myjob.log
-</code></pre></div>
+<pre><code><code>cat /tmp/myjob.log
+</code></code></pre>
 
 <hr />
 <h2>Fix 5 — Switch to launchd for Reliable Scheduling</h2>
 <p>If your job must run even after the Mac wakes from sleep, use <code>launchd</code> instead of <code>cron</code>. <code>launchd</code> is macOS-native, integrates with power management, and can run missed jobs on wake.</p>
 <p>Create a plist file at <code>~/Library/LaunchAgents/com.yourname.yourjob.plist</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
-<span class="cp">&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot;</span>
-<span class="cp">  &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;</span>
-<span class="nt">&lt;plist</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
-<span class="nt">&lt;dict&gt;</span>
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>Label<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;string&gt;</span>com.yourname.yourjob<span class="nt">&lt;/string&gt;</span>
+<pre><code><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot;
+  &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;
+&lt;plist version=&quot;1.0&quot;&gt;
+&lt;dict&gt;
+    &lt;key&gt;Label&lt;/key&gt;
+    &lt;string&gt;com.yourname.yourjob&lt;/string&gt;
 
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>EnvironmentVariables<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;dict&gt;</span>
-<span class="w">        </span><span class="nt">&lt;key&gt;</span>PATH<span class="nt">&lt;/key&gt;</span>
-<span class="w">        </span><span class="nt">&lt;string&gt;</span>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin<span class="nt">&lt;/string&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/dict&gt;</span>
+    &lt;key&gt;EnvironmentVariables&lt;/key&gt;
+    &lt;dict&gt;
+        &lt;key&gt;PATH&lt;/key&gt;
+        &lt;string&gt;/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin&lt;/string&gt;
+    &lt;/dict&gt;
 
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>ProgramArguments<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;array&gt;</span>
-<span class="w">        </span><span class="nt">&lt;string&gt;</span>/bin/zsh<span class="nt">&lt;/string&gt;</span>
-<span class="w">        </span><span class="nt">&lt;string&gt;</span>/Users/yourname/scripts/yourscript.zsh<span class="nt">&lt;/string&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/array&gt;</span>
+    &lt;key&gt;ProgramArguments&lt;/key&gt;
+    &lt;array&gt;
+        &lt;string&gt;/bin/zsh&lt;/string&gt;
+        &lt;string&gt;/Users/yourname/scripts/yourscript.zsh&lt;/string&gt;
+    &lt;/array&gt;
 
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>StartCalendarInterval<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;dict&gt;</span>
-<span class="w">        </span><span class="nt">&lt;key&gt;</span>Hour<span class="nt">&lt;/key&gt;</span>
-<span class="w">        </span><span class="nt">&lt;integer&gt;</span>9<span class="nt">&lt;/integer&gt;</span>
-<span class="w">        </span><span class="nt">&lt;key&gt;</span>Minute<span class="nt">&lt;/key&gt;</span>
-<span class="w">        </span><span class="nt">&lt;integer&gt;</span>0<span class="nt">&lt;/integer&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/dict&gt;</span>
+    &lt;key&gt;StartCalendarInterval&lt;/key&gt;
+    &lt;dict&gt;
+        &lt;key&gt;Hour&lt;/key&gt;
+        &lt;integer&gt;9&lt;/integer&gt;
+        &lt;key&gt;Minute&lt;/key&gt;
+        &lt;integer&gt;0&lt;/integer&gt;
+    &lt;/dict&gt;
 
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>StandardOutPath<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;string&gt;</span>/tmp/yourjob.log<span class="nt">&lt;/string&gt;</span>
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>StandardErrorPath<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;string&gt;</span>/tmp/yourjob-error.log<span class="nt">&lt;/string&gt;</span>
-<span class="nt">&lt;/dict&gt;</span>
-<span class="nt">&lt;/plist&gt;</span>
-</code></pre></div>
+    &lt;key&gt;StandardOutPath&lt;/key&gt;
+    &lt;string&gt;/tmp/yourjob.log&lt;/string&gt;
+    &lt;key&gt;StandardErrorPath&lt;/key&gt;
+    &lt;string&gt;/tmp/yourjob-error.log&lt;/string&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+</code></code></pre>
 
 <p>Load it:</p>
-<div class="codehilite"><pre><span></span><code>launchctl<span class="w"> </span>load<span class="w"> </span>~/Library/LaunchAgents/com.yourname.yourjob.plist
-</code></pre></div>
+<pre><code><code>launchctl load ~/Library/LaunchAgents/com.yourname.yourjob.plist
+</code></code></pre>
 
 <p>See the companion guide <strong>"Fix launchd / plist Scripts Not Running (macOS)"</strong> for more detail on launchd troubleshooting.</p>
 <hr />

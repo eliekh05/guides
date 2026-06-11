@@ -4,13 +4,13 @@ DATA:windows:Fix Windows 11 No Internet After Update:Windows
 <hr />
 <h2>Fix 1 — Reset Network Stack</h2>
 <p>Open <strong>Command Prompt as Administrator</strong> and run all of these:</p>
-<div class="codehilite"><pre><span></span><code>netsh winsock reset
+<pre><code><code>netsh winsock reset
 netsh int ip reset
 netsh int tcp reset
 ipconfig /release
 ipconfig /flushdns
 ipconfig /renew
-</code></pre></div>
+</code></code></pre>
 
 <p>Restart your PC and test.</p>
 <hr />
@@ -28,17 +28,17 @@ ipconfig /renew
 <p><strong>Settings → System → Troubleshoot → Other troubleshooters → Internet Connections → Run</strong></p>
 <hr />
 <h2>Fix 4 — Reset TCP/IP and Winsock More Thoroughly</h2>
-<div class="codehilite"><pre><span></span><code>netsh int ip reset resetlog.txt
+<pre><code><code>netsh int ip reset resetlog.txt
 netsh winsock reset catalog
 netsh advfirewall reset
-</code></pre></div>
+</code></code></pre>
 
 <p>Restart after running these.</p>
 <hr />
 <h2>Fix 5 — Check DHCP Service Is Running</h2>
-<div class="codehilite"><pre><span></span><code>sc query dhcp
+<pre><code><code>sc query dhcp
 net start dhcp
-</code></pre></div>
+</code></code></pre>
 
 <p>Or in <strong>Services</strong> (<code>services.msc</code>): find <strong>DHCP Client</strong> → make sure it is <strong>Running</strong> and set to <strong>Automatic</strong>.</p>
 <hr />

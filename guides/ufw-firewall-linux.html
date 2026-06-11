@@ -3,96 +3,96 @@ DATA:security:Set Up UFW Firewall on Linux:Security & Apps
 <p>UFW (Uncomplicated Firewall) is the standard firewall tool on Ubuntu and Debian. It wraps iptables/nftables in simple commands. This guide covers setup, common rules, and the Docker bypass problem most guides ignore.</p>
 <hr />
 <h2>Install and Enable</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>ufw<span class="w"> </span>-y<span class="w">          </span><span class="c1"># Ubuntu/Debian</span>
-sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>epel-release<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>ufw<span class="w"> </span>-y<span class="w">   </span><span class="c1"># Fedora/RHEL</span>
-sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>ufw<span class="w">               </span><span class="c1"># Arch</span>
-</code></pre></div>
+<pre><code><code>sudo apt install ufw -y          # Ubuntu/Debian
+sudo dnf install epel-release &amp;&amp; sudo dnf install ufw -y   # Fedora/RHEL
+sudo pacman -S ufw               # Arch
+</code></code></pre>
 
 <p><strong>Before enabling — allow SSH so you don't lock yourself out:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span>ssh<span class="w">               </span><span class="c1"># allows port 22</span>
-<span class="c1"># Or for a custom SSH port:</span>
-sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span><span class="m">2222</span>/tcp
-</code></pre></div>
+<pre><code><code>sudo ufw allow ssh               # allows port 22
+# Or for a custom SSH port:
+sudo ufw allow 2222/tcp
+</code></code></pre>
 
 <p>Set default policies:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>ufw<span class="w"> </span>default<span class="w"> </span>deny<span class="w"> </span>incoming
-sudo<span class="w"> </span>ufw<span class="w"> </span>default<span class="w"> </span>allow<span class="w"> </span>outgoing
-</code></pre></div>
+<pre><code><code>sudo ufw default deny incoming
+sudo ufw default allow outgoing
+</code></code></pre>
 
 <p>Enable UFW:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>ufw<span class="w"> </span><span class="nb">enable</span>
-</code></pre></div>
+<pre><code><code>sudo ufw enable
+</code></code></pre>
 
 <hr />
 <h2>Common Rules</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Allow specific ports</span>
-sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span><span class="m">80</span>/tcp<span class="w">            </span><span class="c1"># HTTP</span>
-sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span><span class="m">443</span>/tcp<span class="w">           </span><span class="c1"># HTTPS</span>
-sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span><span class="m">8006</span>/tcp<span class="w">          </span><span class="c1"># Proxmox web UI</span>
+<pre><code><code># Allow specific ports
+sudo ufw allow 80/tcp            # HTTP
+sudo ufw allow 443/tcp           # HTTPS
+sudo ufw allow 8006/tcp          # Proxmox web UI
 
-<span class="c1"># Allow a range</span>
-sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span><span class="m">1000</span>:2000/tcp
+# Allow a range
+sudo ufw allow 1000:2000/tcp
 
-<span class="c1"># Allow from specific IP only</span>
-sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span>from<span class="w"> </span><span class="m">192</span>.168.1.50<span class="w"> </span>to<span class="w"> </span>any<span class="w"> </span>port<span class="w"> </span><span class="m">22</span>
+# Allow from specific IP only
+sudo ufw allow from 192.168.1.50 to any port 22
 
-<span class="c1"># Allow from subnet</span>
-sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span>from<span class="w"> </span><span class="m">192</span>.168.1.0/24
+# Allow from subnet
+sudo ufw allow from 192.168.1.0/24
 
-<span class="c1"># Deny a port</span>
-sudo<span class="w"> </span>ufw<span class="w"> </span>deny<span class="w"> </span><span class="m">23</span>/tcp
+# Deny a port
+sudo ufw deny 23/tcp
 
-<span class="c1"># Delete a rule (by number)</span>
-sudo<span class="w"> </span>ufw<span class="w"> </span>status<span class="w"> </span>numbered
-sudo<span class="w"> </span>ufw<span class="w"> </span>delete<span class="w"> </span><span class="m">3</span>
+# Delete a rule (by number)
+sudo ufw status numbered
+sudo ufw delete 3
 
-<span class="c1"># Delete by rule content</span>
-sudo<span class="w"> </span>ufw<span class="w"> </span>delete<span class="w"> </span>allow<span class="w"> </span><span class="m">80</span>/tcp
-</code></pre></div>
+# Delete by rule content
+sudo ufw delete allow 80/tcp
+</code></code></pre>
 
 <hr />
 <h2>Check Status</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>ufw<span class="w"> </span>status<span class="w"> </span>verbose
-sudo<span class="w"> </span>ufw<span class="w"> </span>status<span class="w"> </span>numbered<span class="w">         </span><span class="c1"># shows rules with numbers for easy deletion</span>
-</code></pre></div>
+<pre><code><code>sudo ufw status verbose
+sudo ufw status numbered         # shows rules with numbers for easy deletion
+</code></code></pre>
 
 <hr />
 <h2>The Docker Bypass Problem</h2>
 <p><strong>Docker bypasses UFW completely.</strong> When you run <code>-p 8080:80</code>, Docker inserts iptables rules directly into PREROUTING — before UFW processes anything. Port 8080 is open to the internet even if UFW blocks it.</p>
 <p><strong>Fix — add to <code>/etc/ufw/after.rules</code>:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/ufw/after.rules
-</code></pre></div>
+<pre><code><code>sudo nano /etc/ufw/after.rules
+</code></code></pre>
 
 <p>Add at the end of the file:</p>
-<div class="codehilite"><pre><span></span><code><span class="o">#</span> <span class="kr">BEGIN</span> <span class="n">UFW</span> <span class="n">AND</span> <span class="n">DOCKER</span>
-<span class="o">*</span><span class="n">filter</span>
-<span class="p">:</span><span class="n">ufw</span><span class="o">-</span><span class="n">user</span><span class="o">-</span><span class="n">forward</span> <span class="o">-</span> <span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span>
-<span class="p">:</span><span class="n">DOCKER</span><span class="o">-</span><span class="n">USER</span> <span class="o">-</span> <span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span>
-<span class="o">-</span><span class="n">A</span> <span class="n">DOCKER</span><span class="o">-</span><span class="n">USER</span> <span class="o">-</span><span class="n">j</span> <span class="n">ufw</span><span class="o">-</span><span class="n">user</span><span class="o">-</span><span class="n">forward</span>
-<span class="o">-</span><span class="n">A</span> <span class="n">DOCKER</span><span class="o">-</span><span class="n">USER</span> <span class="o">-</span><span class="n">j</span> <span class="kr">RETURN</span> <span class="o">-</span><span class="n">s</span> <span class="mf">10.0</span><span class="p">.</span><span class="mf">0.0</span><span class="o">/</span><span class="mi">8</span>
-<span class="o">-</span><span class="n">A</span> <span class="n">DOCKER</span><span class="o">-</span><span class="n">USER</span> <span class="o">-</span><span class="n">j</span> <span class="kr">RETURN</span> <span class="o">-</span><span class="n">s</span> <span class="mf">172.16</span><span class="p">.</span><span class="mf">0.0</span><span class="o">/</span><span class="mi">12</span>
-<span class="o">-</span><span class="n">A</span> <span class="n">DOCKER</span><span class="o">-</span><span class="n">USER</span> <span class="o">-</span><span class="n">j</span> <span class="kr">RETURN</span> <span class="o">-</span><span class="n">s</span> <span class="mf">192.168</span><span class="p">.</span><span class="mf">0.0</span><span class="o">/</span><span class="mi">16</span>
-<span class="o">-</span><span class="n">A</span> <span class="n">DOCKER</span><span class="o">-</span><span class="n">USER</span> <span class="o">-</span><span class="n">j</span> <span class="n">DROP</span>
-<span class="n">COMMIT</span>
-<span class="o">#</span> <span class="kr">END</span> <span class="n">UFW</span> <span class="n">AND</span> <span class="n">DOCKER</span>
-</code></pre></div>
+<pre><code><code># BEGIN UFW AND DOCKER
+*filter
+:ufw-user-forward - [0:0]
+:DOCKER-USER - [0:0]
+-A DOCKER-USER -j ufw-user-forward
+-A DOCKER-USER -j RETURN -s 10.0.0.0/8
+-A DOCKER-USER -j RETURN -s 172.16.0.0/12
+-A DOCKER-USER -j RETURN -s 192.168.0.0/16
+-A DOCKER-USER -j DROP
+COMMIT
+# END UFW AND DOCKER
+</code></code></pre>
 
 <p>Then reload:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>ufw<span class="w"> </span>reload
-</code></pre></div>
+<pre><code><code>sudo ufw reload
+</code></code></pre>
 
 <p>Now explicitly allow Docker container ports through UFW:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>ufw<span class="w"> </span>route<span class="w"> </span>allow<span class="w"> </span>proto<span class="w"> </span>tcp<span class="w"> </span>from<span class="w"> </span>any<span class="w"> </span>to<span class="w"> </span>any<span class="w"> </span>port<span class="w"> </span><span class="m">8080</span>
-</code></pre></div>
+<pre><code><code>sudo ufw route allow proto tcp from any to any port 8080
+</code></code></pre>
 
 <hr />
 <h2>Reset UFW</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>ufw<span class="w"> </span>reset<span class="w">       </span><span class="c1"># removes all rules, disables UFW</span>
-</code></pre></div>
+<pre><code><code>sudo ufw reset       # removes all rules, disables UFW
+</code></code></pre>
 
 <hr />
 <h2>Logging</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>ufw<span class="w"> </span>logging<span class="w"> </span>on<span class="w">          </span><span class="c1"># enable logging</span>
-sudo<span class="w"> </span>ufw<span class="w"> </span>logging<span class="w"> </span>medium<span class="w">      </span><span class="c1"># log level: off, low, medium, high, full</span>
-sudo<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/ufw.log
-</code></pre></div>
+<pre><code><code>sudo ufw logging on          # enable logging
+sudo ufw logging medium      # log level: off, low, medium, high, full
+sudo tail -f /var/log/ufw.log
+</code></code></pre>

@@ -3,8 +3,8 @@ DATA:linux:Set Up SSH Keys from Scratch (macOS and Linux):Linux
 <p>SSH keys let you log into servers without a password — faster, more secure, and no more typing credentials every time.</p>
 <hr />
 <h2>Step 1 — Generate a Key Pair</h2>
-<div class="codehilite"><pre><span></span><code>ssh-keygen<span class="w"> </span>-t<span class="w"> </span>ed25519<span class="w"> </span>-C<span class="w"> </span><span class="s2">&quot;your@email.com&quot;</span>
-</code></pre></div>
+<pre><code><code>ssh-keygen -t ed25519 -C &quot;your@email.com&quot;
+</code></code></pre>
 
 <ul>
 <li><code>-t ed25519</code> — modern, secure key type (use this over RSA)</li>
@@ -18,27 +18,27 @@ DATA:linux:Set Up SSH Keys from Scratch (macOS and Linux):Linux
 - <code>~/.ssh/id_ed25519.pub</code> — your <strong>public key</strong> — this goes on the server</p>
 <hr />
 <h2>Step 2 — Copy the Public Key to a Server</h2>
-<div class="codehilite"><pre><span></span><code>ssh-copy-id<span class="w"> </span>username@server_ip
-</code></pre></div>
+<pre><code><code>ssh-copy-id username@server_ip
+</code></code></pre>
 
 <p>Enter your password one last time. From now on, no password needed.</p>
 <p>If <code>ssh-copy-id</code> is not available (some macOS setups):</p>
-<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>~/.ssh/id_ed25519.pub<span class="w"> </span><span class="p">|</span><span class="w"> </span>ssh<span class="w"> </span>username@server_ip<span class="w"> </span><span class="s2">&quot;mkdir -p ~/.ssh &amp;&amp; cat &gt;&gt; ~/.ssh/authorized_keys &amp;&amp; chmod 600 ~/.ssh/authorized_keys&quot;</span>
-</code></pre></div>
+<pre><code><code>cat ~/.ssh/id_ed25519.pub | ssh username@server_ip &quot;mkdir -p ~/.ssh &amp;&amp; cat &gt;&gt; ~/.ssh/authorized_keys &amp;&amp; chmod 600 ~/.ssh/authorized_keys&quot;
+</code></code></pre>
 
 <hr />
 <h2>Step 3 — Log In</h2>
-<div class="codehilite"><pre><span></span><code>ssh<span class="w"> </span>username@server_ip
-</code></pre></div>
+<pre><code><code>ssh username@server_ip
+</code></code></pre>
 
 <p>No password prompt — you are in.</p>
 <hr />
 <h2>Step 4 — Set Up ~/.ssh/config for Multiple Servers</h2>
 <p>Instead of typing <code>ssh user@192.168.1.100</code> every time, create shortcuts:</p>
-<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>~/.ssh/config
-</code></pre></div>
+<pre><code><code>nano ~/.ssh/config
+</code></code></pre>
 
-<div class="codehilite"><pre><span></span><code>Host myserver
+<pre><code><code>Host myserver
     HostName 192.168.1.100
     User ubuntu
     IdentityFile ~/.ssh/id_ed25519
@@ -48,59 +48,59 @@ Host vps
     User root
     Port 2222
     IdentityFile ~/.ssh/id_ed25519
-</code></pre></div>
+</code></code></pre>
 
 <p>Now you just type:</p>
-<div class="codehilite"><pre><span></span><code>ssh<span class="w"> </span>myserver
-ssh<span class="w"> </span>vps
-</code></pre></div>
+<pre><code><code>ssh myserver
+ssh vps
+</code></code></pre>
 
 <p>Set correct permissions:</p>
-<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>~/.ssh/config
-</code></pre></div>
+<pre><code><code>chmod 600 ~/.ssh/config
+</code></code></pre>
 
 <hr />
 <h2>Add Key to SSH Agent (So You Only Enter Passphrase Once)</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Start the agent</span>
-<span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>ssh-agent<span class="w"> </span>-s<span class="k">)</span><span class="s2">&quot;</span>
+<pre><code><code># Start the agent
+eval &quot;$(ssh-agent -s)&quot;
 
-<span class="c1"># Add your key</span>
-ssh-add<span class="w"> </span>~/.ssh/id_ed25519
-</code></pre></div>
+# Add your key
+ssh-add ~/.ssh/id_ed25519
+</code></code></pre>
 
 <p><strong>macOS — make it persist across reboots:</strong></p>
 <p>Add to <code>~/.ssh/config</code>:</p>
-<div class="codehilite"><pre><span></span><code>Host *
+<pre><code><code>Host *
     AddKeysToAgent yes
     UseKeychain yes
     IdentityFile ~/.ssh/id_ed25519
-</code></pre></div>
+</code></code></pre>
 
 <p>Then:</p>
-<div class="codehilite"><pre><span></span><code>ssh-add<span class="w"> </span>--apple-use-keychain<span class="w"> </span>~/.ssh/id_ed25519
-</code></pre></div>
+<pre><code><code>ssh-add --apple-use-keychain ~/.ssh/id_ed25519
+</code></code></pre>
 
 <hr />
 <h2>Copy Public Key to GitHub / GitLab</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Print your public key</span>
-cat<span class="w"> </span>~/.ssh/id_ed25519.pub
-</code></pre></div>
+<pre><code><code># Print your public key
+cat ~/.ssh/id_ed25519.pub
+</code></code></pre>
 
 <p>Copy the entire output. Then:
 - <strong>GitHub:</strong> Settings → SSH and GPG keys → New SSH key → paste
 - <strong>GitLab:</strong> Preferences → SSH Keys → paste</p>
 <p>Test:</p>
-<div class="codehilite"><pre><span></span><code>ssh<span class="w"> </span>-T<span class="w"> </span>git@github.com
-<span class="c1"># Should say: Hi username! You&#39;ve successfully authenticated...</span>
-</code></pre></div>
+<pre><code><code>ssh -T git@github.com
+# Should say: Hi username! You&#39;ve successfully authenticated...
+</code></code></pre>
 
 <hr />
 <h2>Troubleshooting</h2>
 <p><strong>Still asking for password after copying key:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Check permissions</span>
-chmod<span class="w"> </span><span class="m">700</span><span class="w"> </span>~/.ssh
-chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>~/.ssh/authorized_keys
-</code></pre></div>
+<pre><code><code># Check permissions
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
+</code></code></pre>
 
 <p><strong>Permission denied (publickey):</strong>
 The key was not copied to the server. Repeat Step 2, or manually paste the contents of <code>~/.ssh/id_ed25519.pub</code> into <code>~/.ssh/authorized_keys</code> on the server.</p>

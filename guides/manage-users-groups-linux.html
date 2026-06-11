@@ -2,60 +2,60 @@ DATA:system-users:Manage Users and Groups on Linux:System & Users
 <h1>Manage Users and Groups on Linux</h1>
 <hr />
 <h2>Users</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Create a new user</span>
-sudo<span class="w"> </span>useradd<span class="w"> </span>username<span class="w">                     </span><span class="c1"># minimal, no home dir</span>
-sudo<span class="w"> </span>useradd<span class="w"> </span>-m<span class="w"> </span>username<span class="w">                  </span><span class="c1"># with home directory</span>
-sudo<span class="w"> </span>useradd<span class="w"> </span>-m<span class="w"> </span>-s<span class="w"> </span>/bin/bash<span class="w"> </span>username<span class="w">     </span><span class="c1"># with home dir and bash shell</span>
-sudo<span class="w"> </span>adduser<span class="w"> </span>username<span class="w">                     </span><span class="c1"># interactive, friendlier (Debian/Ubuntu)</span>
+<pre><code><code># Create a new user
+sudo useradd username                     # minimal, no home dir
+sudo useradd -m username                  # with home directory
+sudo useradd -m -s /bin/bash username     # with home dir and bash shell
+sudo adduser username                     # interactive, friendlier (Debian/Ubuntu)
 
-<span class="c1"># Set or change password</span>
-sudo<span class="w"> </span>passwd<span class="w"> </span>username
+# Set or change password
+sudo passwd username
 
-<span class="c1"># Delete a user</span>
-sudo<span class="w"> </span>userdel<span class="w"> </span>username
-sudo<span class="w"> </span>userdel<span class="w"> </span>-r<span class="w"> </span>username<span class="w">                  </span><span class="c1"># also delete home directory</span>
+# Delete a user
+sudo userdel username
+sudo userdel -r username                  # also delete home directory
 
-<span class="c1"># Modify a user</span>
-sudo<span class="w"> </span>usermod<span class="w"> </span>-s<span class="w"> </span>/bin/zsh<span class="w"> </span>username<span class="w">         </span><span class="c1"># change shell</span>
-sudo<span class="w"> </span>usermod<span class="w"> </span>-d<span class="w"> </span>/new/home<span class="w"> </span>username<span class="w">        </span><span class="c1"># change home directory</span>
-sudo<span class="w"> </span>usermod<span class="w"> </span>-l<span class="w"> </span>newname<span class="w"> </span>oldname<span class="w">           </span><span class="c1"># rename user</span>
+# Modify a user
+sudo usermod -s /bin/zsh username         # change shell
+sudo usermod -d /new/home username        # change home directory
+sudo usermod -l newname oldname           # rename user
 
-<span class="c1"># Lock / unlock a user account</span>
-sudo<span class="w"> </span>usermod<span class="w"> </span>-L<span class="w"> </span>username<span class="w">                  </span><span class="c1"># lock</span>
-sudo<span class="w"> </span>usermod<span class="w"> </span>-U<span class="w"> </span>username<span class="w">                  </span><span class="c1"># unlock</span>
+# Lock / unlock a user account
+sudo usermod -L username                  # lock
+sudo usermod -U username                  # unlock
 
-<span class="c1"># See info about a user</span>
-id<span class="w"> </span>username
-finger<span class="w"> </span>username
-cat<span class="w"> </span>/etc/passwd<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>username
-</code></pre></div>
+# See info about a user
+id username
+finger username
+cat /etc/passwd | grep username
+</code></code></pre>
 
 <hr />
 <h2>Groups</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Create a group</span>
-sudo<span class="w"> </span>groupadd<span class="w"> </span>groupname
+<pre><code><code># Create a group
+sudo groupadd groupname
 
-<span class="c1"># Delete a group</span>
-sudo<span class="w"> </span>groupdel<span class="w"> </span>groupname
+# Delete a group
+sudo groupdel groupname
 
-<span class="c1"># Add user to a group</span>
-sudo<span class="w"> </span>usermod<span class="w"> </span>-aG<span class="w"> </span>groupname<span class="w"> </span>username<span class="w">       </span><span class="c1"># -a = append, never remove existing groups</span>
+# Add user to a group
+sudo usermod -aG groupname username       # -a = append, never remove existing groups
 
-<span class="c1"># Remove user from a group</span>
-sudo<span class="w"> </span>gpasswd<span class="w"> </span>-d<span class="w"> </span>username<span class="w"> </span>groupname
+# Remove user from a group
+sudo gpasswd -d username groupname
 
-<span class="c1"># List groups a user belongs to</span>
-groups<span class="w"> </span>username
-id<span class="w"> </span>username
+# List groups a user belongs to
+groups username
+id username
 
-<span class="c1"># List all groups</span>
-cat<span class="w"> </span>/etc/group
-getent<span class="w"> </span>group
+# List all groups
+cat /etc/group
+getent group
 
-<span class="c1"># List members of a specific group</span>
-getent<span class="w"> </span>group<span class="w"> </span>sudo
-getent<span class="w"> </span>group<span class="w"> </span>docker
-</code></pre></div>
+# List members of a specific group
+getent group sudo
+getent group docker
+</code></code></pre>
 
 <hr />
 <h2>Important Groups</h2>
@@ -95,11 +95,11 @@ getent<span class="w"> </span>group<span class="w"> </span>docker
 </table>
 <hr />
 <h2>Switch Users</h2>
-<div class="codehilite"><pre><span></span><code>su<span class="w"> </span>username<span class="w">                </span><span class="c1"># switch to user (keeps environment)</span>
-su<span class="w"> </span>-<span class="w"> </span>username<span class="w">              </span><span class="c1"># switch to user (loads their environment)</span>
-sudo<span class="w"> </span>-u<span class="w"> </span>username<span class="w"> </span><span class="nb">command</span><span class="w">   </span><span class="c1"># run a single command as another user</span>
-sudo<span class="w"> </span>-i<span class="w">                    </span><span class="c1"># open root shell</span>
-</code></pre></div>
+<pre><code><code>su username                # switch to user (keeps environment)
+su - username              # switch to user (loads their environment)
+sudo -u username command   # run a single command as another user
+sudo -i                    # open root shell
+</code></code></pre>
 
 <hr />
 <h2>/etc/passwd and /etc/shadow</h2>
@@ -107,22 +107,22 @@ sudo<span class="w"> </span>-i<span class="w">                    </span><span c
 - <code>/etc/passwd</code> — usernames, UIDs, home dirs, shells (readable by all)
 - <code>/etc/shadow</code> — hashed passwords (root only)</p>
 <p>Format of <code>/etc/passwd</code>:</p>
-<div class="codehilite"><pre><span></span><code>username:x:UID:GID:comment:home_dir:shell
-</code></pre></div>
+<pre><code><code>username:x:UID:GID:comment:home_dir:shell
+</code></code></pre>
 
-<div class="codehilite"><pre><span></span><code><span class="c1"># View user entry</span>
-grep<span class="w"> </span>youruser<span class="w"> </span>/etc/passwd
+<pre><code><code># View user entry
+grep youruser /etc/passwd
 
-<span class="c1"># List all users</span>
-cut<span class="w"> </span>-d:<span class="w"> </span>-f1<span class="w"> </span>/etc/passwd
-</code></pre></div>
+# List all users
+cut -d: -f1 /etc/passwd
+</code></code></pre>
 
 <hr />
 <h2>Batch Create Users (from a file)</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># users.txt: one username per line</span>
-<span class="k">while</span><span class="w"> </span><span class="nv">IFS</span><span class="o">=</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>user<span class="p">;</span><span class="w"> </span><span class="k">do</span>
-<span class="w">    </span>sudo<span class="w"> </span>useradd<span class="w"> </span>-m<span class="w"> </span>-s<span class="w"> </span>/bin/bash<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$user</span><span class="s2">&quot;</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$user</span><span class="s2">:</span><span class="k">$(</span>openssl<span class="w"> </span>rand<span class="w"> </span>-base64<span class="w"> </span><span class="m">12</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>chpasswd
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Created: </span><span class="nv">$user</span><span class="s2">&quot;</span>
-<span class="k">done</span><span class="w"> </span>&lt;<span class="w"> </span>users.txt
-</code></pre></div>
+<pre><code><code># users.txt: one username per line
+while IFS= read -r user; do
+    sudo useradd -m -s /bin/bash &quot;$user&quot;
+    echo &quot;$user:$(openssl rand -base64 12)&quot; | sudo chpasswd
+    echo &quot;Created: $user&quot;
+done &lt; users.txt
+</code></code></pre>

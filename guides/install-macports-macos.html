@@ -50,8 +50,8 @@ DATA:package-managers:MacPorts — Install and Use on macOS:Package Managers (Al
 <hr />
 <h2>Step 1 — Install Xcode Command Line Tools</h2>
 <p>MacPorts requires Xcode CLT:</p>
-<div class="codehilite"><pre><span></span><code>xcode-select<span class="w"> </span>--install
-</code></pre></div>
+<pre><code><code>xcode-select --install
+</code></code></pre>
 
 <hr />
 <h2>Step 2 — Download and Install MacPorts</h2>
@@ -62,58 +62,58 @@ DATA:package-managers:MacPorts — Install and Use on macOS:Package Managers (Al
 <li>Open a new Terminal window — MacPorts adds itself to your PATH automatically.</li>
 </ol>
 <p>Verify:</p>
-<div class="codehilite"><pre><span></span><code>port<span class="w"> </span>version
-</code></pre></div>
+<pre><code><code>port version
+</code></code></pre>
 
 <hr />
 <h2>Essential Commands</h2>
 <h3>Install a package</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>port<span class="w"> </span>install<span class="w"> </span>wget
-</code></pre></div>
+<pre><code><code>sudo port install wget
+</code></code></pre>
 
 <p>MacPorts requires <code>sudo</code> — unlike Homebrew, it installs to a system directory.</p>
 <h3>Search for a package</h3>
-<div class="codehilite"><pre><span></span><code>port<span class="w"> </span>search<span class="w"> </span>python
-port<span class="w"> </span>search<span class="w"> </span>--name<span class="w"> </span>python<span class="w">  </span><span class="c1"># Search by name only</span>
-</code></pre></div>
+<pre><code><code>port search python
+port search --name python  # Search by name only
+</code></code></pre>
 
 <h3>Get info about a package</h3>
-<div class="codehilite"><pre><span></span><code>port<span class="w"> </span>info<span class="w"> </span>python312
-</code></pre></div>
+<pre><code><code>port info python312
+</code></code></pre>
 
 <h3>Update MacPorts and all ports</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>port<span class="w"> </span>selfupdate
-sudo<span class="w"> </span>port<span class="w"> </span>upgrade<span class="w"> </span>outdated
-</code></pre></div>
+<pre><code><code>sudo port selfupdate
+sudo port upgrade outdated
+</code></code></pre>
 
 <h3>List installed ports</h3>
-<div class="codehilite"><pre><span></span><code>port<span class="w"> </span>installed
-</code></pre></div>
+<pre><code><code>port installed
+</code></code></pre>
 
 <h3>Remove a package</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>port<span class="w"> </span>uninstall<span class="w"> </span>wget
-</code></pre></div>
+<pre><code><code>sudo port uninstall wget
+</code></code></pre>
 
 <h3>Remove a package and everything it depends on (if nothing else needs it)</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>port<span class="w"> </span>uninstall<span class="w"> </span>--follow-dependencies<span class="w"> </span>wget
-</code></pre></div>
+<pre><code><code>sudo port uninstall --follow-dependencies wget
+</code></code></pre>
 
 <h3>Clean up old versions</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>port<span class="w"> </span>reclaim
-</code></pre></div>
+<pre><code><code>sudo port reclaim
+</code></code></pre>
 
 <hr />
 <h2>Variants — Customise What Gets Compiled</h2>
 <p>MacPorts supports variants — optional features you enable or disable at compile time:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># See available variants for a port</span>
-port<span class="w"> </span>variants<span class="w"> </span>python312
+<pre><code><code># See available variants for a port
+port variants python312
 
-<span class="c1"># Install with a specific variant enabled</span>
-sudo<span class="w"> </span>port<span class="w"> </span>install<span class="w"> </span>python312<span class="w"> </span>+universal
+# Install with a specific variant enabled
+sudo port install python312 +universal
 
-<span class="c1"># Install with a variant disabled</span>
-sudo<span class="w"> </span>port<span class="w"> </span>install<span class="w"> </span>ffmpeg<span class="w"> </span>-x11
-</code></pre></div>
+# Install with a variant disabled
+sudo port install ffmpeg -x11
+</code></code></pre>
 
 <p>Common variants:
 - <code>+universal</code> — build for both Intel and Apple Silicon
@@ -122,12 +122,12 @@ sudo<span class="w"> </span>port<span class="w"> </span>install<span class="w"> 
 <hr />
 <h2>Fix: port command not found after install</h2>
 <p>If <code>port</code> is not found after installing MacPorts:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;export PATH=&quot;/opt/local/bin:/opt/local/sbin:$PATH&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
-<span class="nb">source</span><span class="w"> </span>~/.zprofile
-</code></pre></div>
+<pre><code><code>echo &#39;export PATH=&quot;/opt/local/bin:/opt/local/sbin:$PATH&quot;&#39; &gt;&gt; ~/.zprofile
+source ~/.zprofile
+</code></code></pre>
 
 <hr />
 <h2>Uninstall MacPorts</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>port<span class="w"> </span>-fp<span class="w"> </span>uninstall<span class="w"> </span>--follow-dependencies<span class="w"> </span>installed
-sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/opt/local<span class="w"> </span>/Applications/DarwinPorts<span class="w"> </span>/Applications/MacPorts<span class="w"> </span>/Library/LaunchDaemons/org.macports.*<span class="w"> </span>/Library/Receipts/DarwinPorts*.pkg<span class="w"> </span>/Library/Receipts/MacPorts*.pkg<span class="w"> </span>/Library/StartupItems/DarwinPortsStartup<span class="w"> </span>/Library/Tcl/darwinports1.0<span class="w"> </span>/Library/Tcl/macports1.0<span class="w"> </span>~/.macports
-</code></pre></div>
+<pre><code><code>sudo port -fp uninstall --follow-dependencies installed
+sudo rm -rf /opt/local /Applications/DarwinPorts /Applications/MacPorts /Library/LaunchDaemons/org.macports.* /Library/Receipts/DarwinPorts*.pkg /Library/Receipts/MacPorts*.pkg /Library/StartupItems/DarwinPortsStartup /Library/Tcl/darwinports1.0 /Library/Tcl/macports1.0 ~/.macports
+</code></code></pre>

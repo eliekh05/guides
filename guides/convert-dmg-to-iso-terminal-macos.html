@@ -6,8 +6,8 @@ DATA:macos:Convert a DMG to ISO Using Terminal (macOS):macOS
 <h2>Convert a DMG to ISO</h2>
 <p>Open <strong>Terminal</strong> and run the following two commands.</p>
 <h3>Step 1 — Convert DMG to CDR</h3>
-<div class="codehilite"><pre><span></span><code>hdiutil<span class="w"> </span>convert<span class="w"> </span>/path/to/yourfile.dmg<span class="w"> </span>-format<span class="w"> </span>UDTO<span class="w"> </span>-o<span class="w"> </span>~/Desktop/yourfile
-</code></pre></div>
+<pre><code><code>hdiutil convert /path/to/yourfile.dmg -format UDTO -o ~/Desktop/yourfile
+</code></code></pre>
 
 <ul>
 <li>Replace <code>/path/to/yourfile.dmg</code> with the actual path to your DMG file.</li>
@@ -18,39 +18,39 @@ DATA:macos:Convert a DMG to ISO Using Terminal (macOS):macOS
 <p><strong>Tip:</strong> You can drag and drop the DMG file from Finder into the Terminal window instead of typing the path manually.</p>
 </blockquote>
 <h3>Step 2 — Rename CDR to ISO</h3>
-<div class="codehilite"><pre><span></span><code>mv<span class="w"> </span>~/Desktop/yourfile.cdr<span class="w"> </span>~/Desktop/yourfile.iso
-</code></pre></div>
+<pre><code><code>mv ~/Desktop/yourfile.cdr ~/Desktop/yourfile.iso
+</code></code></pre>
 
 <p>The <code>.cdr</code> and <code>.iso</code> formats are identical — renaming the extension is all that is needed. The file is now a standard ISO that Windows and Linux can use.</p>
 <hr />
 <h2>Convert a macOS Installer App to ISO</h2>
 <p>This is the method used to create a bootable macOS ISO for virtual machines. Replace <code>Sequoia</code> and the app name with your macOS version.</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Step 1 — Create a blank DMG to write the installer into</span>
-hdiutil<span class="w"> </span>create<span class="w"> </span>-o<span class="w"> </span>/tmp/Sequoia<span class="w"> </span>-size<span class="w"> </span>18500m<span class="w"> </span>-volname<span class="w"> </span><span class="s2">&quot;Install macOS Sequoia&quot;</span><span class="w"> </span>-layout<span class="w"> </span>SPUD<span class="w"> </span>-fs<span class="w"> </span>HFS+J
+<pre><code><code># Step 1 — Create a blank DMG to write the installer into
+hdiutil create -o /tmp/Sequoia -size 18500m -volname &quot;Install macOS Sequoia&quot; -layout SPUD -fs HFS+J
 
-<span class="c1"># Step 2 — Mount the blank DMG</span>
-hdiutil<span class="w"> </span>attach<span class="w"> </span>/tmp/Sequoia.dmg<span class="w"> </span>-noverify<span class="w"> </span>-mountpoint<span class="w"> </span>/Volumes/InstallMacOSSequoia
+# Step 2 — Mount the blank DMG
+hdiutil attach /tmp/Sequoia.dmg -noverify -mountpoint /Volumes/InstallMacOSSequoia
 
-<span class="c1"># Step 3 — Write the macOS installer to the mounted DMG</span>
-sudo<span class="w"> </span>/Applications/Install<span class="se">\ </span>macOS<span class="se">\ </span>Sequoia.app/Contents/Resources/createinstallmedia<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--volume<span class="w"> </span>/Volumes/InstallMacOSSequoia<span class="w"> </span>--nointeraction
+# Step 3 — Write the macOS installer to the mounted DMG
+sudo /Applications/Install\ macOS\ Sequoia.app/Contents/Resources/createinstallmedia \
+  --volume /Volumes/InstallMacOSSequoia --nointeraction
 
-<span class="c1"># Step 4 — Unmount the DMG</span>
-hdiutil<span class="w"> </span>detach<span class="w"> </span>/Volumes/Install<span class="se">\ </span>macOS<span class="se">\ </span>Sequoia
+# Step 4 — Unmount the DMG
+hdiutil detach /Volumes/Install\ macOS\ Sequoia
 
-<span class="c1"># Step 5 — Convert to ISO</span>
-hdiutil<span class="w"> </span>convert<span class="w"> </span>/tmp/Sequoia.dmg<span class="w"> </span>-format<span class="w"> </span>UDTO<span class="w"> </span>-o<span class="w"> </span>~/Desktop/Sequoia
+# Step 5 — Convert to ISO
+hdiutil convert /tmp/Sequoia.dmg -format UDTO -o ~/Desktop/Sequoia
 
-<span class="c1"># Step 6 — Rename to .iso</span>
-mv<span class="w"> </span>~/Desktop/Sequoia.cdr<span class="w"> </span>~/Desktop/Sequoia.iso
-</code></pre></div>
+# Step 6 — Rename to .iso
+mv ~/Desktop/Sequoia.cdr ~/Desktop/Sequoia.iso
+</code></code></pre>
 
 <p>The finished <code>Sequoia.iso</code> on your Desktop can be used with VMware, VirtualBox, UTM, or copied to a Windows or Linux machine.</p>
 <hr />
 <h2>Convert ISO back to DMG (Reverse)</h2>
 <p>If you need to go the other direction — ISO to DMG:</p>
-<div class="codehilite"><pre><span></span><code>hdiutil<span class="w"> </span>convert<span class="w"> </span>/path/to/yourfile.iso<span class="w"> </span>-format<span class="w"> </span>UDRW<span class="w"> </span>-o<span class="w"> </span>~/Desktop/yourfile.dmg
-</code></pre></div>
+<pre><code><code>hdiutil convert /path/to/yourfile.iso -format UDRW -o ~/Desktop/yourfile.dmg
+</code></code></pre>
 
 <hr />
 <h2>Common Errors</h2>

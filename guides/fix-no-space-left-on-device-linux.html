@@ -3,113 +3,113 @@ DATA:system-users:Fix 'No Space Left on Device' on Linux:System & Users
 <p>This error appears when a filesystem is full. The fix depends on what filled it up. Work through these in order.</p>
 <hr />
 <h2>Step 1 — Find Which Filesystem Is Full</h2>
-<div class="codehilite"><pre><span></span><code>df<span class="w"> </span>-h
-</code></pre></div>
+<pre><code><code>df -h
+</code></code></pre>
 
 <p>Look for a filesystem at 100% or close. Note the mount point — usually <code>/</code>, <code>/var</code>, or <code>/boot</code>.</p>
 <hr />
 <h2>Step 2 — Find What Is Using the Space</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Find largest folders (from root)</span>
-sudo<span class="w"> </span>du<span class="w"> </span>-sh<span class="w"> </span>/*<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-rh<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
+<pre><code><code># Find largest folders (from root)
+sudo du -sh /* 2&gt;/dev/null | sort -rh | head -20
 
-<span class="c1"># Drill down into the largest folder</span>
-sudo<span class="w"> </span>du<span class="w"> </span>-sh<span class="w"> </span>/var/*<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-rh<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
-sudo<span class="w"> </span>du<span class="w"> </span>-sh<span class="w"> </span>/var/log/*<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-rh<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-10
-</code></pre></div>
+# Drill down into the largest folder
+sudo du -sh /var/* | sort -rh | head -20
+sudo du -sh /var/log/* | sort -rh | head -10
+</code></code></pre>
 
 <p><strong>Common culprits:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Large log files</span>
-sudo<span class="w"> </span>du<span class="w"> </span>-sh<span class="w"> </span>/var/log/*
+<pre><code><code># Large log files
+sudo du -sh /var/log/*
 
-<span class="c1"># Docker images and containers</span>
-docker<span class="w"> </span>system<span class="w"> </span>df
-docker<span class="w"> </span>system<span class="w"> </span>prune<span class="w"> </span>-a
+# Docker images and containers
+docker system df
+docker system prune -a
 
-<span class="c1"># Old kernels (Ubuntu/Debian)</span>
-dpkg<span class="w"> </span>--list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>linux-image
-sudo<span class="w"> </span>apt<span class="w"> </span>autoremove
+# Old kernels (Ubuntu/Debian)
+dpkg --list | grep linux-image
+sudo apt autoremove
 
-<span class="c1"># Journal logs</span>
-journalctl<span class="w"> </span>--disk-usage
-sudo<span class="w"> </span>journalctl<span class="w"> </span>--vacuum-size<span class="o">=</span>200M
+# Journal logs
+journalctl --disk-usage
+sudo journalctl --vacuum-size=200M
 
-<span class="c1"># Package cache</span>
-du<span class="w"> </span>-sh<span class="w"> </span>/var/cache/apt/
-sudo<span class="w"> </span>apt<span class="w"> </span>clean
-</code></pre></div>
+# Package cache
+du -sh /var/cache/apt/
+sudo apt clean
+</code></code></pre>
 
 <hr />
 <h2>Step 3 — Quick Cleanup</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Remove old kernels and unused packages</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>autoremove<span class="w"> </span>-y
-sudo<span class="w"> </span>apt<span class="w"> </span>clean
-sudo<span class="w"> </span>apt<span class="w"> </span>autoclean
+<pre><code><code># Remove old kernels and unused packages
+sudo apt autoremove -y
+sudo apt clean
+sudo apt autoclean
 
-<span class="c1"># Clear journal logs older than 7 days</span>
-sudo<span class="w"> </span>journalctl<span class="w"> </span>--vacuum-time<span class="o">=</span>7d
+# Clear journal logs older than 7 days
+sudo journalctl --vacuum-time=7d
 
-<span class="c1"># Clear thumbnail cache</span>
-rm<span class="w"> </span>-rf<span class="w"> </span>~/.cache/thumbnails/*
+# Clear thumbnail cache
+rm -rf ~/.cache/thumbnails/*
 
-<span class="c1"># Empty Trash</span>
-rm<span class="w"> </span>-rf<span class="w"> </span>~/.local/share/Trash/files/*
+# Empty Trash
+rm -rf ~/.local/share/Trash/files/*
 
-<span class="c1"># Clear temp files</span>
-sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/tmp/*
-sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/var/tmp/*
-</code></pre></div>
+# Clear temp files
+sudo rm -rf /tmp/*
+sudo rm -rf /var/tmp/*
+</code></code></pre>
 
 <hr />
 <h2>Step 4 — Find Large Files</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Files over 1GB</span>
-sudo<span class="w"> </span>find<span class="w"> </span>/<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-size<span class="w"> </span>+1G<span class="w"> </span><span class="m">2</span>&gt;/dev/null
+<pre><code><code># Files over 1GB
+sudo find / -type f -size +1G 2&gt;/dev/null
 
-<span class="c1"># Files over 500MB in /var</span>
-sudo<span class="w"> </span>find<span class="w"> </span>/var<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-size<span class="w"> </span>+500M<span class="w"> </span><span class="m">2</span>&gt;/dev/null
+# Files over 500MB in /var
+sudo find /var -type f -size +500M 2&gt;/dev/null
 
-<span class="c1"># Largest files anywhere</span>
-sudo<span class="w"> </span>find<span class="w"> </span>/<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-printf<span class="w"> </span><span class="s1">&#39;%s %p\n&#39;</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-rn<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
-</code></pre></div>
+# Largest files anywhere
+sudo find / -type f -printf &#39;%s %p\n&#39; 2&gt;/dev/null | sort -rn | head -20
+</code></code></pre>
 
 <hr />
 <h2>Special Case — <code>/boot</code> Is Full</h2>
 <p><code>/boot</code> fills up when old kernels are not removed. The partition is small (usually 500MB–1GB).</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># List installed kernels</span>
-dpkg<span class="w"> </span>--list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>linux-image
+<pre><code><code># List installed kernels
+dpkg --list | grep linux-image
 
-<span class="c1"># See which kernel you&#39;re running (don&#39;t remove this one)</span>
-uname<span class="w"> </span>-r
+# See which kernel you&#39;re running (don&#39;t remove this one)
+uname -r
 
-<span class="c1"># Remove old kernels</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>autoremove<span class="w"> </span>-y
+# Remove old kernels
+sudo apt autoremove -y
 
-<span class="c1"># If autoremove doesn&#39;t work, manually remove old ones</span>
-sudo<span class="w"> </span>dpkg<span class="w"> </span>--purge<span class="w"> </span>linux-image-OLD-VERSION
-</code></pre></div>
+# If autoremove doesn&#39;t work, manually remove old ones
+sudo dpkg --purge linux-image-OLD-VERSION
+</code></code></pre>
 
 <hr />
 <h2>Special Case — Inode Limit Reached</h2>
 <p>Sometimes <code>df -h</code> shows space available but you still get the error. The inode table may be full:</p>
-<div class="codehilite"><pre><span></span><code>df<span class="w"> </span>-i
-</code></pre></div>
+<pre><code><code>df -i
+</code></code></pre>
 
 <p>If a filesystem shows 100% under <code>IUse%</code> — you have run out of inodes (too many small files).</p>
 <p>Find directories with huge numbers of files:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>find<span class="w"> </span>/<span class="w"> </span>-xdev<span class="w"> </span>-type<span class="w"> </span>d<span class="w"> </span>-printf<span class="w"> </span><span class="s1">&#39;%h\n&#39;</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span><span class="p">|</span><span class="w"> </span>uniq<span class="w"> </span>-c<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-rn<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
-</code></pre></div>
+<pre><code><code>sudo find / -xdev -type d -printf &#39;%h\n&#39; 2&gt;/dev/null | sort | uniq -c | sort -rn | head -20
+</code></code></pre>
 
 <p>Common cause: mail spool, temp files, or a runaway process creating files. Delete the unnecessary files or directories.</p>
 <hr />
 <h2>Prevent It From Happening Again</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Add to root&#39;s crontab to auto-clean journal weekly</span>
-sudo<span class="w"> </span>crontab<span class="w"> </span>-e
-<span class="c1"># Add:</span>
-<span class="m">0</span><span class="w"> </span><span class="m">3</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span><span class="m">0</span><span class="w"> </span>journalctl<span class="w"> </span>--vacuum-size<span class="o">=</span>500M
-<span class="m">0</span><span class="w"> </span><span class="m">3</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span><span class="m">0</span><span class="w"> </span>apt-get<span class="w"> </span>clean<span class="w"> </span>-y
-</code></pre></div>
+<pre><code><code># Add to root&#39;s crontab to auto-clean journal weekly
+sudo crontab -e
+# Add:
+0 3 * * 0 journalctl --vacuum-size=500M
+0 3 * * 0 apt-get clean -y
+</code></code></pre>
 
 <hr />
 <h2>Check Disk Health While You're At It</h2>
 <p>If the disk filled up suspiciously fast or you see I/O errors:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>smartctl<span class="w"> </span>-H<span class="w"> </span>/dev/sda
-</code></pre></div>
+<pre><code><code>sudo smartctl -H /dev/sda
+</code></code></pre>

@@ -3,142 +3,142 @@ DATA:networking:Network Troubleshooting on Linux:Networking & DNS
 <p>A systematic approach to diagnosing network problems — from physical layer to application.</p>
 <hr />
 <h2>Step 1 — Is the Interface Up?</h2>
-<div class="codehilite"><pre><span></span><code>ip<span class="w"> </span>a
-</code></pre></div>
+<pre><code><code>ip a
+</code></code></pre>
 
 <p>Look for your interface (eth0, ens3, wlan0, etc.). It should show <code>UP</code> and have an IP address. If it shows <code>DOWN</code>:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>eth0<span class="w"> </span>up
-</code></pre></div>
+<pre><code><code>sudo ip link set eth0 up
+</code></code></pre>
 
 <hr />
 <h2>Step 2 — Do You Have an IP Address?</h2>
-<div class="codehilite"><pre><span></span><code>ip<span class="w"> </span>a<span class="w"> </span>show<span class="w"> </span>eth0
-</code></pre></div>
+<pre><code><code>ip a show eth0
+</code></code></pre>
 
 <p>If no IP address is assigned, DHCP may have failed:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dhclient<span class="w"> </span>eth0<span class="w">                      </span><span class="c1"># request a DHCP lease (Debian/Ubuntu)</span>
-sudo<span class="w"> </span>nmcli<span class="w"> </span>connection<span class="w"> </span>up<span class="w"> </span><span class="s2">&quot;connection&quot;</span><span class="w">   </span><span class="c1"># NetworkManager</span>
-sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>networking<span class="w">       </span><span class="c1"># restart networking entirely</span>
-</code></pre></div>
+<pre><code><code>sudo dhclient eth0                      # request a DHCP lease (Debian/Ubuntu)
+sudo nmcli connection up &quot;connection&quot;   # NetworkManager
+sudo systemctl restart networking       # restart networking entirely
+</code></code></pre>
 
 <hr />
 <h2>Step 3 — Can You Reach the Gateway?</h2>
-<div class="codehilite"><pre><span></span><code>ip<span class="w"> </span>route<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>default<span class="w">                 </span><span class="c1"># find your gateway IP</span>
-ping<span class="w"> </span>-c<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">192</span>.168.1.1<span class="w">                   </span><span class="c1"># ping the gateway (replace with your IP)</span>
-</code></pre></div>
+<pre><code><code>ip route | grep default                 # find your gateway IP
+ping -c 4 192.168.1.1                   # ping the gateway (replace with your IP)
+</code></code></pre>
 
 <p>If this fails — problem is between you and the router. Check cable, WiFi connection, or interface configuration.</p>
 <hr />
 <h2>Step 4 — Can You Reach the Internet by IP?</h2>
-<div class="codehilite"><pre><span></span><code>ping<span class="w"> </span>-c<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">8</span>.8.8.8
-</code></pre></div>
+<pre><code><code>ping -c 4 8.8.8.8
+</code></code></pre>
 
 <p>If this works but Step 5 does not — it is a DNS problem.
 If this fails but Step 3 works — problem is between your router and the internet.</p>
 <hr />
 <h2>Step 5 — Does DNS Work?</h2>
-<div class="codehilite"><pre><span></span><code>ping<span class="w"> </span>-c<span class="w"> </span><span class="m">4</span><span class="w"> </span>google.com
-nslookup<span class="w"> </span>google.com
-dig<span class="w"> </span>google.com<span class="w"> </span>+short
-</code></pre></div>
+<pre><code><code>ping -c 4 google.com
+nslookup google.com
+dig google.com +short
+</code></code></pre>
 
 <p>If DNS fails but pinging by IP works:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Check current DNS servers</span>
-cat<span class="w"> </span>/etc/resolv.conf
-resolvectl<span class="w"> </span>status
+<pre><code><code># Check current DNS servers
+cat /etc/resolv.conf
+resolvectl status
 
-<span class="c1"># Test a specific DNS server</span>
-dig<span class="w"> </span>@8.8.8.8<span class="w"> </span>google.com<span class="w"> </span>+short
+# Test a specific DNS server
+dig @8.8.8.8 google.com +short
 
-<span class="c1"># Temporarily set DNS</span>
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;nameserver 8.8.8.8&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/resolv.conf
-</code></pre></div>
+# Temporarily set DNS
+echo &quot;nameserver 8.8.8.8&quot; | sudo tee /etc/resolv.conf
+</code></code></pre>
 
 <p>For permanent DNS fix see the <strong>Set a Static IP on Linux Using Netplan</strong> guide.</p>
 <hr />
 <h2>Diagnose Packet Loss and Latency</h2>
-<div class="codehilite"><pre><span></span><code>ping<span class="w"> </span>-c<span class="w"> </span><span class="m">20</span><span class="w"> </span>google.com<span class="w">               </span><span class="c1"># look for packet loss in output</span>
-mtr<span class="w"> </span>google.com<span class="w">                      </span><span class="c1"># interactive traceroute shows per-hop loss</span>
-traceroute<span class="w"> </span>google.com<span class="w">               </span><span class="c1"># trace each hop to destination</span>
-</code></pre></div>
+<pre><code><code>ping -c 20 google.com               # look for packet loss in output
+mtr google.com                      # interactive traceroute shows per-hop loss
+traceroute google.com               # trace each hop to destination
+</code></code></pre>
 
 <hr />
 <h2>Check Listening Services</h2>
-<div class="codehilite"><pre><span></span><code>ss<span class="w"> </span>-tlnp<span class="w">                            </span><span class="c1"># what&#39;s listening on which port</span>
-ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>:80<span class="w">                 </span><span class="c1"># is port 80 open?</span>
-sudo<span class="w"> </span>lsof<span class="w"> </span>-i<span class="w"> </span>:80<span class="w">                    </span><span class="c1"># what process is on port 80</span>
-</code></pre></div>
+<pre><code><code>ss -tlnp                            # what&#39;s listening on which port
+ss -tlnp | grep :80                 # is port 80 open?
+sudo lsof -i :80                    # what process is on port 80
+</code></code></pre>
 
 <hr />
 <h2>Test a Remote Port</h2>
-<div class="codehilite"><pre><span></span><code>nc<span class="w"> </span>-zv<span class="w"> </span>google.com<span class="w"> </span><span class="m">443</span><span class="w">               </span><span class="c1"># can I reach port 443?</span>
-nc<span class="w"> </span>-zv<span class="w"> </span>google.com<span class="w"> </span><span class="m">22</span><span class="w">                </span><span class="c1"># can I reach SSH?</span>
-nc<span class="w"> </span>-zv<span class="w"> </span>-w<span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="m">192</span>.168.1.100<span class="w"> </span><span class="m">8006</span><span class="w">      </span><span class="c1"># with 5 second timeout</span>
-</code></pre></div>
+<pre><code><code>nc -zv google.com 443               # can I reach port 443?
+nc -zv google.com 22                # can I reach SSH?
+nc -zv -w 5 192.168.1.100 8006      # with 5 second timeout
+</code></code></pre>
 
 <hr />
 <h2>Check Firewall</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>ufw<span class="w"> </span>status<span class="w">                     </span><span class="c1"># UFW</span>
-sudo<span class="w"> </span>iptables<span class="w"> </span>-L<span class="w"> </span>-n<span class="w"> </span>-v<span class="w">              </span><span class="c1"># iptables rules</span>
-sudo<span class="w"> </span>firewall-cmd<span class="w"> </span>--list-all<span class="w">        </span><span class="c1"># firewalld (Fedora/RHEL)</span>
-</code></pre></div>
+<pre><code><code>sudo ufw status                     # UFW
+sudo iptables -L -n -v              # iptables rules
+sudo firewall-cmd --list-all        # firewalld (Fedora/RHEL)
+</code></code></pre>
 
 <hr />
 <h2>Check for Duplicate IPs (ARP)</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>arping<span class="w"> </span>-I<span class="w"> </span>eth0<span class="w"> </span><span class="m">192</span>.168.1.100<span class="w">   </span><span class="c1"># check if an IP is already in use</span>
-arp<span class="w"> </span>-a<span class="w">                              </span><span class="c1"># show ARP cache</span>
-</code></pre></div>
+<pre><code><code>sudo arping -I eth0 192.168.1.100   # check if an IP is already in use
+arp -a                              # show ARP cache
+</code></code></pre>
 
 <hr />
 <h2>DNS Flush</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Ubuntu/Debian with systemd-resolved</span>
-sudo<span class="w"> </span>resolvectl<span class="w"> </span>flush-caches
-sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>systemd-resolved
+<pre><code><code># Ubuntu/Debian with systemd-resolved
+sudo resolvectl flush-caches
+sudo systemctl restart systemd-resolved
 
-<span class="c1"># Older systems</span>
-sudo<span class="w"> </span>systemd-resolve<span class="w"> </span>--flush-caches
-</code></pre></div>
+# Older systems
+sudo systemd-resolve --flush-caches
+</code></code></pre>
 
 <hr />
 <h2>Read Network Logs</h2>
-<div class="codehilite"><pre><span></span><code>journalctl<span class="w"> </span>-u<span class="w"> </span>NetworkManager<span class="w"> </span>-f<span class="w">     </span><span class="c1"># NetworkManager logs</span>
-journalctl<span class="w"> </span>-u<span class="w"> </span>networking<span class="w"> </span>-f<span class="w">         </span><span class="c1"># Debian networking service</span>
-dmesg<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>eth<span class="w">                 </span><span class="c1"># kernel messages about ethernet</span>
-dmesg<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>wifi<span class="w">                </span><span class="c1"># kernel messages about WiFi</span>
-</code></pre></div>
+<pre><code><code>journalctl -u NetworkManager -f     # NetworkManager logs
+journalctl -u networking -f         # Debian networking service
+dmesg | grep -i eth                 # kernel messages about ethernet
+dmesg | grep -i wifi                # kernel messages about WiFi
+</code></code></pre>
 
 <hr />
 <h2>Reset Network Configuration</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Restart NetworkManager (most distros)</span>
-sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>NetworkManager
+<pre><code><code># Restart NetworkManager (most distros)
+sudo systemctl restart NetworkManager
 
-<span class="c1"># Restart Debian/Ubuntu networking</span>
-sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>networking
+# Restart Debian/Ubuntu networking
+sudo systemctl restart networking
 
-<span class="c1"># Restart specific interface via NetworkManager</span>
-sudo<span class="w"> </span>nmcli<span class="w"> </span>connection<span class="w"> </span>down<span class="w"> </span><span class="s2">&quot;connection-name&quot;</span>
-sudo<span class="w"> </span>nmcli<span class="w"> </span>connection<span class="w"> </span>up<span class="w"> </span><span class="s2">&quot;connection-name&quot;</span>
-</code></pre></div>
+# Restart specific interface via NetworkManager
+sudo nmcli connection down &quot;connection-name&quot;
+sudo nmcli connection up &quot;connection-name&quot;
+</code></code></pre>
 
 <hr />
 <h2>Bandwidth Test</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Install iperf3 on both machines</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>iperf3<span class="w"> </span>-y
+<pre><code><code># Install iperf3 on both machines
+sudo apt install iperf3 -y
 
-<span class="c1"># On server machine</span>
-iperf3<span class="w"> </span>-s
+# On server machine
+iperf3 -s
 
-<span class="c1"># On client machine</span>
-iperf3<span class="w"> </span>-c<span class="w"> </span>server-ip
-</code></pre></div>
+# On client machine
+iperf3 -c server-ip
+</code></code></pre>
 
 <hr />
 <h2>Quick Diagnostic Checklist</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Run all at once for a quick overview</span>
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=== Interfaces ===&quot;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ip<span class="w"> </span>a
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=== Routes ===&quot;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ip<span class="w"> </span>route
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=== DNS ===&quot;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>cat<span class="w"> </span>/etc/resolv.conf
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=== Gateway ping ===&quot;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ping<span class="w"> </span>-c<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="k">$(</span>ip<span class="w"> </span>route<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>default<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $3}&#39;</span><span class="k">)</span>
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=== Internet ping ===&quot;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ping<span class="w"> </span>-c<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">8</span>.8.8.8
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=== DNS test ===&quot;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>dig<span class="w"> </span>google.com<span class="w"> </span>+short
-</code></pre></div>
+<pre><code><code># Run all at once for a quick overview
+echo &quot;=== Interfaces ===&quot; &amp;&amp; ip a
+echo &quot;=== Routes ===&quot; &amp;&amp; ip route
+echo &quot;=== DNS ===&quot; &amp;&amp; cat /etc/resolv.conf
+echo &quot;=== Gateway ping ===&quot; &amp;&amp; ping -c 2 $(ip route | grep default | awk &#39;{print $3}&#39;)
+echo &quot;=== Internet ping ===&quot; &amp;&amp; ping -c 2 8.8.8.8
+echo &quot;=== DNS test ===&quot; &amp;&amp; dig google.com +short
+</code></code></pre>

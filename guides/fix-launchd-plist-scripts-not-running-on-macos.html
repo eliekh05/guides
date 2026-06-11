@@ -21,20 +21,20 @@ DATA:scheduling:Fix launchd / plist Scripts Not Running:Task Scheduling
 <h2>Fix 1 — Use Full Paths for Every Command</h2>
 <p>In your script, replace every command with its full path. Do not rely on PATH being set.</p>
 <p>To find the full path of any command, run in Terminal:</p>
-<div class="codehilite"><pre><span></span><code>which<span class="w"> </span>brew
-which<span class="w"> </span>python3
-which<span class="w"> </span>node
-</code></pre></div>
+<pre><code><code>which brew
+which python3
+which node
+</code></code></pre>
 
 <p>Then in your script, replace:</p>
-<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>update
-</code></pre></div>
+<pre><code><code>brew update
+</code></code></pre>
 
 <p>With:</p>
-<div class="codehilite"><pre><span></span><code>/opt/homebrew/bin/brew<span class="w"> </span>update<span class="w">   </span><span class="c1"># Apple Silicon Mac</span>
-<span class="c1"># or</span>
-/usr/local/bin/brew<span class="w"> </span>update<span class="w">      </span><span class="c1"># Intel Mac</span>
-</code></pre></div>
+<pre><code><code>/opt/homebrew/bin/brew update   # Apple Silicon Mac
+# or
+/usr/local/bin/brew update      # Intel Mac
+</code></code></pre>
 
 <p><strong>Common full paths:</strong></p>
 <table>
@@ -76,12 +76,12 @@ which<span class="w"> </span>node
 <hr />
 <h2>Fix 2 — Set PATH Inside the plist</h2>
 <p>You can define environment variables directly in your plist file so <code>launchd</code> has them available:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&lt;key&gt;</span>EnvironmentVariables<span class="nt">&lt;/key&gt;</span>
-<span class="nt">&lt;dict&gt;</span>
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>PATH<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;string&gt;</span>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin<span class="nt">&lt;/string&gt;</span>
-<span class="nt">&lt;/dict&gt;</span>
-</code></pre></div>
+<pre><code><code>&lt;key&gt;EnvironmentVariables&lt;/key&gt;
+&lt;dict&gt;
+    &lt;key&gt;PATH&lt;/key&gt;
+    &lt;string&gt;/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin&lt;/string&gt;
+&lt;/dict&gt;
+</code></code></pre>
 
 <p>Add this block inside the main <code>&lt;dict&gt;</code> of your plist, alongside your <code>Label</code> and <code>ProgramArguments</code>.</p>
 <hr />
@@ -100,74 +100,74 @@ which<span class="w"> </span>node
 <hr />
 <h2>Fix 4 — Add Logging to Diagnose the Problem</h2>
 <p><code>launchd</code> gives no error output by default. Add log output to your plist to capture what is going wrong:</p>
-<div class="codehilite"><pre><span></span><code><span class="nt">&lt;key&gt;</span>StandardOutPath<span class="nt">&lt;/key&gt;</span>
-<span class="nt">&lt;string&gt;</span>/tmp/my-script.log<span class="nt">&lt;/string&gt;</span>
-<span class="nt">&lt;key&gt;</span>StandardErrorPath<span class="nt">&lt;/key&gt;</span>
-<span class="nt">&lt;string&gt;</span>/tmp/my-script-error.log<span class="nt">&lt;/string&gt;</span>
-</code></pre></div>
+<pre><code><code>&lt;key&gt;StandardOutPath&lt;/key&gt;
+&lt;string&gt;/tmp/my-script.log&lt;/string&gt;
+&lt;key&gt;StandardErrorPath&lt;/key&gt;
+&lt;string&gt;/tmp/my-script-error.log&lt;/string&gt;
+</code></code></pre>
 
 <p>After your script runs (or fails to run), check the logs:</p>
-<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>/tmp/my-script.log
-cat<span class="w"> </span>/tmp/my-script-error.log
-</code></pre></div>
+<pre><code><code>cat /tmp/my-script.log
+cat /tmp/my-script-error.log
+</code></code></pre>
 
 <p>Any errors — including "command not found" — will appear there.</p>
 <hr />
 <h2>Fix 5 — Load and Verify the plist</h2>
 <p>After creating or editing a plist in <code>~/Library/LaunchAgents/</code>, load it with:</p>
-<div class="codehilite"><pre><span></span><code>launchctl<span class="w"> </span>load<span class="w"> </span>~/Library/LaunchAgents/com.yourname.yourscript.plist
-</code></pre></div>
+<pre><code><code>launchctl load ~/Library/LaunchAgents/com.yourname.yourscript.plist
+</code></code></pre>
 
 <p>To check if it loaded successfully:</p>
-<div class="codehilite"><pre><span></span><code>launchctl<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>com.yourname.yourscript
-</code></pre></div>
+<pre><code><code>launchctl list | grep com.yourname.yourscript
+</code></code></pre>
 
 <p>The output shows three columns: PID, exit code, and label. An exit code of <code>0</code> means it ran successfully. Any other number indicates an error — check your log files.</p>
 <p>To unload and reload after making changes:</p>
-<div class="codehilite"><pre><span></span><code>launchctl<span class="w"> </span>unload<span class="w"> </span>~/Library/LaunchAgents/com.yourname.yourscript.plist
-launchctl<span class="w"> </span>load<span class="w"> </span>~/Library/LaunchAgents/com.yourname.yourscript.plist
-</code></pre></div>
+<pre><code><code>launchctl unload ~/Library/LaunchAgents/com.yourname.yourscript.plist
+launchctl load ~/Library/LaunchAgents/com.yourname.yourscript.plist
+</code></code></pre>
 
 <hr />
 <h2>Example plist With All Fixes Applied</h2>
-<div class="codehilite"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
-<span class="cp">&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot;</span>
-<span class="cp">  &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;</span>
-<span class="nt">&lt;plist</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
-<span class="nt">&lt;dict&gt;</span>
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>Label<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;string&gt;</span>com.yourname.yourscript<span class="nt">&lt;/string&gt;</span>
+<pre><code><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot;
+  &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;
+&lt;plist version=&quot;1.0&quot;&gt;
+&lt;dict&gt;
+    &lt;key&gt;Label&lt;/key&gt;
+    &lt;string&gt;com.yourname.yourscript&lt;/string&gt;
 
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>EnvironmentVariables<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;dict&gt;</span>
-<span class="w">        </span><span class="nt">&lt;key&gt;</span>PATH<span class="nt">&lt;/key&gt;</span>
-<span class="w">        </span><span class="nt">&lt;string&gt;</span>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin<span class="nt">&lt;/string&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/dict&gt;</span>
+    &lt;key&gt;EnvironmentVariables&lt;/key&gt;
+    &lt;dict&gt;
+        &lt;key&gt;PATH&lt;/key&gt;
+        &lt;string&gt;/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin&lt;/string&gt;
+    &lt;/dict&gt;
 
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>ProgramArguments<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;array&gt;</span>
-<span class="w">        </span><span class="nt">&lt;string&gt;</span>/bin/zsh<span class="nt">&lt;/string&gt;</span>
-<span class="w">        </span><span class="nt">&lt;string&gt;</span>/Users/yourname/scripts/yourscript.zsh<span class="nt">&lt;/string&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/array&gt;</span>
+    &lt;key&gt;ProgramArguments&lt;/key&gt;
+    &lt;array&gt;
+        &lt;string&gt;/bin/zsh&lt;/string&gt;
+        &lt;string&gt;/Users/yourname/scripts/yourscript.zsh&lt;/string&gt;
+    &lt;/array&gt;
 
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>StartCalendarInterval<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;dict&gt;</span>
-<span class="w">        </span><span class="nt">&lt;key&gt;</span>Hour<span class="nt">&lt;/key&gt;</span>
-<span class="w">        </span><span class="nt">&lt;integer&gt;</span>9<span class="nt">&lt;/integer&gt;</span>
-<span class="w">        </span><span class="nt">&lt;key&gt;</span>Minute<span class="nt">&lt;/key&gt;</span>
-<span class="w">        </span><span class="nt">&lt;integer&gt;</span>0<span class="nt">&lt;/integer&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/dict&gt;</span>
+    &lt;key&gt;StartCalendarInterval&lt;/key&gt;
+    &lt;dict&gt;
+        &lt;key&gt;Hour&lt;/key&gt;
+        &lt;integer&gt;9&lt;/integer&gt;
+        &lt;key&gt;Minute&lt;/key&gt;
+        &lt;integer&gt;0&lt;/integer&gt;
+    &lt;/dict&gt;
 
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>StandardOutPath<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;string&gt;</span>/tmp/yourscript.log<span class="nt">&lt;/string&gt;</span>
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>StandardErrorPath<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;string&gt;</span>/tmp/yourscript-error.log<span class="nt">&lt;/string&gt;</span>
+    &lt;key&gt;StandardOutPath&lt;/key&gt;
+    &lt;string&gt;/tmp/yourscript.log&lt;/string&gt;
+    &lt;key&gt;StandardErrorPath&lt;/key&gt;
+    &lt;string&gt;/tmp/yourscript-error.log&lt;/string&gt;
 
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>RunAtLoad<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;false/&gt;</span>
-<span class="nt">&lt;/dict&gt;</span>
-<span class="nt">&lt;/plist&gt;</span>
-</code></pre></div>
+    &lt;key&gt;RunAtLoad&lt;/key&gt;
+    &lt;false/&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+</code></code></pre>
 
 <p>Replace <code>yourname</code> and <code>yourscript</code> with your actual username and script name.</p>
 <hr />

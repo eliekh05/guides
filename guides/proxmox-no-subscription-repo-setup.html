@@ -32,8 +32,8 @@ DATA:installation:Proxmox No-Subscription Repository Setup:Installation Guides
 <p><strong>Both files point to enterprise.proxmox.com.</strong> Both require a subscription. Most guides only tell you to disable one — leaving the other active, which is why <code>apt update</code> still throws errors after following those guides.</p>
 <hr />
 <h2>Check Your Proxmox Version First</h2>
-<div class="codehilite"><pre><span></span><code>pveversion
-</code></pre></div>
+<pre><code><code>pveversion
+</code></code></pre>
 
 <ul>
 <li>If it shows <code>pve-manager/8.x</code> — you are on PVE 8 (Debian Bookworm). Use the PVE 8 section.</li>
@@ -42,132 +42,132 @@ DATA:installation:Proxmox No-Subscription Repository Setup:Installation Guides
 <hr />
 <h2>Fix for Proxmox VE 9 (Debian Trixie) — Current</h2>
 <h3>Step 1 — Disable the enterprise PVE repository</h3>
-<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>/etc/apt/sources.list.d/pve-enterprise.sources
-</code></pre></div>
+<pre><code><code>nano /etc/apt/sources.list.d/pve-enterprise.sources
+</code></code></pre>
 
 <p>Comment out all lines by adding <code>#</code> at the start of each:</p>
-<div class="codehilite"><pre><span></span><code># Types: deb
+<pre><code><code># Types: deb
 # URIs: https://enterprise.proxmox.com/debian/pve
 # Suites: trixie
 # Components: pve-enterprise
 # Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
-</code></pre></div>
+</code></code></pre>
 
 <p>Save with <strong>Ctrl+X → Y → Enter</strong>.</p>
 <h3>Step 2 — Disable the enterprise Ceph repository</h3>
-<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>/etc/apt/sources.list.d/ceph.list
-</code></pre></div>
+<pre><code><code>nano /etc/apt/sources.list.d/ceph.list
+</code></code></pre>
 
 <p>Comment out all lines:</p>
-<div class="codehilite"><pre><span></span><code># deb https://enterprise.proxmox.com/debian/ceph-squid trixie enterprise
-</code></pre></div>
+<pre><code><code># deb https://enterprise.proxmox.com/debian/ceph-squid trixie enterprise
+</code></code></pre>
 
 <p>Save and exit.</p>
 <h3>Step 3 — Add the no-subscription PVE repository</h3>
-<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>/etc/apt/sources.list.d/pve-no-subscription.list
-</code></pre></div>
+<pre><code><code>nano /etc/apt/sources.list.d/pve-no-subscription.list
+</code></code></pre>
 
 <p>Add this line:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">deb</span><span class="w"> </span><span class="s">http://download.proxmox.com/debian/pve</span><span class="w"> </span><span class="kp">trixie</span><span class="w"> </span><span class="kp">pve-no-subscription</span>
-</code></pre></div>
+<pre><code><code>deb http://download.proxmox.com/debian/pve trixie pve-no-subscription
+</code></code></pre>
 
 <p>Save and exit.</p>
 <h3>Step 4 — Add the no-subscription Ceph repository</h3>
-<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>/etc/apt/sources.list.d/ceph.list
-</code></pre></div>
+<pre><code><code>nano /etc/apt/sources.list.d/ceph.list
+</code></code></pre>
 
 <p>Add this line below the commented-out enterprise line:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">deb</span><span class="w"> </span><span class="s">http://download.proxmox.com/debian/ceph-squid</span><span class="w"> </span><span class="kp">trixie</span><span class="w"> </span><span class="kp">no-subscription</span>
-</code></pre></div>
+<pre><code><code>deb http://download.proxmox.com/debian/ceph-squid trixie no-subscription
+</code></code></pre>
 
 <p>Save and exit.</p>
 <h3>Step 5 — Update and upgrade</h3>
-<div class="codehilite"><pre><span></span><code>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>apt<span class="w"> </span>full-upgrade<span class="w"> </span>-y
-</code></pre></div>
+<pre><code><code>apt update &amp;&amp; apt full-upgrade -y
+</code></code></pre>
 
 <p>No more 401 errors. If you still see one, check both files again — a single uncommented enterprise line will continue causing errors.</p>
 <hr />
 <h2>Fix for Proxmox VE 8 (Debian Bookworm)</h2>
 <h3>Step 1 — Disable the enterprise PVE repository</h3>
-<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>/etc/apt/sources.list.d/pve-enterprise.list
-</code></pre></div>
+<pre><code><code>nano /etc/apt/sources.list.d/pve-enterprise.list
+</code></code></pre>
 
 <p>Comment out the line:</p>
-<div class="codehilite"><pre><span></span><code># deb https://enterprise.proxmox.com/debian/pve bookworm pve-enterprise
-</code></pre></div>
+<pre><code><code># deb https://enterprise.proxmox.com/debian/pve bookworm pve-enterprise
+</code></code></pre>
 
 <p>Save and exit.</p>
 <h3>Step 2 — Disable the enterprise Ceph repository</h3>
-<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>/etc/apt/sources.list.d/ceph.list
-</code></pre></div>
+<pre><code><code>nano /etc/apt/sources.list.d/ceph.list
+</code></code></pre>
 
 <p>Comment out the enterprise line:</p>
-<div class="codehilite"><pre><span></span><code># deb https://enterprise.proxmox.com/debian/ceph-quincy bookworm enterprise
-</code></pre></div>
+<pre><code><code># deb https://enterprise.proxmox.com/debian/ceph-quincy bookworm enterprise
+</code></code></pre>
 
 <p>Save and exit.</p>
 <h3>Step 3 — Add the no-subscription PVE repository</h3>
-<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>/etc/apt/sources.list
-</code></pre></div>
+<pre><code><code>nano /etc/apt/sources.list
+</code></code></pre>
 
 <p>Add this line at the bottom:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">deb</span><span class="w"> </span><span class="s">http://download.proxmox.com/debian/pve</span><span class="w"> </span><span class="kp">bookworm</span><span class="w"> </span><span class="kp">pve-no-subscription</span>
-</code></pre></div>
+<pre><code><code>deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription
+</code></code></pre>
 
 <p>Save and exit.</p>
 <h3>Step 4 — Add the no-subscription Ceph repository</h3>
-<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>/etc/apt/sources.list.d/ceph.list
-</code></pre></div>
+<pre><code><code>nano /etc/apt/sources.list.d/ceph.list
+</code></code></pre>
 
 <p>Add this line:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">deb</span><span class="w"> </span><span class="s">http://download.proxmox.com/debian/ceph-squid</span><span class="w"> </span><span class="kp">bookworm</span><span class="w"> </span><span class="kp">no-subscription</span>
-</code></pre></div>
+<pre><code><code>deb http://download.proxmox.com/debian/ceph-squid bookworm no-subscription
+</code></code></pre>
 
 <p>Save and exit.</p>
 <h3>Step 5 — Update and upgrade</h3>
-<div class="codehilite"><pre><span></span><code>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>apt<span class="w"> </span>full-upgrade<span class="w"> </span>-y
-</code></pre></div>
+<pre><code><code>apt update &amp;&amp; apt full-upgrade -y
+</code></code></pre>
 
 <hr />
 <h2>One-Command Fix (Copy and Paste)</h2>
 <p>If you just want to run it all at once without editing files manually:</p>
 <p><strong>PVE 9 (Trixie):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Disable enterprise repos</span>
-sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;s/^Types:/#Types:/;s/^URIs:/#URIs:/;s/^Suites:/#Suites:/;s/^Components:/#Components:/;s/^Signed-By:/#Signed-By:/&#39;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>/etc/apt/sources.list.d/pve-enterprise.sources
-sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;s/^deb/#deb/&#39;</span><span class="w"> </span>/etc/apt/sources.list.d/ceph.list
+<pre><code><code># Disable enterprise repos
+sed -i &#39;s/^Types:/#Types:/;s/^URIs:/#URIs:/;s/^Suites:/#Suites:/;s/^Components:/#Components:/;s/^Signed-By:/#Signed-By:/&#39; \
+  /etc/apt/sources.list.d/pve-enterprise.sources
+sed -i &#39;s/^deb/#deb/&#39; /etc/apt/sources.list.d/ceph.list
 
-<span class="c1"># Add no-subscription repos</span>
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;deb http://download.proxmox.com/debian/pve trixie pve-no-subscription&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>&gt;<span class="w"> </span>/etc/apt/sources.list.d/pve-no-subscription.list
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;deb http://download.proxmox.com/debian/ceph-squid trixie no-subscription&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>&gt;&gt;<span class="w"> </span>/etc/apt/sources.list.d/ceph.list
+# Add no-subscription repos
+echo &quot;deb http://download.proxmox.com/debian/pve trixie pve-no-subscription&quot; \
+  &gt; /etc/apt/sources.list.d/pve-no-subscription.list
+echo &quot;deb http://download.proxmox.com/debian/ceph-squid trixie no-subscription&quot; \
+  &gt;&gt; /etc/apt/sources.list.d/ceph.list
 
-apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>apt<span class="w"> </span>full-upgrade<span class="w"> </span>-y
-</code></pre></div>
+apt update &amp;&amp; apt full-upgrade -y
+</code></code></pre>
 
 <p><strong>PVE 8 (Bookworm):</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Disable enterprise repos</span>
-sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;s/^deb/#deb/&#39;</span><span class="w"> </span>/etc/apt/sources.list.d/pve-enterprise.list
-sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;s/^deb https:\/\/enterprise/#deb https:\/\/enterprise/&#39;</span><span class="w"> </span>/etc/apt/sources.list.d/ceph.list
+<pre><code><code># Disable enterprise repos
+sed -i &#39;s/^deb/#deb/&#39; /etc/apt/sources.list.d/pve-enterprise.list
+sed -i &#39;s/^deb https:\/\/enterprise/#deb https:\/\/enterprise/&#39; /etc/apt/sources.list.d/ceph.list
 
-<span class="c1"># Add no-subscription repos</span>
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>&gt;&gt;<span class="w"> </span>/etc/apt/sources.list
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;deb http://download.proxmox.com/debian/ceph-squid bookworm no-subscription&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>&gt;&gt;<span class="w"> </span>/etc/apt/sources.list.d/ceph.list
+# Add no-subscription repos
+echo &quot;deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription&quot; \
+  &gt;&gt; /etc/apt/sources.list
+echo &quot;deb http://download.proxmox.com/debian/ceph-squid bookworm no-subscription&quot; \
+  &gt;&gt; /etc/apt/sources.list.d/ceph.list
 
-apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>apt<span class="w"> </span>full-upgrade<span class="w"> </span>-y
-</code></pre></div>
+apt update &amp;&amp; apt full-upgrade -y
+</code></code></pre>
 
 <hr />
 <h2>Remove the "No Valid Subscription" Popup</h2>
 <p>Even after fixing the repositories, the Proxmox web UI shows a popup on every login saying <strong>"You do not have a valid subscription."</strong> This is cosmetic — it does not affect functionality. To remove it:</p>
-<div class="codehilite"><pre><span></span><code>sed<span class="w"> </span>-i.bak<span class="w"> </span><span class="s2">&quot;s/Ext.Msg.show(/void(/g&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>/usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
+<pre><code><code>sed -i.bak &quot;s/Ext.Msg.show(/void(/g&quot; \
+  /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
 
-systemctl<span class="w"> </span>restart<span class="w"> </span>pveproxy
-</code></pre></div>
+systemctl restart pveproxy
+</code></code></pre>
 
 <p>Refresh your browser (hard refresh with Ctrl+Shift+R). The popup will be gone.</p>
 <blockquote>
@@ -225,13 +225,13 @@ systemctl<span class="w"> </span>restart<span class="w"> </span>pveproxy
 <hr />
 <h2>Verify Everything Is Correct</h2>
 <p>After running <code>apt update</code>, check there are no errors:</p>
-<div class="codehilite"><pre><span></span><code>apt<span class="w"> </span>update<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;error\|401\|unauthorized&quot;</span>
-</code></pre></div>
+<pre><code><code>apt update 2&gt;&amp;1 | grep -i &quot;error\|401\|unauthorized&quot;
+</code></code></pre>
 
 <p>No output means everything is clean. Also verify your repo files look correct:</p>
-<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>/etc/apt/sources.list.d/pve-enterprise.list<span class="w">    </span><span class="c1"># or .sources for PVE 9</span>
-cat<span class="w"> </span>/etc/apt/sources.list.d/ceph.list
-cat<span class="w"> </span>/etc/apt/sources.list.d/pve-no-subscription.list
-</code></pre></div>
+<pre><code><code>cat /etc/apt/sources.list.d/pve-enterprise.list    # or .sources for PVE 9
+cat /etc/apt/sources.list.d/ceph.list
+cat /etc/apt/sources.list.d/pve-no-subscription.list
+</code></code></pre>
 
 <p>Every enterprise line should start with <code>#</code>. Every no-subscription line should be active (no <code>#</code>).</p>

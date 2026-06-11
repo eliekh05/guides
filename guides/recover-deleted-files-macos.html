@@ -17,13 +17,13 @@ DATA:system-users:Recover Deleted Files on macOS:System & Users
 <h2>Option 3 — Recover from a Local Snapshot (No External Drive Needed)</h2>
 <p>macOS takes local Time Machine snapshots even without an external backup drive. These are stored on your Mac itself.</p>
 <p>Check if snapshots exist:</p>
-<div class="codehilite"><pre><span></span><code>tmutil<span class="w"> </span>listlocalsnapshots<span class="w"> </span>/
-</code></pre></div>
+<pre><code><code>tmutil listlocalsnapshots /
+</code></code></pre>
 
 <p>If you see entries like <code>com.apple.TimeMachine.2025-05-04-120000</code>, mount one:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Mount a snapshot (replace the date with one from the list above)</span>
-tmutil<span class="w"> </span>localsnapshot<span class="w"> </span>/Volumes/com.apple.TimeMachine.2025-05-04-120000
-</code></pre></div>
+<pre><code><code># Mount a snapshot (replace the date with one from the list above)
+tmutil localsnapshot /Volumes/com.apple.TimeMachine.2025-05-04-120000
+</code></code></pre>
 
 <p>Or use <strong>Enter Time Machine</strong> from the menu bar — it will show local snapshots even without an external drive connected.</p>
 <hr />
@@ -33,23 +33,23 @@ tmutil<span class="w"> </span>localsnapshot<span class="w"> </span>/Volumes/com.
 <hr />
 <h2>Option 5 — Check the <code>.Trash</code> Folder Directly</h2>
 <p>Sometimes files appear deleted but are still in a hidden Trash folder:</p>
-<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>-la<span class="w"> </span>~/.Trash/
-</code></pre></div>
+<pre><code><code>ls -la ~/.Trash/
+</code></code></pre>
 
 <p>If the file is there, move it back:</p>
-<div class="codehilite"><pre><span></span><code>mv<span class="w"> </span>~/.Trash/yourfile.txt<span class="w"> </span>~/Desktop/
-</code></pre></div>
+<pre><code><code>mv ~/.Trash/yourfile.txt ~/Desktop/
+</code></code></pre>
 
 <p>For external drives, Trash is stored at:</p>
-<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>/Volumes/DRIVENAME/.Trashes/
-</code></pre></div>
+<pre><code><code>ls /Volumes/DRIVENAME/.Trashes/
+</code></code></pre>
 
 <hr />
 <h2>Option 6 — TestDisk (Free, No Install Required via Homebrew)</h2>
 <p>If none of the above work and the file was recently deleted, TestDisk can scan the disk for recoverable data:</p>
-<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>testdisk
-sudo<span class="w"> </span>testdisk
-</code></pre></div>
+<pre><code><code>brew install testdisk
+sudo testdisk
+</code></code></pre>
 
 <p>Select your drive → <strong>Analyse</strong> → <strong>Advanced</strong> → <strong>Undelete</strong>. This works best the sooner you run it after deletion — the longer you wait and use the drive, the lower the chance of recovery.</p>
 <hr />

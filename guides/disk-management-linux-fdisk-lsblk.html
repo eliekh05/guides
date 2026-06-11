@@ -2,24 +2,24 @@ DATA:system-users:Disk Management on Linux (lsblk, fdisk, mkfs, mount):System & 
 <h1>Disk Management on Linux (lsblk, fdisk, mkfs, mount)</h1>
 <hr />
 <h2>See All Disks and Partitions</h2>
-<div class="codehilite"><pre><span></span><code>lsblk<span class="w">                          </span><span class="c1"># tree view of all block devices</span>
-lsblk<span class="w"> </span>-f<span class="w">                       </span><span class="c1"># include filesystem type and UUID</span>
-lsblk<span class="w"> </span>-o<span class="w"> </span>NAME,SIZE,TYPE,FSTYPE,MOUNTPOINT
+<pre><code><code>lsblk                          # tree view of all block devices
+lsblk -f                       # include filesystem type and UUID
+lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINT
 
-fdisk<span class="w"> </span>-l<span class="w">                       </span><span class="c1"># detailed partition table (needs sudo)</span>
-sudo<span class="w"> </span>fdisk<span class="w"> </span>-l<span class="w"> </span>/dev/sda<span class="w">         </span><span class="c1"># specific disk</span>
+fdisk -l                       # detailed partition table (needs sudo)
+sudo fdisk -l /dev/sda         # specific disk
 
-df<span class="w"> </span>-h<span class="w">                          </span><span class="c1"># mounted filesystems and usage</span>
-du<span class="w"> </span>-sh<span class="w"> </span>/path/to/folder<span class="w">         </span><span class="c1"># size of a specific folder</span>
-</code></pre></div>
+df -h                          # mounted filesystems and usage
+du -sh /path/to/folder         # size of a specific folder
+</code></code></pre>
 
 <hr />
 <h2>Partition a Disk</h2>
 <blockquote>
 <p>⚠️ <strong>Partitioning erases data.</strong> Triple-check you have the right disk with <code>lsblk</code> before proceeding.</p>
 </blockquote>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>fdisk<span class="w"> </span>/dev/sdb<span class="w">            </span><span class="c1"># interactive partition editor</span>
-</code></pre></div>
+<pre><code><code>sudo fdisk /dev/sdb            # interactive partition editor
+</code></code></pre>
 
 <p>Inside fdisk:
 - <code>p</code> — print current partition table
@@ -29,114 +29,114 @@ du<span class="w"> </span>-sh<span class="w"> </span>/path/to/folder<span class=
 - <code>w</code> — write changes and exit
 - <code>q</code> — quit without saving</p>
 <p><strong>For GPT disks (recommended for disks over 2 TB or UEFI systems), use gdisk or parted:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>parted<span class="w"> </span>/dev/sdb
-</code></pre></div>
+<pre><code><code>sudo parted /dev/sdb
+</code></code></pre>
 
 <hr />
 <h2>Format a Partition</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># ext4 (standard Linux filesystem)</span>
-sudo<span class="w"> </span>mkfs.ext4<span class="w"> </span>/dev/sdb1
+<pre><code><code># ext4 (standard Linux filesystem)
+sudo mkfs.ext4 /dev/sdb1
 
-<span class="c1"># With a label</span>
-sudo<span class="w"> </span>mkfs.ext4<span class="w"> </span>-L<span class="w"> </span><span class="s2">&quot;MyDisk&quot;</span><span class="w"> </span>/dev/sdb1
+# With a label
+sudo mkfs.ext4 -L &quot;MyDisk&quot; /dev/sdb1
 
-<span class="c1"># XFS (better for large files and databases)</span>
-sudo<span class="w"> </span>mkfs.xfs<span class="w"> </span>/dev/sdb1
+# XFS (better for large files and databases)
+sudo mkfs.xfs /dev/sdb1
 
-<span class="c1"># FAT32 (compatible with Windows/macOS)</span>
-sudo<span class="w"> </span>mkfs.vfat<span class="w"> </span>-F<span class="w"> </span><span class="m">32</span><span class="w"> </span>/dev/sdb1
+# FAT32 (compatible with Windows/macOS)
+sudo mkfs.vfat -F 32 /dev/sdb1
 
-<span class="c1"># exFAT (better for large files than FAT32)</span>
-sudo<span class="w"> </span>mkfs.exfat<span class="w"> </span>/dev/sdb1
-</code></pre></div>
+# exFAT (better for large files than FAT32)
+sudo mkfs.exfat /dev/sdb1
+</code></code></pre>
 
 <hr />
 <h2>Mount a Partition</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Create a mount point</span>
-sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/mnt/data
+<pre><code><code># Create a mount point
+sudo mkdir -p /mnt/data
 
-<span class="c1"># Mount</span>
-sudo<span class="w"> </span>mount<span class="w"> </span>/dev/sdb1<span class="w"> </span>/mnt/data
+# Mount
+sudo mount /dev/sdb1 /mnt/data
 
-<span class="c1"># Mount with specific filesystem type</span>
-sudo<span class="w"> </span>mount<span class="w"> </span>-t<span class="w"> </span>ext4<span class="w"> </span>/dev/sdb1<span class="w"> </span>/mnt/data
+# Mount with specific filesystem type
+sudo mount -t ext4 /dev/sdb1 /mnt/data
 
-<span class="c1"># Unmount</span>
-sudo<span class="w"> </span>umount<span class="w"> </span>/mnt/data
+# Unmount
+sudo umount /mnt/data
 
-<span class="c1"># Show all mounts</span>
-mount<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>/dev/sdb
-</code></pre></div>
+# Show all mounts
+mount | grep /dev/sdb
+</code></code></pre>
 
 <hr />
 <h2>Auto-Mount at Boot (/etc/fstab)</h2>
 <p>Find the UUID first (safer than using /dev/sdb1 which can change):</p>
-<div class="codehilite"><pre><span></span><code>lsblk<span class="w"> </span>-f<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>sdb1
-<span class="c1"># or</span>
-sudo<span class="w"> </span>blkid<span class="w"> </span>/dev/sdb1
-</code></pre></div>
+<pre><code><code>lsblk -f | grep sdb1
+# or
+sudo blkid /dev/sdb1
+</code></code></pre>
 
 <p>Edit fstab:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/fstab
-</code></pre></div>
+<pre><code><code>sudo nano /etc/fstab
+</code></code></pre>
 
 <p>Add a line:</p>
-<div class="codehilite"><pre><span></span><code>UUID=abc123-def456  /mnt/data  ext4  defaults  0  2
-</code></pre></div>
+<pre><code><code>UUID=abc123-def456  /mnt/data  ext4  defaults  0  2
+</code></code></pre>
 
 <p>Format: <code>device  mountpoint  filesystem  options  dump  pass</code></p>
 <p>Test before rebooting:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>mount<span class="w"> </span>-a<span class="w">      </span><span class="c1"># mounts everything in fstab</span>
-sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
-</code></pre></div>
+<pre><code><code>sudo mount -a      # mounts everything in fstab
+sudo systemctl daemon-reload
+</code></code></pre>
 
 <hr />
 <h2>Resize a Partition</h2>
 <p><strong>Extend an ext4 filesystem after enlarging the partition:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>resize2fs<span class="w"> </span>/dev/sdb1
-</code></pre></div>
+<pre><code><code>sudo resize2fs /dev/sdb1
+</code></code></pre>
 
 <p><strong>Check filesystem before resize:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>e2fsck<span class="w"> </span>-f<span class="w"> </span>/dev/sdb1
-</code></pre></div>
+<pre><code><code>sudo e2fsck -f /dev/sdb1
+</code></code></pre>
 
 <p><strong>Extend an XFS filesystem:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>xfs_growfs<span class="w"> </span>/mnt/data
-</code></pre></div>
+<pre><code><code>sudo xfs_growfs /mnt/data
+</code></code></pre>
 
 <hr />
 <h2>LVM — Logical Volume Manager</h2>
 <p>LVM lets you resize volumes without repartitioning.</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Show LVM volumes</span>
-sudo<span class="w"> </span>pvs<span class="w">                     </span><span class="c1"># physical volumes</span>
-sudo<span class="w"> </span>vgs<span class="w">                     </span><span class="c1"># volume groups</span>
-sudo<span class="w"> </span>lvs<span class="w">                     </span><span class="c1"># logical volumes</span>
+<pre><code><code># Show LVM volumes
+sudo pvs                     # physical volumes
+sudo vgs                     # volume groups
+sudo lvs                     # logical volumes
 
-<span class="c1"># Extend a logical volume by 10G</span>
-sudo<span class="w"> </span>lvextend<span class="w"> </span>-L<span class="w"> </span>+10G<span class="w"> </span>/dev/vg0/lv-data
-sudo<span class="w"> </span>resize2fs<span class="w"> </span>/dev/vg0/lv-data<span class="w">    </span><span class="c1"># resize filesystem after extending</span>
-</code></pre></div>
+# Extend a logical volume by 10G
+sudo lvextend -L +10G /dev/vg0/lv-data
+sudo resize2fs /dev/vg0/lv-data    # resize filesystem after extending
+</code></code></pre>
 
 <hr />
 <h2>Check and Repair Filesystem</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Must unmount first (or use recovery mode for root)</span>
-sudo<span class="w"> </span>umount<span class="w"> </span>/dev/sdb1
-sudo<span class="w"> </span>e2fsck<span class="w"> </span>-f<span class="w"> </span>/dev/sdb1<span class="w">       </span><span class="c1"># check and repair ext4</span>
+<pre><code><code># Must unmount first (or use recovery mode for root)
+sudo umount /dev/sdb1
+sudo e2fsck -f /dev/sdb1       # check and repair ext4
 
-<span class="c1"># Force check on next reboot (for root filesystem)</span>
-sudo<span class="w"> </span>touch<span class="w"> </span>/forcefsck
-</code></pre></div>
+# Force check on next reboot (for root filesystem)
+sudo touch /forcefsck
+</code></code></pre>
 
 <hr />
 <h2>SMART Disk Health</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>smartmontools<span class="w"> </span>-y
+<pre><code><code>sudo apt install smartmontools -y
 
-<span class="c1"># Quick check</span>
-sudo<span class="w"> </span>smartctl<span class="w"> </span>-H<span class="w"> </span>/dev/sda
+# Quick check
+sudo smartctl -H /dev/sda
 
-<span class="c1"># Full info</span>
-sudo<span class="w"> </span>smartctl<span class="w"> </span>-a<span class="w"> </span>/dev/sda
+# Full info
+sudo smartctl -a /dev/sda
 
-<span class="c1"># Long self-test</span>
-sudo<span class="w"> </span>smartctl<span class="w"> </span>-t<span class="w"> </span>long<span class="w"> </span>/dev/sda
-</code></pre></div>
+# Long self-test
+sudo smartctl -t long /dev/sda
+</code></code></pre>

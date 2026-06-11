@@ -4,71 +4,71 @@ DATA:package-managers:snap — Package Manager on Linux:Package Managers (All OS
 <hr />
 <h2>Install snap (non-Ubuntu)</h2>
 <p><strong>Debian:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>snapd<span class="w"> </span>-y
-sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>snapd.socket
-sudo<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>/var/lib/snapd/snap<span class="w"> </span>/snap<span class="w">   </span><span class="c1"># for classic snap support</span>
-</code></pre></div>
+<pre><code><code>sudo apt install snapd -y
+sudo systemctl enable --now snapd.socket
+sudo ln -s /var/lib/snapd/snap /snap   # for classic snap support
+</code></code></pre>
 
 <p><strong>Fedora:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>snapd<span class="w"> </span>-y
-sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>snapd.socket
-sudo<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>/var/lib/snapd/snap<span class="w"> </span>/snap
-</code></pre></div>
+<pre><code><code>sudo dnf install snapd -y
+sudo systemctl enable --now snapd.socket
+sudo ln -s /var/lib/snapd/snap /snap
+</code></code></pre>
 
 <p><strong>Arch:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>snapd
-sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>snapd.socket
-sudo<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>/var/lib/snapd/snap<span class="w"> </span>/snap
-</code></pre></div>
+<pre><code><code>sudo pacman -S snapd
+sudo systemctl enable --now snapd.socket
+sudo ln -s /var/lib/snapd/snap /snap
+</code></code></pre>
 
 <hr />
 <h2>Basic Commands</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Search for a snap</span>
-snap<span class="w"> </span>find<span class="w"> </span>firefox
+<pre><code><code># Search for a snap
+snap find firefox
 
-<span class="c1"># Install a snap</span>
-sudo<span class="w"> </span>snap<span class="w"> </span>install<span class="w"> </span>firefox
+# Install a snap
+sudo snap install firefox
 
-<span class="c1"># Install in classic mode (unrestricted, like a normal app)</span>
-sudo<span class="w"> </span>snap<span class="w"> </span>install<span class="w"> </span>code<span class="w"> </span>--classic
+# Install in classic mode (unrestricted, like a normal app)
+sudo snap install code --classic
 
-<span class="c1"># Remove a snap</span>
-sudo<span class="w"> </span>snap<span class="w"> </span>remove<span class="w"> </span>firefox
+# Remove a snap
+sudo snap remove firefox
 
-<span class="c1"># Update all snaps</span>
-sudo<span class="w"> </span>snap<span class="w"> </span>refresh
+# Update all snaps
+sudo snap refresh
 
-<span class="c1"># Update a specific snap</span>
-sudo<span class="w"> </span>snap<span class="w"> </span>refresh<span class="w"> </span>firefox
+# Update a specific snap
+sudo snap refresh firefox
 
-<span class="c1"># List installed snaps</span>
-snap<span class="w"> </span>list
+# List installed snaps
+snap list
 
-<span class="c1"># Info about a snap</span>
-snap<span class="w"> </span>info<span class="w"> </span>firefox
-</code></pre></div>
+# Info about a snap
+snap info firefox
+</code></code></pre>
 
 <hr />
 <h2>View Running Snap Services</h2>
-<div class="codehilite"><pre><span></span><code>snap<span class="w"> </span>services<span class="w">                        </span><span class="c1"># list all snap services</span>
-sudo<span class="w"> </span>snap<span class="w"> </span>start/stop/restart<span class="w"> </span>service-name
-</code></pre></div>
+<pre><code><code>snap services                        # list all snap services
+sudo snap start/stop/restart service-name
+</code></code></pre>
 
 <hr />
 <h2>Revert to Previous Version</h2>
 <p>Snap keeps the previous version and you can roll back:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>snap<span class="w"> </span>revert<span class="w"> </span>firefox
-snap<span class="w"> </span>list<span class="w"> </span>--all<span class="w"> </span>firefox<span class="w">     </span><span class="c1"># see all installed versions</span>
-</code></pre></div>
+<pre><code><code>sudo snap revert firefox
+snap list --all firefox     # see all installed versions
+</code></code></pre>
 
 <hr />
 <h2>Free Up Disk Space</h2>
 <p>Snap keeps old versions. Remove them:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Remove old snap versions (keep current + 2)</span>
-snap<span class="w"> </span>list<span class="w"> </span>--all<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;/disabled/{print $1, $3}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>snapname<span class="w"> </span>revision<span class="p">;</span><span class="w"> </span><span class="k">do</span>
-<span class="w">  </span>sudo<span class="w"> </span>snap<span class="w"> </span>remove<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$snapname</span><span class="s2">&quot;</span><span class="w"> </span>--revision<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$revision</span><span class="s2">&quot;</span>
-<span class="k">done</span>
-</code></pre></div>
+<pre><code><code># Remove old snap versions (keep current + 2)
+snap list --all | awk &#39;/disabled/{print $1, $3}&#39; | while read snapname revision; do
+  sudo snap remove &quot;$snapname&quot; --revision=&quot;$revision&quot;
+done
+</code></code></pre>
 
 <hr />
 <h2>snap vs Flatpak vs apt</h2>
@@ -128,16 +128,16 @@ snap<span class="w"> </span>list<span class="w"> </span>--all<span class="w"> </
 </table>
 <hr />
 <h2>Disable snap on Ubuntu (if you prefer Flatpak)</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>disable<span class="w"> </span>--now<span class="w"> </span>snapd
-sudo<span class="w"> </span>apt<span class="w"> </span>purge<span class="w"> </span>snapd<span class="w"> </span>-y
-sudo<span class="w"> </span>apt-mark<span class="w"> </span>hold<span class="w"> </span>snapd
+<pre><code><code>sudo systemctl disable --now snapd
+sudo apt purge snapd -y
+sudo apt-mark hold snapd
 
-<span class="c1"># Block future reinstall</span>
-sudo<span class="w"> </span>tee<span class="w"> </span>/etc/apt/preferences.d/nosnap.pref<span class="w"> </span><span class="s">&lt;&lt; &#39;SNAP&#39;</span>
-<span class="s">Package: snapd</span>
-<span class="s">Pin: release a=*</span>
-<span class="s">Pin-Priority: -10</span>
-<span class="s">SNAP</span>
-</code></pre></div>
+# Block future reinstall
+sudo tee /etc/apt/preferences.d/nosnap.pref &lt;&lt; &#39;SNAP&#39;
+Package: snapd
+Pin: release a=*
+Pin-Priority: -10
+SNAP
+</code></code></pre>
 
 <p>Then install Flatpak as the alternative.</p>

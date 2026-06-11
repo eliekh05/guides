@@ -51,49 +51,49 @@ DATA:package-managers:Fix Homebrew / Commands Not Found:Package Managers (All OS
 <h2>Fix — Add Homebrew to Your PATH</h2>
 <h3>Apple Silicon Macs (M1, M2, M3, M4)</h3>
 <p>Homebrew installs to <code>/opt/homebrew/</code> on Apple Silicon. Add it to your PATH:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;eval &quot;$(/opt/homebrew/bin/brew shellenv)&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
-<span class="nb">source</span><span class="w"> </span>~/.zprofile
-</code></pre></div>
+<pre><code><code>echo &#39;eval &quot;$(/opt/homebrew/bin/brew shellenv)&quot;&#39; &gt;&gt; ~/.zprofile
+source ~/.zprofile
+</code></code></pre>
 
 <h3>Intel Macs</h3>
 <p>Homebrew installs to <code>/usr/local/</code> on Intel Macs:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;eval &quot;$(/usr/local/bin/brew shellenv)&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
-<span class="nb">source</span><span class="w"> </span>~/.zprofile
-</code></pre></div>
+<pre><code><code>echo &#39;eval &quot;$(/usr/local/bin/brew shellenv)&quot;&#39; &gt;&gt; ~/.zprofile
+source ~/.zprofile
+</code></code></pre>
 
 <p>After running these commands, open a new Terminal window and test:</p>
-<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>--version
-</code></pre></div>
+<pre><code><code>brew --version
+</code></code></pre>
 
 <hr />
 <h2>Fix — Add Any Custom Path</h2>
 <p>If you need to add a specific folder (not just Homebrew) to your PATH:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;export PATH=&quot;/your/custom/path:$PATH&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
-<span class="nb">source</span><span class="w"> </span>~/.zprofile
-</code></pre></div>
+<pre><code><code>echo &#39;export PATH=&quot;/your/custom/path:$PATH&quot;&#39; &gt;&gt; ~/.zprofile
+source ~/.zprofile
+</code></code></pre>
 
 <p>Replace <code>/your/custom/path</code> with the actual directory. The <code>:$PATH</code> at the end preserves all the existing paths — never leave that out.</p>
 <hr />
 <h2>Diagnose What Is Happening</h2>
 <h3>Check your current PATH:</h3>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="nv">$PATH</span>
-</code></pre></div>
+<pre><code><code>echo $PATH
+</code></code></pre>
 
 <h3>Check which shell you are using:</h3>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="nv">$SHELL</span>
-</code></pre></div>
+<pre><code><code>echo $SHELL
+</code></code></pre>
 
 <h3>Check if a file exists and what is in it:</h3>
-<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>~/.zprofile
-cat<span class="w"> </span>~/.zshrc
-cat<span class="w"> </span>~/.bash_profile
-</code></pre></div>
+<pre><code><code>cat ~/.zprofile
+cat ~/.zshrc
+cat ~/.bash_profile
+</code></code></pre>
 
 <h3>Check where a command is installed:</h3>
-<div class="codehilite"><pre><span></span><code>which<span class="w"> </span>brew
-which<span class="w"> </span>python3
-which<span class="w"> </span>node
-</code></pre></div>
+<pre><code><code>which brew
+which python3
+which node
+</code></code></pre>
 
 <p>If <code>which</code> returns nothing, the tool is either not installed or its folder is not in your PATH.</p>
 <hr />

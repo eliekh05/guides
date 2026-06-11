@@ -2,83 +2,83 @@ DATA:networking:Check If a Port is Open (Linux, macOS, Windows):Networking & DNS
 <h1>Check If a Port is Open (Linux, macOS, Windows)</h1>
 <hr />
 <h2>Check What is Listening Locally</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Linux — modern</span>
-ss<span class="w"> </span>-tlnp<span class="w">                        </span><span class="c1"># TCP listening ports with process names</span>
-ss<span class="w"> </span>-tulnp<span class="w">                       </span><span class="c1"># TCP and UDP</span>
-ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>:80<span class="w">             </span><span class="c1"># check if port 80 is listening</span>
+<pre><code><code># Linux — modern
+ss -tlnp                        # TCP listening ports with process names
+ss -tulnp                       # TCP and UDP
+ss -tlnp | grep :80             # check if port 80 is listening
 
-<span class="c1"># Linux — older systems</span>
-netstat<span class="w"> </span>-tlnp
-netstat<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>:80
+# Linux — older systems
+netstat -tlnp
+netstat -tlnp | grep :80
 
-<span class="c1"># macOS</span>
-sudo<span class="w"> </span>lsof<span class="w"> </span>-i<span class="w"> </span>TCP<span class="w"> </span>-sTCP:LISTEN<span class="w">   </span><span class="c1"># all listening TCP ports</span>
-sudo<span class="w"> </span>lsof<span class="w"> </span>-i<span class="w"> </span>:8080<span class="w">              </span><span class="c1"># specific port</span>
-sudo<span class="w"> </span>lsof<span class="w"> </span>-i<span class="w"> </span>:80<span class="w"> </span>-i<span class="w"> </span>:443<span class="w">        </span><span class="c1"># multiple ports</span>
+# macOS
+sudo lsof -i TCP -sTCP:LISTEN   # all listening TCP ports
+sudo lsof -i :8080              # specific port
+sudo lsof -i :80 -i :443        # multiple ports
 
-<span class="c1"># Windows (PowerShell)</span>
-netstat<span class="w"> </span>-ano<span class="w"> </span><span class="p">|</span><span class="w"> </span>findstr<span class="w"> </span>:80
-Get-NetTCPConnection<span class="w"> </span>-State<span class="w"> </span>Listen
-</code></pre></div>
+# Windows (PowerShell)
+netstat -ano | findstr :80
+Get-NetTCPConnection -State Listen
+</code></code></pre>
 
 <hr />
 <h2>Test a Remote Port</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># nc (netcat) — macOS and Linux</span>
-nc<span class="w"> </span>-zv<span class="w"> </span>hostname<span class="w"> </span><span class="m">443</span><span class="w">             </span><span class="c1"># TCP test</span>
-nc<span class="w"> </span>-zv<span class="w"> </span>-u<span class="w"> </span>hostname<span class="w"> </span><span class="m">53</span><span class="w">          </span><span class="c1"># UDP test</span>
-nc<span class="w"> </span>-zv<span class="w"> </span><span class="m">192</span>.168.1.100<span class="w"> </span><span class="m">22</span><span class="w">        </span><span class="c1"># test SSH</span>
+<pre><code><code># nc (netcat) — macOS and Linux
+nc -zv hostname 443             # TCP test
+nc -zv -u hostname 53          # UDP test
+nc -zv 192.168.1.100 22        # test SSH
 
-<span class="c1"># telnet</span>
-telnet<span class="w"> </span>hostname<span class="w"> </span><span class="m">80</span>
+# telnet
+telnet hostname 80
 
-<span class="c1"># curl (HTTP/HTTPS)</span>
-curl<span class="w"> </span>-v<span class="w"> </span>https://example.com<span class="w">     </span><span class="c1"># shows connection details</span>
+# curl (HTTP/HTTPS)
+curl -v https://example.com     # shows connection details
 
-<span class="c1"># nmap</span>
-nmap<span class="w"> </span>-p<span class="w"> </span><span class="m">80</span>,443<span class="w"> </span>example.com<span class="w">      </span><span class="c1"># scan specific ports</span>
-nmap<span class="w"> </span>-p<span class="w"> </span><span class="m">1</span>-1000<span class="w"> </span><span class="m">192</span>.168.1.100<span class="w">   </span><span class="c1"># scan range</span>
-</code></pre></div>
+# nmap
+nmap -p 80,443 example.com      # scan specific ports
+nmap -p 1-1000 192.168.1.100   # scan range
+</code></code></pre>
 
 <hr />
 <h2>Windows — Test a Remote Port</h2>
-<div class="codehilite"><pre><span></span><code><span class="c"># PowerShell</span>
-<span class="nb">Test-NetConnection</span> <span class="n">example</span><span class="p">.</span><span class="n">com</span> <span class="n">-Port</span> <span class="n">443</span>
-<span class="nb">Test-NetConnection</span> <span class="n">192</span><span class="p">.</span><span class="n">168</span><span class="p">.</span><span class="n">1</span><span class="p">.</span><span class="n">100</span> <span class="n">-Port</span> <span class="n">22</span>
+<pre><code><code># PowerShell
+Test-NetConnection example.com -Port 443
+Test-NetConnection 192.168.1.100 -Port 22
 
-<span class="c"># Telnet (enable first in Windows Features)</span>
-<span class="n">telnet</span> <span class="n">hostname</span> <span class="n">port</span>
-</code></pre></div>
+# Telnet (enable first in Windows Features)
+telnet hostname port
+</code></code></pre>
 
 <hr />
 <h2>What is Using a Port</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Linux — find process using port 8080</span>
-sudo<span class="w"> </span>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>:8080
-sudo<span class="w"> </span>fuser<span class="w"> </span><span class="m">8080</span>/tcp<span class="w">             </span><span class="c1"># just the PID</span>
-sudo<span class="w"> </span>lsof<span class="w"> </span>-i<span class="w"> </span>:8080<span class="w">              </span><span class="c1"># process name + PID</span>
+<pre><code><code># Linux — find process using port 8080
+sudo ss -tlnp | grep :8080
+sudo fuser 8080/tcp             # just the PID
+sudo lsof -i :8080              # process name + PID
 
-<span class="c1"># macOS</span>
-sudo<span class="w"> </span>lsof<span class="w"> </span>-i<span class="w"> </span>:8080
+# macOS
+sudo lsof -i :8080
 
-<span class="c1"># Kill the process using a port</span>
-sudo<span class="w"> </span><span class="nb">kill</span><span class="w"> </span><span class="k">$(</span>sudo<span class="w"> </span>lsof<span class="w"> </span>-t<span class="w"> </span>-i:8080<span class="k">)</span>
-</code></pre></div>
+# Kill the process using a port
+sudo kill $(sudo lsof -t -i:8080)
+</code></code></pre>
 
 <hr />
 <h2>Open a Port in the Firewall</h2>
 <p><strong>UFW (Ubuntu/Debian):</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span><span class="m">8080</span>/tcp
-sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span><span class="m">443</span>
-sudo<span class="w"> </span>ufw<span class="w"> </span>reload
-</code></pre></div>
+<pre><code><code>sudo ufw allow 8080/tcp
+sudo ufw allow 443
+sudo ufw reload
+</code></code></pre>
 
 <p><strong>firewalld (Fedora/RHEL):</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>firewall-cmd<span class="w"> </span>--add-port<span class="o">=</span><span class="m">8080</span>/tcp<span class="w"> </span>--permanent
-sudo<span class="w"> </span>firewall-cmd<span class="w"> </span>--reload
-</code></pre></div>
+<pre><code><code>sudo firewall-cmd --add-port=8080/tcp --permanent
+sudo firewall-cmd --reload
+</code></code></pre>
 
 <p><strong>macOS:</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--add<span class="w"> </span>/path/to/app
-</code></pre></div>
+<pre><code><code>sudo /usr/libexec/ApplicationFirewall/socketfilterfw --add /path/to/app
+</code></code></pre>
 
 <hr />
 <h2>Common Port Numbers</h2>

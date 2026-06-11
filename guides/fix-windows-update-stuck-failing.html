@@ -17,7 +17,7 @@ Settings → Update &amp; Security → Troubleshoot → Additional troubleshoote
 <h2>Step 2 — Reset the Windows Update Cache</h2>
 <p>Corrupted download cache is one of the most common causes of stuck or failed updates. This clears it completely and forces a fresh download.</p>
 <p>Open <strong>Command Prompt as Administrator</strong> (right-click Start → Terminal/Command Prompt → Run as administrator):</p>
-<div class="codehilite"><pre><span></span><code>net stop wuauserv
+<pre><code><code>net stop wuauserv
 net stop cryptsvc
 net stop bits
 net stop msiserver
@@ -29,7 +29,7 @@ net start wuauserv
 net start cryptsvc
 net start bits
 net start msiserver
-</code></pre></div>
+</code></code></pre>
 
 <p>Restart your PC and run Windows Update again.</p>
 <hr />
@@ -38,15 +38,15 @@ net start msiserver
 <p><strong>Always run DISM before SFC.</strong> DISM repairs the Windows image that SFC uses as a reference. Running SFC first when the image is corrupted will not fix anything.</p>
 </blockquote>
 <p>Open <strong>Command Prompt as Administrator</strong> and run these in order:</p>
-<div class="codehilite"><pre><span></span><code>DISM /Online /Cleanup-Image /CheckHealth
+<pre><code><code>DISM /Online /Cleanup-Image /CheckHealth
 DISM /Online /Cleanup-Image /ScanHealth
 DISM /Online /Cleanup-Image /RestoreHealth
-</code></pre></div>
+</code></code></pre>
 
 <p>Wait for each to complete. <code>RestoreHealth</code> downloads replacement files from Microsoft — it needs internet and can take 10–30 minutes.</p>
 <p>Then run SFC:</p>
-<div class="codehilite"><pre><span></span><code>sfc /scannow
-</code></pre></div>
+<pre><code><code>sfc /scannow
+</code></code></pre>
 
 <p>Restart after both complete. Try Windows Update again.</p>
 <hr />
@@ -67,17 +67,17 @@ DISM /Online /Cleanup-Image /RestoreHealth
 <li>Go to <strong>Settings → Network &amp; Internet → Proxy</strong> and make sure <strong>Use a proxy server</strong> is off.</li>
 <li>Open Command Prompt as Administrator and reset network settings:</li>
 </ol>
-<div class="codehilite"><pre><span></span><code>netsh winsock reset
+<pre><code><code>netsh winsock reset
 netsh winhttp reset proxy
 ipconfig /flushdns
-</code></pre></div>
+</code></code></pre>
 
 <p>Restart and try again.</p>
 <hr />
 <h2>Step 6 — Fix Update Services</h2>
 <p>If Windows Update services are stopped or set to disabled:</p>
 <p>Open <strong>Command Prompt as Administrator</strong>:</p>
-<div class="codehilite"><pre><span></span><code>sc config wuauserv start= auto
+<pre><code><code>sc config wuauserv start= auto
 sc config bits start= auto
 sc config cryptsvc start= auto
 sc config trustedinstaller start= auto
@@ -85,20 +85,20 @@ sc config trustedinstaller start= auto
 net start wuauserv
 net start bits
 net start cryptsvc
-</code></pre></div>
+</code></code></pre>
 
 <hr />
 <h2>Step 7 — Use the Modern Update Command (usoclient)</h2>
 <p><code>wuauclt</code> is deprecated on Windows 10 and 11. Use <code>usoclient</code> to force Windows to scan and install updates:</p>
 <p>Open <strong>Command Prompt as Administrator</strong>:</p>
-<div class="codehilite"><pre><span></span><code><span class="n">usoclient</span><span class="w"> </span><span class="n">StartScan</span>
-<span class="n">usoclient</span><span class="w"> </span><span class="n">StartDownload</span>
-<span class="n">usoclient</span><span class="w"> </span><span class="n">StartInstall</span>
-</code></pre></div>
+<pre><code><code>usoclient StartScan
+usoclient StartDownload
+usoclient StartInstall
+</code></code></pre>
 
 <p>Or force the full cycle in one line:</p>
-<div class="codehilite"><pre><span></span><code>usoclient ScanInstallWait
-</code></pre></div>
+<pre><code><code>usoclient ScanInstallWait
+</code></code></pre>
 
 <hr />
 <h2>Step 8 — In-Place Upgrade Repair (Last Resort Before Reinstall)</h2>

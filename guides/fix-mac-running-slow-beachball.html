@@ -60,30 +60,30 @@ DATA:system-users:Fix Mac Running Slow or Constant Beachball:System & Users
 <h2>Step 3 — Free Up RAM</h2>
 <p>If memory pressure is yellow or red:</p>
 <p><strong>Quit apps you are not using:</strong></p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># See what is using the most RAM</span>
-top<span class="w"> </span>-o<span class="w"> </span>MEM
-</code></pre></div>
+<pre><code><code># See what is using the most RAM
+top -o MEM
+</code></code></pre>
 
 <p><strong>Clear inactive memory (temporary fix):</strong></p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>purge
-</code></pre></div>
+<pre><code><code>sudo purge
+</code></code></pre>
 
 <p>This frees cached memory. The effect is temporary but immediate.</p>
 <p><strong>Long-term:</strong> if you are regularly hitting red memory pressure with your normal workload, you need more RAM or a Mac with more memory.</p>
 <hr />
 <h2>Step 4 — Check and Fix Disk Issues</h2>
 <p>A slow or failing SSD causes persistent beachball regardless of RAM and CPU.</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Check disk health</span>
-diskutil<span class="w"> </span>info<span class="w"> </span>/<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;SMART Status&quot;</span>
-</code></pre></div>
+<pre><code><code># Check disk health
+diskutil info / | grep &quot;SMART Status&quot;
+</code></code></pre>
 
 <p>Should say <code>Verified</code>. If it says <code>Failing</code>, back up immediately.</p>
 <p><strong>Run First Aid:</strong>
 1. Open <strong>Disk Utility</strong> → select your drive → <strong>First Aid</strong> → <strong>Run</strong>.
 2. Fix any errors found.</p>
 <p><strong>Check available space:</strong></p>
-<div class="codehilite"><pre><span></span><code>df<span class="w"> </span>-h
-</code></pre></div>
+<pre><code><code>df -h
+</code></code></pre>
 
 <p>macOS needs at least 10–15 GB free to function smoothly. If your drive is almost full, clear space:
 - Empty Trash
@@ -105,9 +105,9 @@ diskutil<span class="w"> </span>info<span class="w"> </span>/<span class="w"> </
 <hr />
 <h2>Step 7 — Check for Malware</h2>
 <p>Legitimate malware is rare on Mac but does exist. If CPU usage is high with no obvious app causing it:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Check for unusual processes</span>
-ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-k<span class="w"> </span><span class="m">3</span><span class="w"> </span>-r<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
-</code></pre></div>
+<pre><code><code># Check for unusual processes
+ps aux | sort -k 3 -r | head -20
+</code></code></pre>
 
 <p>Or use <strong>Malwarebytes for Mac</strong> (free scan) — the most reliable free scanner for macOS.</p>
 <hr />
@@ -121,14 +121,14 @@ ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><sp
 <p>If it is still slow after reinstall, the hardware is at fault (RAM, SSD, or thermal paste worn out on older Intel Macs).</p>
 <hr />
 <h2>Quick Diagnostic</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># One-liner to see top CPU users right now</span>
-ps<span class="w"> </span>aux<span class="w"> </span>--sort<span class="o">=</span>-%cpu<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-10
+<pre><code><code># One-liner to see top CPU users right now
+ps aux --sort=-%cpu | head -10
 
-<span class="c1"># One-liner to see top RAM users right now  </span>
-ps<span class="w"> </span>aux<span class="w"> </span>--sort<span class="o">=</span>-%mem<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-10
+# One-liner to see top RAM users right now  
+ps aux --sort=-%mem | head -10
 
-<span class="c1"># Check system load average (1m, 5m, 15m)</span>
+# Check system load average (1m, 5m, 15m)
 uptime
-</code></pre></div>
+</code></code></pre>
 
 <p>Load average above the number of CPU cores = system is overloaded.</p>

@@ -3,8 +3,8 @@ DATA:linux:Backup and Sync Files with rsync (macOS and Linux):Linux
 <p><code>rsync</code> is the best tool for backing up and syncing files on macOS and Linux. It only copies files that have changed (not everything every time), preserves permissions and timestamps, works over SSH to remote servers, and can exclude folders you do not want.</p>
 <hr />
 <h2>Basic Syntax</h2>
-<div class="codehilite"><pre><span></span><code>rsync<span class="w"> </span><span class="o">[</span>options<span class="o">]</span><span class="w"> </span>source/<span class="w"> </span>destination/
-</code></pre></div>
+<pre><code><code>rsync [options] source/ destination/
+</code></code></pre>
 
 <blockquote>
 <p><strong>The trailing slash matters.</strong> <code>source/</code> means "copy the contents of source". <code>source</code> (no slash) means "copy the folder itself into destination".</p>
@@ -52,60 +52,60 @@ DATA:linux:Backup and Sync Files with rsync (macOS and Linux):Linux
 <hr />
 <h2>Common Use Cases</h2>
 <h3>Copy a folder to a backup drive</h3>
-<div class="codehilite"><pre><span></span><code>rsync<span class="w"> </span>-av<span class="w"> </span>~/Documents/<span class="w"> </span>/Volumes/BackupDrive/Documents/
-</code></pre></div>
+<pre><code><code>rsync -av ~/Documents/ /Volumes/BackupDrive/Documents/
+</code></code></pre>
 
 <h3>Preview before running (dry run)</h3>
 <p>Always do this first for destructive operations:</p>
-<div class="codehilite"><pre><span></span><code>rsync<span class="w"> </span>-av<span class="w"> </span>--dry-run<span class="w"> </span>~/Documents/<span class="w"> </span>/Volumes/BackupDrive/Documents/
-</code></pre></div>
+<pre><code><code>rsync -av --dry-run ~/Documents/ /Volumes/BackupDrive/Documents/
+</code></code></pre>
 
 <h3>Mirror a folder (delete files removed from source)</h3>
-<div class="codehilite"><pre><span></span><code>rsync<span class="w"> </span>-av<span class="w"> </span>--delete<span class="w"> </span>~/Documents/<span class="w"> </span>/Volumes/BackupDrive/Documents/
-</code></pre></div>
+<pre><code><code>rsync -av --delete ~/Documents/ /Volumes/BackupDrive/Documents/
+</code></code></pre>
 
 <blockquote>
 <p><strong>Warning:</strong> <code>--delete</code> removes files from the destination that are no longer in the source. If you accidentally deleted something from the source, it will also be deleted from the backup. Use with care.</p>
 </blockquote>
 <h3>Copy to a remote server over SSH</h3>
-<div class="codehilite"><pre><span></span><code>rsync<span class="w"> </span>-avz<span class="w"> </span>~/Documents/<span class="w"> </span>user@server.com:/home/user/backup/
-</code></pre></div>
+<pre><code><code>rsync -avz ~/Documents/ user@server.com:/home/user/backup/
+</code></code></pre>
 
 <h3>Copy from a remote server to local</h3>
-<div class="codehilite"><pre><span></span><code>rsync<span class="w"> </span>-avz<span class="w"> </span>user@server.com:/home/user/files/<span class="w"> </span>~/Downloads/from-server/
-</code></pre></div>
+<pre><code><code>rsync -avz user@server.com:/home/user/files/ ~/Downloads/from-server/
+</code></code></pre>
 
 <h3>Show progress for large files</h3>
-<div class="codehilite"><pre><span></span><code>rsync<span class="w"> </span>-av<span class="w"> </span>--progress<span class="w"> </span>~/Documents/<span class="w"> </span>/Volumes/BackupDrive/Documents/
-</code></pre></div>
+<pre><code><code>rsync -av --progress ~/Documents/ /Volumes/BackupDrive/Documents/
+</code></code></pre>
 
 <h3>Exclude specific folders</h3>
-<div class="codehilite"><pre><span></span><code>rsync<span class="w"> </span>-av<span class="w"> </span>--exclude<span class="o">=</span><span class="s1">&#39;node_modules&#39;</span><span class="w"> </span>--exclude<span class="o">=</span><span class="s1">&#39;.git&#39;</span><span class="w"> </span>~/Projects/<span class="w"> </span>/Volumes/BackupDrive/Projects/
-</code></pre></div>
+<pre><code><code>rsync -av --exclude=&#39;node_modules&#39; --exclude=&#39;.git&#39; ~/Projects/ /Volumes/BackupDrive/Projects/
+</code></code></pre>
 
 <h3>Exclude using a file</h3>
 <p>Create <code>~/.rsync-exclude</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="nf">node_modules</span><span class="err">/</span>
-<span class="na">.git</span><span class="err">/</span>
-<span class="err">*</span><span class="na">.log</span>
-<span class="na">.DS_Store</span>
-<span class="nf">__pycache__</span><span class="err">/</span>
-<span class="na">.venv</span><span class="err">/</span>
-</code></pre></div>
+<pre><code><code>node_modules/
+.git/
+*.log
+.DS_Store
+__pycache__/
+.venv/
+</code></code></pre>
 
 <p>Then:</p>
-<div class="codehilite"><pre><span></span><code>rsync<span class="w"> </span>-av<span class="w"> </span>--exclude-from<span class="o">=</span><span class="s1">&#39;~/.rsync-exclude&#39;</span><span class="w"> </span>~/Projects/<span class="w"> </span>/Volumes/BackupDrive/Projects/
-</code></pre></div>
+<pre><code><code>rsync -av --exclude-from=&#39;~/.rsync-exclude&#39; ~/Projects/ /Volumes/BackupDrive/Projects/
+</code></code></pre>
 
 <hr />
 <h2>Scheduled Backups with cron</h2>
 <p>Back up Documents every night at 2 AM:</p>
-<div class="codehilite"><pre><span></span><code>crontab<span class="w"> </span>-e
-</code></pre></div>
+<pre><code><code>crontab -e
+</code></code></pre>
 
 <p>Add:</p>
-<div class="codehilite"><pre><span></span><code><span class="mf">0</span><span class="w"> </span><span class="mf">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">rsync</span><span class="w"> </span><span class="o">-</span><span class="n">a</span><span class="w"> </span><span class="o">--</span><span class="n">delete</span><span class="w"> </span><span class="err">~</span><span class="o">/</span><span class="n">Documents</span><span class="o">/</span><span class="w"> </span><span class="o">/</span><span class="n">Volumes</span><span class="o">/</span><span class="n">BackupDrive</span><span class="o">/</span><span class="n">Documents</span><span class="o">/</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="err">~</span><span class="o">/</span><span class="n">rsync</span><span class="o">-</span><span class="n">backup</span><span class="mf">.</span><span class="nb">log</span><span class="w"> </span><span class="mf">2</span><span class="o">&gt;</span><span class="err">&amp;</span><span class="mf">1</span>
-</code></pre></div>
+<pre><code><code>0 2 * * * rsync -a --delete ~/Documents/ /Volumes/BackupDrive/Documents/ &gt;&gt; ~/rsync-backup.log 2&gt;&amp;1
+</code></code></pre>
 
 <blockquote>
 <p><strong>macOS note:</strong> The drive must be mounted and your Mac must be awake at 2 AM. If you cannot guarantee this, use a launchd plist instead — see the <strong>Fix launchd / plist Scripts Not Running</strong> guide.</p>
@@ -113,80 +113,80 @@ DATA:linux:Backup and Sync Files with rsync (macOS and Linux):Linux
 <hr />
 <h2>Scheduled Backups with launchd (macOS — More Reliable)</h2>
 <p>Create <code>~/Library/LaunchAgents/com.backup.daily.plist</code>:</p>
-<div class="codehilite"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
-<span class="cp">&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot; &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;</span>
-<span class="nt">&lt;plist</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
-<span class="nt">&lt;dict&gt;</span>
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>Label<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;string&gt;</span>com.backup.daily<span class="nt">&lt;/string&gt;</span>
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>ProgramArguments<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;array&gt;</span>
-<span class="w">        </span><span class="nt">&lt;string&gt;</span>/usr/bin/rsync<span class="nt">&lt;/string&gt;</span>
-<span class="w">        </span><span class="nt">&lt;string&gt;</span>-a<span class="nt">&lt;/string&gt;</span>
-<span class="w">        </span><span class="nt">&lt;string&gt;</span>--delete<span class="nt">&lt;/string&gt;</span>
-<span class="w">        </span><span class="nt">&lt;string&gt;</span>/Users/YOURUSERNAME/Documents/<span class="nt">&lt;/string&gt;</span>
-<span class="w">        </span><span class="nt">&lt;string&gt;</span>/Volumes/BackupDrive/Documents/<span class="nt">&lt;/string&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/array&gt;</span>
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>StartCalendarInterval<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;dict&gt;</span>
-<span class="w">        </span><span class="nt">&lt;key&gt;</span>Hour<span class="nt">&lt;/key&gt;</span>
-<span class="w">        </span><span class="nt">&lt;integer&gt;</span>2<span class="nt">&lt;/integer&gt;</span>
-<span class="w">        </span><span class="nt">&lt;key&gt;</span>Minute<span class="nt">&lt;/key&gt;</span>
-<span class="w">        </span><span class="nt">&lt;integer&gt;</span>0<span class="nt">&lt;/integer&gt;</span>
-<span class="w">    </span><span class="nt">&lt;/dict&gt;</span>
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>StandardOutPath<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;string&gt;</span>/tmp/rsync-backup.log<span class="nt">&lt;/string&gt;</span>
-<span class="w">    </span><span class="nt">&lt;key&gt;</span>StandardErrorPath<span class="nt">&lt;/key&gt;</span>
-<span class="w">    </span><span class="nt">&lt;string&gt;</span>/tmp/rsync-backup-error.log<span class="nt">&lt;/string&gt;</span>
-<span class="nt">&lt;/dict&gt;</span>
-<span class="nt">&lt;/plist&gt;</span>
-</code></pre></div>
+<pre><code><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot; &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;
+&lt;plist version=&quot;1.0&quot;&gt;
+&lt;dict&gt;
+    &lt;key&gt;Label&lt;/key&gt;
+    &lt;string&gt;com.backup.daily&lt;/string&gt;
+    &lt;key&gt;ProgramArguments&lt;/key&gt;
+    &lt;array&gt;
+        &lt;string&gt;/usr/bin/rsync&lt;/string&gt;
+        &lt;string&gt;-a&lt;/string&gt;
+        &lt;string&gt;--delete&lt;/string&gt;
+        &lt;string&gt;/Users/YOURUSERNAME/Documents/&lt;/string&gt;
+        &lt;string&gt;/Volumes/BackupDrive/Documents/&lt;/string&gt;
+    &lt;/array&gt;
+    &lt;key&gt;StartCalendarInterval&lt;/key&gt;
+    &lt;dict&gt;
+        &lt;key&gt;Hour&lt;/key&gt;
+        &lt;integer&gt;2&lt;/integer&gt;
+        &lt;key&gt;Minute&lt;/key&gt;
+        &lt;integer&gt;0&lt;/integer&gt;
+    &lt;/dict&gt;
+    &lt;key&gt;StandardOutPath&lt;/key&gt;
+    &lt;string&gt;/tmp/rsync-backup.log&lt;/string&gt;
+    &lt;key&gt;StandardErrorPath&lt;/key&gt;
+    &lt;string&gt;/tmp/rsync-backup-error.log&lt;/string&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+</code></code></pre>
 
 <p>Replace <code>YOURUSERNAME</code> with your actual username. Load it:</p>
-<div class="codehilite"><pre><span></span><code>launchctl<span class="w"> </span>load<span class="w"> </span>~/Library/LaunchAgents/com.backup.daily.plist
-</code></pre></div>
+<pre><code><code>launchctl load ~/Library/LaunchAgents/com.backup.daily.plist
+</code></code></pre>
 
 <hr />
 <h2>Useful One-Liners</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Check what has changed between source and destination (without copying)</span>
-rsync<span class="w"> </span>-av<span class="w"> </span>--dry-run<span class="w"> </span>--itemize-changes<span class="w"> </span>~/Documents/<span class="w"> </span>/Volumes/Backup/Documents/
+<pre><code><code># Check what has changed between source and destination (without copying)
+rsync -av --dry-run --itemize-changes ~/Documents/ /Volumes/Backup/Documents/
 
-<span class="c1"># Copy only files modified in the last 7 days</span>
-rsync<span class="w"> </span>-av<span class="w"> </span>--update<span class="w"> </span>~/Documents/<span class="w"> </span>/Volumes/Backup/Documents/
+# Copy only files modified in the last 7 days
+rsync -av --update ~/Documents/ /Volumes/Backup/Documents/
 
-<span class="c1"># Copy and limit bandwidth to 1 MB/s (useful for background backups)</span>
-rsync<span class="w"> </span>-av<span class="w"> </span>--bwlimit<span class="o">=</span><span class="m">1000</span><span class="w"> </span>~/Documents/<span class="w"> </span>/Volumes/Backup/Documents/
+# Copy and limit bandwidth to 1 MB/s (useful for background backups)
+rsync -av --bwlimit=1000 ~/Documents/ /Volumes/Backup/Documents/
 
-<span class="c1"># Resume an interrupted transfer</span>
-rsync<span class="w"> </span>-avP<span class="w"> </span>~/LargeFiles/<span class="w"> </span>/Volumes/Backup/LargeFiles/
-</code></pre></div>
+# Resume an interrupted transfer
+rsync -avP ~/LargeFiles/ /Volumes/Backup/LargeFiles/
+</code></code></pre>
 
 <hr />
 <h2>Understanding the Output</h2>
 <p>When using <code>--itemize-changes</code>, rsync shows a code before each file:</p>
-<div class="codehilite"><pre><span></span><code><span class="err">&gt;</span><span class="nf">f</span><span class="err">+++++++++</span><span class="w"> </span><span class="no">newfile.txt</span><span class="w">        </span><span class="c1"># New file being sent</span>
-<span class="err">&gt;</span><span class="nf">f.s.......</span><span class="w"> </span><span class="no">changedfile.txt</span><span class="w">    </span><span class="c1"># File size changed</span>
-<span class="na">.f..t......</span><span class="w"> </span><span class="no">touchedfile.txt</span><span class="w">    </span><span class="c1"># Timestamp changed only</span>
-<span class="err">*</span><span class="nf">deleting</span><span class="w">   </span><span class="no">oldfile.txt</span><span class="w">        </span><span class="c1"># File deleted (with --delete)</span>
-</code></pre></div>
+<pre><code><code>&gt;f+++++++++ newfile.txt        # New file being sent
+&gt;f.s....... changedfile.txt    # File size changed
+.f..t...... touchedfile.txt    # Timestamp changed only
+*deleting   oldfile.txt        # File deleted (with --delete)
+</code></code></pre>
 
 <hr />
 <h2>Troubleshooting</h2>
 <h3>rsync: command not found (macOS)</h3>
 <p>macOS includes rsync but it may be an old version. Install the current one:</p>
-<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>rsync
-</code></pre></div>
+<pre><code><code>brew install rsync
+</code></code></pre>
 
 <h3>Permission denied errors</h3>
 <p>Add <code>sudo</code> if copying system files, or fix ownership of the destination:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span>/path/to/destination/
-</code></pre></div>
+<pre><code><code>sudo chown -R $(whoami) /path/to/destination/
+</code></code></pre>
 
 <h3>Transfer is slow over SSH</h3>
 <p>Add <code>-z</code> for compression:</p>
-<div class="codehilite"><pre><span></span><code>rsync<span class="w"> </span>-avz<span class="w"> </span>user@server:/path/<span class="w"> </span>~/local/
-</code></pre></div>
+<pre><code><code>rsync -avz user@server:/path/ ~/local/
+</code></code></pre>
 
 <p>Or specify a faster SSH cipher:</p>
-<div class="codehilite"><pre><span></span><code>rsync<span class="w"> </span>-avz<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;ssh -c aes128-gcm@openssh.com&quot;</span><span class="w"> </span>user@server:/path/<span class="w"> </span>~/local/
-</code></pre></div>
+<pre><code><code>rsync -avz -e &quot;ssh -c aes128-gcm@openssh.com&quot; user@server:/path/ ~/local/
+</code></code></pre>

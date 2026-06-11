@@ -10,14 +10,14 @@ DATA:server:Free SSL with Let's Encrypt and Certbot (Nginx):Server & Self-Hostin
 </ul>
 <hr />
 <h2>Install Certbot</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>certbot<span class="w"> </span>python3-certbot-nginx<span class="w"> </span>-y<span class="w">     </span><span class="c1"># Ubuntu/Debian</span>
-sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>certbot<span class="w"> </span>python3-certbot-nginx<span class="w"> </span>-y<span class="w">     </span><span class="c1"># Fedora/RHEL</span>
-</code></pre></div>
+<pre><code><code>sudo apt install certbot python3-certbot-nginx -y     # Ubuntu/Debian
+sudo dnf install certbot python3-certbot-nginx -y     # Fedora/RHEL
+</code></code></pre>
 
 <hr />
 <h2>Get a Certificate and Auto-Configure Nginx</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>certbot<span class="w"> </span>--nginx<span class="w"> </span>-d<span class="w"> </span>example.com<span class="w"> </span>-d<span class="w"> </span>www.example.com
-</code></pre></div>
+<pre><code><code>sudo certbot --nginx -d example.com -d www.example.com
+</code></code></pre>
 
 <p>Certbot will:
 1. Verify you own the domain (by serving a file on port 80)
@@ -27,73 +27,73 @@ sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> <
 <p>That is all. Your site is now HTTPS.</p>
 <hr />
 <h2>Multiple Domains</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>certbot<span class="w"> </span>--nginx<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-d<span class="w"> </span>example.com<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-d<span class="w"> </span>www.example.com<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-d<span class="w"> </span>api.example.com
-</code></pre></div>
+<pre><code><code>sudo certbot --nginx \
+  -d example.com \
+  -d www.example.com \
+  -d api.example.com
+</code></code></pre>
 
 <hr />
 <h2>Certificate Only (No Auto-Config)</h2>
 <p>If you want to manage Nginx config yourself:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>certbot<span class="w"> </span>certonly<span class="w"> </span>--nginx<span class="w"> </span>-d<span class="w"> </span>example.com
-</code></pre></div>
+<pre><code><code>sudo certbot certonly --nginx -d example.com
+</code></code></pre>
 
 <p>Certificates are saved to <code>/etc/letsencrypt/live/example.com/</code>:
 - <code>fullchain.pem</code> — the certificate (use this for <code>ssl_certificate</code>)
 - <code>privkey.pem</code> — the private key (use this for <code>ssl_certificate_key</code>)</p>
 <p>Manual Nginx SSL config:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">server</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kn">listen</span><span class="w"> </span><span class="mi">443</span><span class="w"> </span><span class="s">ssl</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">server_name</span><span class="w"> </span><span class="s">example.com</span><span class="p">;</span>
+<pre><code><code>server {
+    listen 443 ssl;
+    server_name example.com;
 
-<span class="w">    </span><span class="kn">ssl_certificate</span><span class="w"> </span><span class="s">/etc/letsencrypt/live/example.com/fullchain.pem</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">ssl_certificate_key</span><span class="w"> </span><span class="s">/etc/letsencrypt/live/example.com/privkey.pem</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">include</span><span class="w"> </span><span class="s">/etc/letsencrypt/options-ssl-nginx.conf</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">ssl_dhparam</span><span class="w"> </span><span class="s">/etc/letsencrypt/ssl-dhparams.pem</span><span class="p">;</span>
+    ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
-<span class="w">    </span><span class="kn">location</span><span class="w"> </span><span class="s">/</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://localhost:3000</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="p">}</span>
+    location / {
+        proxy_pass http://localhost:3000;
+    }
+}
 
-<span class="k">server</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kn">listen</span><span class="w"> </span><span class="mi">80</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">server_name</span><span class="w"> </span><span class="s">example.com</span><span class="p">;</span>
-<span class="w">    </span><span class="kn">return</span><span class="w"> </span><span class="mi">301</span><span class="w"> </span><span class="s">https://</span><span class="nv">$host$request_uri</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div>
+server {
+    listen 80;
+    server_name example.com;
+    return 301 https://$host$request_uri;
+}
+</code></code></pre>
 
 <hr />
 <h2>Auto-Renewal</h2>
 <p>Certbot installs a systemd timer or cron job automatically. Verify it:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>certbot.timer<span class="w">     </span><span class="c1"># systemd</span>
-sudo<span class="w"> </span>crontab<span class="w"> </span>-l<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>certbot<span class="w">          </span><span class="c1"># cron fallback</span>
+<pre><code><code>sudo systemctl status certbot.timer     # systemd
+sudo crontab -l | grep certbot          # cron fallback
 
-<span class="c1"># Test renewal without actually renewing</span>
-sudo<span class="w"> </span>certbot<span class="w"> </span>renew<span class="w"> </span>--dry-run
-</code></pre></div>
+# Test renewal without actually renewing
+sudo certbot renew --dry-run
+</code></code></pre>
 
 <p>Certificates auto-renew 30 days before expiry.</p>
 <hr />
 <h2>Renew Manually</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>certbot<span class="w"> </span>renew
-sudo<span class="w"> </span>systemctl<span class="w"> </span>reload<span class="w"> </span>nginx
-</code></pre></div>
+<pre><code><code>sudo certbot renew
+sudo systemctl reload nginx
+</code></code></pre>
 
 <hr />
 <h2>Check Expiry</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>certbot<span class="w"> </span>certificates
-</code></pre></div>
+<pre><code><code>sudo certbot certificates
+</code></code></pre>
 
 <hr />
 <h2>Common Errors</h2>
 <p><strong><code>Domain not yet configured</code></strong> — DNS not pointing to this server yet. Check <code>dig example.com</code> returns your server IP.</p>
 <p><strong><code>Connection refused on port 80</code></strong> — firewall is blocking port 80:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span><span class="m">80</span>
-sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span><span class="m">443</span>
-</code></pre></div>
+<pre><code><code>sudo ufw allow 80
+sudo ufw allow 443
+</code></code></pre>
 
 <p><strong><code>Certificate is not yet due for renewal</code></strong> — less than 30 days until expiry, Certbot skips it. Use <code>--force-renewal</code> to renew anyway:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>certbot<span class="w"> </span>renew<span class="w"> </span>--force-renewal
-</code></pre></div>
+<pre><code><code>sudo certbot renew --force-renewal
+</code></code></pre>

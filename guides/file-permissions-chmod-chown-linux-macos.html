@@ -3,13 +3,13 @@ DATA:linux:File Permissions — chmod and chown (macOS and Linux):Linux
 <p>Every file on Linux and macOS has an owner, a group, and permissions for three audiences: the owner, the group, and everyone else.</p>
 <hr />
 <h2>Read Permissions</h2>
-<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>-la
-</code></pre></div>
+<pre><code><code>ls -la
+</code></code></pre>
 
 <p>Example output:</p>
-<div class="codehilite"><pre><span></span><code>-rwxr-xr--  1  alice  staff  1234  file.sh
+<pre><code><code>-rwxr-xr--  1  alice  staff  1234  file.sh
 drwxr-xr-x  2  alice  staff   128  folder/
-</code></pre></div>
+</code></code></pre>
 
 <table>
 <thead>
@@ -82,12 +82,12 @@ drwxr-xr-x  2  alice  staff   128  folder/
 <h2>chmod — Change Permissions</h2>
 <h3>Numeric (Octal) Mode</h3>
 <p>Each position is owner, group, others. Each digit = r+w+x values added together.</p>
-<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span>file.sh<span class="w">      </span><span class="c1"># rwxr-xr-x — owner full, group/others read+execute</span>
-chmod<span class="w"> </span><span class="m">644</span><span class="w"> </span>file.txt<span class="w">     </span><span class="c1"># rw-r--r-- — owner read+write, others read only</span>
-chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>secret.key<span class="w">   </span><span class="c1"># rw------- — owner read+write only</span>
-chmod<span class="w"> </span><span class="m">777</span><span class="w"> </span>file.sh<span class="w">      </span><span class="c1"># rwxrwxrwx — everyone full (avoid this)</span>
-chmod<span class="w"> </span><span class="m">000</span><span class="w"> </span>file.txt<span class="w">     </span><span class="c1"># --------- — no permissions for anyone</span>
-</code></pre></div>
+<pre><code><code>chmod 755 file.sh      # rwxr-xr-x — owner full, group/others read+execute
+chmod 644 file.txt     # rw-r--r-- — owner read+write, others read only
+chmod 600 secret.key   # rw------- — owner read+write only
+chmod 777 file.sh      # rwxrwxrwx — everyone full (avoid this)
+chmod 000 file.txt     # --------- — no permissions for anyone
+</code></code></pre>
 
 <p><strong>Common permission values:</strong></p>
 <table>
@@ -132,57 +132,57 @@ chmod<span class="w"> </span><span class="m">000</span><span class="w"> </span>f
 </tbody>
 </table>
 <h3>Symbolic Mode</h3>
-<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span>+x<span class="w"> </span>file.sh<span class="w">           </span><span class="c1"># add execute for everyone</span>
-chmod<span class="w"> </span>-x<span class="w"> </span>file.sh<span class="w">           </span><span class="c1"># remove execute from everyone</span>
-chmod<span class="w"> </span>u+x<span class="w"> </span>file.sh<span class="w">          </span><span class="c1"># add execute for owner only</span>
-chmod<span class="w"> </span>g+w<span class="w"> </span>file.txt<span class="w">         </span><span class="c1"># add write for group</span>
-chmod<span class="w"> </span>o-r<span class="w"> </span>secret.txt<span class="w">       </span><span class="c1"># remove read from others</span>
-chmod<span class="w"> </span><span class="nv">u</span><span class="o">=</span>rwx,g<span class="o">=</span>rx,o<span class="o">=</span>r<span class="w"> </span>file<span class="w">  </span><span class="c1"># set exact permissions symbolically</span>
-</code></pre></div>
+<pre><code><code>chmod +x file.sh           # add execute for everyone
+chmod -x file.sh           # remove execute from everyone
+chmod u+x file.sh          # add execute for owner only
+chmod g+w file.txt         # add write for group
+chmod o-r secret.txt       # remove read from others
+chmod u=rwx,g=rx,o=r file  # set exact permissions symbolically
+</code></code></pre>
 
 <ul>
 <li><code>u</code> = user/owner, <code>g</code> = group, <code>o</code> = others, <code>a</code> = all three</li>
 </ul>
 <h3>Recursive</h3>
-<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span>-R<span class="w"> </span><span class="m">755</span><span class="w"> </span>/var/www<span class="w">          </span><span class="c1"># apply recursively to folder</span>
-find<span class="w"> </span>/var/www<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-exec<span class="w"> </span>chmod<span class="w"> </span><span class="m">644</span><span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span><span class="w">    </span><span class="c1"># files only</span>
-find<span class="w"> </span>/var/www<span class="w"> </span>-type<span class="w"> </span>d<span class="w"> </span>-exec<span class="w"> </span>chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span><span class="w">    </span><span class="c1"># directories only</span>
-</code></pre></div>
+<pre><code><code>chmod -R 755 /var/www          # apply recursively to folder
+find /var/www -type f -exec chmod 644 {} \;    # files only
+find /var/www -type d -exec chmod 755 {} \;    # directories only
+</code></code></pre>
 
 <hr />
 <h2>chown — Change Owner</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span>alice<span class="w"> </span>file.txt<span class="w">              </span><span class="c1"># change owner to alice</span>
-sudo<span class="w"> </span>chown<span class="w"> </span>alice:staff<span class="w"> </span>file.txt<span class="w">        </span><span class="c1"># change owner and group</span>
-sudo<span class="w"> </span>chown<span class="w"> </span>:staff<span class="w"> </span>file.txt<span class="w">             </span><span class="c1"># change group only</span>
-sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span>alice:staff<span class="w"> </span>/var/www<span class="w">     </span><span class="c1"># recursive</span>
-sudo<span class="w"> </span>chown<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span>file.txt<span class="w">          </span><span class="c1"># take ownership of a file</span>
-</code></pre></div>
+<pre><code><code>sudo chown alice file.txt              # change owner to alice
+sudo chown alice:staff file.txt        # change owner and group
+sudo chown :staff file.txt             # change group only
+sudo chown -R alice:staff /var/www     # recursive
+sudo chown $(whoami) file.txt          # take ownership of a file
+</code></code></pre>
 
 <hr />
 <h2>chgrp — Change Group</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chgrp<span class="w"> </span>staff<span class="w"> </span>file.txt
-sudo<span class="w"> </span>chgrp<span class="w"> </span>-R<span class="w"> </span>www-data<span class="w"> </span>/var/www
-</code></pre></div>
+<pre><code><code>sudo chgrp staff file.txt
+sudo chgrp -R www-data /var/www
+</code></code></pre>
 
 <hr />
 <h2>Special Permissions</h2>
 <h3>Setuid (run as owner, not caller)</h3>
-<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span>u+s<span class="w"> </span>/usr/bin/program<span class="w">     </span><span class="c1"># 4755</span>
-</code></pre></div>
+<pre><code><code>chmod u+s /usr/bin/program     # 4755
+</code></code></pre>
 
 <h3>Setgid (new files inherit directory group)</h3>
-<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span>g+s<span class="w"> </span>/shared/folder<span class="w">       </span><span class="c1"># 2755</span>
-</code></pre></div>
+<pre><code><code>chmod g+s /shared/folder       # 2755
+</code></code></pre>
 
 <h3>Sticky bit (only owner can delete files in directory)</h3>
-<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span>+t<span class="w"> </span>/tmp<span class="w">                  </span><span class="c1"># 1777</span>
-</code></pre></div>
+<pre><code><code>chmod +t /tmp                  # 1777
+</code></code></pre>
 
 <hr />
 <h2>SSH Permission Requirements (Common Cause of Errors)</h2>
-<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span><span class="m">700</span><span class="w"> </span>~/.ssh
-chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>~/.ssh/id_ed25519
-chmod<span class="w"> </span><span class="m">644</span><span class="w"> </span>~/.ssh/id_ed25519.pub
-chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>~/.ssh/authorized_keys
-chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>~/.ssh/config
-</code></pre></div>
+<pre><code><code>chmod 700 ~/.ssh
+chmod 600 ~/.ssh/id_ed25519
+chmod 644 ~/.ssh/id_ed25519.pub
+chmod 600 ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/config
+</code></code></pre>

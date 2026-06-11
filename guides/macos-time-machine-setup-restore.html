@@ -61,26 +61,26 @@ DATA:macos:Time Machine — Complete Setup and Restore Guide:macOS
 <p>You can also run Migration Assistant later: <strong>Applications → Utilities → Migration Assistant</strong>.</p>
 <hr />
 <h2>Check Backup Status</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Check when last backup happened</span>
-tmutil<span class="w"> </span>latestbackup
+<pre><code><code># Check when last backup happened
+tmutil latestbackup
 
-<span class="c1"># List all backups</span>
-tmutil<span class="w"> </span>listbackups
+# List all backups
+tmutil listbackups
 
-<span class="c1"># Show backup destination</span>
-tmutil<span class="w"> </span>destinationinfo
-</code></pre></div>
+# Show backup destination
+tmutil destinationinfo
+</code></code></pre>
 
 <hr />
 <h2>Force a Backup Now</h2>
-<div class="codehilite"><pre><span></span><code>tmutil<span class="w"> </span>startbackup
-</code></pre></div>
+<pre><code><code>tmutil startbackup
+</code></code></pre>
 
 <p>Or from the menu bar: click Time Machine icon → <strong>Back Up Now</strong>.</p>
 <hr />
 <h2>Backup Verification</h2>
 <p>Occasionally verify your backup is healthy:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>tmutil<span class="w"> </span>verifychecksums<span class="w"> </span>/Volumes/YOUR_BACKUP_DRIVE
-</code></pre></div>
+<pre><code><code>sudo tmutil verifychecksums /Volumes/YOUR_BACKUP_DRIVE
+</code></code></pre>
 
 <p>Also open Disk Utility → select your Time Machine drive → <strong>First Aid</strong> → <strong>Run</strong> to check the drive itself.</p>

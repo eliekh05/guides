@@ -3,102 +3,102 @@ DATA:scheduling:cron — Schedule Tasks on Linux and macOS:Task Scheduling
 <p>cron runs commands automatically on a schedule. This guide covers the syntax, common patterns, and the mistakes that cause cron jobs to silently fail.</p>
 <hr />
 <h2>Edit Your Cron Jobs</h2>
-<div class="codehilite"><pre><span></span><code>crontab<span class="w"> </span>-e<span class="w">          </span><span class="c1"># edit your cron jobs</span>
-crontab<span class="w"> </span>-l<span class="w">          </span><span class="c1"># list your cron jobs</span>
-crontab<span class="w"> </span>-r<span class="w">          </span><span class="c1"># remove all your cron jobs</span>
-sudo<span class="w"> </span>crontab<span class="w"> </span>-e<span class="w">     </span><span class="c1"># edit root&#39;s cron jobs</span>
-</code></pre></div>
+<pre><code><code>crontab -e          # edit your cron jobs
+crontab -l          # list your cron jobs
+crontab -r          # remove all your cron jobs
+sudo crontab -e     # edit root&#39;s cron jobs
+</code></code></pre>
 
 <hr />
 <h2>Cron Syntax</h2>
-<div class="codehilite"><pre><span></span><code><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">command</span>
-<span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="err">│</span>
-<span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="err">└──</span><span class="w"> </span><span class="n">Day</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">week</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="o">-</span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sunday</span><span class="p">)</span>
-<span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="err">└────</span><span class="w"> </span><span class="n">Month</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="mi">12</span><span class="p">)</span>
-<span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="err">└──────</span><span class="w"> </span><span class="n">Day</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">month</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="mi">31</span><span class="p">)</span>
-<span class="err">│</span><span class="w"> </span><span class="err">└────────</span><span class="w"> </span><span class="n">Hour</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="o">-</span><span class="mi">23</span><span class="p">)</span>
-<span class="err">└──────────</span><span class="w"> </span><span class="n">Minute</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="o">-</span><span class="mi">59</span><span class="p">)</span>
-</code></pre></div>
+<pre><code><code>* * * * * command
+│ │ │ │ │
+│ │ │ │ └── Day of week (0-7, 0 and 7 = Sunday)
+│ │ │ └──── Month (1-12)
+│ │ └────── Day of month (1-31)
+│ └──────── Hour (0-23)
+└────────── Minute (0-59)
+</code></code></pre>
 
 <p><code>*</code> means every.</p>
 <hr />
 <h2>Examples</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Every minute</span>
-*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/path/to/script.sh
+<pre><code><code># Every minute
+* * * * * /path/to/script.sh
 
-<span class="c1"># Every hour at minute 0</span>
-<span class="m">0</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/path/to/script.sh
+# Every hour at minute 0
+0 * * * * /path/to/script.sh
 
-<span class="c1"># Every day at 2:30 AM</span>
-<span class="m">30</span><span class="w"> </span><span class="m">2</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/path/to/script.sh
+# Every day at 2:30 AM
+30 2 * * * /path/to/script.sh
 
-<span class="c1"># Every Monday at 9 AM</span>
-<span class="m">0</span><span class="w"> </span><span class="m">9</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span><span class="m">1</span><span class="w"> </span>/path/to/script.sh
+# Every Monday at 9 AM
+0 9 * * 1 /path/to/script.sh
 
-<span class="c1"># Every 15 minutes</span>
-*/15<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/path/to/script.sh
+# Every 15 minutes
+*/15 * * * * /path/to/script.sh
 
-<span class="c1"># Every day at midnight and noon</span>
-<span class="m">0</span><span class="w"> </span><span class="m">0</span>,12<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/path/to/script.sh
+# Every day at midnight and noon
+0 0,12 * * * /path/to/script.sh
 
-<span class="c1"># First day of every month at midnight</span>
-<span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">1</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/path/to/script.sh
+# First day of every month at midnight
+0 0 1 * * /path/to/script.sh
 
-<span class="c1"># Weekdays at 8 AM</span>
-<span class="m">0</span><span class="w"> </span><span class="m">8</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span><span class="m">1</span>-5<span class="w"> </span>/path/to/script.sh
-</code></pre></div>
+# Weekdays at 8 AM
+0 8 * * 1-5 /path/to/script.sh
+</code></code></pre>
 
 <hr />
 <h2>Shortcuts</h2>
-<div class="codehilite"><pre><span></span><code>@reboot<span class="w">     </span><span class="c1"># run once at startup</span>
-@hourly<span class="w">     </span><span class="c1"># run once an hour (= 0 * * * *)</span>
-@daily<span class="w">      </span><span class="c1"># run once a day (= 0 0 * * *)</span>
-@weekly<span class="w">     </span><span class="c1"># run once a week (= 0 0 * * 0)</span>
-@monthly<span class="w">    </span><span class="c1"># run once a month (= 0 0 1 * *)</span>
-</code></pre></div>
+<pre><code><code>@reboot     # run once at startup
+@hourly     # run once an hour (= 0 * * * *)
+@daily      # run once a day (= 0 0 * * *)
+@weekly     # run once a week (= 0 0 * * 0)
+@monthly    # run once a month (= 0 0 1 * *)
+</code></code></pre>
 
-<div class="codehilite"><pre><span></span><code>@reboot<span class="w"> </span>/path/to/script.sh
-@daily<span class="w"> </span>/path/to/backup.sh
-</code></pre></div>
+<pre><code><code>@reboot /path/to/script.sh
+@daily /path/to/backup.sh
+</code></code></pre>
 
 <hr />
 <h2>Why Cron Jobs Silently Fail (Most Common Issues)</h2>
 <h3>1. No PATH set</h3>
 <p>cron has a minimal PATH. Commands like <code>python3</code>, <code>node</code>, <code>brew</code> are not found.</p>
 <p>Fix — use full paths:</p>
-<div class="codehilite"><pre><span></span><code><span class="m">0</span><span class="w"> </span><span class="m">2</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/usr/bin/python3<span class="w"> </span>/home/user/script.py
-<span class="m">0</span><span class="w"> </span><span class="m">2</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/opt/homebrew/bin/brew<span class="w"> </span>upgrade
-</code></pre></div>
+<pre><code><code>0 2 * * * /usr/bin/python3 /home/user/script.py
+0 2 * * * /opt/homebrew/bin/brew upgrade
+</code></code></pre>
 
 <p>Find the full path of a command:</p>
-<div class="codehilite"><pre><span></span><code>which<span class="w"> </span>python3
-</code></pre></div>
+<pre><code><code>which python3
+</code></code></pre>
 
 <h3>2. Script not executable</h3>
-<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span>+x<span class="w"> </span>/path/to/script.sh
-</code></pre></div>
+<pre><code><code>chmod +x /path/to/script.sh
+</code></code></pre>
 
 <h3>3. No output — you don't know if it worked</h3>
 <p>Redirect output to a log file:</p>
-<div class="codehilite"><pre><span></span><code><span class="m">0</span><span class="w"> </span><span class="m">2</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/path/to/script.sh<span class="w"> </span>&gt;&gt;<span class="w"> </span>/tmp/myscript.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
-</code></pre></div>
+<pre><code><code>0 2 * * * /path/to/script.sh &gt;&gt; /tmp/myscript.log 2&gt;&amp;1
+</code></code></pre>
 
 <p><code>2&gt;&amp;1</code> captures both stdout and stderr.</p>
 <h3>4. Environment differences</h3>
 <p>Set variables explicitly in the crontab:</p>
-<div class="codehilite"><pre><span></span><code><span class="nv">PATH</span><span class="o">=</span>/usr/local/bin:/usr/bin:/bin
-<span class="nv">HOME</span><span class="o">=</span>/home/youruser
-<span class="m">0</span><span class="w"> </span><span class="m">2</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>script.sh
-</code></pre></div>
+<pre><code><code>PATH=/usr/local/bin:/usr/bin:/bin
+HOME=/home/youruser
+0 2 * * * script.sh
+</code></code></pre>
 
 <hr />
 <h2>System-Wide Cron (Linux)</h2>
 <p>Drop scripts into these directories — no crontab needed:</p>
-<div class="codehilite"><pre><span></span><code>/etc/cron.hourly/
+<pre><code><code>/etc/cron.hourly/
 /etc/cron.daily/
 /etc/cron.weekly/
 /etc/cron.monthly/
-</code></pre></div>
+</code></code></pre>
 
 <p>Scripts must be executable and not have a file extension (no <code>.sh</code>).</p>
 <hr />

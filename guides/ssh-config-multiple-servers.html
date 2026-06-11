@@ -3,13 +3,13 @@ DATA:linux:SSH Config — Manage Multiple Servers:Linux
 <p>Instead of typing <code>ssh -i ~/.ssh/mykey -p 2222 user@192.168.1.100</code> every time, the <code>~/.ssh/config</code> file lets you type <code>ssh myserver</code>.</p>
 <hr />
 <h2>Create the Config File</h2>
-<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>~/.ssh/config
-chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>~/.ssh/config
-</code></pre></div>
+<pre><code><code>nano ~/.ssh/config
+chmod 600 ~/.ssh/config
+</code></code></pre>
 
 <hr />
 <h2>Basic Example</h2>
-<div class="codehilite"><pre><span></span><code>Host myserver
+<pre><code><code>Host myserver
     HostName 192.168.1.100
     User ubuntu
     IdentityFile ~/.ssh/id_ed25519
@@ -19,16 +19,16 @@ Host vps
     User root
     Port 2222
     IdentityFile ~/.ssh/vps_key
-</code></pre></div>
+</code></code></pre>
 
 <p>Now connect with:</p>
-<div class="codehilite"><pre><span></span><code>ssh<span class="w"> </span>myserver
-ssh<span class="w"> </span>vps
-</code></pre></div>
+<pre><code><code>ssh myserver
+ssh vps
+</code></code></pre>
 
 <hr />
 <h2>All Useful Options</h2>
-<div class="codehilite"><pre><span></span><code>Host workserver
+<pre><code><code>Host workserver
     HostName work.example.com
     User john
     Port 22
@@ -52,16 +52,16 @@ Host dev-*
     User developer
     IdentityFile ~/.ssh/dev_key
     StrictHostKeyChecking no        # skip host key check (trusted network only)
-</code></pre></div>
+</code></code></pre>
 
 <hr />
 <h2>Apply Settings to All Hosts</h2>
-<div class="codehilite"><pre><span></span><code>Host *
+<pre><code><code>Host *
     ServerAliveInterval 60
     ServerAliveCountMax 3
     AddKeysToAgent yes
     IdentityFile ~/.ssh/id_ed25519
-</code></pre></div>
+</code></code></pre>
 
 <p>Put this at the bottom of the file — <code>Host *</code> applies to everything that does not match a more specific entry above it.</p>
 <hr />
@@ -130,11 +130,11 @@ Host dev-*
 </table>
 <hr />
 <h2>Port Forwarding via Config</h2>
-<div class="codehilite"><pre><span></span><code>Host tunnel
+<pre><code><code>Host tunnel
     HostName server.example.com
     User admin
     LocalForward 8080 localhost:80     # local:8080 → remote:80
     LocalForward 5432 localhost:5432   # local:5432 → remote postgres
-</code></pre></div>
+</code></code></pre>
 
 <p>Connect with <code>ssh tunnel</code> and then access <code>localhost:8080</code> locally.</p>

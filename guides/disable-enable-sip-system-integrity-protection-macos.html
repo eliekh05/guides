@@ -8,8 +8,8 @@ DATA:security:Disable and Enable SIP (System Integrity Protection) on macOS:Secu
 <hr />
 <h2>Check Current SIP Status</h2>
 <p>Before doing anything, check whether SIP is already disabled:</p>
-<div class="codehilite"><pre><span></span><code>csrutil<span class="w"> </span>status
-</code></pre></div>
+<pre><code><code>csrutil status
+</code></code></pre>
 
 <p>Output will say one of:
 - <code>System Integrity Protection status: enabled.</code> — SIP is on
@@ -49,16 +49,16 @@ DATA:security:Disable and Enable SIP (System Integrity Protection) on macOS:Secu
 <hr />
 <h2>Re-enable SIP</h2>
 <p>The process is identical to disabling — boot into Recovery Mode and run:</p>
-<div class="codehilite"><pre><span></span><code>csrutil<span class="w"> </span><span class="nb">enable</span>
-</code></pre></div>
+<pre><code><code>csrutil enable
+</code></code></pre>
 
 <p>Then restart.</p>
 <p><strong>This is the same steps for both Intel and Apple Silicon</strong> — just follow the same boot process above for your chip type, but use <code>csrutil enable</code> instead.</p>
 <hr />
 <h2>Partially Disable SIP (Advanced)</h2>
 <p>Some tools only need specific SIP protections disabled rather than all of them. For example, yabai only needs filesystem protection disabled:</p>
-<div class="codehilite"><pre><span></span><code>csrutil<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--without<span class="w"> </span>fs
-</code></pre></div>
+<pre><code><code>csrutil enable --without fs
+</code></code></pre>
 
 <p>Available flags:</p>
 <table>

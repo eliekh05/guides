@@ -10,130 +10,130 @@ DATA:system-users:PowerShell Basics — Commands You Actually Use:System & Users
 </ul>
 <hr />
 <h2>Navigation</h2>
-<div class="codehilite"><pre><span></span><code><span class="nb">pwd </span>                        <span class="c"># current directory (Print Working Directory)</span>
-<span class="nb">ls </span>                         <span class="c"># list files (alias for Get-ChildItem)</span>
-<span class="nb">ls </span><span class="n">-Hidden</span>                  <span class="c"># include hidden files</span>
-<span class="nb">cd </span><span class="n">Documents</span>                <span class="c"># change directory</span>
-<span class="nb">cd </span><span class="p">..</span>                       <span class="c"># go up one level</span>
-<span class="nb">cd </span><span class="p">~</span>                        <span class="c"># go to home directory</span>
-</code></pre></div>
+<pre><code><code>pwd                         # current directory (Print Working Directory)
+ls                          # list files (alias for Get-ChildItem)
+ls -Hidden                  # include hidden files
+cd Documents                # change directory
+cd ..                       # go up one level
+cd ~                        # go to home directory
+</code></code></pre>
 
 <hr />
 <h2>Files and Folders</h2>
-<div class="codehilite"><pre><span></span><code><span class="c"># Create</span>
-<span class="nb">New-Item</span> <span class="n">file</span><span class="p">.</span><span class="n">txt</span> <span class="n">-ItemType</span> <span class="n">File</span>
-<span class="nb">New-Item</span> <span class="n">myfolder</span> <span class="n">-ItemType</span> <span class="n">Directory</span>
-<span class="n">mkdir</span> <span class="n">myfolder</span>              <span class="c"># shortcut</span>
+<pre><code><code># Create
+New-Item file.txt -ItemType File
+New-Item myfolder -ItemType Directory
+mkdir myfolder              # shortcut
 
-<span class="c"># Copy</span>
-<span class="nb">Copy-Item</span> <span class="n">file</span><span class="p">.</span><span class="n">txt</span> <span class="n">copy</span><span class="p">.</span><span class="n">txt</span>
-<span class="nb">Copy-Item</span> <span class="n">folder</span> <span class="n">-Recurse</span> <span class="n">-Destination</span> <span class="n">newfolder</span>
+# Copy
+Copy-Item file.txt copy.txt
+Copy-Item folder -Recurse -Destination newfolder
 
-<span class="c"># Move / Rename</span>
-<span class="nb">Move-Item</span> <span class="n">old</span><span class="p">.</span><span class="n">txt</span> <span class="n">new</span><span class="p">.</span><span class="n">txt</span>
-<span class="nb">Rename-Item</span> <span class="n">old</span><span class="p">.</span><span class="n">txt</span> <span class="n">new</span><span class="p">.</span><span class="n">txt</span>
+# Move / Rename
+Move-Item old.txt new.txt
+Rename-Item old.txt new.txt
 
-<span class="c"># Delete</span>
-<span class="nb">Remove-Item</span> <span class="n">file</span><span class="p">.</span><span class="n">txt</span>
-<span class="nb">Remove-Item</span> <span class="n">folder</span> <span class="n">-Recurse</span>    <span class="c"># delete folder and contents</span>
-<span class="nb">Remove-Item</span> <span class="p">*.</span><span class="n">log</span>              <span class="c"># delete all .log files</span>
+# Delete
+Remove-Item file.txt
+Remove-Item folder -Recurse    # delete folder and contents
+Remove-Item *.log              # delete all .log files
 
-<span class="c"># Read a file</span>
-<span class="nb">Get-Content</span> <span class="n">file</span><span class="p">.</span><span class="n">txt</span>
-<span class="nb">cat </span><span class="n">file</span><span class="p">.</span><span class="n">txt</span>                   <span class="c"># alias</span>
+# Read a file
+Get-Content file.txt
+cat file.txt                   # alias
 
-<span class="c"># Write to a file</span>
-<span class="s2">&quot;Hello&quot;</span> <span class="p">|</span> <span class="nb">Out-File</span> <span class="n">file</span><span class="p">.</span><span class="n">txt</span>    <span class="c"># overwrite</span>
-<span class="s2">&quot;Hello&quot;</span> <span class="p">|</span> <span class="nb">Add-Content</span> <span class="n">file</span><span class="p">.</span><span class="n">txt</span> <span class="c"># append</span>
-</code></pre></div>
+# Write to a file
+&quot;Hello&quot; | Out-File file.txt    # overwrite
+&quot;Hello&quot; | Add-Content file.txt # append
+</code></code></pre>
 
 <hr />
 <h2>Search</h2>
-<div class="codehilite"><pre><span></span><code><span class="c"># Find files by name</span>
-<span class="nb">Get-ChildItem</span> <span class="n">-Recurse</span> <span class="n">-Filter</span> <span class="s2">&quot;*.txt&quot;</span>
-<span class="nb">Get-ChildItem</span> <span class="n">C</span><span class="p">:\</span> <span class="n">-Recurse</span> <span class="n">-Name</span> <span class="s2">&quot;config.json&quot;</span> <span class="n">2</span><span class="p">&gt;</span><span class="nv">$null</span>
+<pre><code><code># Find files by name
+Get-ChildItem -Recurse -Filter &quot;*.txt&quot;
+Get-ChildItem C:\ -Recurse -Name &quot;config.json&quot; 2&gt;$null
 
-<span class="c"># Search inside files (like grep)</span>
-<span class="nb">Select-String</span> <span class="n">-Path</span> <span class="s2">&quot;*.log&quot;</span> <span class="n">-Pattern</span> <span class="s2">&quot;error&quot;</span>
-<span class="nb">Get-Content</span> <span class="n">app</span><span class="p">.</span><span class="n">log</span> <span class="p">|</span> <span class="nb">Select-String</span> <span class="s2">&quot;error&quot;</span>
+# Search inside files (like grep)
+Select-String -Path &quot;*.log&quot; -Pattern &quot;error&quot;
+Get-Content app.log | Select-String &quot;error&quot;
 
-<span class="c"># Find processes</span>
-<span class="nb">Get-Process</span> <span class="n">notepad</span>
-<span class="nb">Get-Process</span> <span class="p">|</span> <span class="nb">Where-Object</span> <span class="p">{</span><span class="nv">$_</span><span class="p">.</span><span class="n">CPU</span> <span class="o">-gt</span> <span class="n">50</span><span class="p">}</span>
-</code></pre></div>
+# Find processes
+Get-Process notepad
+Get-Process | Where-Object {$_.CPU -gt 50}
+</code></code></pre>
 
 <hr />
 <h2>System Info</h2>
-<div class="codehilite"><pre><span></span><code><span class="nb">Get-ComputerInfo</span>                    <span class="c"># detailed system info</span>
-<span class="n">systeminfo</span>                          <span class="c"># traditional system info</span>
-<span class="nb">Get-Process</span>                         <span class="c"># running processes</span>
-<span class="nb">Get-Service</span>                         <span class="c"># services</span>
-<span class="nb">Get-Service</span> <span class="p">|</span> <span class="nb">Where-Object</span> <span class="p">{</span><span class="nv">$_</span><span class="p">.</span><span class="n">Status</span> <span class="o">-eq</span> <span class="s2">&quot;Running&quot;</span><span class="p">}</span>
-<span class="nb">Get-EventLog</span> <span class="n">-LogName</span> <span class="n">System</span> <span class="n">-Newest</span> <span class="n">20</span>    <span class="c"># event log</span>
-</code></pre></div>
+<pre><code><code>Get-ComputerInfo                    # detailed system info
+systeminfo                          # traditional system info
+Get-Process                         # running processes
+Get-Service                         # services
+Get-Service | Where-Object {$_.Status -eq &quot;Running&quot;}
+Get-EventLog -LogName System -Newest 20    # event log
+</code></code></pre>
 
 <hr />
 <h2>Network</h2>
-<div class="codehilite"><pre><span></span><code><span class="n">ipconfig</span>                            <span class="c"># IP addresses</span>
-<span class="n">ipconfig</span> <span class="p">/</span><span class="n">all</span>                       <span class="c"># detailed</span>
-<span class="n">ipconfig</span> <span class="p">/</span><span class="n">flushdns</span>                  <span class="c"># flush DNS cache</span>
-<span class="nb">Test-NetConnection</span> <span class="n">google</span><span class="p">.</span><span class="n">com</span>       <span class="c"># ping + port test</span>
-<span class="nb">Test-NetConnection</span> <span class="n">google</span><span class="p">.</span><span class="n">com</span> <span class="n">-Port</span> <span class="n">443</span>   <span class="c"># test specific port</span>
-<span class="nb">Resolve-DnsName</span> <span class="n">google</span><span class="p">.</span><span class="n">com</span>          <span class="c"># DNS lookup</span>
-<span class="n">netstat</span> <span class="n">-an</span>                         <span class="c"># active connections</span>
-</code></pre></div>
+<pre><code><code>ipconfig                            # IP addresses
+ipconfig /all                       # detailed
+ipconfig /flushdns                  # flush DNS cache
+Test-NetConnection google.com       # ping + port test
+Test-NetConnection google.com -Port 443   # test specific port
+Resolve-DnsName google.com          # DNS lookup
+netstat -an                         # active connections
+</code></code></pre>
 
 <hr />
 <h2>Useful One-Liners</h2>
-<div class="codehilite"><pre><span></span><code><span class="c"># Restart</span>
-<span class="nb">Restart-Computer</span>
+<pre><code><code># Restart
+Restart-Computer
 
-<span class="c"># Shutdown</span>
-<span class="nb">Stop-Computer</span>
+# Shutdown
+Stop-Computer
 
-<span class="c"># Check Windows version</span>
-<span class="n">winver</span>
-<span class="no">[System.Environment]</span><span class="p">::</span><span class="n">OSVersion</span>
+# Check Windows version
+winver
+[System.Environment]::OSVersion
 
-<span class="c"># List installed software</span>
-<span class="nb">Get-Package</span>
-<span class="n">winget</span> <span class="n">list</span>
+# List installed software
+Get-Package
+winget list
 
-<span class="c"># Kill a process</span>
-<span class="nb">Stop-Process</span> <span class="n">-Name</span> <span class="n">notepad</span>
-<span class="nb">Stop-Process</span> <span class="n">-Id</span> <span class="n">1234</span>
+# Kill a process
+Stop-Process -Name notepad
+Stop-Process -Id 1234
 
-<span class="c"># Get clipboard contents</span>
-<span class="nb">Get-Clipboard</span>
+# Get clipboard contents
+Get-Clipboard
 
-<span class="c"># Set clipboard</span>
-<span class="s2">&quot;text to copy&quot;</span> <span class="p">|</span> <span class="nb">Set-Clipboard</span>
+# Set clipboard
+&quot;text to copy&quot; | Set-Clipboard
 
-<span class="c"># Run as another user</span>
-<span class="nb">Start-Process</span> <span class="n">powershell</span> <span class="n">-Credential</span> <span class="p">(</span><span class="nb">Get-Credential</span><span class="p">)</span>
-</code></pre></div>
+# Run as another user
+Start-Process powershell -Credential (Get-Credential)
+</code></code></pre>
 
 <hr />
 <h2>Pipelines</h2>
 <p>PowerShell pipes objects, not just text:</p>
-<div class="codehilite"><pre><span></span><code><span class="c"># Get top 5 processes by CPU</span>
-<span class="nb">Get-Process</span> <span class="p">|</span> <span class="nb">Sort-Object</span> <span class="n">CPU</span> <span class="n">-Descending</span> <span class="p">|</span> <span class="nb">Select-Object</span> <span class="n">-First</span> <span class="n">5</span>
+<pre><code><code># Get top 5 processes by CPU
+Get-Process | Sort-Object CPU -Descending | Select-Object -First 5
 
-<span class="c"># Export process list to CSV</span>
-<span class="nb">Get-Process</span> <span class="p">|</span> <span class="nb">Export-Csv</span> <span class="n">processes</span><span class="p">.</span><span class="n">csv</span>
+# Export process list to CSV
+Get-Process | Export-Csv processes.csv
 
-<span class="c"># Get services that are stopped</span>
-<span class="nb">Get-Service</span> <span class="p">|</span> <span class="nb">Where-Object</span> <span class="p">{</span><span class="nv">$_</span><span class="p">.</span><span class="n">Status</span> <span class="o">-eq</span> <span class="s2">&quot;Stopped&quot;</span><span class="p">}</span>
+# Get services that are stopped
+Get-Service | Where-Object {$_.Status -eq &quot;Stopped&quot;}
 
-<span class="c"># Count files in a folder</span>
-<span class="p">(</span><span class="nb">Get-ChildItem</span> <span class="o">-File</span><span class="p">).</span><span class="n">Count</span>
-</code></pre></div>
+# Count files in a folder
+(Get-ChildItem -File).Count
+</code></code></pre>
 
 <hr />
 <h2>Execution Policy (Fix "Cannot be loaded" Error)</h2>
-<div class="codehilite"><pre><span></span><code><span class="c"># Check current policy</span>
-<span class="nb">Get-ExecutionPolicy</span>
+<pre><code><code># Check current policy
+Get-ExecutionPolicy
 
-<span class="c"># Allow scripts (run as Admin)</span>
-<span class="nb">Set-ExecutionPolicy</span> <span class="n">RemoteSigned</span> <span class="n">-Scope</span> <span class="n">CurrentUser</span>
-</code></pre></div>
+# Allow scripts (run as Admin)
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+</code></code></pre>

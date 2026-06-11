@@ -32,18 +32,18 @@ DATA:installation:Install macOS Sequoia on VMware Workstation Pro (Windows):Inst
 <p>You need a genuine macOS Sequoia ISO. There are two ways to get one:</p>
 <h3>Option A — Using a Real Mac (Cleanest Method)</h3>
 <p>On a Mac, open Terminal and run:</p>
-<div class="codehilite"><pre><span></span><code>softwareupdate<span class="w"> </span>--fetch-full-installer<span class="w"> </span>--full-installer-version<span class="w"> </span><span class="m">15</span>.0
-</code></pre></div>
+<pre><code><code>softwareupdate --fetch-full-installer --full-installer-version 15.0
+</code></code></pre>
 
 <p>This downloads the full macOS Sequoia installer to <code>/Applications/</code>. Then convert it to an ISO:</p>
-<div class="codehilite"><pre><span></span><code>hdiutil<span class="w"> </span>create<span class="w"> </span>-o<span class="w"> </span>/tmp/Sequoia<span class="w"> </span>-size<span class="w"> </span>16384m<span class="w"> </span>-volname<span class="w"> </span><span class="s2">&quot;Install macOS Sequoia&quot;</span><span class="w"> </span>-layout<span class="w"> </span>SPUD<span class="w"> </span>-fs<span class="w"> </span>HFS+J
-hdiutil<span class="w"> </span>attach<span class="w"> </span>/tmp/Sequoia.dmg<span class="w"> </span>-noverify<span class="w"> </span>-mountpoint<span class="w"> </span>/Volumes/InstallMacOSSequoia
-sudo<span class="w"> </span>/Applications/Install<span class="se">\ </span>macOS<span class="se">\ </span>Sequoia.app/Contents/Resources/createinstallmedia<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--volume<span class="w"> </span>/Volumes/InstallMacOSSequoia<span class="w"> </span>--nointeraction
-hdiutil<span class="w"> </span>detach<span class="w"> </span>/Volumes/Install<span class="se">\ </span>macOS<span class="se">\ </span>Sequoia
-hdiutil<span class="w"> </span>convert<span class="w"> </span>/tmp/Sequoia.dmg<span class="w"> </span>-format<span class="w"> </span>UDTO<span class="w"> </span>-o<span class="w"> </span>~/Desktop/Sequoia
-mv<span class="w"> </span>~/Desktop/Sequoia.cdr<span class="w"> </span>~/Desktop/Sequoia.iso
-</code></pre></div>
+<pre><code><code>hdiutil create -o /tmp/Sequoia -size 16384m -volname &quot;Install macOS Sequoia&quot; -layout SPUD -fs HFS+J
+hdiutil attach /tmp/Sequoia.dmg -noverify -mountpoint /Volumes/InstallMacOSSequoia
+sudo /Applications/Install\ macOS\ Sequoia.app/Contents/Resources/createinstallmedia \
+  --volume /Volumes/InstallMacOSSequoia --nointeraction
+hdiutil detach /Volumes/Install\ macOS\ Sequoia
+hdiutil convert /tmp/Sequoia.dmg -format UDTO -o ~/Desktop/Sequoia
+mv ~/Desktop/Sequoia.cdr ~/Desktop/Sequoia.iso
+</code></code></pre>
 
 <p>Copy the <code>Sequoia.iso</code> from your Mac's Desktop to your Windows PC.</p>
 <h3>Option B — Using gibMacOS on Windows (No Mac Needed)</h3>
@@ -111,7 +111,7 @@ mv<span class="w"> </span>~/Desktop/Sequoia.cdr<span class="w"> </span>~/Desktop
 <li>Find the file ending in <code>.vmx</code> — right-click it and open with <strong>Notepad</strong> (or any text editor).</li>
 <li>Scroll to the very <strong>bottom</strong> of the file and add these lines:</li>
 </ol>
-<div class="codehilite"><pre><span></span><code>smc.version = &quot;0&quot;
+<pre><code><code>smc.version = &quot;0&quot;
 smc.present = &quot;TRUE&quot;
 board-id.reflectHost = &quot;TRUE&quot;
 hw.model = &quot;MacBookPro19,1&quot;
@@ -119,7 +119,7 @@ hw.model.reflectHost = &quot;FALSE&quot;
 serialNumber.reflectHost = &quot;FALSE&quot;
 usb.generic.allowHID = &quot;TRUE&quot;
 usb.generic.allowLastHID = &quot;TRUE&quot;
-</code></pre></div>
+</code></code></pre>
 
 <ol>
 <li>Save the file and close Notepad.</li>
@@ -212,19 +212,19 @@ usb.generic.allowLastHID = &quot;TRUE&quot;
 <li>Open the macOS <strong>Terminal</strong> (Applications → Utilities → Terminal).</li>
 <li>Run:</li>
 </ol>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>/Library/Application<span class="se">\ </span>Support/VMware<span class="se">\ </span>Tools/vmware-resolutionSet<span class="w"> </span><span class="m">1920</span><span class="w"> </span><span class="m">1080</span>
-</code></pre></div>
+<pre><code><code>sudo /Library/Application\ Support/VMware\ Tools/vmware-resolutionSet 1920 1080
+</code></code></pre>
 
 <p>Replace <code>1920 1080</code> with your actual monitor resolution. You can also try:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>/Library/Application<span class="se">\ </span>Support/VMware<span class="se">\ </span>Tools/vmware-resolutionSet<span class="w"> </span><span class="m">2560</span><span class="w"> </span><span class="m">1440</span>
-</code></pre></div>
+<pre><code><code>sudo /Library/Application\ Support/VMware\ Tools/vmware-resolutionSet 2560 1440
+</code></code></pre>
 
 <p>Log out and back into macOS — the resolution will apply.</p>
 <hr />
 <h2>AMD CPU — Extra Steps</h2>
 <p>macOS does not officially support AMD CPUs and requires an additional kernel patch to boot.</p>
 <p>After completing Step 6 (editing the VMX file), add this extra line:</p>
-<div class="codehilite"><pre><span></span><code>cpuid.0.eax = &quot;0000:0000:0000:0000:0000:0000:0000:1011&quot;
+<pre><code><code>cpuid.0.eax = &quot;0000:0000:0000:0000:0000:0000:0000:1011&quot;
 cpuid.0.ebx = &quot;0111:0101:0110:1110:0110:0101:0100:0111&quot;
 cpuid.0.ecx = &quot;0110:1100:0110:0101:0111:0100:0110:1110&quot;
 cpuid.0.edx = &quot;0100:1001:0110:0101:0110:1110:0110:1001&quot;
@@ -232,7 +232,7 @@ cpuid.1.eax = &quot;0000:0000:0000:0001:0000:0110:0111:0001&quot;
 cpuid.1.ebx = &quot;0000:0010:0000:0001:0000:1000:0000:0000&quot;
 cpuid.1.ecx = &quot;1000:0010:1001:1000:0010:0010:0000:0011&quot;
 cpuid.1.edx = &quot;0000:1111:1010:1011:1111:1011:1111:1111&quot;
-</code></pre></div>
+</code></code></pre>
 
 <p>This makes macOS think it is running on an Intel CPU. Stability varies by AMD CPU generation — Ryzen 5000 series and newer generally work well.</p>
 <hr />

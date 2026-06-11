@@ -2,24 +2,24 @@ DATA:macos:Compress and Extract Files (zip, tar, gz) on macOS and Linux:macOS
 <h1>Compress and Extract Files (zip, tar, gz) on macOS and Linux</h1>
 <hr />
 <h2>zip and unzip</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Create a zip</span>
-zip<span class="w"> </span>archive.zip<span class="w"> </span>file1.txt<span class="w"> </span>file2.txt
+<pre><code><code># Create a zip
+zip archive.zip file1.txt file2.txt
 
-<span class="c1"># Zip an entire folder</span>
-zip<span class="w"> </span>-r<span class="w"> </span>archive.zip<span class="w"> </span>myfolder/
+# Zip an entire folder
+zip -r archive.zip myfolder/
 
-<span class="c1"># Extract a zip</span>
-unzip<span class="w"> </span>archive.zip
+# Extract a zip
+unzip archive.zip
 
-<span class="c1"># Extract to a specific folder</span>
-unzip<span class="w"> </span>archive.zip<span class="w"> </span>-d<span class="w"> </span>/path/to/destination/
+# Extract to a specific folder
+unzip archive.zip -d /path/to/destination/
 
-<span class="c1"># List contents without extracting</span>
-unzip<span class="w"> </span>-l<span class="w"> </span>archive.zip
+# List contents without extracting
+unzip -l archive.zip
 
-<span class="c1"># Extract a single file from a zip</span>
-unzip<span class="w"> </span>archive.zip<span class="w"> </span>specificfile.txt
-</code></pre></div>
+# Extract a single file from a zip
+unzip archive.zip specificfile.txt
+</code></code></pre>
 
 <hr />
 <h2>tar — the confusing one</h2>
@@ -66,64 +66,64 @@ unzip<span class="w"> </span>archive.zip<span class="w"> </span>specificfile.txt
 </tr>
 </tbody>
 </table>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Create a .tar.gz (most common)</span>
-tar<span class="w"> </span>-czf<span class="w"> </span>archive.tar.gz<span class="w"> </span>myfolder/
+<pre><code><code># Create a .tar.gz (most common)
+tar -czf archive.tar.gz myfolder/
 
-<span class="c1"># Extract a .tar.gz</span>
-tar<span class="w"> </span>-xzf<span class="w"> </span>archive.tar.gz
+# Extract a .tar.gz
+tar -xzf archive.tar.gz
 
-<span class="c1"># Extract to a specific folder</span>
-tar<span class="w"> </span>-xzf<span class="w"> </span>archive.tar.gz<span class="w"> </span>-C<span class="w"> </span>/path/to/destination/
+# Extract to a specific folder
+tar -xzf archive.tar.gz -C /path/to/destination/
 
-<span class="c1"># List contents without extracting</span>
-tar<span class="w"> </span>-tzf<span class="w"> </span>archive.tar.gz
+# List contents without extracting
+tar -tzf archive.tar.gz
 
-<span class="c1"># Create .tar.bz2 (smaller, slower)</span>
-tar<span class="w"> </span>-cjf<span class="w"> </span>archive.tar.bz2<span class="w"> </span>myfolder/
+# Create .tar.bz2 (smaller, slower)
+tar -cjf archive.tar.bz2 myfolder/
 
-<span class="c1"># Extract .tar.bz2</span>
-tar<span class="w"> </span>-xjf<span class="w"> </span>archive.tar.bz2
+# Extract .tar.bz2
+tar -xjf archive.tar.bz2
 
-<span class="c1"># Create uncompressed tar</span>
-tar<span class="w"> </span>-cf<span class="w"> </span>archive.tar<span class="w"> </span>myfolder/
+# Create uncompressed tar
+tar -cf archive.tar myfolder/
 
-<span class="c1"># Extract uncompressed tar</span>
-tar<span class="w"> </span>-xf<span class="w"> </span>archive.tar
-</code></pre></div>
+# Extract uncompressed tar
+tar -xf archive.tar
+</code></code></pre>
 
 <blockquote>
 <p><strong>Memory trick:</strong> <code>czf</code> = <strong>C</strong>reate <strong>Z</strong>ipped <strong>F</strong>ile. <code>xzf</code> = e<strong>X</strong>tract <strong>Z</strong>ipped <strong>F</strong>ile.</p>
 </blockquote>
 <hr />
 <h2>gz files (single file, not a folder)</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Compress a single file</span>
-gzip<span class="w"> </span>file.txt<span class="w">        </span><span class="c1"># creates file.txt.gz, removes original</span>
+<pre><code><code># Compress a single file
+gzip file.txt        # creates file.txt.gz, removes original
 
-<span class="c1"># Keep the original</span>
-gzip<span class="w"> </span>-k<span class="w"> </span>file.txt
+# Keep the original
+gzip -k file.txt
 
-<span class="c1"># Decompress</span>
-gunzip<span class="w"> </span>file.txt.gz
+# Decompress
+gunzip file.txt.gz
 
-<span class="c1"># Or</span>
-gzip<span class="w"> </span>-d<span class="w"> </span>file.txt.gz
-</code></pre></div>
+# Or
+gzip -d file.txt.gz
+</code></code></pre>
 
 <hr />
 <h2>7z (if installed)</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Install</span>
-sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>p7zip-full<span class="w"> </span>-y<span class="w">   </span><span class="c1"># Ubuntu/Debian</span>
-brew<span class="w"> </span>install<span class="w"> </span>p7zip<span class="w">               </span><span class="c1"># macOS</span>
+<pre><code><code># Install
+sudo apt install p7zip-full -y   # Ubuntu/Debian
+brew install p7zip               # macOS
 
-<span class="c1"># Create</span>
-7z<span class="w"> </span>a<span class="w"> </span>archive.7z<span class="w"> </span>myfolder/
+# Create
+7z a archive.7z myfolder/
 
-<span class="c1"># Extract</span>
-7z<span class="w"> </span>x<span class="w"> </span>archive.7z
+# Extract
+7z x archive.7z
 
-<span class="c1"># Extract to folder</span>
-7z<span class="w"> </span>x<span class="w"> </span>archive.7z<span class="w"> </span>-o/path/to/destination/
-</code></pre></div>
+# Extract to folder
+7z x archive.7z -o/path/to/destination/
+</code></code></pre>
 
 <hr />
 <h2>Quick reference</h2>

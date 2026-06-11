@@ -37,13 +37,13 @@ DATA:package-managers:Fix curl Errors After Reinstalling Homebrew:Package Manage
 <h2>Step 3 — Fix Homebrew if curl Issues Persist</h2>
 <p>If the steps above did not resolve the problem, the issue may be with Homebrew itself.</p>
 <h3>Navigate to the Homebrew bin directory</h3>
-<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>/usr/local/Homebrew/bin/
-</code></pre></div>
+<pre><code><code>cd /usr/local/Homebrew/bin/
+</code></code></pre>
 
 <h3>Update and restore Homebrew</h3>
-<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>update-reset<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>brew<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>brew<span class="w"> </span>bundle
-<span class="c1"># Run brew bundle from the directory where your Brewfile is saved</span>
-</code></pre></div>
+<pre><code><code>brew update-reset &amp;&amp; brew update &amp;&amp; brew bundle
+# Run brew bundle from the directory where your Brewfile is saved
+</code></code></pre>
 
 <hr />
 <h2>Common Errors and Fixes</h2>
@@ -53,10 +53,10 @@ DATA:package-managers:Fix curl Errors After Reinstalling Homebrew:Package Manage
 <p><em>Your HOMEBREW_PREFIX is set to /usr/local but HOMEBREW_CELLAR is set to /usr/local/Homebrew/Cellar...</em></p>
 </blockquote>
 <p>Run:</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="nv">$HOMEBREW_CELLAR</span>
-sudo<span class="w"> </span>mv<span class="w"> </span>/usr/local/Homebrew/Cellar<span class="w"> </span>/usr/local/Cellar
-brew<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>brew<span class="w"> </span>doctor
-</code></pre></div>
+<pre><code><code>echo $HOMEBREW_CELLAR
+sudo mv /usr/local/Homebrew/Cellar /usr/local/Cellar
+brew update &amp;&amp; brew doctor
+</code></code></pre>
 
 <hr />
 <h3>Symlink error — directory not writable</h3>
@@ -65,17 +65,17 @@ brew<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&
 <p><em>Error: Could not symlink /usr/local/share/PACKAGE_NAME — not writable</em></p>
 </blockquote>
 <p>Run (replacing <code>PACKAGE_NAME</code> with the actual package name from the error):</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span>/usr/local/share/PACKAGE_NAME
-brew<span class="w"> </span>link<span class="w"> </span>PACKAGE_NAME
-brew<span class="w"> </span>bundle
-<span class="c1"># Run brew bundle from the directory where your Brewfile is saved</span>
-</code></pre></div>
+<pre><code><code>sudo chown -R $(whoami) /usr/local/share/PACKAGE_NAME
+brew link PACKAGE_NAME
+brew bundle
+# Run brew bundle from the directory where your Brewfile is saved
+</code></code></pre>
 
 <hr />
 <h2>Reinstall Homebrew from Scratch</h2>
 <p>If nothing above works, do a clean reinstall of Homebrew:</p>
-<div class="codehilite"><pre><span></span><code>/bin/bash<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://raw.githubusercontent.com/Homebrew/install/master/install.sh<span class="k">)</span><span class="s2">&quot;</span>
-</code></pre></div>
+<pre><code><code>/bin/bash -c &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)&quot;
+</code></code></pre>
 
 <hr />
 <p>🎉 <strong>Done!</strong> Your Homebrew installation should now be working correctly.</p>

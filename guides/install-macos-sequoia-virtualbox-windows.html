@@ -72,8 +72,8 @@ DATA:installation:Install macOS Sequoia on VirtualBox (Windows):Installation Gui
 <li>Restart Windows.</li>
 </ol>
 <p>To re-enable Hyper-V later if needed:</p>
-<div class="codehilite"><pre><span></span><code><span class="nx">bcdedit</span><span class="w"> </span><span class="o">/</span><span class="nx">set</span><span class="w"> </span><span class="nx">hypervisorlaunchtype</span><span class="w"> </span><span class="kt">auto</span>
-</code></pre></div>
+<pre><code><code>bcdedit /set hypervisorlaunchtype auto
+</code></code></pre>
 
 <blockquote>
 <p><strong>Note:</strong> If you use WSL 2, Docker Desktop, or Windows Sandbox, disabling Hyper-V will break them. You will need to re-enable it after you are done with the macOS VM, or use VMware instead (which has better Hyper-V coexistence).</p>
@@ -83,23 +83,23 @@ DATA:installation:Install macOS Sequoia on VirtualBox (Windows):Installation Gui
 <p>You need a genuine macOS Sequoia ISO. Do not download pre-built ISOs or VMDKs from random sites — they are often outdated, pirated, or contain malware.</p>
 <h3>Option A — Using a Real Mac (Recommended)</h3>
 <p>On a Mac running macOS Ventura or later, open Terminal and run:</p>
-<div class="codehilite"><pre><span></span><code>softwareupdate<span class="w"> </span>--fetch-full-installer<span class="w"> </span>--full-installer-version<span class="w"> </span><span class="m">15</span>.0
-</code></pre></div>
+<pre><code><code>softwareupdate --fetch-full-installer --full-installer-version 15.0
+</code></code></pre>
 
 <p>Wait for it to download (about 13 GB). Then convert it to ISO:</p>
-<div class="codehilite"><pre><span></span><code>hdiutil<span class="w"> </span>create<span class="w"> </span>-o<span class="w"> </span>/tmp/Sequoia<span class="w"> </span>-size<span class="w"> </span>16384m<span class="w"> </span>-volname<span class="w"> </span><span class="s2">&quot;Install macOS Sequoia&quot;</span><span class="w"> </span>-layout<span class="w"> </span>SPUD<span class="w"> </span>-fs<span class="w"> </span>HFS+J
+<pre><code><code>hdiutil create -o /tmp/Sequoia -size 16384m -volname &quot;Install macOS Sequoia&quot; -layout SPUD -fs HFS+J
 
-hdiutil<span class="w"> </span>attach<span class="w"> </span>/tmp/Sequoia.dmg<span class="w"> </span>-noverify<span class="w"> </span>-mountpoint<span class="w"> </span>/Volumes/InstallMacOSSequoia
+hdiutil attach /tmp/Sequoia.dmg -noverify -mountpoint /Volumes/InstallMacOSSequoia
 
-sudo<span class="w"> </span>/Applications/Install<span class="se">\ </span>macOS<span class="se">\ </span>Sequoia.app/Contents/Resources/createinstallmedia<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--volume<span class="w"> </span>/Volumes/InstallMacOSSequoia<span class="w"> </span>--nointeraction
+sudo /Applications/Install\ macOS\ Sequoia.app/Contents/Resources/createinstallmedia \
+  --volume /Volumes/InstallMacOSSequoia --nointeraction
 
-hdiutil<span class="w"> </span>detach<span class="w"> </span>/Volumes/Install<span class="se">\ </span>macOS<span class="se">\ </span>Sequoia
+hdiutil detach /Volumes/Install\ macOS\ Sequoia
 
-hdiutil<span class="w"> </span>convert<span class="w"> </span>/tmp/Sequoia.dmg<span class="w"> </span>-format<span class="w"> </span>UDTO<span class="w"> </span>-o<span class="w"> </span>~/Desktop/Sequoia
+hdiutil convert /tmp/Sequoia.dmg -format UDTO -o ~/Desktop/Sequoia
 
-mv<span class="w"> </span>~/Desktop/Sequoia.cdr<span class="w"> </span>~/Desktop/Sequoia.iso
-</code></pre></div>
+mv ~/Desktop/Sequoia.cdr ~/Desktop/Sequoia.iso
+</code></code></pre>
 
 <p>Copy <code>Sequoia.iso</code> to your Windows PC.</p>
 <h3>Option B — Using gibMacOS on Windows (No Mac Needed)</h3>
@@ -183,7 +183,7 @@ mv<span class="w"> </span>~/Desktop/Sequoia.cdr<span class="w"> </span>~/Desktop
 <p>This is the step every outdated guide either skips or gets wrong. Without these commands macOS will not boot. These must be run <strong>while the VM is powered off</strong>.</p>
 <p>Open <strong>Command Prompt as Administrator</strong>.</p>
 <h3>For Intel CPUs — run all of these:</h3>
-<div class="codehilite"><pre><span></span><code>cd &quot;C:\Program Files\Oracle\VirtualBox\&quot;
+<pre><code><code>cd &quot;C:\Program Files\Oracle\VirtualBox\&quot;
 
 VBoxManage.exe modifyvm &quot;macOS Sequoia&quot; --cpuidset 00000001 000106e5 00100800 0098e3fd bfebfbff
 
@@ -198,11 +198,11 @@ VBoxManage setextradata &quot;macOS Sequoia&quot; &quot;VBoxInternal/Devices/smc
 VBoxManage setextradata &quot;macOS Sequoia&quot; &quot;VBoxInternal/Devices/smc/0/Config/GetKeyFromRealSMC&quot; 1
 
 VBoxManage setextradata &quot;macOS Sequoia&quot; &quot;VBoxInternal/TM/TSCMode&quot; &quot;RealTSCOffset&quot;
-</code></pre></div>
+</code></code></pre>
 
 <h3>For AMD CPUs — run all of the above, then also run this:</h3>
-<div class="codehilite"><pre><span></span><code>VBoxManage modifyvm &quot;macOS Sequoia&quot; --cpu-profile &quot;Intel Core i7-6700K&quot;
-</code></pre></div>
+<pre><code><code>VBoxManage modifyvm &quot;macOS Sequoia&quot; --cpu-profile &quot;Intel Core i7-6700K&quot;
+</code></code></pre>
 
 <blockquote>
 <p><strong>AMD note:</strong> The CPU profile line is essential on AMD — without it macOS kernel panics immediately. If <code>Intel Core i7-6700K</code> does not work for your specific AMD chip, try <code>Intel Xeon X5482 3.20GHz</code> as an alternative. Also change <code>GetKeyFromRealSMC</code> from <code>1</code> to <code>0</code> on AMD systems:
@@ -292,19 +292,19 @@ VBoxManage setextradata "macOS Sequoia" "VBoxInternal/TM/TSCMode" "RealTSCOffset
 <h2>Step 8 — Fix Screen Resolution</h2>
 <p>VirtualBox does not auto-resize macOS like VMware does. Set your resolution manually.</p>
 <p>Power off the VM first, then open <strong>Command Prompt as Administrator</strong> and run:</p>
-<div class="codehilite"><pre><span></span><code>cd &quot;C:\Program Files\Oracle\VirtualBox\&quot;
+<pre><code><code>cd &quot;C:\Program Files\Oracle\VirtualBox\&quot;
 
 VBoxManage setextradata &quot;macOS Sequoia&quot; VBoxInternal2/EfiGraphicsResolution 1920x1080
-</code></pre></div>
+</code></code></pre>
 
 <p>Replace <code>1920x1080</code> with your actual monitor resolution. Other options:</p>
-<div class="codehilite"><pre><span></span><code><span class="mf">1280</span><span class="n">x720</span>
-<span class="mf">1280</span><span class="n">x800</span>
-<span class="mf">1440</span><span class="n">x900</span>
-<span class="mf">1600</span><span class="n">x900</span>
-<span class="mf">1920</span><span class="n">x1080</span>
-<span class="mf">2560</span><span class="n">x1440</span>
-</code></pre></div>
+<pre><code><code>1280x720
+1280x800
+1440x900
+1600x900
+1920x1080
+2560x1440
+</code></code></pre>
 
 <p>Start the VM again — macOS will boot at the resolution you set.</p>
 <hr />
@@ -329,14 +329,14 @@ VBoxManage setextradata &quot;macOS Sequoia&quot; VBoxInternal2/EfiGraphicsResol
 <p>Power off. Run the <code>TSCMode RealTSCOffset</code> command if you have not already. Also try reducing CPU count to <strong>1</strong> in Settings → System → Processor (speeds up install significantly).</p>
 <h3>Boot loops during installation</h3>
 <p>This is the TSCMode issue. Power off, run:</p>
-<div class="codehilite"><pre><span></span><code>VBoxManage setextradata &quot;macOS Sequoia&quot; &quot;VBoxInternal/TM/TSCMode&quot; &quot;RealTSCOffset&quot;
-</code></pre></div>
+<pre><code><code>VBoxManage setextradata &quot;macOS Sequoia&quot; &quot;VBoxInternal/TM/TSCMode&quot; &quot;RealTSCOffset&quot;
+</code></code></pre>
 
 <p>Then start the VM and select <strong>Continue</strong> from the installer menu.</p>
 <h3><code>VERR_INVALID_HANDLE</code> SMC error</h3>
 <p>You are on an AMD CPU but used <code>GetKeyFromRealSMC</code> value <code>1</code>. Change it to <code>0</code>:</p>
-<div class="codehilite"><pre><span></span><code>VBoxManage setextradata &quot;macOS Sequoia&quot; &quot;VBoxInternal/Devices/smc/0/Config/GetKeyFromRealSMC&quot; 0
-</code></pre></div>
+<pre><code><code>VBoxManage setextradata &quot;macOS Sequoia&quot; &quot;VBoxInternal/Devices/smc/0/Config/GetKeyFromRealSMC&quot; 0
+</code></code></pre>
 
 <h3>No internet in macOS</h3>
 <p>Go to VM <strong>Settings</strong> → <strong>Network</strong> → confirm <strong>Adapter 1</strong> is set to <strong>NAT</strong> and is enabled.</p>

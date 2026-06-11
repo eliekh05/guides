@@ -83,83 +83,83 @@ DATA:linux:Linux Log Files — Where They Are and What They Mean:Linux
 </table>
 <hr />
 <h2>Reading Logs</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># View a log file</span>
-cat<span class="w"> </span>/var/log/syslog
-less<span class="w"> </span>/var/log/syslog<span class="w">        </span><span class="c1"># scrollable view, press q to quit</span>
+<pre><code><code># View a log file
+cat /var/log/syslog
+less /var/log/syslog        # scrollable view, press q to quit
 
-<span class="c1"># Show last 50 lines</span>
-tail<span class="w"> </span>-50<span class="w"> </span>/var/log/syslog
+# Show last 50 lines
+tail -50 /var/log/syslog
 
-<span class="c1"># Follow a log in real time</span>
-tail<span class="w"> </span>-f<span class="w"> </span>/var/log/nginx/error.log
+# Follow a log in real time
+tail -f /var/log/nginx/error.log
 
-<span class="c1"># Follow multiple logs at once</span>
-tail<span class="w"> </span>-f<span class="w"> </span>/var/log/nginx/error.log<span class="w"> </span>/var/log/auth.log
+# Follow multiple logs at once
+tail -f /var/log/nginx/error.log /var/log/auth.log
 
-<span class="c1"># Search for errors</span>
-grep<span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="w"> </span>/var/log/syslog
-grep<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;failed&quot;</span><span class="w"> </span>/var/log/auth.log
+# Search for errors
+grep &quot;error&quot; /var/log/syslog
+grep -i &quot;failed&quot; /var/log/auth.log
 
-<span class="c1"># Show entries from last hour</span>
-journalctl<span class="w"> </span>--since<span class="w"> </span><span class="s2">&quot;1 hour ago&quot;</span>
-</code></pre></div>
+# Show entries from last hour
+journalctl --since &quot;1 hour ago&quot;
+</code></code></pre>
 
 <hr />
 <h2>journalctl — systemd Journal (Modern Systems)</h2>
 <p>Most modern distributions use systemd's journal instead of or alongside traditional log files:</p>
-<div class="codehilite"><pre><span></span><code>journalctl<span class="w">                              </span><span class="c1"># all logs</span>
-journalctl<span class="w"> </span>-f<span class="w">                           </span><span class="c1"># follow in real time</span>
-journalctl<span class="w"> </span>-n<span class="w"> </span><span class="m">100</span><span class="w">                       </span><span class="c1"># last 100 lines</span>
-journalctl<span class="w"> </span>-p<span class="w"> </span>err<span class="w">                       </span><span class="c1"># errors only</span>
-journalctl<span class="w"> </span>-p<span class="w"> </span>err<span class="w"> </span>-b<span class="w">                    </span><span class="c1"># errors from current boot</span>
-journalctl<span class="w"> </span>-u<span class="w"> </span>nginx<span class="w">                     </span><span class="c1"># logs for nginx service only</span>
-journalctl<span class="w"> </span>-u<span class="w"> </span>nginx<span class="w"> </span>-f<span class="w">                  </span><span class="c1"># follow nginx logs</span>
-journalctl<span class="w"> </span>--since<span class="w"> </span><span class="s2">&quot;2026-05-01&quot;</span>
-journalctl<span class="w"> </span>--since<span class="w"> </span>yesterday
-journalctl<span class="w"> </span>--disk-usage<span class="w">                 </span><span class="c1"># how much space logs use</span>
-</code></pre></div>
+<pre><code><code>journalctl                              # all logs
+journalctl -f                           # follow in real time
+journalctl -n 100                       # last 100 lines
+journalctl -p err                       # errors only
+journalctl -p err -b                    # errors from current boot
+journalctl -u nginx                     # logs for nginx service only
+journalctl -u nginx -f                  # follow nginx logs
+journalctl --since &quot;2026-05-01&quot;
+journalctl --since yesterday
+journalctl --disk-usage                 # how much space logs use
+</code></code></pre>
 
 <hr />
 <h2>Check Recent Failed Logins</h2>
-<div class="codehilite"><pre><span></span><code>lastb<span class="w">                           </span><span class="c1"># failed login attempts</span>
-last<span class="w">                            </span><span class="c1"># successful logins</span>
-last<span class="w"> </span>-a<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20<span class="w">              </span><span class="c1"># recent logins with hostname</span>
-</code></pre></div>
+<pre><code><code>lastb                           # failed login attempts
+last                            # successful logins
+last -a | head -20              # recent logins with hostname
+</code></code></pre>
 
 <hr />
 <h2>Clear Old Logs</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Clear journal logs older than 30 days</span>
-sudo<span class="w"> </span>journalctl<span class="w"> </span>--vacuum-time<span class="o">=</span>30d
+<pre><code><code># Clear journal logs older than 30 days
+sudo journalctl --vacuum-time=30d
 
-<span class="c1"># Keep only last 500MB of journal</span>
-sudo<span class="w"> </span>journalctl<span class="w"> </span>--vacuum-size<span class="o">=</span>500M
+# Keep only last 500MB of journal
+sudo journalctl --vacuum-size=500M
 
-<span class="c1"># Rotate and compress log files</span>
-sudo<span class="w"> </span>logrotate<span class="w"> </span>-f<span class="w"> </span>/etc/logrotate.conf
-</code></pre></div>
+# Rotate and compress log files
+sudo logrotate -f /etc/logrotate.conf
+</code></code></pre>
 
 <hr />
 <h2>logrotate — Automatic Log Rotation</h2>
 <p>Configuration files in <code>/etc/logrotate.d/</code>. Example for a custom app:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/logrotate.d/myapp
-</code></pre></div>
+<pre><code><code>sudo nano /etc/logrotate.d/myapp
+</code></code></pre>
 
-<div class="codehilite"><pre><span></span><code><span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="nb">log</span><span class="o">/</span><span class="n">myapp</span><span class="o">/*.</span><span class="n">log</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">daily</span>
-<span class="w">    </span><span class="n">rotate</span><span class="w"> </span><span class="mi">14</span>
-<span class="w">    </span><span class="n">compress</span>
-<span class="w">    </span><span class="n">delaycompress</span>
-<span class="w">    </span><span class="n">missingok</span>
-<span class="w">    </span><span class="n">notifempty</span>
-<span class="w">    </span><span class="n">create</span><span class="w"> </span><span class="mi">644</span><span class="w"> </span><span class="n">myuser</span><span class="w"> </span><span class="n">mygroup</span>
-<span class="p">}</span>
-</code></pre></div>
+<pre><code><code>/var/log/myapp/*.log {
+    daily
+    rotate 14
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 644 myuser mygroup
+}
+</code></code></pre>
 
 <hr />
 <h2>Monitor Logs for Keywords</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Alert when &quot;critical&quot; appears in syslog</span>
-tail<span class="w"> </span>-f<span class="w"> </span>/var/log/syslog<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>--line-buffered<span class="w"> </span><span class="s2">&quot;critical&quot;</span>
+<pre><code><code># Alert when &quot;critical&quot; appears in syslog
+tail -f /var/log/syslog | grep --line-buffered &quot;critical&quot;
 
-<span class="c1"># Log all SSH failures to a separate file</span>
-grep<span class="w"> </span><span class="s2">&quot;Failed password&quot;</span><span class="w"> </span>/var/log/auth.log<span class="w"> </span>&gt;&gt;<span class="w"> </span>/root/ssh-failures.log
-</code></pre></div>
+# Log all SSH failures to a separate file
+grep &quot;Failed password&quot; /var/log/auth.log &gt;&gt; /root/ssh-failures.log
+</code></code></pre>

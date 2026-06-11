@@ -5,9 +5,9 @@ DATA:package-managers:Nix Package Manager — Complete Beginner Guide:Package Ma
 <hr />
 <h2>What Makes Nix Different</h2>
 <p>Every other package manager installs packages into shared system directories (<code>/usr/bin</code>, <code>/usr/lib</code>). Nix installs each package into its own unique directory like:</p>
-<div class="codehilite"><pre><span></span><code>/nix/store/abc123def456-firefox-126.0/
+<pre><code><code>/nix/store/abc123def456-firefox-126.0/
 /nix/store/xyz789ghi012-nodejs-20.11.0/
-</code></pre></div>
+</code></code></pre>
 
 <p>The hash in the folder name is computed from every input that went into building the package — its source, dependencies, build flags, everything. This means:</p>
 <ul>
@@ -19,20 +19,20 @@ DATA:package-managers:Nix Package Manager — Complete Beginner Guide:Package Ma
 <hr />
 <h2>Install Nix</h2>
 <p><strong>Recommended — Determinate Systems installer (enables flakes by default):</strong></p>
-<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>--proto<span class="w"> </span><span class="s1">&#39;=https&#39;</span><span class="w"> </span>--tlsv1.2<span class="w"> </span>-sSf<span class="w"> </span>-L<span class="w"> </span>https://install.determinate.systems/nix<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh<span class="w"> </span>-s<span class="w"> </span>--<span class="w"> </span>install
-</code></pre></div>
+<pre><code><code>curl --proto &#39;=https&#39; --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+</code></code></pre>
 
 <p><strong>Official installer:</strong></p>
-<div class="codehilite"><pre><span></span><code>sh<span class="w"> </span>&lt;<span class="o">(</span>curl<span class="w"> </span>-L<span class="w"> </span>https://nixos.org/nix/install<span class="o">)</span><span class="w"> </span>
-</code></pre></div>
+<pre><code><code>sh &lt;(curl -L https://nixos.org/nix/install) 
+</code></code></pre>
 
 <p>After installation, close and reopen your terminal (or source the profile):</p>
-<div class="codehilite"><pre><span></span><code><span class="nb">source</span><span class="w"> </span>/etc/profile
-</code></pre></div>
+<pre><code><code>source /etc/profile
+</code></code></pre>
 
 <p>Verify:</p>
-<div class="codehilite"><pre><span></span><code>nix<span class="w"> </span>--version
-</code></pre></div>
+<pre><code><code>nix --version
+</code></code></pre>
 
 <hr />
 <h2>Two CLIs — Old and New</h2>
@@ -80,101 +80,101 @@ DATA:package-managers:Nix Package Manager — Complete Beginner Guide:Package Ma
 </table>
 <p>The new CLI requires flakes to be enabled. Both work fine — use whichever you see in guides you are following.</p>
 <h3>Enable flakes (if not using Determinate installer)</h3>
-<div class="codehilite"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>~/.config/nix
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;experimental-features = nix-command flakes&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.config/nix/nix.conf
-</code></pre></div>
+<pre><code><code>mkdir -p ~/.config/nix
+echo &quot;experimental-features = nix-command flakes&quot; &gt;&gt; ~/.config/nix/nix.conf
+</code></code></pre>
 
 <hr />
 <h2>Finding Packages</h2>
 <p>Search at <a href="https://search.nixos.org">search.nixos.org</a> — select the channel you are using (usually <code>nixpkgs</code> or <code>unstable</code>).</p>
 <p>Or search from the command line:</p>
-<div class="codehilite"><pre><span></span><code>nix<span class="w"> </span>search<span class="w"> </span>nixpkgs<span class="w"> </span>firefox
-</code></pre></div>
+<pre><code><code>nix search nixpkgs firefox
+</code></code></pre>
 
 <p>Packages are referenced by their <strong>attribute path</strong> — usually <code>nixpkgs#packagename</code> or <code>nixpkgs.packagename</code>.</p>
 <hr />
 <h2>Installing Packages Permanently</h2>
 <h3>New CLI (recommended with flakes)</h3>
-<div class="codehilite"><pre><span></span><code>nix<span class="w"> </span>profile<span class="w"> </span>install<span class="w"> </span>nixpkgs#firefox
-nix<span class="w"> </span>profile<span class="w"> </span>install<span class="w"> </span>nixpkgs#git<span class="w"> </span>nixpkgs#vim<span class="w"> </span>nixpkgs#curl
-</code></pre></div>
+<pre><code><code>nix profile install nixpkgs#firefox
+nix profile install nixpkgs#git nixpkgs#vim nixpkgs#curl
+</code></code></pre>
 
 <h3>Old CLI</h3>
-<div class="codehilite"><pre><span></span><code>nix-env<span class="w"> </span>-iA<span class="w"> </span>nixpkgs.firefox
-</code></pre></div>
+<pre><code><code>nix-env -iA nixpkgs.firefox
+</code></code></pre>
 
 <hr />
 <h2>Trying a Package Without Installing It</h2>
 <p>This is one of Nix's killer features — spin up a temporary shell with any package available, then exit and it's gone:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># New CLI</span>
-nix<span class="w"> </span>shell<span class="w"> </span>nixpkgs#cowsay
-cowsay<span class="w"> </span><span class="s2">&quot;Hello from Nix&quot;</span>
-<span class="nb">exit</span><span class="w">   </span><span class="c1"># cowsay is gone</span>
+<pre><code><code># New CLI
+nix shell nixpkgs#cowsay
+cowsay &quot;Hello from Nix&quot;
+exit   # cowsay is gone
 
-<span class="c1"># Old CLI</span>
-nix-shell<span class="w"> </span>-p<span class="w"> </span>cowsay
-</code></pre></div>
+# Old CLI
+nix-shell -p cowsay
+</code></code></pre>
 
 <p>You can combine multiple packages:</p>
-<div class="codehilite"><pre><span></span><code>nix<span class="w"> </span>shell<span class="w"> </span>nixpkgs#python3<span class="w"> </span>nixpkgs#nodejs<span class="w"> </span>nixpkgs#git
-</code></pre></div>
+<pre><code><code>nix shell nixpkgs#python3 nixpkgs#nodejs nixpkgs#git
+</code></code></pre>
 
 <p>This is perfect for trying something out before committing to an install.</p>
 <hr />
 <h2>Running a Package Once Without Installing</h2>
-<div class="codehilite"><pre><span></span><code>nix<span class="w"> </span>run<span class="w"> </span>nixpkgs#cowsay<span class="w"> </span>--<span class="w"> </span><span class="s2">&quot;Hello&quot;</span>
-</code></pre></div>
+<pre><code><code>nix run nixpkgs#cowsay -- &quot;Hello&quot;
+</code></code></pre>
 
 <p>The package runs once and is not added to your profile.</p>
 <hr />
 <h2>Upgrading Packages</h2>
 <h3>New CLI</h3>
-<div class="codehilite"><pre><span></span><code>nix<span class="w"> </span>profile<span class="w"> </span>upgrade<span class="w"> </span><span class="s1">&#39;.*&#39;</span><span class="w">          </span><span class="c1"># Upgrade everything</span>
-nix<span class="w"> </span>profile<span class="w"> </span>upgrade<span class="w"> </span>firefox<span class="w">       </span><span class="c1"># Upgrade specific package</span>
-</code></pre></div>
+<pre><code><code>nix profile upgrade &#39;.*&#39;          # Upgrade everything
+nix profile upgrade firefox       # Upgrade specific package
+</code></code></pre>
 
 <h3>Old CLI</h3>
-<div class="codehilite"><pre><span></span><code>nix-env<span class="w"> </span>-u<span class="w">                        </span><span class="c1"># Upgrade everything</span>
-nix-env<span class="w"> </span>-u<span class="w"> </span>firefox<span class="w">                </span><span class="c1"># Upgrade specific package</span>
-</code></pre></div>
+<pre><code><code>nix-env -u                        # Upgrade everything
+nix-env -u firefox                # Upgrade specific package
+</code></code></pre>
 
 <hr />
 <h2>Removing Packages</h2>
 <h3>New CLI</h3>
-<div class="codehilite"><pre><span></span><code>nix<span class="w"> </span>profile<span class="w"> </span>list<span class="w">                  </span><span class="c1"># Get the index number or name</span>
-nix<span class="w"> </span>profile<span class="w"> </span>remove<span class="w"> </span>firefox
-</code></pre></div>
+<pre><code><code>nix profile list                  # Get the index number or name
+nix profile remove firefox
+</code></code></pre>
 
 <h3>Old CLI</h3>
-<div class="codehilite"><pre><span></span><code>nix-env<span class="w"> </span>-e<span class="w"> </span>firefox
-</code></pre></div>
+<pre><code><code>nix-env -e firefox
+</code></code></pre>
 
 <hr />
 <h2>Rolling Back</h2>
 <p>Every Nix operation creates a new <strong>generation</strong> — a snapshot of your profile state. You can roll back to any of them.</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># List generations</span>
-nix<span class="w"> </span>profile<span class="w"> </span><span class="nb">history</span><span class="w">               </span><span class="c1"># new CLI</span>
-nix-env<span class="w"> </span>--list-generations<span class="w">        </span><span class="c1"># old CLI</span>
+<pre><code><code># List generations
+nix profile history               # new CLI
+nix-env --list-generations        # old CLI
 
-<span class="c1"># Roll back to previous generation</span>
-nix<span class="w"> </span>profile<span class="w"> </span>rollback<span class="w">              </span><span class="c1"># new CLI</span>
-nix-env<span class="w"> </span>--rollback<span class="w">                </span><span class="c1"># old CLI</span>
+# Roll back to previous generation
+nix profile rollback              # new CLI
+nix-env --rollback                # old CLI
 
-<span class="c1"># Switch to a specific generation (old CLI)</span>
-nix-env<span class="w"> </span>--switch-generation<span class="w"> </span><span class="m">42</span>
-</code></pre></div>
+# Switch to a specific generation (old CLI)
+nix-env --switch-generation 42
+</code></code></pre>
 
 <hr />
 <h2>Cleaning Up Disk Space</h2>
 <p>Nix keeps all old generations and unused packages in <code>/nix/store</code>. Clean them up:</p>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Delete old generations (keep current)</span>
-nix<span class="w"> </span>profile<span class="w"> </span>wipe-history<span class="w"> </span>--older-than<span class="w"> </span>30d<span class="w">   </span><span class="c1"># new CLI</span>
-nix-env<span class="w"> </span>--delete-generations<span class="w"> </span>old<span class="w">            </span><span class="c1"># old CLI</span>
+<pre><code><code># Delete old generations (keep current)
+nix profile wipe-history --older-than 30d   # new CLI
+nix-env --delete-generations old            # old CLI
 
-<span class="c1"># Remove packages no longer referenced by any generation</span>
+# Remove packages no longer referenced by any generation
 nix-collect-garbage
-nix-collect-garbage<span class="w"> </span>-d<span class="w">   </span><span class="c1"># delete old generations AND collect garbage</span>
-</code></pre></div>
+nix-collect-garbage -d   # delete old generations AND collect garbage
+</code></code></pre>
 
 <hr />
 <h2>nix-env vs nix profile — Key Differences</h2>

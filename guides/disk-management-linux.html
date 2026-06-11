@@ -2,76 +2,76 @@ DATA:system-users:Disk Management on Linux:System & Users
 <h1>Disk Management on Linux</h1>
 <hr />
 <h2>Check Disk Space</h2>
-<div class="codehilite"><pre><span></span><code>df<span class="w"> </span>-h<span class="w">                           </span><span class="c1"># disk usage of all mounted filesystems</span>
-df<span class="w"> </span>-h<span class="w"> </span>/<span class="w">                         </span><span class="c1"># root filesystem only</span>
-du<span class="w"> </span>-sh<span class="w"> </span>/var/log<span class="w">                 </span><span class="c1"># size of a specific directory</span>
-du<span class="w"> </span>-sh<span class="w"> </span>~/*<span class="w">                      </span><span class="c1"># size of each item in home folder</span>
-du<span class="w"> </span>-sh<span class="w"> </span>*<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-rh<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-10<span class="w">  </span><span class="c1"># top 10 largest items in current folder</span>
-ncdu<span class="w"> </span>/<span class="w">                          </span><span class="c1"># interactive disk usage browser (install: apt install ncdu)</span>
-</code></pre></div>
+<pre><code><code>df -h                           # disk usage of all mounted filesystems
+df -h /                         # root filesystem only
+du -sh /var/log                 # size of a specific directory
+du -sh ~/*                      # size of each item in home folder
+du -sh * | sort -rh | head -10  # top 10 largest items in current folder
+ncdu /                          # interactive disk usage browser (install: apt install ncdu)
+</code></code></pre>
 
 <hr />
 <h2>List Disks and Partitions</h2>
-<div class="codehilite"><pre><span></span><code>lsblk<span class="w">                           </span><span class="c1"># tree view of all block devices</span>
-lsblk<span class="w"> </span>-f<span class="w">                        </span><span class="c1"># includes filesystem type and UUID</span>
-fdisk<span class="w"> </span>-l<span class="w">                        </span><span class="c1"># detailed partition info (requires sudo)</span>
-sudo<span class="w"> </span>fdisk<span class="w"> </span>-l<span class="w"> </span>/dev/sda<span class="w">          </span><span class="c1"># specific drive</span>
-parted<span class="w"> </span>-l<span class="w">                       </span><span class="c1"># alternative to fdisk</span>
-</code></pre></div>
+<pre><code><code>lsblk                           # tree view of all block devices
+lsblk -f                        # includes filesystem type and UUID
+fdisk -l                        # detailed partition info (requires sudo)
+sudo fdisk -l /dev/sda          # specific drive
+parted -l                       # alternative to fdisk
+</code></code></pre>
 
 <hr />
 <h2>Mount and Unmount</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Mount a drive</span>
-sudo<span class="w"> </span>mount<span class="w"> </span>/dev/sdb1<span class="w"> </span>/mnt
+<pre><code><code># Mount a drive
+sudo mount /dev/sdb1 /mnt
 
-<span class="c1"># Mount with filesystem type specified</span>
-sudo<span class="w"> </span>mount<span class="w"> </span>-t<span class="w"> </span>ext4<span class="w"> </span>/dev/sdb1<span class="w"> </span>/mnt
-sudo<span class="w"> </span>mount<span class="w"> </span>-t<span class="w"> </span>ntfs<span class="w"> </span>/dev/sdb1<span class="w"> </span>/mnt
+# Mount with filesystem type specified
+sudo mount -t ext4 /dev/sdb1 /mnt
+sudo mount -t ntfs /dev/sdb1 /mnt
 
-<span class="c1"># Unmount</span>
-sudo<span class="w"> </span>umount<span class="w"> </span>/mnt
-sudo<span class="w"> </span>umount<span class="w"> </span>/dev/sdb1
+# Unmount
+sudo umount /mnt
+sudo umount /dev/sdb1
 
-<span class="c1"># List all mounted filesystems</span>
-mount<span class="w"> </span><span class="p">|</span><span class="w"> </span>column<span class="w"> </span>-t
-</code></pre></div>
+# List all mounted filesystems
+mount | column -t
+</code></code></pre>
 
 <hr />
 <h2>Auto-Mount at Boot (/etc/fstab)</h2>
 <p>Find the UUID of a partition:</p>
-<div class="codehilite"><pre><span></span><code>blkid<span class="w"> </span>/dev/sdb1
-</code></pre></div>
+<pre><code><code>blkid /dev/sdb1
+</code></code></pre>
 
 <p>Add to <code>/etc/fstab</code>:</p>
-<div class="codehilite"><pre><span></span><code>UUID=your-uuid-here  /mnt/data  ext4  defaults  0  2
-</code></pre></div>
+<pre><code><code>UUID=your-uuid-here  /mnt/data  ext4  defaults  0  2
+</code></code></pre>
 
 <p>Test fstab without rebooting:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>mount<span class="w"> </span>-a
-</code></pre></div>
+<pre><code><code>sudo mount -a
+</code></code></pre>
 
 <hr />
 <h2>Format a Drive</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Create ext4 filesystem</span>
-sudo<span class="w"> </span>mkfs.ext4<span class="w"> </span>/dev/sdb1
+<pre><code><code># Create ext4 filesystem
+sudo mkfs.ext4 /dev/sdb1
 
-<span class="c1"># Create NTFS (for Windows compatibility)</span>
-sudo<span class="w"> </span>mkfs.ntfs<span class="w"> </span>/dev/sdb1
+# Create NTFS (for Windows compatibility)
+sudo mkfs.ntfs /dev/sdb1
 
-<span class="c1"># Create FAT32</span>
-sudo<span class="w"> </span>mkfs.vfat<span class="w"> </span>-F<span class="w"> </span><span class="m">32</span><span class="w"> </span>/dev/sdb1
+# Create FAT32
+sudo mkfs.vfat -F 32 /dev/sdb1
 
-<span class="c1"># Create exFAT (cross-platform, large files)</span>
-sudo<span class="w"> </span>mkfs.exfat<span class="w"> </span>/dev/sdb1
-</code></pre></div>
+# Create exFAT (cross-platform, large files)
+sudo mkfs.exfat /dev/sdb1
+</code></code></pre>
 
 <blockquote>
 <p>⚠️ This permanently destroys all data on the partition.</p>
 </blockquote>
 <hr />
 <h2>Partition a Drive with fdisk</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>fdisk<span class="w"> </span>/dev/sdb
-</code></pre></div>
+<pre><code><code>sudo fdisk /dev/sdb
+</code></code></pre>
 
 <p>Inside fdisk:
 - <code>p</code> — print current partition table
@@ -82,32 +82,32 @@ sudo<span class="w"> </span>mkfs.exfat<span class="w"> </span>/dev/sdb1
 - <code>q</code> — quit without saving</p>
 <hr />
 <h2>Check and Repair Filesystem</h2>
-<div class="codehilite"><pre><span></span><code><span class="c1"># Run fsck on unmounted filesystem</span>
-sudo<span class="w"> </span>fsck<span class="w"> </span>/dev/sdb1
+<pre><code><code># Run fsck on unmounted filesystem
+sudo fsck /dev/sdb1
 
-<span class="c1"># Force check (even if marked clean)</span>
-sudo<span class="w"> </span>fsck<span class="w"> </span>-f<span class="w"> </span>/dev/sdb1
+# Force check (even if marked clean)
+sudo fsck -f /dev/sdb1
 
-<span class="c1"># Schedule check on next reboot (ext4)</span>
-sudo<span class="w"> </span>tune2fs<span class="w"> </span>-C<span class="w"> </span><span class="m">1</span><span class="w"> </span>/dev/sda1
-</code></pre></div>
+# Schedule check on next reboot (ext4)
+sudo tune2fs -C 1 /dev/sda1
+</code></code></pre>
 
 <p>Never run fsck on a mounted filesystem.</p>
 <hr />
 <h2>SMART Status (Disk Health)</h2>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>smartmontools<span class="w"> </span>-y
-sudo<span class="w"> </span>smartctl<span class="w"> </span>-a<span class="w"> </span>/dev/sda<span class="w">          </span><span class="c1"># full SMART report</span>
-sudo<span class="w"> </span>smartctl<span class="w"> </span>-H<span class="w"> </span>/dev/sda<span class="w">          </span><span class="c1"># health status only</span>
-sudo<span class="w"> </span>smartctl<span class="w"> </span>-t<span class="w"> </span>short<span class="w"> </span>/dev/sda<span class="w">    </span><span class="c1"># run short self-test</span>
-</code></pre></div>
+<pre><code><code>sudo apt install smartmontools -y
+sudo smartctl -a /dev/sda          # full SMART report
+sudo smartctl -H /dev/sda          # health status only
+sudo smartctl -t short /dev/sda    # run short self-test
+</code></code></pre>
 
 <hr />
 <h2>LVM (Logical Volume Manager)</h2>
-<div class="codehilite"><pre><span></span><code>pvs<span class="w">              </span><span class="c1"># list physical volumes</span>
-vgs<span class="w">              </span><span class="c1"># list volume groups</span>
-lvs<span class="w">              </span><span class="c1"># list logical volumes</span>
+<pre><code><code>pvs              # list physical volumes
+vgs              # list volume groups
+lvs              # list logical volumes
 
-<span class="c1"># Extend a logical volume</span>
-sudo<span class="w"> </span>lvextend<span class="w"> </span>-L+10G<span class="w"> </span>/dev/vg0/lv_home
-sudo<span class="w"> </span>resize2fs<span class="w"> </span>/dev/vg0/lv_home<span class="w">     </span><span class="c1"># resize ext4 to fill new space</span>
-</code></pre></div>
+# Extend a logical volume
+sudo lvextend -L+10G /dev/vg0/lv_home
+sudo resize2fs /dev/vg0/lv_home     # resize ext4 to fill new space
+</code></code></pre>

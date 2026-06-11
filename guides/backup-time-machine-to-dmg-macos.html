@@ -19,15 +19,15 @@ DATA:system-users:Back Up Using Time Machine to a DMG File (macOS):System & User
 <h2>Step 2 — Find the Volume Name</h2>
 <p>Once the DMG is mounted, it will appear as a drive in Disk Utility and on your Desktop. Note the volume name — you will need it in the next step. It will be something like <code>TimeMachineBackup</code> or whatever you named it.</p>
 <p>You can also check it from Terminal:</p>
-<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>/Volumes/
-</code></pre></div>
+<pre><code><code>ls /Volumes/
+</code></code></pre>
 
 <p>Your mounted DMG will appear in the list.</p>
 <hr />
 <h2>Step 3 — Set the DMG as the Time Machine Destination</h2>
 <p>Open <strong>Terminal</strong> and run:</p>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>tmutil<span class="w"> </span>setdestination<span class="w"> </span>/Volumes/TimeMachineBackup
-</code></pre></div>
+<pre><code><code>sudo tmutil setdestination /Volumes/TimeMachineBackup
+</code></code></pre>
 
 <p>Replace <code>TimeMachineBackup</code> with the actual name of your mounted DMG volume from Step 2.</p>
 <p>Enter your password when prompted.</p>

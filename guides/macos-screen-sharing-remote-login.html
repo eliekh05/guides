@@ -1,0 +1,69 @@
+DATA:macos:macOS Screen Sharing and Remote Login (SSH and VNC):macOS
+<h1>macOS Screen Sharing and Remote Login (SSH and VNC)</h1>
+<p>macOS has built-in screen sharing and remote access. No third-party software needed.</p>
+<hr />
+<h2>SSH Remote Login (Terminal Access)</h2>
+<h3>Enable on the Mac you want to access remotely</h3>
+<p><strong>System Settings → General → Sharing → Remote Login → On</strong></p>
+<p>Note your Mac's IP address shown there or run:</p>
+<div class="codehilite"><pre><span></span><code>ipconfig<span class="w"> </span>getifaddr<span class="w"> </span>en0<span class="w">    </span><span class="c1"># WiFi</span>
+ipconfig<span class="w"> </span>getifaddr<span class="w"> </span>en1<span class="w">    </span><span class="c1"># Ethernet</span>
+</code></pre></div>
+
+<h3>Connect from another machine</h3>
+<div class="codehilite"><pre><span></span><code>ssh<span class="w"> </span>yourusername@YOUR_MAC_IP
+</code></pre></div>
+
+<h3>Only allow specific users</h3>
+<p>In Remote Login settings, change <strong>Allow access for:</strong> from <strong>All users</strong> to specific users you add to the list.</p>
+<hr />
+<h2>Screen Sharing (VNC — See and Control the Desktop)</h2>
+<h3>Enable on the Mac you want to access</h3>
+<p><strong>System Settings → General → Sharing → Screen Sharing → On</strong></p>
+<p>Click <strong>i</strong> next to Screen Sharing to set a password or restrict to specific users.</p>
+<h3>Connect from another Mac</h3>
+<p><strong>Finder → Go → Connect to Server → <code>vnc://YOUR_MAC_IP</code></strong></p>
+<p>Or from the network browser in Finder — your Mac will appear under Locations if on the same network.</p>
+<h3>Connect from Windows or Linux</h3>
+<p>Use any VNC client — <strong>TigerVNC</strong> (free), <strong>RealVNC Viewer</strong> (free), or <strong>Remmina</strong> (Linux).</p>
+<p>Server address: <code>YOUR_MAC_IP:5900</code></p>
+<h3>Connect from iPhone or iPad</h3>
+<p>Use <strong>Jump Desktop</strong> (paid) or <strong>VNC Viewer</strong> (free) from the App Store.</p>
+<hr />
+<h2>Apple Remote Desktop Alternative (Third Party)</h2>
+<p>For better performance than VNC, use:
+- <strong>Screen Sharing</strong> built into macOS — simple, works well on the same network
+- <strong>Jump Desktop</strong> — fast, works over internet
+- <strong>Chrome Remote Desktop</strong> — free, works anywhere</p>
+<hr />
+<h2>iCloud Remote Desktop (Apple Silicon, macOS Sequoia+)</h2>
+<p>On macOS Sequoia and later with Apple Silicon, you can connect to your Mac remotely through iCloud without being on the same network:</p>
+<p><strong>System Settings → General → Sharing → Remote Desktop → turn on</strong></p>
+<p>Then connect from the Finder sidebar under Locations on another Mac signed into the same iCloud account.</p>
+<hr />
+<h2>Remote Management via Terminal Only (No GUI)</h2>
+<p>For servers and headless Macs, SSH is all you need. Useful commands once connected:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Restart</span>
+sudo<span class="w"> </span>shutdown<span class="w"> </span>-r<span class="w"> </span>now
+
+<span class="c1"># Shut down</span>
+sudo<span class="w"> </span>shutdown<span class="w"> </span>-h<span class="w"> </span>now
+
+<span class="c1"># Open an app</span>
+open<span class="w"> </span>-a<span class="w"> </span><span class="s2">&quot;Safari&quot;</span>
+
+<span class="c1"># Run a script</span>
+bash<span class="w"> </span>~/scripts/myscript.sh
+
+<span class="c1"># Check what apps are running</span>
+ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-v<span class="w"> </span>grep<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;Safari|Chrome&quot;</span>
+</code></pre></div>
+
+<hr />
+<h2>Security Tips</h2>
+<ul>
+<li><strong>Use SSH keys</strong> instead of passwords for Remote Login — see <strong>Set Up SSH Keys from Scratch</strong> guide</li>
+<li><strong>Disable Remote Login</strong> when not in use: <code>sudo systemsetup -setremotelogin off</code></li>
+<li><strong>Firewall</strong> should be enabled when exposing SSH to the internet: System Settings → Network → Firewall → On</li>
+<li><strong>Change SSH port</strong> from 22 to reduce automated attacks — see the <strong>Harden SSH Server</strong> guide</li>
+</ul>

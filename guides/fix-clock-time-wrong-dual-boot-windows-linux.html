@@ -1,0 +1,38 @@
+DATA:macos:Fix Clock Showing Wrong Time When Dual Booting Windows and Linux:macOS
+<h1>Fix Clock Showing Wrong Time When Dual Booting Windows and Linux</h1>
+<p>When dual booting Windows and Linux, the clock shows the wrong time in one of them after switching between the two. This happens because Windows and Linux handle the hardware clock differently — Windows stores local time, Linux stores UTC. Every time you switch, one of them corrects the clock and throws the other off.</p>
+<hr />
+<h2>The Fix — Make Linux Use Local Time (Matches Windows)</h2>
+<p>The easiest fix is to tell Linux to use local time like Windows does:</p>
+<div class="codehilite"><pre><span></span><code>timedatectl<span class="w"> </span>set-local-rtc<span class="w"> </span><span class="m">1</span><span class="w"> </span>--adjust-system-clock
+</code></pre></div>
+
+<p>Verify it worked:</p>
+<div class="codehilite"><pre><span></span><code>timedatectl
+</code></pre></div>
+
+<p>Look for <code>RTC in local TZ: yes</code>.</p>
+<hr />
+<h2>Alternative — Make Windows Use UTC (Matches Linux)</h2>
+<p>If you prefer Linux's approach, tell Windows to store UTC instead. Open <strong>Command Prompt as Administrator</strong> and run:</p>
+<div class="codehilite"><pre><span></span><code><span class="kt">reg</span><span class="w"> </span><span class="n">add</span><span class="w"> </span><span class="s">&quot;HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\TimeZoneInformation&quot;</span><span class="w"> </span><span class="o">/</span><span class="n">v</span><span class="w"> </span><span class="n">RealTimeIsUniversal</span><span class="w"> </span><span class="o">/</span><span class="n">d</span><span class="w"> </span><span class="mh">1</span><span class="w"> </span><span class="o">/</span><span class="n">t</span><span class="w"> </span><span class="n">REG_DWORD</span><span class="w"> </span><span class="o">/</span><span class="n">f</span>
+</code></pre></div>
+
+<p>Restart Windows. The clock should now stay in sync with Linux.</p>
+<hr />
+<h2>Also Sync Time After Switching</h2>
+<p>Even with the fix above, the clock may drift slightly. Force a time sync after booting:</p>
+<p><strong>Linux:</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>timedatectl<span class="w"> </span>set-ntp<span class="w"> </span><span class="nb">true</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>systemd-timesyncd
+</code></pre></div>
+
+<p><strong>Windows:</strong>
+Open Command Prompt as Administrator:</p>
+<div class="codehilite"><pre><span></span><code>w32tm /resync /force
+</code></pre></div>
+
+<hr />
+<blockquote>
+<p><strong>Which fix to use?</strong> The Linux <code>set-local-rtc 1</code> approach is simpler and requires no Windows registry edit. The Windows UTC approach is technically more correct but either works fine.</p>
+</blockquote>

@@ -1,0 +1,180 @@
+DATA:package-managers:Homebrew Essential Commands Cheatsheet:Package Managers (All OSes)
+<h1>Homebrew Essential Commands Cheatsheet</h1>
+<p>A complete reference for the Homebrew commands you actually use day to day — installing, updating, fixing, and managing packages. All commands work on both macOS and Linux.</p>
+<hr />
+<h2>Installing and Removing</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Install a package (formula)</span>
+brew<span class="w"> </span>install<span class="w"> </span>wget
+
+<span class="c1"># Install a macOS app (cask)</span>
+brew<span class="w"> </span>install<span class="w"> </span>--cask<span class="w"> </span>firefox
+
+<span class="c1"># Uninstall a package</span>
+brew<span class="w"> </span>uninstall<span class="w"> </span>wget
+
+<span class="c1"># Uninstall a package and all its dependencies</span>
+brew<span class="w"> </span>uninstall<span class="w"> </span>--force<span class="w"> </span>wget
+
+<span class="c1"># Reinstall a broken or corrupt package</span>
+brew<span class="w"> </span>reinstall<span class="w"> </span>wget
+</code></pre></div>
+
+<hr />
+<h2>Searching</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Search for a package</span>
+brew<span class="w"> </span>search<span class="w"> </span>python
+
+<span class="c1"># Get detailed info about a package (version, dependencies, options)</span>
+brew<span class="w"> </span>info<span class="w"> </span>python
+
+<span class="c1"># Show what a package depends on</span>
+brew<span class="w"> </span>deps<span class="w"> </span>python
+
+<span class="c1"># Show what packages depend on a specific package</span>
+brew<span class="w"> </span>uses<span class="w"> </span>--installed<span class="w"> </span>python
+</code></pre></div>
+
+<hr />
+<h2>Updating and Upgrading</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Update Homebrew and the list of available packages</span>
+brew<span class="w"> </span>update
+
+<span class="c1"># Upgrade all installed packages to latest versions</span>
+brew<span class="w"> </span>upgrade
+
+<span class="c1"># Upgrade a specific package only</span>
+brew<span class="w"> </span>upgrade<span class="w"> </span>wget
+
+<span class="c1"># See what packages are outdated before upgrading</span>
+brew<span class="w"> </span>outdated
+
+<span class="c1"># Prevent a package from being upgraded</span>
+brew<span class="w"> </span>pin<span class="w"> </span>wget
+
+<span class="c1"># Allow a pinned package to be upgraded again</span>
+brew<span class="w"> </span>unpin<span class="w"> </span>wget
+</code></pre></div>
+
+<hr />
+<h2>Checking and Fixing</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check for problems in your Homebrew installation</span>
+brew<span class="w"> </span>doctor
+
+<span class="c1"># Check if a specific package is properly linked</span>
+brew<span class="w"> </span>link<span class="w"> </span>--check<span class="w"> </span>wget
+
+<span class="c1"># Fix broken links for a package</span>
+brew<span class="w"> </span>link<span class="w"> </span>wget
+
+<span class="c1"># Fix broken links, overwriting any conflicts</span>
+brew<span class="w"> </span>link<span class="w"> </span>--overwrite<span class="w"> </span>wget
+
+<span class="c1"># Unlink a package (make it unavailable without uninstalling)</span>
+brew<span class="w"> </span>unlink<span class="w"> </span>wget
+</code></pre></div>
+
+<hr />
+<h2>Cleaning Up</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Remove old versions of installed packages (safe to run regularly)</span>
+brew<span class="w"> </span>cleanup
+
+<span class="c1"># See what would be removed before actually cleaning</span>
+brew<span class="w"> </span>cleanup<span class="w"> </span>--dry-run
+
+<span class="c1"># Remove everything cleanup would remove, including cached downloads</span>
+brew<span class="w"> </span>cleanup<span class="w"> </span>-s
+
+<span class="c1"># Remove all cached downloads</span>
+rm<span class="w"> </span>-rf<span class="w"> </span><span class="k">$(</span>brew<span class="w"> </span>--cache<span class="k">)</span>
+</code></pre></div>
+
+<hr />
+<h2>Listing and Inspecting</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># List all installed formulas</span>
+brew<span class="w"> </span>list
+
+<span class="c1"># List all installed casks</span>
+brew<span class="w"> </span>list<span class="w"> </span>--cask
+
+<span class="c1"># List installed packages with their versions</span>
+brew<span class="w"> </span>list<span class="w"> </span>--versions
+
+<span class="c1"># See where a package is installed</span>
+brew<span class="w"> </span>--prefix<span class="w"> </span>wget
+
+<span class="c1"># See where the Homebrew bin directory is</span>
+brew<span class="w"> </span>--prefix
+
+<span class="c1"># Show the full dependency tree of a package</span>
+brew<span class="w"> </span>deps<span class="w"> </span>--tree<span class="w"> </span>wget
+</code></pre></div>
+
+<hr />
+<h2>Services (Background Processes)</h2>
+<p>Some Homebrew packages run as background services (databases, web servers, etc.):</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># List all services and their status</span>
+brew<span class="w"> </span>services<span class="w"> </span>list
+
+<span class="c1"># Start a service</span>
+brew<span class="w"> </span>services<span class="w"> </span>start<span class="w"> </span>postgresql
+
+<span class="c1"># Stop a service</span>
+brew<span class="w"> </span>services<span class="w"> </span>stop<span class="w"> </span>postgresql
+
+<span class="c1"># Restart a service</span>
+brew<span class="w"> </span>services<span class="w"> </span>restart<span class="w"> </span>postgresql
+
+<span class="c1"># Start a service now and also on login</span>
+brew<span class="w"> </span>services<span class="w"> </span>start<span class="w"> </span>--now<span class="w"> </span>postgresql
+</code></pre></div>
+
+<hr />
+<h2>Taps (Third-Party Repositories)</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Add a third-party repository</span>
+brew<span class="w"> </span>tap<span class="w"> </span>hashicorp/tap
+
+<span class="c1"># Install a formula from a tap</span>
+brew<span class="w"> </span>install<span class="w"> </span>hashicorp/tap/terraform
+
+<span class="c1"># List all taps</span>
+brew<span class="w"> </span>tap
+
+<span class="c1"># Remove a tap</span>
+brew<span class="w"> </span>untap<span class="w"> </span>hashicorp/tap
+</code></pre></div>
+
+<hr />
+<h2>Troubleshooting Quick Commands</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Reinstall Xcode Command Line Tools (after macOS updates)</span>
+xcode-select<span class="w"> </span>--install
+
+<span class="c1"># Reset Homebrew to a clean state</span>
+brew<span class="w"> </span>update-reset
+
+<span class="c1"># Force update everything</span>
+brew<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>brew<span class="w"> </span>upgrade<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>brew<span class="w"> </span>cleanup
+
+<span class="c1"># Check what is using a port (e.g. port 5432 for PostgreSQL)</span>
+lsof<span class="w"> </span>-i<span class="w"> </span>:5432
+
+<span class="c1"># Export all installed packages to a file</span>
+brew<span class="w"> </span>bundle<span class="w"> </span>dump<span class="w"> </span>--file<span class="o">=</span>~/Brewfile
+
+<span class="c1"># Install all packages from a Brewfile</span>
+brew<span class="w"> </span>bundle<span class="w"> </span>install<span class="w"> </span>--file<span class="o">=</span>~/Brewfile
+</code></pre></div>
+
+<hr />
+<h2>Brewfile — Save and Restore Your Packages</h2>
+<p>A Brewfile is a list of all your Homebrew packages that you can use to quickly set up a new Mac identically.</p>
+<p><strong>Generate a Brewfile from your current install:</strong></p>
+<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>bundle<span class="w"> </span>dump<span class="w"> </span>--file<span class="o">=</span>~/Brewfile
+</code></pre></div>
+
+<p><strong>Install everything from a Brewfile on a new Mac:</strong></p>
+<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>bundle<span class="w"> </span>install<span class="w"> </span>--file<span class="o">=</span>~/Brewfile
+</code></pre></div>
+
+<p><strong>Check which Brewfile packages are not currently installed:</strong></p>
+<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>bundle<span class="w"> </span>check<span class="w"> </span>--file<span class="o">=</span>~/Brewfile
+</code></pre></div>

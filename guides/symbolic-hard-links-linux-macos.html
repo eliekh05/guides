@@ -1,0 +1,115 @@
+DATA:linux:Symbolic Links and Hard Links on Linux and macOS:Linux
+<h1>Symbolic Links and Hard Links on Linux and macOS</h1>
+<hr />
+<h2>Symbolic Links (Symlinks)</h2>
+<p>A symlink is a pointer to another file or directory. If the target is deleted, the symlink breaks.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Create a symlink</span>
+ln<span class="w"> </span>-s<span class="w"> </span>/path/to/original<span class="w"> </span>/path/to/link
+
+<span class="c1"># Examples</span>
+ln<span class="w"> </span>-s<span class="w"> </span>/opt/myapp/bin/myapp<span class="w"> </span>/usr/local/bin/myapp<span class="w">     </span><span class="c1"># make a command available system-wide</span>
+ln<span class="w"> </span>-s<span class="w"> </span>/mnt/data/photos<span class="w"> </span>~/Photos<span class="w">                      </span><span class="c1"># link a folder</span>
+ln<span class="w"> </span>-s<span class="w"> </span>/etc/nginx/sites-available/mysite.conf<span class="w"> </span>/etc/nginx/sites-enabled/mysite.conf<span class="w">  </span><span class="c1"># Nginx config</span>
+</code></pre></div>
+
+<h3>View symlinks</h3>
+<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>-la<span class="w">         </span><span class="c1"># shows -&gt; pointing to target</span>
+ls<span class="w"> </span>-la<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;^l&quot;</span><span class="w">   </span><span class="c1"># list only symlinks</span>
+readlink<span class="w"> </span>/usr/local/bin/myapp<span class="w">       </span><span class="c1"># show where a symlink points</span>
+readlink<span class="w"> </span>-f<span class="w"> </span>/usr/local/bin/myapp<span class="w">    </span><span class="c1"># follow all symlinks to final target</span>
+</code></pre></div>
+
+<h3>Update or overwrite a symlink</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># -f = force overwrite existing symlink</span>
+ln<span class="w"> </span>-sf<span class="w"> </span>/path/to/new/target<span class="w"> </span>/path/to/link
+</code></pre></div>
+
+<h3>Delete a symlink</h3>
+<div class="codehilite"><pre><span></span><code>rm<span class="w"> </span>/path/to/link<span class="w">         </span><span class="c1"># remove the link, not the target</span>
+unlink<span class="w"> </span>/path/to/link<span class="w">     </span><span class="c1"># same thing</span>
+</code></pre></div>
+
+<blockquote>
+<p><strong>Do not use <code>rm -r</code> on a symlink to a directory</strong> — it deletes the contents of the target directory, not just the link.</p>
+</blockquote>
+<hr />
+<h2>Hard Links</h2>
+<p>A hard link is another name for the same file. Both names point to the same data on disk. Deleting one name leaves the data accessible through the other.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Create a hard link</span>
+ln<span class="w"> </span>/path/to/original<span class="w"> </span>/path/to/hardlink
+
+<span class="c1"># View hard link count (second column in ls -la)</span>
+ls<span class="w"> </span>-la<span class="w"> </span>file.txt
+<span class="c1"># -rw-r--r--  2  alice  staff  ...    &lt;- the 2 means 2 hard links</span>
+</code></pre></div>
+
+<h3>Hard link limitations</h3>
+<ul>
+<li>Cannot cross filesystem boundaries (cannot hard link across different partitions)</li>
+<li>Cannot hard link directories (on most systems)</li>
+<li>Both names must be on the same filesystem</li>
+</ul>
+<hr />
+<h2>Symlink vs Hard Link</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Symlink</th>
+<th>Hard Link</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Target deleted</td>
+<td>Symlink breaks (dangling)</td>
+<td>Data still accessible via other name</td>
+</tr>
+<tr>
+<td>Cross filesystems</td>
+<td>✅ Yes</td>
+<td>❌ No</td>
+</tr>
+<tr>
+<td>Link to directory</td>
+<td>✅ Yes</td>
+<td>❌ Usually no</td>
+</tr>
+<tr>
+<td>Shows as separate file</td>
+<td>Yes (with <code>-&gt;</code>  in <code>ls</code>)</td>
+<td>No (looks identical)</td>
+</tr>
+<tr>
+<td>Most common use</td>
+<td>✅</td>
+<td>Rarely needed</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Practical Use Cases</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Make Python 3 available as &quot;python&quot;</span>
+sudo<span class="w"> </span>ln<span class="w"> </span>-sf<span class="w"> </span>/usr/bin/python3<span class="w"> </span>/usr/local/bin/python
+
+<span class="c1"># Enable an Nginx site</span>
+sudo<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>/etc/nginx/sites-available/mysite<span class="w"> </span>/etc/nginx/sites-enabled/
+
+<span class="c1"># Create a shortcut to a deep path</span>
+ln<span class="w"> </span>-s<span class="w"> </span>~/Documents/Projects/client-work/2026/webapp<span class="w"> </span>~/Desktop/webapp
+
+<span class="c1"># Link a config file to a managed location</span>
+ln<span class="w"> </span>-sf<span class="w"> </span>/opt/myapp/config/app.conf<span class="w"> </span>~/.config/app.conf
+
+<span class="c1"># Java version management (switch default Java)</span>
+sudo<span class="w"> </span>ln<span class="w"> </span>-sf<span class="w"> </span>/usr/lib/jvm/java-21/bin/java<span class="w"> </span>/usr/local/bin/java
+</code></pre></div>
+
+<hr />
+<h2>Fix Broken Symlinks</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Find all broken symlinks in current directory</span>
+find<span class="w"> </span>.<span class="w"> </span>-type<span class="w"> </span>l<span class="w"> </span>!<span class="w"> </span>-exec<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-e<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span><span class="w"> </span>-print
+
+<span class="c1"># Find broken symlinks system-wide</span>
+find<span class="w"> </span>/<span class="w"> </span>-type<span class="w"> </span>l<span class="w"> </span>!<span class="w"> </span>-exec<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-e<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span><span class="w"> </span>-print<span class="w"> </span><span class="m">2</span>&gt;/dev/null
+</code></pre></div>

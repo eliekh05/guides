@@ -1,0 +1,87 @@
+DATA:system-users:Fix Bluetooth Not Working on macOS and Windows:System & Users
+<h1>Fix Bluetooth Not Working on macOS and Windows</h1>
+<hr />
+<h2>macOS</h2>
+<h3>Fix 1 — Toggle Bluetooth Off and On</h3>
+<p>Click the Bluetooth icon in the menu bar → turn off → wait 5 seconds → turn back on. Fixes roughly a third of cases.</p>
+<h3>Fix 2 — Forget and Re-Pair the Device</h3>
+<ol>
+<li><strong>System Settings</strong> → <strong>Bluetooth</strong>.</li>
+<li>Click <strong>(i)</strong> next to the device → <strong>Forget This Device</strong>.</li>
+<li>Put the device back into pairing mode.</li>
+<li>Re-pair it.</li>
+</ol>
+<h3>Fix 3 — Reset the Bluetooth Module</h3>
+<p><strong>macOS Ventura and later:</strong>
+Hold <strong>Shift + Option (⌥)</strong> and click the Bluetooth icon in the menu bar → <strong>Reset the Bluetooth module</strong> → confirm.</p>
+<p><strong>macOS Monterey and earlier:</strong>
+Hold <strong>Shift + Option (⌥)</strong> and click Bluetooth icon → <strong>Debug</strong> → <strong>Reset the Bluetooth module</strong>.</p>
+<h3>Fix 4 — Delete Bluetooth Preference Files</h3>
+<p>Open <strong>Finder</strong> → <strong>Command + Shift + G</strong> → navigate to <code>/Library/Preferences/</code> and delete:
+- <code>com.apple.Bluetooth.plist</code></p>
+<p>Then navigate to <code>~/Library/Preferences/</code> and delete:
+- <code>com.apple.Bluetooth.plist</code></p>
+<p>Restart your Mac. macOS recreates these files fresh.</p>
+<h3>Fix 5 — Reset NVRAM</h3>
+<p><strong>Intel Mac:</strong> Restart holding <strong>Option + Command + P + R</strong> for 20 seconds.
+<strong>Apple Silicon:</strong> Standard restart — NVRAM resets automatically.</p>
+<p>See the <strong>Reset NVRAM and SMC</strong> guide for full instructions.</p>
+<hr />
+<h2>Windows</h2>
+<h3>Fix 1 — Toggle Bluetooth</h3>
+<p><strong>Settings</strong> → <strong>Bluetooth &amp; devices</strong> → toggle off → wait 5 seconds → toggle back on.</p>
+<h3>Fix 2 — Run the Bluetooth Troubleshooter</h3>
+<p><strong>Settings</strong> → <strong>System</strong> → <strong>Troubleshoot</strong> → <strong>Other troubleshooters</strong> → <strong>Bluetooth</strong> → <strong>Run</strong>.</p>
+<h3>Fix 3 — Restart Bluetooth Services</h3>
+<p>Open <strong>Command Prompt as Administrator</strong>:</p>
+<div class="codehilite"><pre><span></span><code>net stop bthserv
+net start bthserv
+</code></pre></div>
+
+<h3>Fix 4 — Update or Reinstall Bluetooth Driver</h3>
+<ol>
+<li>Right-click Start → <strong>Device Manager</strong> → expand <strong>Bluetooth</strong>.</li>
+<li>Right-click your adapter → <strong>Update driver</strong> → <strong>Search automatically</strong>.</li>
+<li>If that fails: right-click → <strong>Uninstall device</strong> → check <strong>Delete the driver software</strong> → <strong>Uninstall</strong> → restart Windows.</li>
+</ol>
+<h3>Fix 5 — Disable Fast Startup</h3>
+<p>Fast Startup leaves Bluetooth in a bad state between sessions:</p>
+<ol>
+<li><strong>Control Panel</strong> → <strong>Power Options</strong> → <strong>Choose what the power buttons do</strong>.</li>
+<li>Click <strong>Change settings that are currently unavailable</strong>.</li>
+<li>Uncheck <strong>Turn on fast startup</strong> → <strong>Save changes</strong>.</li>
+<li>Do a full restart (not shutdown).</li>
+</ol>
+<hr />
+<h2>Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>macOS Fix</th>
+<th>Windows Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Device won't connect</td>
+<td>Fix 2 — forget and re-pair</td>
+<td>Fix 2 — remove and re-pair</td>
+</tr>
+<tr>
+<td>Bluetooth greyed out</td>
+<td>Fix 3 — reset module</td>
+<td>Fix 4 — reinstall driver</td>
+</tr>
+<tr>
+<td>Stopped after OS update</td>
+<td>Fix 4 — delete prefs</td>
+<td>Fix 4 — update driver</td>
+</tr>
+<tr>
+<td>Drops after sleep/wake</td>
+<td>Fix 3 — reset module</td>
+<td>Fix 5 — disable fast startup</td>
+</tr>
+</tbody>
+</table>

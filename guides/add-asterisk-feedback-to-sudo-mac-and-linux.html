@@ -1,0 +1,29 @@
+DATA:macos:Add Asterisk Feedback to Sudo:macOS
+<h1>Add Asterisk Feedback to Sudo</h1>
+<p>By default, <code>sudo</code> does not show any characters when you type your password. This guide enables asterisk (<code>*</code>) feedback so you can see how many characters you have typed.</p>
+<p><strong>Requirements:</strong> Ubuntu 10.04 or later, or macOS 10.8 or later.</p>
+<hr />
+<h2>Steps</h2>
+<ol>
+<li>
+<p>Open <strong>Terminal</strong>.</p>
+</li>
+<li>
+<p>Run the following command to open the sudoers file safely:
+   <code>bash
+   sudo visudo</code></p>
+</li>
+<li>
+<p>Find the line that reads:
+   <code>Defaults env_reset</code>
+   Replace it with:
+   <code>Defaults env_reset,pwfeedback</code>
+   If the line does not exist, add the new line instead.</p>
+</li>
+<li>
+<p>Save and exit the editor:</p>
+</li>
+<li><strong>Ubuntu / Linux (nano):</strong> Press <code>Ctrl+X</code>, then <code>Y</code>, then <code>Enter</code>.</li>
+<li><strong>macOS (vi):</strong> Type <code>:wq</code> and press <code>Enter</code>.</li>
+</ol>
+<p>Password asterisks will now appear whenever you are prompted for your <code>sudo</code> password.</p>

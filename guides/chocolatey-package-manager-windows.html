@@ -1,0 +1,162 @@
+DATA:package-managers:Chocolatey — Package Manager for Windows:Package Managers (All OSes)
+<h1>Chocolatey — Package Manager for Windows</h1>
+<p>Chocolatey is a community-driven package manager for Windows with over 9,000 packages. It pre-dates winget by many years and has a larger package library, including many enterprise tools, older software versions, and developer utilities not available in winget.</p>
+<hr />
+<h2>winget vs Chocolatey — When to Use Which</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>winget</th>
+<th>Chocolatey</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Made by</td>
+<td>Microsoft</td>
+<td>Community/Chocolatey Inc.</td>
+</tr>
+<tr>
+<td>Package count</td>
+<td>~3,000</td>
+<td>~9,000</td>
+</tr>
+<tr>
+<td>Requires admin</td>
+<td>Sometimes</td>
+<td>Yes (always)</td>
+</tr>
+<tr>
+<td>Free</td>
+<td>Yes</td>
+<td>Free community tier</td>
+</tr>
+<tr>
+<td>Best for</td>
+<td>Consumer apps, Microsoft Store apps</td>
+<td>Developer tools, enterprise, older versions</td>
+</tr>
+</tbody>
+</table>
+<p>You can use both — they install to different locations and do not conflict. Many people use winget for consumer apps and Chocolatey for developer tools.</p>
+<hr />
+<h2>Step 1 — Install Chocolatey</h2>
+<p>Open <strong>PowerShell as Administrator</strong> (right-click Start → Windows PowerShell (Admin)):</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">Set-ExecutionPolicy</span> <span class="n">Bypass</span> <span class="n">-Scope</span> <span class="k">Process</span> <span class="n">-Force</span>
+<span class="no">[System.Net.ServicePointManager]</span><span class="p">::</span><span class="n">SecurityProtocol</span> <span class="p">=</span> <span class="no">[System.Net.ServicePointManager]</span><span class="p">::</span><span class="n">SecurityProtocol</span> <span class="o">-bor</span> <span class="n">3072</span>
+<span class="nb">iex </span><span class="p">((</span><span class="nb">New-Object</span> <span class="n">System</span><span class="p">.</span><span class="n">Net</span><span class="p">.</span><span class="n">WebClient</span><span class="p">).</span><span class="n">DownloadString</span><span class="p">(</span><span class="s1">&#39;https://community.chocolatey.org/install.ps1&#39;</span><span class="p">))</span>
+</code></pre></div>
+
+<p>Close and reopen PowerShell as Administrator. Verify:</p>
+<div class="codehilite"><pre><span></span><code>choco --version
+</code></pre></div>
+
+<hr />
+<h2>Essential Commands</h2>
+<p>All Chocolatey commands must be run in <strong>PowerShell or Command Prompt as Administrator</strong>.</p>
+<h3>Install a package</h3>
+<div class="codehilite"><pre><span></span><code>choco install firefox
+choco install googlechrome
+choco install vscode
+choco install git
+</code></pre></div>
+
+<h3>Install silently without confirmation prompts</h3>
+<div class="codehilite"><pre><span></span><code>choco install firefox -y
+</code></pre></div>
+
+<h3>Install a specific version</h3>
+<div class="codehilite"><pre><span></span><code>choco install python --version=3.11.0
+</code></pre></div>
+
+<h3>Search for a package</h3>
+<div class="codehilite"><pre><span></span><code>choco search python
+choco search &quot;visual studio&quot;
+</code></pre></div>
+
+<h3>Get info about a package</h3>
+<div class="codehilite"><pre><span></span><code>choco info firefox
+</code></pre></div>
+
+<h3>Upgrade a package</h3>
+<div class="codehilite"><pre><span></span><code>choco upgrade firefox
+</code></pre></div>
+
+<h3>Upgrade ALL packages</h3>
+<div class="codehilite"><pre><span></span><code>choco upgrade all -y
+</code></pre></div>
+
+<h3>Remove a package</h3>
+<div class="codehilite"><pre><span></span><code>choco uninstall firefox
+</code></pre></div>
+
+<h3>List installed packages</h3>
+<div class="codehilite"><pre><span></span><code>choco list --local-only
+</code></pre></div>
+
+<hr />
+<h2>Install Multiple Packages at Once</h2>
+<div class="codehilite"><pre><span></span><code>choco install git vscode nodejs python firefox googlechrome 7zip vlc -y
+</code></pre></div>
+
+<hr />
+<h2>Packages File (chocolatey.config)</h2>
+<p>Create a <code>packages.config</code> file to install many apps at once — useful for new machine setup:</p>
+<div class="codehilite"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+<span class="nt">&lt;packages&gt;</span>
+<span class="w">  </span><span class="nt">&lt;package</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;git&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;package</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;vscode&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;package</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;nodejs&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;package</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;python&quot;</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;3.12.0&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;package</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;firefox&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;package</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;7zip&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;package</span><span class="w"> </span><span class="na">id=</span><span class="s">&quot;vlc&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/packages&gt;</span>
+</code></pre></div>
+
+<p>Install all from the file:</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">choco</span><span class="w"> </span><span class="nx">install</span><span class="w"> </span><span class="nx">packages</span><span class="p">.</span><span class="nx">config</span><span class="w"> </span><span class="o">-</span><span class="nx">y</span>
+</code></pre></div>
+
+<hr />
+<h2>Popular Packages Reference</h2>
+<div class="codehilite"><pre><span></span><code><span class="n">choco</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="o">-</span><span class="n">y</span>
+<span class="n">choco</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">vscode</span><span class="w"> </span><span class="o">-</span><span class="n">y</span>
+<span class="n">choco</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">nodejs</span><span class="w"> </span><span class="o">-</span><span class="n">y</span>
+<span class="n">choco</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">python</span><span class="w"> </span><span class="o">-</span><span class="n">y</span>
+<span class="n">choco</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">googlechrome</span><span class="w"> </span><span class="o">-</span><span class="n">y</span>
+<span class="n">choco</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">firefox</span><span class="w"> </span><span class="o">-</span><span class="n">y</span>
+<span class="n">choco</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="mh">7</span><span class="n">zip</span><span class="w"> </span><span class="o">-</span><span class="n">y</span>
+<span class="n">choco</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">vlc</span><span class="w"> </span><span class="o">-</span><span class="n">y</span>
+<span class="n">choco</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">discord</span><span class="w"> </span><span class="o">-</span><span class="n">y</span>
+<span class="n">choco</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">spotify</span><span class="w"> </span><span class="o">-</span><span class="n">y</span>
+<span class="n">choco</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">postman</span><span class="w"> </span><span class="o">-</span><span class="n">y</span>
+<span class="n">choco</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">docker</span><span class="o">-</span><span class="n">desktop</span><span class="w"> </span><span class="o">-</span><span class="n">y</span>
+<span class="n">choco</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">notepadplusplus</span><span class="w"> </span><span class="o">-</span><span class="n">y</span>
+<span class="n">choco</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">putty</span><span class="w"> </span><span class="o">-</span><span class="n">y</span>
+<span class="n">choco</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">winscp</span><span class="w"> </span><span class="o">-</span><span class="n">y</span>
+<span class="n">choco</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">wireshark</span><span class="w"> </span><span class="o">-</span><span class="n">y</span>
+<span class="n">choco</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">virtualbox</span><span class="w"> </span><span class="o">-</span><span class="n">y</span>
+<span class="n">choco</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">obs</span><span class="o">-</span><span class="n">studio</span><span class="w"> </span><span class="o">-</span><span class="n">y</span>
+</code></pre></div>
+
+<hr />
+<h2>Common Errors and Fixes</h2>
+<h3><code>Access to the path is denied</code></h3>
+<p>You are not running as Administrator. Right-click PowerShell → Run as Administrator.</p>
+<h3><code>The package was not found</code></h3>
+<p>The package ID is slightly different. Search first:</p>
+<div class="codehilite"><pre><span></span><code>choco search appname
+</code></pre></div>
+
+<h3><code>Checksum mismatch</code></h3>
+<p>The installer file was updated but the Chocolatey package has not caught up. Try:</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">choco</span><span class="w"> </span><span class="nx">install</span><span class="w"> </span><span class="kn">package</span><span class="w"> </span><span class="o">--</span><span class="nx">ignore</span><span class="o">-</span><span class="nx">checksums</span>
+</code></pre></div>
+
+<p>Use with caution — only do this for packages you trust.</p>
+<h3>Chocolatey prompts for confirmation on every package</h3>
+<p>Add <code>-y</code> to all install/upgrade commands, or set it as default:</p>
+<div class="codehilite"><pre><span></span><code>choco feature enable -n allowGlobalConfirmation
+</code></pre></div>

@@ -1,0 +1,85 @@
+DATA:system-users:Change Hostname on Linux and macOS:System & Users
+<h1>Change Hostname on Linux and macOS</h1>
+<hr />
+<h2>Linux</h2>
+<h3>Check current hostname</h3>
+<div class="codehilite"><pre><span></span><code>hostname
+hostnamectl
+cat<span class="w"> </span>/etc/hostname
+</code></pre></div>
+
+<h3>Change hostname permanently</h3>
+<p><strong>Method 1 — hostnamectl (modern, recommended):</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>hostnamectl<span class="w"> </span>set-hostname<span class="w"> </span>newhostname
+</code></pre></div>
+
+<p><strong>Method 2 — edit files directly:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Edit hostname file</span>
+sudo<span class="w"> </span>nano<span class="w"> </span>/etc/hostname
+<span class="c1"># Replace the current hostname with the new one. Save and exit.</span>
+
+<span class="c1"># Edit hosts file</span>
+sudo<span class="w"> </span>nano<span class="w"> </span>/etc/hosts
+<span class="c1"># Find the line with your old hostname (usually 127.0.1.1 oldhostname)</span>
+<span class="c1"># Change it to 127.0.1.1 newhostname</span>
+</code></pre></div>
+
+<h3>Apply without rebooting</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>hostname<span class="w"> </span>newhostname
+<span class="c1"># Or restart the hostname service</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>systemd-hostnamed
+</code></pre></div>
+
+<h3>Verify</h3>
+<div class="codehilite"><pre><span></span><code>hostname
+hostnamectl<span class="w"> </span>status
+</code></pre></div>
+
+<hr />
+<h2>macOS</h2>
+<h3>Check current hostname</h3>
+<div class="codehilite"><pre><span></span><code>hostname
+scutil<span class="w"> </span>--get<span class="w"> </span>HostName
+scutil<span class="w"> </span>--get<span class="w"> </span>LocalHostName
+scutil<span class="w"> </span>--get<span class="w"> </span>ComputerName
+</code></pre></div>
+
+<p>macOS has three separate "names":
+- <strong>HostName</strong> — used by the command line
+- <strong>LocalHostName</strong> — used for Bonjour/mDNS (what you see on the network as <code>name.local</code>)
+- <strong>ComputerName</strong> — display name shown in System Settings</p>
+<h3>Change via System Settings (Easiest)</h3>
+<p><strong>System Settings → General → About → Name</strong> — change the name here.</p>
+<p>This updates the ComputerName. The LocalHostName updates automatically based on it.</p>
+<h3>Change via Terminal</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Change all three</span>
+sudo<span class="w"> </span>scutil<span class="w"> </span>--set<span class="w"> </span>HostName<span class="w"> </span>newhostname
+sudo<span class="w"> </span>scutil<span class="w"> </span>--set<span class="w"> </span>LocalHostName<span class="w"> </span>newhostname
+sudo<span class="w"> </span>scutil<span class="w"> </span>--set<span class="w"> </span>ComputerName<span class="w"> </span><span class="s2">&quot;New Computer Name&quot;</span>
+
+<span class="c1"># Flush DNS to apply</span>
+dscacheutil<span class="w"> </span>-flushcache
+</code></pre></div>
+
+<h3>Verify</h3>
+<div class="codehilite"><pre><span></span><code>scutil<span class="w"> </span>--get<span class="w"> </span>HostName
+scutil<span class="w"> </span>--get<span class="w"> </span>LocalHostName
+scutil<span class="w"> </span>--get<span class="w"> </span>ComputerName
+</code></pre></div>
+
+<hr />
+<h2>Proxmox / Server Hostname Change</h2>
+<p>For Proxmox or any server where the hostname must match DNS and <code>/etc/hosts</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 1. Change hostname</span>
+sudo<span class="w"> </span>hostnamectl<span class="w"> </span>set-hostname<span class="w"> </span>proxmox.local
+
+<span class="c1"># 2. Update /etc/hosts — critical for Proxmox</span>
+sudo<span class="w"> </span>nano<span class="w"> </span>/etc/hosts
+<span class="c1"># Change the line that maps your IP to the old hostname:</span>
+<span class="c1"># FROM: 192.168.1.100  oldname.local oldname</span>
+<span class="c1"># TO:   192.168.1.100  proxmox.local proxmox</span>
+
+<span class="c1"># 3. Verify resolution</span>
+hostname<span class="w"> </span>--fqdn
+hostname<span class="w"> </span>--ip-address<span class="w">      </span><span class="c1"># must return actual IP, not 127.x.x.x</span>
+</code></pre></div>

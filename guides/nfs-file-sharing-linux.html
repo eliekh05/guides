@@ -1,0 +1,128 @@
+DATA:server:NFS File Sharing Between Linux Machines:Server & Self-Hosting
+<h1>NFS File Sharing Between Linux Machines</h1>
+<p>NFS (Network File System) shares directories between Linux/Unix machines. Faster than Samba for Linux-to-Linux transfers, no Windows compatibility.</p>
+<hr />
+<h2>Server Setup</h2>
+<h3>Install NFS server</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>nfs-kernel-server<span class="w"> </span>-y<span class="w">     </span><span class="c1"># Ubuntu/Debian</span>
+sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>nfs-utils<span class="w"> </span>-y<span class="w">              </span><span class="c1"># Fedora/RHEL</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>nfs-server
+</code></pre></div>
+
+<h3>Create and configure a share</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/srv/nfs/shared
+sudo<span class="w"> </span>chown<span class="w"> </span>nobody:nogroup<span class="w"> </span>/srv/nfs/shared
+sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span>/srv/nfs/shared
+</code></pre></div>
+
+<p>Edit <code>/etc/exports</code>:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/exports
+</code></pre></div>
+
+<p>Add a line:</p>
+<div class="codehilite"><pre><span></span><code>/srv/nfs/shared    192.168.1.0/24(rw,sync,no_subtree_check)
+</code></pre></div>
+
+<p>Format: <code>path  who_can_access(options)</code></p>
+<p><strong>Common options:</strong>
+- <code>rw</code> — read/write
+- <code>ro</code> — read-only
+- <code>sync</code> — write to disk before responding (safer)
+- <code>async</code> — faster but less safe
+- <code>no_subtree_check</code> — improves reliability
+- <code>no_root_squash</code> — let remote root access as root (risky)
+- <code>root_squash</code> — map remote root to nobody (default, safer)</p>
+<p><strong>Allow a specific IP only:</strong></p>
+<div class="codehilite"><pre><span></span><code>/srv/nfs/shared    192.168.1.50(rw,sync,no_subtree_check)
+</code></pre></div>
+
+<p><strong>Allow multiple clients:</strong></p>
+<div class="codehilite"><pre><span></span><code>/srv/nfs/shared    192.168.1.0/24(rw,sync) 10.0.0.0/8(ro,sync)
+</code></pre></div>
+
+<p>Apply the exports:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>exportfs<span class="w"> </span>-a
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>nfs-server
+</code></pre></div>
+
+<hr />
+<h2>Open Firewall</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span>from<span class="w"> </span><span class="m">192</span>.168.1.0/24<span class="w"> </span>to<span class="w"> </span>any<span class="w"> </span>port<span class="w"> </span>nfs<span class="w">    </span><span class="c1"># UFW</span>
+sudo<span class="w"> </span>firewall-cmd<span class="w"> </span>--add-service<span class="o">=</span>nfs<span class="w"> </span>--permanent<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>firewall-cmd<span class="w"> </span>--reload<span class="w">  </span><span class="c1"># firewalld</span>
+</code></pre></div>
+
+<hr />
+<h2>Client Setup</h2>
+<h3>Install NFS client</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>nfs-common<span class="w"> </span>-y<span class="w">      </span><span class="c1"># Ubuntu/Debian</span>
+sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>nfs-utils<span class="w"> </span>-y<span class="w">       </span><span class="c1"># Fedora/RHEL</span>
+</code></pre></div>
+
+<h3>Mount temporarily</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/mnt/nfs
+sudo<span class="w"> </span>mount<span class="w"> </span>SERVER_IP:/srv/nfs/shared<span class="w"> </span>/mnt/nfs
+</code></pre></div>
+
+<h3>Mount permanently via /etc/fstab</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/fstab
+</code></pre></div>
+
+<p>Add:</p>
+<div class="codehilite"><pre><span></span><code>SERVER_IP:/srv/nfs/shared  /mnt/nfs  nfs  defaults,_netdev  0  0
+</code></pre></div>
+
+<p><code>_netdev</code> tells the system to wait for network before mounting.</p>
+<p>Test:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>mount<span class="w"> </span>-a
+df<span class="w"> </span>-h<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>nfs
+</code></pre></div>
+
+<hr />
+<h2>Verify Exports</h2>
+<p>From server:</p>
+<div class="codehilite"><pre><span></span><code>exportfs<span class="w"> </span>-v<span class="w">                            </span><span class="c1"># list active exports</span>
+showmount<span class="w"> </span>-e<span class="w"> </span>localhost<span class="w">                 </span><span class="c1"># show what&#39;s exported</span>
+</code></pre></div>
+
+<p>From client:</p>
+<div class="codehilite"><pre><span></span><code>showmount<span class="w"> </span>-e<span class="w"> </span>SERVER_IP<span class="w">                 </span><span class="c1"># see available shares</span>
+</code></pre></div>
+
+<hr />
+<h2>NFS vs Samba</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>NFS</th>
+<th>Samba</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Linux to Linux</td>
+<td>✅ Best choice</td>
+<td>Works</td>
+</tr>
+<tr>
+<td>Linux to Windows</td>
+<td>❌ Needs extra setup</td>
+<td>✅ Native</td>
+</tr>
+<tr>
+<td>Linux to macOS</td>
+<td>✅ Works</td>
+<td>✅ Works</td>
+</tr>
+<tr>
+<td>Performance</td>
+<td>Better</td>
+<td>Slightly slower</td>
+</tr>
+<tr>
+<td>Setup complexity</td>
+<td>Similar</td>
+<td>Similar</td>
+</tr>
+</tbody>
+</table>

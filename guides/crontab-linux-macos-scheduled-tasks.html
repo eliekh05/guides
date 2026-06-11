@@ -1,0 +1,133 @@
+DATA:scheduling:cron and crontab — Schedule Tasks on Linux and macOS:Task Scheduling
+<h1>cron and crontab — Schedule Tasks on Linux and macOS</h1>
+<hr />
+<h2>Edit Your Crontab</h2>
+<div class="codehilite"><pre><span></span><code>crontab<span class="w"> </span>-e<span class="w">          </span><span class="c1"># edit your personal crontab</span>
+crontab<span class="w"> </span>-l<span class="w">          </span><span class="c1"># list your current crontab</span>
+crontab<span class="w"> </span>-r<span class="w">          </span><span class="c1"># remove your crontab (careful — no confirmation)</span>
+</code></pre></div>
+
+<p>For system-wide tasks:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>crontab<span class="w"> </span>-e<span class="w">     </span><span class="c1"># root&#39;s crontab</span>
+</code></pre></div>
+
+<p>Or place scripts in:
+- <code>/etc/cron.hourly/</code>
+- <code>/etc/cron.daily/</code>
+- <code>/etc/cron.weekly/</code>
+- <code>/etc/cron.monthly/</code></p>
+<hr />
+<h2>Crontab Syntax</h2>
+<div class="codehilite"><pre><span></span><code><span class="err">┌─────────────</span><span class="w"> </span><span class="n">minute</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">59</span><span class="p">)</span>
+<span class="err">│</span><span class="w"> </span><span class="err">┌─────────────</span><span class="w"> </span><span class="n">hour</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">23</span><span class="p">)</span>
+<span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="err">┌─────────────</span><span class="w"> </span><span class="n">day</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">month</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">31</span><span class="p">)</span>
+<span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="err">┌─────────────</span><span class="w"> </span><span class="n">month</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">12</span><span class="p">)</span>
+<span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="err">┌─────────────</span><span class="w"> </span><span class="n">day</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">week</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sunday</span><span class="p">)</span>
+<span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="err">│</span><span class="w"> </span><span class="err">│</span>
+<span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">command</span>
+</code></pre></div>
+
+<hr />
+<h2>Common Schedule Examples</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Every minute</span>
+<span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="sr">/path/</span><span class="n">to</span><span class="o">/</span><span class="n">script</span><span class="o">.</span><span class="n">sh</span>
+
+<span class="c1"># Every 5 minutes</span>
+<span class="o">*</span><span class="sr">/5 * * * * /</span><span class="n">path</span><span class="sr">/to/sc</span><span class="n">ript</span><span class="o">.</span><span class="n">sh</span>
+
+<span class="c1"># Every hour (at minute 0)</span>
+<span class="mi">0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="sr">/path/</span><span class="n">to</span><span class="o">/</span><span class="n">script</span><span class="o">.</span><span class="n">sh</span>
+
+<span class="c1"># Every day at 2:30 AM</span>
+<span class="mi">30</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="sr">/path/</span><span class="n">to</span><span class="o">/</span><span class="n">script</span><span class="o">.</span><span class="n">sh</span>
+
+<span class="c1"># Every Monday at 9 AM</span>
+<span class="mi">0</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="sr">/path/</span><span class="n">to</span><span class="o">/</span><span class="n">script</span><span class="o">.</span><span class="n">sh</span>
+
+<span class="c1"># Every weekday (Mon-Fri) at 8 AM</span>
+<span class="mi">0</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1</span><span class="o">-</span><span class="mi">5</span><span class="w"> </span><span class="sr">/path/</span><span class="n">to</span><span class="o">/</span><span class="n">script</span><span class="o">.</span><span class="n">sh</span>
+
+<span class="c1"># Every 15 minutes</span>
+<span class="o">*</span><span class="sr">/15 * * * * /</span><span class="n">path</span><span class="sr">/to/sc</span><span class="n">ript</span><span class="o">.</span><span class="n">sh</span>
+
+<span class="c1"># First day of every month at midnight</span>
+<span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="sr">/path/</span><span class="n">to</span><span class="o">/</span><span class="n">script</span><span class="o">.</span><span class="n">sh</span>
+
+<span class="c1"># Every Sunday at 3 AM</span>
+<span class="mi">0</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="sr">/path/</span><span class="n">to</span><span class="o">/</span><span class="n">script</span><span class="o">.</span><span class="n">sh</span>
+
+<span class="c1"># Twice a day (8 AM and 8 PM)</span>
+<span class="mi">0</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="mi">20</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="sr">/path/</span><span class="n">to</span><span class="o">/</span><span class="n">script</span><span class="o">.</span><span class="n">sh</span>
+</code></pre></div>
+
+<hr />
+<h2>Shortcuts</h2>
+<div class="codehilite"><pre><span></span><code><span class="nv">@reboot</span><span class="w">     </span><span class="n">run</span><span class="w"> </span><span class="n">once</span><span class="w"> </span><span class="k">at</span><span class="w"> </span><span class="n">startup</span>
+<span class="nv">@daily</span><span class="w">      </span><span class="n">same</span><span class="w"> </span><span class="k">as</span><span class="err">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span>
+<span class="nv">@hourly</span><span class="w">     </span><span class="n">same</span><span class="w"> </span><span class="k">as</span><span class="err">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span>
+<span class="nv">@weekly</span><span class="w">     </span><span class="n">same</span><span class="w"> </span><span class="k">as</span><span class="err">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">0</span>
+<span class="nv">@monthly</span><span class="w">    </span><span class="n">same</span><span class="w"> </span><span class="k">as</span><span class="err">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="o">*</span>
+<span class="nv">@yearly</span><span class="w">     </span><span class="n">same</span><span class="w"> </span><span class="k">as</span><span class="err">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">*</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="nv">@reboot</span><span class="w"> </span><span class="o">/</span><span class="k">path</span><span class="o">/</span><span class="k">to</span><span class="o">/</span><span class="n">startup</span><span class="o">-</span><span class="n">script</span><span class="p">.</span><span class="n">sh</span>
+<span class="nv">@daily</span><span class="w"> </span><span class="o">/</span><span class="k">path</span><span class="o">/</span><span class="k">to</span><span class="o">/</span><span class="k">backup</span><span class="p">.</span><span class="n">sh</span>
+</code></pre></div>
+
+<hr />
+<h2>Always Use Full Paths</h2>
+<p>cron does not load your shell PATH. Commands that work in Terminal often fail in cron.</p>
+<p><strong>Wrong:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="k">*</span> * <span class="gs">* *</span> * python3 script.py
+</code></pre></div>
+
+<p><strong>Correct:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="k">*</span> * <span class="gs">* *</span> * /usr/bin/python3 /home/user/scripts/script.py
+</code></pre></div>
+
+<p>Find the full path of any command:</p>
+<div class="codehilite"><pre><span></span><code>which<span class="w"> </span>python3
+which<span class="w"> </span>brew
+which<span class="w"> </span>node
+</code></pre></div>
+
+<hr />
+<h2>Capture Output and Errors</h2>
+<p>By default, cron emails output to the local user (which usually goes nowhere). Redirect to a log file:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Redirect both stdout and stderr to a log</span>
+<span class="m">0</span><span class="w"> </span><span class="m">2</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/path/to/backup.sh<span class="w"> </span>&gt;&gt;<span class="w"> </span>/var/log/backup.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+
+<span class="c1"># Suppress all output</span>
+<span class="m">0</span><span class="w"> </span><span class="m">2</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/path/to/backup.sh<span class="w"> </span>&gt;<span class="w"> </span>/dev/null<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</code></pre></div>
+
+<hr />
+<h2>Environment Variables in Crontab</h2>
+<div class="codehilite"><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="k">Set</span><span class="w"> </span><span class="k">PATH</span><span class="w"> </span><span class="k">at</span><span class="w"> </span><span class="k">top</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">crontab</span>
+<span class="k">PATH</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="k">local</span><span class="o">/</span><span class="nl">sbin</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="k">local</span><span class="o">/</span><span class="nl">bin</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nl">sbin</span><span class="p">:</span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="nl">bin</span><span class="p">:</span><span class="o">/</span><span class="nl">sbin</span><span class="p">:</span><span class="o">/</span><span class="nl">bin</span><span class="p">:</span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">homebrew</span><span class="o">/</span><span class="n">bin</span>
+
+<span class="err">#</span><span class="w"> </span><span class="k">Set</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">output</span>
+<span class="n">MAILTO</span><span class="o">=</span><span class="k">admin</span><span class="nv">@example</span><span class="p">.</span><span class="n">com</span>
+
+<span class="err">#</span><span class="w"> </span><span class="ow">Or</span><span class="w"> </span><span class="n">silence</span><span class="w"> </span><span class="n">email</span>
+<span class="n">MAILTO</span><span class="o">=</span><span class="ss">&quot;&quot;</span>
+</code></pre></div>
+
+<hr />
+<h2>Debug Cron Issues</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check if cron is running</span>
+systemctl<span class="w"> </span>status<span class="w"> </span>cron<span class="w">           </span><span class="c1"># Ubuntu/Debian</span>
+systemctl<span class="w"> </span>status<span class="w"> </span>crond<span class="w">          </span><span class="c1"># Fedora/RHEL</span>
+
+<span class="c1"># Check cron logs</span>
+grep<span class="w"> </span>CRON<span class="w"> </span>/var/log/syslog<span class="w">       </span><span class="c1"># Ubuntu/Debian</span>
+journalctl<span class="w"> </span>-u<span class="w"> </span>cron<span class="w">              </span><span class="c1"># systemd systems</span>
+
+<span class="c1"># Test your script manually as if cron ran it</span>
+env<span class="w"> </span>-i<span class="w"> </span><span class="nv">PATH</span><span class="o">=</span>/usr/local/sbin:/usr/local/bin:/usr/bin:/bin<span class="w"> </span>/path/to/script.sh
+</code></pre></div>
+
+<hr />
+<h2>macOS Cron Notes</h2>
+<p>cron works on macOS but <code>launchd</code> is the preferred macOS method — see the <strong>Run a Script at Startup or Login on macOS</strong> guide.</p>
+<p>If using cron on macOS and the script accesses Desktop/Documents/Downloads, Terminal and cron need Full Disk Access in <strong>System Settings → Privacy &amp; Security → Full Disk Access</strong>.</p>

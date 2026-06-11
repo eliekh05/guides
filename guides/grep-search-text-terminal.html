@@ -1,0 +1,134 @@
+DATA:linux:grep — Search Text in Files (macOS and Linux):Linux
+<h1>grep — Search Text in Files (macOS and Linux)</h1>
+<p><code>grep</code> searches for text patterns in files or command output. It is one of the most used Terminal commands.</p>
+<hr />
+<h2>Basic Usage</h2>
+<div class="codehilite"><pre><span></span><code>grep<span class="w"> </span><span class="s2">&quot;word&quot;</span><span class="w"> </span>file.txt<span class="w">                  </span><span class="c1"># find lines containing &quot;word&quot;</span>
+grep<span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="w"> </span>/var/log/syslog<span class="w">          </span><span class="c1"># search a log file</span>
+grep<span class="w"> </span><span class="s2">&quot;def &quot;</span><span class="w"> </span>*.py<span class="w">                      </span><span class="c1"># search all .py files</span>
+</code></pre></div>
+
+<hr />
+<h2>Essential Flags</h2>
+<div class="codehilite"><pre><span></span><code>grep<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;word&quot;</span><span class="w"> </span>file.txt<span class="w">               </span><span class="c1"># case-insensitive</span>
+grep<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;word&quot;</span><span class="w"> </span>/path/<span class="w">                 </span><span class="c1"># recursive (search all files in folder)</span>
+grep<span class="w"> </span>-l<span class="w"> </span><span class="s2">&quot;word&quot;</span><span class="w"> </span>*.txt<span class="w">                  </span><span class="c1"># list files that contain the match (not the lines)</span>
+grep<span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;word&quot;</span><span class="w"> </span>file.txt<span class="w">               </span><span class="c1"># show line numbers</span>
+grep<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;word&quot;</span><span class="w"> </span>file.txt<span class="w">               </span><span class="c1"># count matching lines</span>
+grep<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;word&quot;</span><span class="w"> </span>file.txt<span class="w">               </span><span class="c1"># invert — show lines that do NOT match</span>
+grep<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;word&quot;</span><span class="w"> </span>file.txt<span class="w">               </span><span class="c1"># whole word only (not &quot;password&quot; when searching &quot;word&quot;)</span>
+grep<span class="w"> </span>-A<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="w"> </span>file.txt<span class="w">            </span><span class="c1"># show 3 lines AFTER each match</span>
+grep<span class="w"> </span>-B<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="w"> </span>file.txt<span class="w">            </span><span class="c1"># show 3 lines BEFORE each match</span>
+grep<span class="w"> </span>-C<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="w"> </span>file.txt<span class="w">            </span><span class="c1"># show 3 lines before AND after (context)</span>
+</code></pre></div>
+
+<hr />
+<h2>Search Multiple Files / Recursively</h2>
+<div class="codehilite"><pre><span></span><code>grep<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;TODO&quot;</span><span class="w"> </span>.<span class="w">                       </span><span class="c1"># search everything in current folder</span>
+grep<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;TODO&quot;</span><span class="w"> </span>.<span class="w"> </span>--include<span class="o">=</span><span class="s2">&quot;*.py&quot;</span><span class="w">     </span><span class="c1"># only Python files</span>
+grep<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;TODO&quot;</span><span class="w"> </span>.<span class="w"> </span>--exclude<span class="o">=</span><span class="s2">&quot;*.log&quot;</span><span class="w">    </span><span class="c1"># exclude log files</span>
+grep<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;TODO&quot;</span><span class="w"> </span>.<span class="w"> </span>--exclude-dir<span class="o">=</span><span class="s2">&quot;.git&quot;</span><span class="w"> </span><span class="c1"># exclude .git folder</span>
+</code></pre></div>
+
+<hr />
+<h2>Patterns (Regular Expressions)</h2>
+<div class="codehilite"><pre><span></span><code>grep<span class="w"> </span><span class="s2">&quot;^error&quot;</span><span class="w"> </span>file.txt<span class="w">                </span><span class="c1"># lines starting with &quot;error&quot;</span>
+grep<span class="w"> </span><span class="s2">&quot;error</span>$<span class="s2">&quot;</span><span class="w"> </span>file.txt<span class="w">                </span><span class="c1"># lines ending with &quot;error&quot;</span>
+grep<span class="w"> </span><span class="s2">&quot;err.r&quot;</span><span class="w"> </span>file.txt<span class="w">                 </span><span class="c1"># . matches any character</span>
+grep<span class="w"> </span><span class="s2">&quot;err[oa]r&quot;</span><span class="w"> </span>file.txt<span class="w">              </span><span class="c1"># matches &quot;errar&quot; or &quot;error&quot;</span>
+grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;error|warning&quot;</span><span class="w"> </span>file.txt<span class="w">      </span><span class="c1"># extended regex: OR</span>
+grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;err(or|and)&quot;</span><span class="w"> </span>file.txt<span class="w">        </span><span class="c1"># groups</span>
+grep<span class="w"> </span><span class="s2">&quot;[0-9]{3}&quot;</span><span class="w"> </span>file.txt<span class="w">              </span><span class="c1"># exactly 3 digits</span>
+</code></pre></div>
+
+<p>Use <code>-E</code> for extended regular expressions (ERE). Use <code>-P</code> for Perl-compatible regex (not available on macOS by default).</p>
+<hr />
+<h2>Combine with Other Commands</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Search output of another command</span>
+ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>nginx
+docker<span class="w"> </span>ps<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>mycontainer
+cat<span class="w"> </span>/var/log/auth.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;Failed&quot;</span>
+
+<span class="c1"># Count occurrences</span>
+cat<span class="w"> </span>access.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;404&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l
+
+<span class="c1"># Find all unique IPs in a log</span>
+grep<span class="w"> </span>-oE<span class="w"> </span><span class="s2">&quot;[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+&quot;</span><span class="w"> </span>access.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-u
+
+<span class="c1"># Search history for a command</span>
+<span class="nb">history</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>docker
+</code></pre></div>
+
+<hr />
+<h2>grep vs ripgrep (rg)</h2>
+<p><code>ripgrep</code> (<code>rg</code>) is a modern, faster replacement for grep. It ignores <code>.git</code> and binary files by default, respects <code>.gitignore</code>, and is much faster on large codebases.</p>
+<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>ripgrep<span class="w">       </span><span class="c1"># macOS</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>ripgrep<span class="w">   </span><span class="c1"># Ubuntu/Debian</span>
+
+rg<span class="w"> </span><span class="s2">&quot;TODO&quot;</span><span class="w"> </span>.<span class="w">                </span><span class="c1"># same as grep -r &quot;TODO&quot; .</span>
+rg<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="w"> </span>.<span class="w">            </span><span class="c1"># case-insensitive</span>
+rg<span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="w"> </span>--type<span class="w"> </span>py<span class="w">       </span><span class="c1"># Python files only</span>
+rg<span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="w"> </span>-l<span class="w">              </span><span class="c1"># list files only</span>
+</code></pre></div>
+
+<hr />
+<h2>Highlight Matches</h2>
+<div class="codehilite"><pre><span></span><code>grep<span class="w"> </span>--color<span class="o">=</span>auto<span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="w"> </span>file.txt
+</code></pre></div>
+
+<p>Add to <code>~/.zshrc</code> to always highlight:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">GREP_OPTIONS</span><span class="o">=</span><span class="s1">&#39;--color=auto&#39;</span>
+</code></pre></div>
+
+<hr />
+<h2>Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Search file</td>
+<td><code>grep "text" file</code></td>
+</tr>
+<tr>
+<td>Case-insensitive</td>
+<td><code>grep -i "text" file</code></td>
+</tr>
+<tr>
+<td>Recursive</td>
+<td><code>grep -r "text" folder/</code></td>
+</tr>
+<tr>
+<td>With line numbers</td>
+<td><code>grep -n "text" file</code></td>
+</tr>
+<tr>
+<td>Invert match</td>
+<td><code>grep -v "text" file</code></td>
+</tr>
+<tr>
+<td>Whole word</td>
+<td><code>grep -w "text" file</code></td>
+</tr>
+<tr>
+<td>Count matches</td>
+<td><code>grep -c "text" file</code></td>
+</tr>
+<tr>
+<td>Files with match</td>
+<td><code>grep -l "text" *.txt</code></td>
+</tr>
+<tr>
+<td>Context lines</td>
+<td><code>grep -C 3 "text" file</code></td>
+</tr>
+<tr>
+<td>OR pattern</td>
+<td><code>grep -E "a\|b" file</code></td>
+</tr>
+</tbody>
+</table>

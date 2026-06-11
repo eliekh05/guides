@@ -1,0 +1,158 @@
+DATA:scheduling:Automate Scripts with Windows Task Scheduler:Task Scheduling
+<h1>Automate Scripts with Windows Task Scheduler</h1>
+<p>Windows Task Scheduler is the built-in tool for running scripts, programs, and commands automatically on a schedule or triggered by events. It is the Windows equivalent of cron on Linux or launchd on macOS — and like both of those, it has plenty of ways to silently fail without telling you why. This guide covers how to set it up correctly and how to debug when it does not run.</p>
+<hr />
+<h2>Open Task Scheduler</h2>
+<p>Press <strong>Windows + R</strong>, type <code>taskschd.msc</code>, and press Enter.</p>
+<p>Or search for <strong>Task Scheduler</strong> in the Start menu.</p>
+<hr />
+<h2>Create a Basic Scheduled Task (GUI)</h2>
+<h3>Step 1 — Create a New Task</h3>
+<p>In the right panel, click <strong>Create Basic Task</strong> for a simple wizard, or <strong>Create Task</strong> for full control. Use <strong>Create Task</strong> — the Basic Task wizard hides important options.</p>
+<h3>Step 2 — General Tab</h3>
+<ul>
+<li><strong>Name:</strong> give it a clear name like <code>Daily Backup Script</code></li>
+<li><strong>Description:</strong> optional but useful</li>
+<li><strong>Run whether user is logged on or not:</strong> check this if the task needs to run in the background</li>
+<li><strong>Run with highest privileges:</strong> check this if your script needs admin rights</li>
+<li><strong>Configure for:</strong> set to your Windows version</li>
+</ul>
+<h3>Step 3 — Triggers Tab</h3>
+<p>Click <strong>New</strong> to add when the task runs:</p>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th>When it fires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>On a schedule</td>
+<td>Daily, weekly, monthly, or one time</td>
+</tr>
+<tr>
+<td>At log on</td>
+<td>When any or a specific user logs in</td>
+</tr>
+<tr>
+<td>At startup</td>
+<td>When Windows starts (before login)</td>
+</tr>
+<tr>
+<td>On an event</td>
+<td>When a specific Windows event log entry appears</td>
+</tr>
+<tr>
+<td>On idle</td>
+<td>When the PC has been idle for a set time</td>
+</tr>
+</tbody>
+</table>
+<p>For a daily schedule: choose <strong>Daily</strong>, set the start time, and set <strong>Recur every 1 days</strong>.</p>
+<h3>Step 4 — Actions Tab</h3>
+<p>Click <strong>New</strong>:</p>
+<ul>
+<li><strong>Action:</strong> Start a program</li>
+<li><strong>Program/script:</strong> the full path to your script or executable</li>
+</ul>
+<p><strong>For a PowerShell script:</strong>
+- Program: <code>powershell.exe</code>
+- Arguments: <code>-ExecutionPolicy Bypass -File "C:\Scripts\myscript.ps1"</code></p>
+<p><strong>For a batch file (.bat):</strong>
+- Program: <code>C:\Scripts\myscript.bat</code></p>
+<p><strong>For a Python script:</strong>
+- Program: <code>C:\Python312\python.exe</code>
+- Arguments: <code>"C:\Scripts\myscript.py"</code></p>
+<blockquote>
+<p><strong>Always use full paths.</strong> Task Scheduler does not inherit your user PATH — <code>python</code> alone will fail. Use <code>C:\Python312\python.exe</code>.</p>
+</blockquote>
+<h3>Step 5 — Conditions Tab</h3>
+<ul>
+<li>Uncheck <strong>Start the task only if the computer is on AC power</strong> if you want it to run on battery too</li>
+<li>Uncheck <strong>Stop if the computer switches to battery power</strong></li>
+<li>If the task needs internet, check <strong>Start only if the following network connection is available</strong></li>
+</ul>
+<h3>Step 6 — Settings Tab</h3>
+<ul>
+<li><strong>Allow task to be run on demand:</strong> check this (lets you test manually)</li>
+<li><strong>If the task fails, restart every:</strong> useful for tasks that might fail occasionally</li>
+<li><strong>Stop the task if it runs longer than:</strong> set a timeout to prevent runaway tasks</li>
+<li><strong>If the task is already running:</strong> choose <strong>Do not start a new instance</strong> for most scripts</li>
+</ul>
+<p>Click <strong>OK</strong> and enter your Windows password to save.</p>
+<hr />
+<h2>Create a Task via PowerShell (Faster for Repeat Setup)</h2>
+<div class="codehilite"><pre><span></span><code><span class="nv">$action</span> <span class="p">=</span> <span class="nb">New-ScheduledTaskAction</span> <span class="n">-Execute</span> <span class="s2">&quot;powershell.exe&quot;</span> <span class="p">`</span>
+  <span class="n">-Argument</span> <span class="s1">&#39;-ExecutionPolicy Bypass -File &quot;C:\Scripts\myscript.ps1&quot;&#39;</span>
+
+<span class="nv">$trigger</span> <span class="p">=</span> <span class="nb">New-ScheduledTaskTrigger</span> <span class="n">-Daily</span> <span class="n">-At</span> <span class="s2">&quot;9:00AM&quot;</span>
+
+<span class="nv">$settings</span> <span class="p">=</span> <span class="nb">New-ScheduledTaskSettingsSet</span> <span class="p">`</span>
+  <span class="n">-RunOnlyIfNetworkAvailable</span> <span class="nv">$false</span> <span class="p">`</span>
+  <span class="n">-WakeToRun</span> <span class="nv">$false</span> <span class="p">`</span>
+  <span class="n">-ExecutionTimeLimit</span> <span class="p">(</span><span class="nb">New-TimeSpan</span> <span class="n">-Hours</span> <span class="n">1</span><span class="p">)</span>
+
+<span class="nb">Register-ScheduledTask</span> <span class="n">-TaskName</span> <span class="s2">&quot;Daily Backup&quot;</span> <span class="p">`</span>
+  <span class="n">-Action</span> <span class="nv">$action</span> <span class="p">`</span>
+  <span class="n">-Trigger</span> <span class="nv">$trigger</span> <span class="p">`</span>
+  <span class="n">-Settings</span> <span class="nv">$settings</span> <span class="p">`</span>
+  <span class="n">-RunLevel</span> <span class="n">Highest</span> <span class="p">`</span>
+  <span class="n">-Force</span>
+</code></pre></div>
+
+<hr />
+<h2>Why Tasks Silently Fail (And How to Fix Each)</h2>
+<h3>Task runs but script does nothing</h3>
+<p>Task Scheduler runs from <code>C:\Windows\System32</code> as the working directory, not your script's folder. Your script may be trying to open files with relative paths that do not exist from that location.</p>
+<p>Fix — set the working directory in the action:
+- In <strong>Actions</strong> → <strong>Edit</strong>, set <strong>Start in (optional)</strong> to the folder your script lives in (e.g. <code>C:\Scripts</code>)</p>
+<h3>"The task has been disabled"</h3>
+<p>Right-click the task → <strong>Enable</strong>.</p>
+<h3>Task shows Last Run Result: <code>0x1</code></h3>
+<p>Exit code 1 — the script ran but returned an error. Run the script manually from PowerShell to see the actual error output.</p>
+<h3>Last Run Result: <code>0x41301</code> — Task is currently running</h3>
+<p>The previous run did not finish. Either the task is stuck or the timeout is too short.</p>
+<h3>Last Run Result: <code>0x8007010B</code> — Directory name is invalid</h3>
+<p>Your script path or working directory path does not exist. Check all paths are correct and use full absolute paths.</p>
+<h3>Task runs when logged in but not when logged out</h3>
+<p>Go to task properties → <strong>General</strong> tab → select <strong>Run whether user is logged on or not</strong> → enter your password. Without this, tasks only run when your user account is active.</p>
+<h3>PowerShell script does not run</h3>
+<p>By default, PowerShell's execution policy blocks scripts. Fix:
+- In the action, use: <code>-ExecutionPolicy Bypass -File "C:\Scripts\script.ps1"</code>
+- Never just set <code>Program: script.ps1</code> — always call <code>powershell.exe</code> with the file as an argument</p>
+<h3>Task runs but produces no output / cannot see errors</h3>
+<p>Add logging to your script:</p>
+<p><strong>PowerShell:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="nb">Start-Transcript</span> <span class="n">-Path</span> <span class="s2">&quot;C:\Logs\myscript-log.txt&quot;</span> <span class="n">-Append</span>
+<span class="c"># your script here</span>
+<span class="nb">Stop-Transcript</span>
+</code></pre></div>
+
+<p><strong>Batch file:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="p">@</span><span class="k">echo</span> off
+<span class="k">call</span> myscript.bat <span class="p">&gt;&gt;</span> C:\Logs\myscript-log.txt <span class="mi">2</span><span class="p">&gt;&amp;</span><span class="mi">1</span>
+</code></pre></div>
+
+<p>Then check the log file after the task runs.</p>
+<hr />
+<h2>View Task History</h2>
+<ol>
+<li>In Task Scheduler, click on your task.</li>
+<li>Click the <strong>History</strong> tab at the bottom.</li>
+<li>Each run is listed with its result code and duration.</li>
+</ol>
+<p>If History is empty, enable it: in the left panel, click <strong>Task Scheduler Library</strong> → in the right panel click <strong>Enable All Tasks History</strong>.</p>
+<hr />
+<h2>Export and Import Tasks</h2>
+<p><strong>Export a task</strong> (save as XML for backup or to move to another machine):</p>
+<p>Right-click the task → <strong>Export</strong>.</p>
+<p><strong>Import a task:</strong></p>
+<p>In the right panel → <strong>Import Task</strong> → select the XML file.</p>
+<p><strong>Export via PowerShell:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="nb">Export-ScheduledTask</span> <span class="n">-TaskName</span> <span class="s2">&quot;Daily Backup&quot;</span> <span class="p">|</span> <span class="nb">Out-File</span> <span class="s2">&quot;C:\Backup\DailyBackup.xml&quot;</span>
+</code></pre></div>
+
+<p><strong>Import via PowerShell:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="nb">Register-ScheduledTask</span> <span class="n">-Xml</span> <span class="p">(</span><span class="nb">Get-Content</span> <span class="s2">&quot;C:\Backup\DailyBackup.xml&quot;</span> <span class="p">|</span> <span class="nb">Out-String</span><span class="p">)</span> <span class="n">-TaskName</span> <span class="s2">&quot;Daily Backup&quot;</span> <span class="n">-Force</span>
+</code></pre></div>

@@ -1,0 +1,151 @@
+DATA:linux:Set Up a Printer on Linux (CUPS):Linux
+<h1>Set Up a Printer on Linux (CUPS)</h1>
+<p>CUPS (Common Unix Printing System) is how Linux handles all printing. It works for USB printers, network printers, and wireless printers. Most modern printers work without manual driver installation — but when they do not, this guide covers that too.</p>
+<hr />
+<h2>Step 1 — Install CUPS</h2>
+<p><strong>Ubuntu / Debian / Linux Mint:</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>cups<span class="w"> </span>cups-client<span class="w"> </span>-y
+</code></pre></div>
+
+<p><strong>Fedora:</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>cups<span class="w"> </span>-y
+</code></pre></div>
+
+<p><strong>Arch:</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>cups
+</code></pre></div>
+
+<p>Start and enable CUPS:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>cups
+</code></pre></div>
+
+<hr />
+<h2>Step 2 — Add Your User to the lpadmin Group</h2>
+<p>Without this, you cannot manage printers without root:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>usermod<span class="w"> </span>-aG<span class="w"> </span>lpadmin<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span>
+</code></pre></div>
+
+<p>Log out and back in for the group change to take effect.</p>
+<hr />
+<h2>Step 3 — Open the CUPS Web Interface</h2>
+<p>Open your browser and go to:</p>
+<div class="codehilite"><pre><span></span><code>http://localhost:631
+</code></pre></div>
+
+<p>Click <strong>Administration</strong> → <strong>Add Printer</strong>.</p>
+<p>When it asks for a username and password, use your <strong>Linux login credentials</strong> (the same ones you use to log in to your computer).</p>
+<hr />
+<h2>Step 4 — Add a USB Printer</h2>
+<ol>
+<li>Connect the printer via USB and power it on.</li>
+<li>Go to <code>http://localhost:631</code> → <strong>Administration</strong> → <strong>Add Printer</strong>.</li>
+<li>Your printer should appear under <strong>Local Printers</strong>. Select it and click <strong>Continue</strong>.</li>
+<li>Give it a name → <strong>Continue</strong>.</li>
+<li>Select a driver — CUPS will suggest one. If the exact model is listed, use it. If not, try the generic driver for your manufacturer.</li>
+<li>Click <strong>Add Printer</strong> → <strong>Set Default Options</strong> → <strong>Set Default Options</strong>.</li>
+</ol>
+<p>Print a test page: go to <strong>Printers</strong> → select your printer → <strong>Print Test Page</strong>.</p>
+<hr />
+<h2>Step 5 — Add a Network / Wireless Printer</h2>
+<p>Make sure the printer is on the same network as your Linux machine.</p>
+<ol>
+<li>Go to <code>http://localhost:631</code> → <strong>Administration</strong> → <strong>Add Printer</strong>.</li>
+<li>Look under <strong>Discovered Network Printers</strong> — most modern printers appear here automatically via Bonjour/IPP.</li>
+<li>If it does not appear, select <strong>LPD/LPR Host or Printer</strong> or <strong>Internet Printing Protocol (IPP)</strong> and enter the printer's IP address manually:</li>
+<li>For IPP (most common): <code>ipp://192.168.1.x/ipp/print</code></li>
+<li>For HP JetDirect: <code>socket://192.168.1.x:9100</code></li>
+<li>Select the driver and complete the setup as in Step 4.</li>
+</ol>
+<p>To find your printer's IP: check your router's connected devices list, or print a configuration page from the printer's front panel menu.</p>
+<hr />
+<h2>Manufacturer-Specific Drivers</h2>
+<h3>HP Printers</h3>
+<p>HP has excellent Linux support via HPLIP:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>hplip<span class="w"> </span>hplip-gui<span class="w"> </span>-y<span class="w">   </span><span class="c1"># Ubuntu/Debian</span>
+sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>hplip<span class="w"> </span>-y<span class="w">              </span><span class="c1"># Fedora</span>
+</code></pre></div>
+
+<p>Run the HP setup tool:</p>
+<div class="codehilite"><pre><span></span><code>hp-setup
+</code></pre></div>
+
+<p>Follow the GUI wizard — it detects your HP printer and installs the right driver automatically.</p>
+<h3>Brother Printers</h3>
+<p>Brother provides Linux drivers on their website:</p>
+<ol>
+<li>Go to <a href="https://support.brother.com">support.brother.com</a>, find your model, and download the Linux driver (<code>.deb</code> for Ubuntu/Debian, <code>.rpm</code> for Fedora).</li>
+<li>Install it:
+   <code>bash
+   sudo dpkg -i brother-*.deb     # Ubuntu/Debian
+   sudo rpm -i brother-*.rpm      # Fedora</code></li>
+<li>Then add the printer via CUPS as normal.</li>
+</ol>
+<h3>Epson Printers</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>printer-driver-escpr<span class="w"> </span>-y<span class="w">   </span><span class="c1"># Ubuntu/Debian</span>
+</code></pre></div>
+
+<p>Covers most Epson inkjet models.</p>
+<h3>Canon Printers</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>cups-backend-bjnp<span class="w"> </span>-y<span class="w">   </span><span class="c1"># For network Canon printers</span>
+</code></pre></div>
+
+<hr />
+<h2>Manage Printers from the Desktop</h2>
+<p>Instead of the CUPS web interface, most desktop environments have a built-in printer manager:</p>
+<p><strong>GNOME (Ubuntu):</strong> Settings → Printers</p>
+<p><strong>KDE:</strong> System Settings → Printers</p>
+<p><strong>XFCE:</strong> Settings → Printers</p>
+<hr />
+<h2>Command-Line Printing</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Print a file</span>
+lp<span class="w"> </span>document.pdf
+
+<span class="c1"># Print to a specific printer</span>
+lp<span class="w"> </span>-d<span class="w"> </span>PrinterName<span class="w"> </span>document.pdf
+
+<span class="c1"># Print multiple copies</span>
+lp<span class="w"> </span>-n<span class="w"> </span><span class="m">3</span><span class="w"> </span>document.pdf
+
+<span class="c1"># Check print queue</span>
+lpq
+
+<span class="c1"># Cancel a print job (get job ID from lpq)</span>
+lprm<span class="w"> </span>JOB_ID
+
+<span class="c1"># List all printers</span>
+lpstat<span class="w"> </span>-p
+
+<span class="c1"># Check printer status</span>
+lpstat<span class="w"> </span>-d
+</code></pre></div>
+
+<hr />
+<h2>Troubleshooting</h2>
+<h3>Printer detected but jobs stay queued / never print</h3>
+<p>Check the CUPS error log:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/cups/error_log
+</code></pre></div>
+
+<p>The log shows exactly why jobs are failing. Common causes: wrong driver, wrong connection URI, or printer offline.</p>
+<h3>CUPS service fails to start</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>cups
+journalctl<span class="w"> </span>-u<span class="w"> </span>cups<span class="w"> </span>--since<span class="w"> </span><span class="s2">&quot;5 minutes ago&quot;</span>
+</code></pre></div>
+
+<p>If the config is corrupted:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>mv<span class="w"> </span>/etc/cups/cupsd.conf<span class="w"> </span>/etc/cups/cupsd.conf.bak
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>cups
+</code></pre></div>
+
+<p>CUPS regenerates a default config automatically.</p>
+<h3>Network printer keeps going offline</h3>
+<p>Set a static IP for the printer in your router (DHCP reservation), then re-add it using the static IP instead of a hostname. Hostnames can change; IPs stay fixed.</p>
+<h3>"Filter failed" error</h3>
+<p>The driver or filter is missing. Install <code>foomatic-db</code> and <code>foomatic-filters</code>:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>foomatic-db<span class="w"> </span>foomatic-filters<span class="w"> </span>cups-filters<span class="w"> </span>-y
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>cups
+</code></pre></div>
+
+<h3>Printer needs a PPD file</h3>
+<p>Some older printers require a PPD (PostScript Printer Description) file. Search <a href="https://openprinting.org/printers">openprinting.org/printers</a> for your model and download the PPD. When adding the printer in CUPS, choose <strong>Or Provide a PPD File</strong> and upload it.</p>

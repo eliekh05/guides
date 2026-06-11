@@ -1,0 +1,135 @@
+DATA:linux:Download Files with curl and wget (macOS and Linux):Linux
+<h1>Download Files with curl and wget (macOS and Linux)</h1>
+<p>Both tools download files from the internet via Terminal. <code>curl</code> is more flexible and available on macOS by default. <code>wget</code> is simpler for basic downloads and better at resuming interrupted transfers.</p>
+<hr />
+<h2>curl</h2>
+<h3>Download a file</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-O<span class="w"> </span>https://example.com/file.zip<span class="w">          </span><span class="c1"># save with original filename</span>
+curl<span class="w"> </span>-o<span class="w"> </span>myfile.zip<span class="w"> </span>https://example.com/file.zip<span class="w">   </span><span class="c1"># save with custom name</span>
+curl<span class="w"> </span>-L<span class="w"> </span>-O<span class="w"> </span>https://example.com/file.zip<span class="w">       </span><span class="c1"># follow redirects (-L is often needed)</span>
+</code></pre></div>
+
+<h3>Download and pipe to command</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://get.docker.com<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh<span class="w">        </span><span class="c1"># download and run installer script</span>
+curl<span class="w"> </span>https://api.example.com<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w">             </span><span class="c1"># download JSON and pretty-print it</span>
+</code></pre></div>
+
+<h3>Show progress / suppress output</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-#<span class="w"> </span>-O<span class="w"> </span>https://example.com/file.zip<span class="w">       </span><span class="c1"># progress bar</span>
+curl<span class="w"> </span>-s<span class="w"> </span>https://example.com/file.zip<span class="w"> </span>-o<span class="w"> </span>file.zip<span class="w">  </span><span class="c1"># silent</span>
+curl<span class="w"> </span>-S<span class="w"> </span>-s<span class="w"> </span>https://...<span class="w"> </span>-o<span class="w"> </span>file.zip<span class="w">            </span><span class="c1"># silent but show errors</span>
+</code></pre></div>
+
+<h3>Resume interrupted download</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-C<span class="w"> </span>-<span class="w"> </span>-O<span class="w"> </span>https://example.com/largefile.iso
+</code></pre></div>
+
+<h3>Download with authentication</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-u<span class="w"> </span>username:password<span class="w"> </span>https://example.com/private/file
+curl<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer TOKEN&quot;</span><span class="w"> </span>https://api.example.com/data
+</code></pre></div>
+
+<h3>Send POST request</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;key=value&amp;key2=value2&quot;</span><span class="w"> </span>https://example.com/api
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;key&quot;: &quot;value&quot;}&#39;</span><span class="w"> </span>https://api.example.com
+</code></pre></div>
+
+<h3>Check headers without downloading body</h3>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-I<span class="w"> </span>https://example.com<span class="w">               </span><span class="c1"># HEAD request</span>
+curl<span class="w"> </span>-v<span class="w"> </span>https://example.com<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w">  </span><span class="c1"># verbose with headers</span>
+</code></pre></div>
+
+<h3>Install curl (if missing)</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>curl<span class="w"> </span>-y<span class="w">     </span><span class="c1"># Ubuntu/Debian</span>
+sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>curl<span class="w"> </span>-y<span class="w">     </span><span class="c1"># Fedora</span>
+brew<span class="w"> </span>install<span class="w"> </span>curl<span class="w">            </span><span class="c1"># macOS (updates beyond system version)</span>
+</code></pre></div>
+
+<hr />
+<h2>wget</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>wget<span class="w"> </span>-y<span class="w">     </span><span class="c1"># Ubuntu/Debian</span>
+sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>wget<span class="w"> </span>-y<span class="w">     </span><span class="c1"># Fedora</span>
+brew<span class="w"> </span>install<span class="w"> </span>wget<span class="w">            </span><span class="c1"># macOS (not installed by default)</span>
+</code></pre></div>
+
+<h3>Download a file</h3>
+<div class="codehilite"><pre><span></span><code>wget<span class="w"> </span>https://example.com/file.zip
+wget<span class="w"> </span>-O<span class="w"> </span>myfile.zip<span class="w"> </span>https://example.com/file.zip<span class="w">   </span><span class="c1"># custom filename</span>
+</code></pre></div>
+
+<h3>Resume interrupted download</h3>
+<div class="codehilite"><pre><span></span><code>wget<span class="w"> </span>-c<span class="w"> </span>https://example.com/largefile.iso
+</code></pre></div>
+
+<h3>Download quietly</h3>
+<div class="codehilite"><pre><span></span><code>wget<span class="w"> </span>-q<span class="w"> </span>https://example.com/file.zip
+</code></pre></div>
+
+<h3>Download in background</h3>
+<div class="codehilite"><pre><span></span><code>wget<span class="w"> </span>-b<span class="w"> </span>https://example.com/largefile.iso
+tail<span class="w"> </span>-f<span class="w"> </span>wget-log<span class="w">                                  </span><span class="c1"># check progress</span>
+</code></pre></div>
+
+<h3>Mirror a website</h3>
+<div class="codehilite"><pre><span></span><code>wget<span class="w"> </span>--mirror<span class="w"> </span>--convert-links<span class="w"> </span>--adjust-extension<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--page-requisites<span class="w"> </span>--no-parent<span class="w"> </span>https://example.com
+</code></pre></div>
+
+<h3>Download multiple files from a list</h3>
+<div class="codehilite"><pre><span></span><code>wget<span class="w"> </span>-i<span class="w"> </span>urls.txt<span class="w">           </span><span class="c1"># urls.txt has one URL per line</span>
+</code></pre></div>
+
+<hr />
+<h2>curl vs wget — Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>curl</th>
+<th>wget</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Download file</td>
+<td><code>curl -LO url</code></td>
+<td><code>wget url</code></td>
+</tr>
+<tr>
+<td>Custom filename</td>
+<td><code>curl -o name url</code></td>
+<td><code>wget -O name url</code></td>
+</tr>
+<tr>
+<td>Resume download</td>
+<td><code>curl -C - -O url</code></td>
+<td><code>wget -c url</code></td>
+</tr>
+<tr>
+<td>Follow redirects</td>
+<td><code>curl -L url</code></td>
+<td>automatic</td>
+</tr>
+<tr>
+<td>POST request</td>
+<td><code>curl -X POST -d data url</code></td>
+<td><code>wget --post-data=data url</code></td>
+</tr>
+<tr>
+<td>API calls</td>
+<td><code>curl</code> (better)</td>
+<td>not ideal</td>
+</tr>
+<tr>
+<td>Mirror site</td>
+<td>not ideal</td>
+<td><code>wget --mirror</code></td>
+</tr>
+<tr>
+<td>macOS built-in</td>
+<td>✅ yes</td>
+<td>❌ no</td>
+</tr>
+</tbody>
+</table>

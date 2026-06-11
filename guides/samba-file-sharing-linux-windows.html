@@ -1,0 +1,101 @@
+DATA:server:Samba File Sharing Between Linux and Windows:Server & Self-Hosting
+<h1>Samba File Sharing Between Linux and Windows</h1>
+<p>Samba implements the SMB protocol on Linux — the same protocol Windows uses for file sharing. With Samba you can share Linux folders and access them from Windows, macOS, or other Linux machines exactly like a network drive.</p>
+<hr />
+<h2>Install Samba</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>samba<span class="w"> </span>samba-common<span class="w"> </span>-y<span class="w">     </span><span class="c1"># Ubuntu/Debian</span>
+sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>samba<span class="w"> </span>samba-client<span class="w"> </span>-y<span class="w">     </span><span class="c1"># Fedora/RHEL</span>
+sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>samba<span class="w">                        </span><span class="c1"># Arch</span>
+
+sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>smbd<span class="w"> </span>nmbd
+</code></pre></div>
+
+<hr />
+<h2>Create a Shared Folder</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/srv/shared
+sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">2777</span><span class="w"> </span>/srv/shared<span class="w">           </span><span class="c1"># sticky bit + full permissions</span>
+sudo<span class="w"> </span>chown<span class="w"> </span>nobody:nogroup<span class="w"> </span>/srv/shared
+</code></pre></div>
+
+<hr />
+<h2>Configure a Share</h2>
+<p>Edit <code>/etc/samba/smb.conf</code>:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/samba/smb.conf
+</code></pre></div>
+
+<p>Add at the end of the file:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[SharedFolder]</span>
+<span class="w">   </span><span class="na">comment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">Shared Files</span>
+<span class="w">   </span><span class="na">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/srv/shared</span>
+<span class="w">   </span><span class="na">browsable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">yes</span>
+<span class="w">   </span><span class="na">writable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">yes</span>
+<span class="w">   </span><span class="na">guest ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">yes</span>
+<span class="w">   </span><span class="na">read only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">no</span>
+<span class="w">   </span><span class="na">create mask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0664</span>
+<span class="w">   </span><span class="na">directory mask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">2775</span>
+</code></pre></div>
+
+<p>For a <strong>password-protected share</strong> (replace <code>guest ok = yes</code> with):</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[SecureShare]</span>
+<span class="w">   </span><span class="na">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/srv/secure</span>
+<span class="w">   </span><span class="na">valid users</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">john</span>
+<span class="w">   </span><span class="na">writable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">yes</span>
+<span class="w">   </span><span class="na">read only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">no</span>
+<span class="w">   </span><span class="na">browsable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">yes</span>
+</code></pre></div>
+
+<hr />
+<h2>Test Config and Restart</h2>
+<div class="codehilite"><pre><span></span><code>testparm<span class="w">                               </span><span class="c1"># validate smb.conf</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>smbd<span class="w"> </span>nmbd
+</code></pre></div>
+
+<hr />
+<h2>Create a Samba User (For Password-Protected Shares)</h2>
+<p>The Samba user must exist as a Linux user first:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>useradd<span class="w"> </span>-M<span class="w"> </span>john<span class="w">                   </span><span class="c1"># create linux user without home dir</span>
+sudo<span class="w"> </span>smbpasswd<span class="w"> </span>-a<span class="w"> </span>john<span class="w">                 </span><span class="c1"># set Samba password</span>
+sudo<span class="w"> </span>smbpasswd<span class="w"> </span>-e<span class="w"> </span>john<span class="w">                 </span><span class="c1"># enable the account</span>
+</code></pre></div>
+
+<hr />
+<h2>Open Firewall</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>ufw<span class="w"> </span>allow<span class="w"> </span>samba<span class="w">                   </span><span class="c1"># UFW</span>
+sudo<span class="w"> </span>firewall-cmd<span class="w"> </span>--add-service<span class="o">=</span>samba<span class="w"> </span>--permanent<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>firewall-cmd<span class="w"> </span>--reload<span class="w">  </span><span class="c1"># firewalld</span>
+</code></pre></div>
+
+<hr />
+<h2>Connect From Windows</h2>
+<p>Open File Explorer → address bar → type:</p>
+<div class="codehilite"><pre><span></span><code>\\SERVER_IP\SharedFolder
+</code></pre></div>
+
+<p>Or map as a network drive: right-click <strong>This PC</strong> → <strong>Map network drive</strong> → enter <code>\\SERVER_IP\SharedFolder</code>.</p>
+<hr />
+<h2>Connect From macOS</h2>
+<p>Finder → <strong>Go</strong> → <strong>Connect to Server</strong> → enter:</p>
+<div class="codehilite"><pre><span></span><code>smb://SERVER_IP/SharedFolder
+</code></pre></div>
+
+<hr />
+<h2>Connect From Linux</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Mount temporarily</span>
+sudo<span class="w"> </span>mount<span class="w"> </span>-t<span class="w"> </span>cifs<span class="w"> </span>//SERVER_IP/SharedFolder<span class="w"> </span>/mnt/shared<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-o<span class="w"> </span><span class="nv">username</span><span class="o">=</span>john,password<span class="o">=</span>yourpassword
+
+<span class="c1"># Mount permanently via /etc/fstab</span>
+//SERVER_IP/SharedFolder<span class="w">  </span>/mnt/shared<span class="w">  </span>cifs<span class="w">  </span><span class="nv">username</span><span class="o">=</span>john,password<span class="o">=</span>pass,iocharset<span class="o">=</span>utf8<span class="w">  </span><span class="m">0</span><span class="w">  </span><span class="m">0</span>
+
+<span class="c1"># Install client tools if needed</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>cifs-utils<span class="w"> </span>-y
+</code></pre></div>
+
+<hr />
+<h2>Common Issues</h2>
+<p><strong>Share not visible in network browser</strong> — nmbd is not running: <code>sudo systemctl start nmbd</code></p>
+<p><strong>Access denied</strong> — wrong Samba password or user not enabled: <code>sudo smbpasswd -e username</code></p>
+<p><strong>Cannot write files</strong> — check directory permissions: <code>ls -la /srv/shared</code> — should show <code>drwxrwxrwt</code></p>
+<p><strong>SELinux blocking (Fedora/RHEL)</strong>:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>setsebool<span class="w"> </span>-P<span class="w"> </span>samba_export_all_rw<span class="w"> </span><span class="m">1</span>
+sudo<span class="w"> </span>chcon<span class="w"> </span>-R<span class="w"> </span>-t<span class="w"> </span>samba_share_t<span class="w"> </span>/srv/shared
+</code></pre></div>

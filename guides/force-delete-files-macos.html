@@ -1,0 +1,132 @@
+DATA:system-users:Force Delete Files That Won't Delete on macOS:System & Users
+<h1>Force Delete Files That Won't Delete on macOS</h1>
+<p>"The item can't be moved to the Trash because it can't be deleted." — macOS shows this for several different reasons and each one has a different fix. This guide covers all of them in order from most to least common.</p>
+<hr />
+<h2>Fix 1 — Force Empty Trash</h2>
+<p>If files are stuck in the Trash:</p>
+<ol>
+<li>Hold <strong>Option (⌥)</strong> and click the Trash icon in the Dock.</li>
+<li>Or hold <strong>Option</strong> while clicking <strong>Finder</strong> → <strong>Empty Trash</strong> in the menu bar.</li>
+</ol>
+<p>The Option key tells macOS to skip the "file is in use" check and delete regardless.</p>
+<hr />
+<h2>Fix 2 — File Is In Use — Find and Quit the App Using It</h2>
+<p>macOS will not delete a file that is open in any app.</p>
+<p><strong>Find what is using the file:</strong>
+1. Open <strong>Activity Monitor</strong> (Applications → Utilities → Activity Monitor).
+2. Go to <strong>File</strong> → <strong>Open Files and Ports</strong> or use the search bar to search for the filename.
+3. Quit the process that has the file open.</p>
+<p>Or use Terminal to find and kill the process:</p>
+<div class="codehilite"><pre><span></span><code>lsof<span class="w"> </span>/path/to/file
+</code></pre></div>
+
+<p>This shows which process has the file open. Note the PID (process ID) and kill it:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">kill</span><span class="w"> </span>-9<span class="w"> </span>PID_NUMBER
+</code></pre></div>
+
+<p>Then delete the file normally.</p>
+<hr />
+<h2>Fix 3 — Delete via Terminal</h2>
+<p>Finder sometimes refuses to delete files that Terminal can remove without issue:</p>
+<div class="codehilite"><pre><span></span><code>rm<span class="w"> </span>/path/to/file
+</code></pre></div>
+
+<p>For a folder and everything inside it:</p>
+<div class="codehilite"><pre><span></span><code>rm<span class="w"> </span>-rf<span class="w"> </span>/path/to/folder
+</code></pre></div>
+
+<blockquote>
+<p><strong>Warning:</strong> <code>rm -rf</code> deletes permanently with no Trash. Double-check the path before running.</p>
+</blockquote>
+<p><strong>Tip:</strong> Instead of typing the path, drag the file from Finder directly into the Terminal window to auto-fill the correct path.</p>
+<hr />
+<h2>Fix 4 — File Is Locked — Remove the Lock Flag</h2>
+<p>macOS has a "locked" flag that prevents deletion. To remove it:</p>
+<div class="codehilite"><pre><span></span><code>chflags<span class="w"> </span>nouchg<span class="w"> </span>/path/to/file
+</code></pre></div>
+
+<p>For a folder recursively:</p>
+<div class="codehilite"><pre><span></span><code>chflags<span class="w"> </span>-R<span class="w"> </span>nouchg<span class="w"> </span>/path/to/folder
+</code></pre></div>
+
+<p>Then try deleting again. You can also unlock files in Finder: right-click the file → <strong>Get Info</strong> → uncheck <strong>Locked</strong>.</p>
+<hr />
+<h2>Fix 5 — Wrong Permissions — Take Ownership</h2>
+<p>If the file is owned by another user or by root, you may not have permission to delete it:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span>/path/to/file
+sudo<span class="w"> </span>rm<span class="w"> </span>/path/to/file
+</code></pre></div>
+
+<p>For a folder:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span>/path/to/folder
+sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/path/to/folder
+</code></pre></div>
+
+<hr />
+<h2>Fix 6 — File Name Has Special Characters</h2>
+<p>Files with invisible characters, spaces, or special symbols in their name can be impossible to delete by name. Use the inode number instead:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Get the inode number</span>
+ls<span class="w"> </span>-i<span class="w"> </span>/path/to/problematic/folder/
+
+<span class="c1"># Delete by inode (replace 12345 with actual inode number)</span>
+find<span class="w"> </span>/path/to/folder<span class="w"> </span>-inum<span class="w"> </span><span class="m">12345</span><span class="w"> </span>-delete
+</code></pre></div>
+
+<hr />
+<h2>Fix 7 — File Is in Use by macOS Itself</h2>
+<p>Some files are held open by macOS system processes. Restart your Mac and try deleting immediately on next login before opening any apps.</p>
+<p>If that does not work, boot into <strong>Safe Mode</strong> (hold Shift at startup on Intel, or hold power until you see options on Apple Silicon) and delete from there — Safe Mode disables most background processes.</p>
+<hr />
+<h2>Fix 8 — Protected by SIP (System Files)</h2>
+<p>Files inside <code>/System</code>, <code>/usr/bin</code>, <code>/sbin</code>, and other system paths are protected by SIP (System Integrity Protection). You cannot delete them even with <code>sudo</code>.</p>
+<p>You should almost never need to delete system files. If you genuinely need to:
+1. Boot into Recovery Mode and disable SIP (see the <strong>Disable and Enable SIP</strong> guide).
+2. Delete the file.
+3. Re-enable SIP immediately.</p>
+<hr />
+<h2>Fix 9 — External Drive File Permissions Issue</h2>
+<p>Files copied from NTFS drives, network shares, or external drives sometimes have permissions that prevent deletion on APFS:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/path/to/file
+</code></pre></div>
+
+<p>If the external drive is NTFS, macOS mounts it read-only by default. You may need to install <strong>Paragon NTFS</strong> or <strong>Tuxera NTFS</strong> for write access, or delete the file on a Windows machine.</p>
+<hr />
+<h2>Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Error / Situation</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File stuck in Trash</td>
+<td>Fix 1 — Option + Empty Trash</td>
+</tr>
+<tr>
+<td>"File is in use"</td>
+<td>Fix 2 — find and quit the app</td>
+</tr>
+<tr>
+<td>Finder refuses, no error</td>
+<td>Fix 3 — delete via Terminal</td>
+</tr>
+<tr>
+<td>File shows lock icon</td>
+<td>Fix 4 — <code>chflags nouchg</code></td>
+</tr>
+<tr>
+<td>"Permission denied"</td>
+<td>Fix 5 — <code>sudo chown</code> then <code>sudo rm</code></td>
+</tr>
+<tr>
+<td>Weird filename / won't type</td>
+<td>Fix 6 — delete by inode</td>
+</tr>
+<tr>
+<td>System file</td>
+<td>Fix 8 — disable SIP temporarily</td>
+</tr>
+</tbody>
+</table>

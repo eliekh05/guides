@@ -1,0 +1,152 @@
+DATA:scheduling:Fix cron Jobs Not Running:Task Scheduling
+<h1>Fix cron Jobs Not Running</h1>
+<p><code>cron</code> is a classic Unix tool for scheduling tasks. It still exists on macOS but has several limitations that cause jobs to silently fail. This guide explains why, and gives you working solutions.</p>
+<hr />
+<h2>Why cron Jobs Fail on macOS</h2>
+<h3>1. The Mac was asleep</h3>
+<p><code>cron</code> requires the system to be awake at the exact scheduled time. If your Mac is asleep, the job is <strong>skipped entirely</strong> — it does not run when the Mac wakes up.</p>
+<h3>2. No PATH or shell environment</h3>
+<p>Just like <code>launchd</code>, <code>cron</code> runs with a minimal environment. Commands like <code>brew</code>, <code>python3</code>, or scripts that rely on your <code>.zshrc</code> setup will fail with "command not found".</p>
+<h3>3. Full Disk Access not granted</h3>
+<p>Since macOS Catalina, <code>cron</code> (and the <code>crontab</code> process) needs Full Disk Access to read or write to protected folders. Without it, jobs that touch files in Desktop, Documents, Downloads, etc. will fail silently.</p>
+<h3>4. cron is not recommended by Apple</h3>
+<p>Apple officially deprecated <code>cron</code> in favor of <code>launchd</code>. While <code>cron</code> still works for simple tasks, it will never run missed jobs after a sleep, does not integrate with macOS power management, and gets no active development.</p>
+<hr />
+<h2>Fix 1 — Use Full Paths in Your cron Commands</h2>
+<p>Replace every command with its full path:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Wrong — may fail in cron</span>
+<span class="m">0</span><span class="w"> </span><span class="m">9</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>brew<span class="w"> </span>update
+
+<span class="c1"># Correct</span>
+<span class="m">0</span><span class="w"> </span><span class="m">9</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/opt/homebrew/bin/brew<span class="w"> </span>update<span class="w">       </span><span class="c1"># Apple Silicon</span>
+<span class="m">0</span><span class="w"> </span><span class="m">9</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/usr/local/bin/brew<span class="w"> </span>update<span class="w">          </span><span class="c1"># Intel Mac</span>
+</code></pre></div>
+
+<p>To find the full path of any command:</p>
+<div class="codehilite"><pre><span></span><code>which<span class="w"> </span>brew
+which<span class="w"> </span>python3
+which<span class="w"> </span>node
+</code></pre></div>
+
+<hr />
+<h2>Fix 2 — Grant Full Disk Access to cron</h2>
+<ol>
+<li>Open <strong>System Settings</strong> → <strong>Privacy &amp; Security</strong> → <strong>Full Disk Access</strong>.</li>
+<li>Click the <strong>+</strong> button.</li>
+<li>Press <strong>Command (⌘) + Shift + G</strong> to open the Go to Folder dialog.</li>
+<li>Type <code>/usr/sbin/</code> and press Enter.</li>
+<li>Select <strong>cron</strong> and click <strong>Open</strong>.</li>
+<li>Make sure the toggle next to <code>cron</code> is <strong>on</strong>.</li>
+</ol>
+<hr />
+<h2>Fix 3 — Add a Shell and PATH to Your crontab</h2>
+<p>At the top of your crontab, explicitly define the shell and PATH:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">SHELL</span><span class="o">=</span>/bin/zsh
+<span class="nv">PATH</span><span class="o">=</span>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+
+<span class="c1"># Your jobs below</span>
+<span class="m">0</span><span class="w"> </span><span class="m">9</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/path/to/your/script.sh
+</code></pre></div>
+
+<p>Open your crontab to edit it:</p>
+<div class="codehilite"><pre><span></span><code>crontab<span class="w"> </span>-e
+</code></pre></div>
+
+<hr />
+<h2>Fix 4 — Add Logging to See What Is Failing</h2>
+<p>Redirect output to a log file so you can see what is happening:</p>
+<div class="codehilite"><pre><span></span><code><span class="m">0</span><span class="w"> </span><span class="m">9</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/path/to/script.sh<span class="w"> </span>&gt;&gt;<span class="w"> </span>/tmp/myjob.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</code></pre></div>
+
+<ul>
+<li><code>&gt;&gt;</code> appends output to the log file</li>
+<li><code>2&gt;&amp;1</code> redirects error messages to the same log</li>
+</ul>
+<p>After the scheduled time, check the log:</p>
+<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>/tmp/myjob.log
+</code></pre></div>
+
+<hr />
+<h2>Fix 5 — Switch to launchd for Reliable Scheduling</h2>
+<p>If your job must run even after the Mac wakes from sleep, use <code>launchd</code> instead of <code>cron</code>. <code>launchd</code> is macOS-native, integrates with power management, and can run missed jobs on wake.</p>
+<p>Create a plist file at <code>~/Library/LaunchAgents/com.yourname.yourjob.plist</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="cp">&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot;</span>
+<span class="cp">  &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;</span>
+<span class="nt">&lt;plist</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;dict&gt;</span>
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>Label<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;string&gt;</span>com.yourname.yourjob<span class="nt">&lt;/string&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>EnvironmentVariables<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;dict&gt;</span>
+<span class="w">        </span><span class="nt">&lt;key&gt;</span>PATH<span class="nt">&lt;/key&gt;</span>
+<span class="w">        </span><span class="nt">&lt;string&gt;</span>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin<span class="nt">&lt;/string&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/dict&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>ProgramArguments<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;array&gt;</span>
+<span class="w">        </span><span class="nt">&lt;string&gt;</span>/bin/zsh<span class="nt">&lt;/string&gt;</span>
+<span class="w">        </span><span class="nt">&lt;string&gt;</span>/Users/yourname/scripts/yourscript.zsh<span class="nt">&lt;/string&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/array&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>StartCalendarInterval<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;dict&gt;</span>
+<span class="w">        </span><span class="nt">&lt;key&gt;</span>Hour<span class="nt">&lt;/key&gt;</span>
+<span class="w">        </span><span class="nt">&lt;integer&gt;</span>9<span class="nt">&lt;/integer&gt;</span>
+<span class="w">        </span><span class="nt">&lt;key&gt;</span>Minute<span class="nt">&lt;/key&gt;</span>
+<span class="w">        </span><span class="nt">&lt;integer&gt;</span>0<span class="nt">&lt;/integer&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/dict&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>StandardOutPath<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;string&gt;</span>/tmp/yourjob.log<span class="nt">&lt;/string&gt;</span>
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>StandardErrorPath<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;string&gt;</span>/tmp/yourjob-error.log<span class="nt">&lt;/string&gt;</span>
+<span class="nt">&lt;/dict&gt;</span>
+<span class="nt">&lt;/plist&gt;</span>
+</code></pre></div>
+
+<p>Load it:</p>
+<div class="codehilite"><pre><span></span><code>launchctl<span class="w"> </span>load<span class="w"> </span>~/Library/LaunchAgents/com.yourname.yourjob.plist
+</code></pre></div>
+
+<p>See the companion guide <strong>"Fix launchd / plist Scripts Not Running (macOS)"</strong> for more detail on launchd troubleshooting.</p>
+<hr />
+<h2>cron vs launchd — Quick Comparison</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>cron</th>
+<th>launchd</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Runs missed jobs after sleep</td>
+<td>❌ No</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td>Loads PATH automatically</td>
+<td>❌ No</td>
+<td>❌ No (must set manually)</td>
+</tr>
+<tr>
+<td>GUI tools available</td>
+<td>Some</td>
+<td>Lingon X</td>
+</tr>
+<tr>
+<td>Apple recommended</td>
+<td>❌ Deprecated</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td>Easy to set up quickly</td>
+<td>✅ Yes</td>
+<td>❌ More verbose</td>
+</tr>
+</tbody>
+</table>
+<p>For simple one-off tests, <code>cron</code> is fine. For anything that needs to run reliably on a Mac, use <code>launchd</code>.</p>

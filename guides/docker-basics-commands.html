@@ -1,0 +1,108 @@
+DATA:server:Docker Basics — Commands You Actually Use:Server & Self-Hosting
+<h1>Docker Basics — Commands You Actually Use</h1>
+<hr />
+<h2>Install Docker</h2>
+<p><strong>Ubuntu/Debian (official method):</strong></p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://get.docker.com<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
+sudo<span class="w"> </span>usermod<span class="w"> </span>-aG<span class="w"> </span>docker<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span>
+</code></pre></div>
+
+<p>Log out and back in — this lets you run <code>docker</code> without <code>sudo</code>.</p>
+<p><strong>macOS:</strong>
+Download Docker Desktop from <a href="https://www.docker.com/products/docker-desktop/">docker.com</a>.</p>
+<hr />
+<h2>Run a Container</h2>
+<div class="codehilite"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>hello-world<span class="w">                    </span><span class="c1"># test Docker is working</span>
+docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>ubuntu<span class="w"> </span>bash<span class="w">                </span><span class="c1"># interactive Ubuntu shell</span>
+docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>-p<span class="w"> </span><span class="m">8080</span>:80<span class="w"> </span>nginx<span class="w">            </span><span class="c1"># Nginx in background on port 8080</span>
+docker<span class="w"> </span>run<span class="w"> </span>--name<span class="w"> </span>mycontainer<span class="w"> </span>-d<span class="w"> </span>nginx<span class="w">    </span><span class="c1"># give it a name</span>
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>ubuntu<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;hello&quot;</span><span class="w">       </span><span class="c1"># remove container when done</span>
+</code></pre></div>
+
+<p>Flags:
+- <code>-d</code> — detached (background)
+- <code>-it</code> — interactive terminal
+- <code>-p host:container</code> — port mapping
+- <code>--name</code> — name the container
+- <code>--rm</code> — auto-remove when stopped</p>
+<hr />
+<h2>Manage Containers</h2>
+<div class="codehilite"><pre><span></span><code>docker<span class="w"> </span>ps<span class="w">                    </span><span class="c1"># running containers</span>
+docker<span class="w"> </span>ps<span class="w"> </span>-a<span class="w">                 </span><span class="c1"># all containers including stopped</span>
+
+docker<span class="w"> </span>stop<span class="w"> </span>mycontainer<span class="w">      </span><span class="c1"># graceful stop</span>
+docker<span class="w"> </span><span class="nb">kill</span><span class="w"> </span>mycontainer<span class="w">      </span><span class="c1"># force stop</span>
+docker<span class="w"> </span>start<span class="w"> </span>mycontainer<span class="w">     </span><span class="c1"># start a stopped container</span>
+docker<span class="w"> </span>restart<span class="w"> </span>mycontainer
+
+docker<span class="w"> </span>rm<span class="w"> </span>mycontainer<span class="w">        </span><span class="c1"># delete stopped container</span>
+docker<span class="w"> </span>rm<span class="w"> </span>-f<span class="w"> </span>mycontainer<span class="w">     </span><span class="c1"># force delete running container</span>
+</code></pre></div>
+
+<hr />
+<h2>Images</h2>
+<div class="codehilite"><pre><span></span><code>docker<span class="w"> </span>images<span class="w">                </span><span class="c1"># list local images</span>
+docker<span class="w"> </span>pull<span class="w"> </span>nginx<span class="w">             </span><span class="c1"># download an image</span>
+docker<span class="w"> </span>pull<span class="w"> </span>nginx:1.25<span class="w">        </span><span class="c1"># specific version</span>
+docker<span class="w"> </span>rmi<span class="w"> </span>nginx<span class="w">              </span><span class="c1"># delete an image</span>
+docker<span class="w"> </span>rmi<span class="w"> </span><span class="k">$(</span>docker<span class="w"> </span>images<span class="w"> </span>-q<span class="k">)</span><span class="w"> </span><span class="c1"># delete ALL images (careful)</span>
+</code></pre></div>
+
+<hr />
+<h2>Exec Into a Running Container</h2>
+<div class="codehilite"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>mycontainer<span class="w"> </span>bash<span class="w">     </span><span class="c1"># bash shell inside container</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>mycontainer<span class="w"> </span>sh<span class="w">       </span><span class="c1"># sh if bash not available</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>mycontainer<span class="w"> </span>ls<span class="w"> </span>/var<span class="w">      </span><span class="c1"># run one command</span>
+</code></pre></div>
+
+<hr />
+<h2>Logs</h2>
+<div class="codehilite"><pre><span></span><code>docker<span class="w"> </span>logs<span class="w"> </span>mycontainer<span class="w">              </span><span class="c1"># all logs</span>
+docker<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>mycontainer<span class="w">           </span><span class="c1"># follow logs in real time</span>
+docker<span class="w"> </span>logs<span class="w"> </span>--tail<span class="w"> </span><span class="m">50</span><span class="w"> </span>mycontainer<span class="w">    </span><span class="c1"># last 50 lines</span>
+</code></pre></div>
+
+<hr />
+<h2>Volumes (Persist Data)</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Named volume</span>
+docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>-v<span class="w"> </span>mydata:/var/lib/mysql<span class="w"> </span>mysql
+
+<span class="c1"># Bind mount (folder on your machine → container)</span>
+docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>-v<span class="w"> </span>/home/user/data:/data<span class="w"> </span>nginx
+
+docker<span class="w"> </span>volume<span class="w"> </span>ls<span class="w">                </span><span class="c1"># list volumes</span>
+docker<span class="w"> </span>volume<span class="w"> </span>rm<span class="w"> </span>mydata<span class="w">         </span><span class="c1"># delete a volume</span>
+</code></pre></div>
+
+<hr />
+<h2>Docker Compose</h2>
+<div class="codehilite"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w">            </span><span class="c1"># start all services in docker-compose.yml</span>
+docker<span class="w"> </span>compose<span class="w"> </span>down<span class="w">             </span><span class="c1"># stop and remove containers</span>
+docker<span class="w"> </span>compose<span class="w"> </span>down<span class="w"> </span>-v<span class="w">          </span><span class="c1"># also remove volumes</span>
+docker<span class="w"> </span>compose<span class="w"> </span>logs<span class="w"> </span>-f<span class="w">          </span><span class="c1"># follow logs for all services</span>
+docker<span class="w"> </span>compose<span class="w"> </span>restart<span class="w"> </span>service<span class="w">  </span><span class="c1"># restart one service</span>
+docker<span class="w"> </span>compose<span class="w"> </span>pull<span class="w">             </span><span class="c1"># pull latest images</span>
+</code></pre></div>
+
+<hr />
+<h2>Clean Up</h2>
+<div class="codehilite"><pre><span></span><code>docker<span class="w"> </span>system<span class="w"> </span>prune<span class="w">             </span><span class="c1"># remove stopped containers, unused images, networks</span>
+docker<span class="w"> </span>system<span class="w"> </span>prune<span class="w"> </span>-a<span class="w">          </span><span class="c1"># also remove unused images</span>
+docker<span class="w"> </span>system<span class="w"> </span>prune<span class="w"> </span>-a<span class="w"> </span>--volumes<span class="w"> </span><span class="c1"># also remove unused volumes</span>
+docker<span class="w"> </span>system<span class="w"> </span>df<span class="w">                </span><span class="c1"># see disk usage</span>
+</code></pre></div>
+
+<hr />
+<h2>Common Issues</h2>
+<p><strong>"Permission denied" running docker:</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>usermod<span class="w"> </span>-aG<span class="w"> </span>docker<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span>
+<span class="c1"># then log out and back in</span>
+</code></pre></div>
+
+<p><strong>Port already in use:</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="m">8080</span><span class="w">      </span><span class="c1"># find what is using the port</span>
+</code></pre></div>
+
+<p><strong>Container keeps restarting:</strong></p>
+<div class="codehilite"><pre><span></span><code>docker<span class="w"> </span>logs<span class="w"> </span>mycontainer<span class="w">        </span><span class="c1"># check what error is causing the crash</span>
+</code></pre></div>

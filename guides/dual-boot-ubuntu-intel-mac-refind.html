@@ -1,0 +1,157 @@
+DATA:installation:Dual Boot Ubuntu on an Intel Mac (with rEFInd):Installation Guides
+<h1>Dual Boot Ubuntu on an Intel Mac (with rEFInd)</h1>
+<p>Most guides for this skip the rEFInd step entirely, which is exactly why people end up with GRUB hijacking their boot and losing access to macOS. This guide covers the complete process — partition, install rEFInd first, install Ubuntu, fix Wi-Fi if needed — for Intel Macs running macOS Ventura or earlier.</p>
+<blockquote>
+<p><strong>Intel Mac only.</strong> This does not work on Apple Silicon (M1/M2/M3/M4). Those Macs cannot dual-boot Linux natively.</p>
+<p><strong>Back up your Mac with Time Machine before starting.</strong> Partitioning always carries risk.</p>
+</blockquote>
+<hr />
+<h2>Why rEFInd?</h2>
+<p>Apple's built-in boot picker (hold Option at startup) is too basic — it often cannot see Linux partitions at all. GRUB, the Linux bootloader, installs itself in a way that frequently hijacks the entire boot process and leaves macOS inaccessible.</p>
+<p><strong>rEFInd</strong> is an open-source EFI boot manager that sits between the firmware and all your operating systems. It shows a clean boot menu at every startup with icons for each OS and always lets you reach both macOS and Ubuntu. It is the only reliable dual-boot solution on Intel Macs.</p>
+<hr />
+<h2>Requirements</h2>
+<ul>
+<li>An Intel Mac (2009–2021)</li>
+<li>macOS installed and working</li>
+<li>At least <strong>30 GB free space</strong> to give Ubuntu (50 GB+ recommended)</li>
+<li>A USB drive with at least <strong>8 GB</strong> for the Ubuntu installer</li>
+<li>FileVault must be <strong>disabled</strong> — encryption prevents partition resizing</li>
+</ul>
+<h3>Disable FileVault</h3>
+<p>Go to <strong>System Settings</strong> → <strong>Privacy &amp; Security</strong> → <strong>FileVault</strong> → <strong>Turn Off FileVault</strong>. Decryption may take a while. Do not proceed until it completes.</p>
+<hr />
+<h2>Step 1 — Download Ubuntu</h2>
+<p>Go to <a href="https://ubuntu.com/download/desktop">ubuntu.com/download/desktop</a> and download the latest LTS release (the 64-bit <code>.iso</code> file). Ubuntu 24.04 LTS as of 2026.</p>
+<hr />
+<h2>Step 2 — Create a Bootable Ubuntu USB</h2>
+<p>Download <a href="https://etcher.balena.io">balenaEtcher</a> on your Mac. Open it, select the Ubuntu ISO, select your USB drive, and click <strong>Flash</strong>.</p>
+<hr />
+<h2>Step 3 — Create a Partition for Ubuntu</h2>
+<ol>
+<li>Open <strong>Disk Utility</strong> (Applications → Utilities → Disk Utility).</li>
+<li>Select your Mac's internal drive from the left panel.</li>
+<li>Click <strong>Partition</strong> at the top.</li>
+<li>Click <strong>+</strong> to add a new partition.</li>
+<li>Set the size (30 GB minimum, 50 GB+ recommended).</li>
+<li>Set the format to <strong>MS-DOS (FAT)</strong> — Ubuntu's installer will format it properly.</li>
+<li>Name it <code>UBUNTU</code> so you can identify it later.</li>
+<li>Click <strong>Apply</strong> and confirm.</li>
+</ol>
+<hr />
+<h2>Step 4 — Disable SIP and Install rEFInd</h2>
+<p>rEFInd must be installed before Ubuntu. Installing Ubuntu first almost always results in GRUB overwriting the EFI partition and breaking macOS boot.</p>
+<h3>Disable SIP</h3>
+<ol>
+<li>Restart your Mac and hold <strong>Command (⌘) + R</strong> to boot into Recovery Mode.</li>
+<li>Go to <strong>Utilities</strong> → <strong>Terminal</strong>.</li>
+<li>Run:
+   <code>bash
+   csrutil disable</code></li>
+<li>Restart back into macOS.</li>
+</ol>
+<h3>Install rEFInd</h3>
+<ol>
+<li>Go to <a href="https://www.rodsbooks.com/refind/getting.html">rodsbooks.com/refind/getting.html</a> and download the <strong>Binary zip file</strong>.</li>
+<li>Extract the zip on your Mac Desktop.</li>
+<li>Open <strong>Terminal</strong> (Applications → Utilities → Terminal).</li>
+<li>Drag the <code>refind-install</code> file from the extracted folder into the Terminal window (this fills in the path automatically).</li>
+<li>Press <strong>Enter</strong>.</li>
+<li>Enter your password when prompted.</li>
+</ol>
+<p>rEFInd is now installed. On the next restart you should see the rEFInd boot menu with an Apple logo.</p>
+<h3>Re-enable SIP</h3>
+<ol>
+<li>Restart and hold <strong>Command + R</strong> to enter Recovery Mode again.</li>
+<li>Open Terminal and run:
+   <code>bash
+   csrutil enable</code></li>
+<li>Restart.</li>
+</ol>
+<hr />
+<h2>Step 5 — Install Ubuntu</h2>
+<ol>
+<li>Plug in your Ubuntu USB drive.</li>
+<li>Restart your Mac. The rEFInd boot menu will appear.</li>
+<li>Select the USB drive entry (it may show as <strong>Boot EFI</strong> or have a Ubuntu icon).</li>
+<li>Ubuntu will boot to a live desktop. Click <strong>Install Ubuntu</strong>.</li>
+<li>Choose your language and keyboard layout.</li>
+<li>On the <strong>Updates and other software</strong> screen, choose your preferences and click <strong>Continue</strong>.</li>
+<li>On the <strong>Installation type</strong> screen — this is critical:</li>
+<li>Select <strong>Something else</strong> (not "Install alongside" — that option often gets the partition wrong on Macs).</li>
+<li>In the partition table, find the partition you created in Step 3 (labelled <code>UBUNTU</code>, listed as <code>free space</code> or <code>FAT32</code>).</li>
+<li>Click on it → click <strong>Change</strong>:</li>
+<li><strong>Use as:</strong> <code>Ext4 journaling file system</code></li>
+<li><strong>Format:</strong> check the box</li>
+<li><strong>Mount point:</strong> <code>/</code></li>
+<li>Find the <strong>EFI partition</strong> — it is typically a small (200–500 MB) <code>fat32</code> partition. Do <strong>not</strong> format it. Set <strong>Use as: EFI System Partition</strong> if prompted.</li>
+<li>Click <strong>Install Now</strong> → <strong>Continue</strong>.</li>
+<li>Set your time zone, name, username, and password.</li>
+<li>Wait for installation to complete — 10–20 minutes.</li>
+<li>Click <strong>Restart Now</strong> when prompted. Remove the USB drive.</li>
+</ol>
+<hr />
+<h2>Step 6 — First Boot and Choosing Your OS</h2>
+<p>After restarting, the rEFInd menu will show icons for both macOS and Ubuntu.</p>
+<ul>
+<li><strong>Boot macOS:</strong> select the Apple logo</li>
+<li><strong>Boot Ubuntu:</strong> select the Ubuntu entry</li>
+</ul>
+<p>If rEFInd does not appear and the Mac boots straight into macOS, hold <strong>Option (⌥)</strong> at startup to access the boot picker manually and select rEFInd from there.</p>
+<hr />
+<h2>Step 7 — Fix Wi-Fi on Mac in Ubuntu (If Not Working)</h2>
+<p>Wi-Fi is the most common issue when running Linux on a Mac. Most Macs use <strong>Broadcom</strong> Wi-Fi chips which require a proprietary driver.</p>
+<h3>Check what's happening</h3>
+<p>Open Terminal in Ubuntu and run:</p>
+<div class="codehilite"><pre><span></span><code>lspci<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>Network
+</code></pre></div>
+
+<p>If you see <code>Broadcom</code> in the output, you need the <code>broadcom-sta</code> driver.</p>
+<h3>Fix with ethernet or iPhone hotspot first</h3>
+<p>You need internet to download the driver. Connect via:
+- USB ethernet adapter
+- iPhone: Settings → Personal Hotspot → enable <strong>USB only</strong>, connect with Lightning/USB-C cable</p>
+<h3>Install the driver</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>broadcom-sta-dkms<span class="w"> </span>-y
+sudo<span class="w"> </span>modprobe<span class="w"> </span>-r<span class="w"> </span>b43<span class="w"> </span>ssb<span class="w"> </span>wl<span class="w"> </span>brcmfmac<span class="w"> </span>brcmsmac<span class="w"> </span>bcma
+sudo<span class="w"> </span>modprobe<span class="w"> </span>wl
+</code></pre></div>
+
+<p>Restart Ubuntu. Wi-Fi should now appear in the network menu.</p>
+<p>If <code>broadcom-sta-dkms</code> doesn't fix it, try:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>firmware-b43-installer<span class="w"> </span>-y
+sudo<span class="w"> </span>reboot
+</code></pre></div>
+
+<hr />
+<h2>Step 8 — Fix GRUB Hijacking macOS Boot (If It Happens)</h2>
+<p>If Ubuntu's GRUB overwrites rEFInd and you can no longer reach macOS:</p>
+<ol>
+<li>Boot into macOS by holding <strong>Option (⌥)</strong> at startup and selecting <strong>Macintosh HD</strong>.</li>
+<li>Once in macOS, open Terminal and reinstall rEFInd (repeat Step 4 above).</li>
+</ol>
+<p>rEFInd will restore itself as the primary boot manager and both OSes will be accessible again.</p>
+<hr />
+<h2>Removing Ubuntu and Restoring Mac-Only Boot</h2>
+<ol>
+<li>Boot into macOS.</li>
+<li>Open <strong>Disk Utility</strong> → select the Ubuntu partition → click <strong>Erase</strong> → format as <strong>APFS</strong> or <strong>Mac OS Extended</strong>.</li>
+<li>To remove rEFInd, run in Terminal:
+   <code>bash
+   sudo rm -rf /EFI/refind
+   sudo bless --setBoot --folder /System/Library/CoreServices</code></li>
+<li>Restart — Mac will boot directly into macOS.</li>
+</ol>
+<hr />
+<h2>Troubleshooting</h2>
+<h3>rEFInd menu does not appear at startup</h3>
+<p>Hold <strong>Option (⌥)</strong> at boot and select the rEFInd entry manually. Then open Terminal in macOS and re-run the rEFInd installer to make it the default.</p>
+<h3>macOS disappeared from rEFInd after installing Ubuntu</h3>
+<p>GRUB hijacked the EFI boot order. Boot into macOS via Option key and reinstall rEFInd.</p>
+<h3>Ubuntu installer shows no partitions or wrong disk</h3>
+<p>Make sure you selected <strong>Something else</strong> in Step 5 and are looking at the correct drive.</p>
+<h3>Ubuntu boots but no display / black screen</h3>
+<p>Some Intel Macs need the <code>nomodeset</code> kernel parameter for the first boot. In GRUB, press <strong>e</strong> on the Ubuntu entry, find the line starting with <code>linux</code>, add <code>nomodeset</code> at the end, and press <strong>F10</strong> to boot. Install proprietary GPU drivers after booting.</p>
+<h3>FileVault keeps re-enabling after macOS updates</h3>
+<p>macOS updates sometimes suggest re-enabling FileVault. Keep it off while you have Ubuntu dual-booted — enabling it can break the partition scheme.</p>

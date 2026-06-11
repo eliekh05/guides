@@ -1,0 +1,41 @@
+DATA:system-users:Promote User to Admin (macOS 13 and Later):System & Users
+<h1>Promote User to Admin (macOS 13 and Later)</h1>
+<p>This guide explains how to grant administrator privileges to a standard user account on macOS 13 (Ventura) and later. It is useful when system groups have been removed or the account was set up without admin rights.</p>
+<hr />
+<h2>Prerequisites</h2>
+<ul>
+<li>Your Mac must be updated to the latest compatible macOS version before starting because if system groups removed macOS updates will replace/add the groups.</li>
+<li>You will need access to Recovery Mode.</li>
+</ul>
+<hr />
+<h2>Steps</h2>
+<h3>1 — Boot into Recovery Mode</h3>
+<p>Restart your Mac and hold <strong>Command (⌘) + R</strong> immediately after it powers on. When prompted, select your user account and enter your login password.</p>
+<h3>2 — Open Terminal from Recovery Mode</h3>
+<p>In the menu bar, go to <strong>Utilities → Terminal</strong>.</p>
+<h3>3 — Remove the Setup Done Flag</h3>
+<p>Run the following command to trigger the macOS Setup Assistant on the next boot:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>/Volumes/Macintosh<span class="se">\ </span>HD/var/db<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>rm<span class="w"> </span>.AppleSetupDone
+</code></pre></div>
+
+<p>If the combined command does not work, run each part separately:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>/
+<span class="nb">cd</span><span class="w"> </span>Volumes/
+<span class="nb">cd</span><span class="w"> </span>Macintosh<span class="se">\ </span>HD
+<span class="nb">cd</span><span class="w"> </span>var/db
+rm<span class="w"> </span>.AppleSetupDone
+</code></pre></div>
+
+<h3>4 — Reboot and Complete Setup</h3>
+<p>Restart your Mac. The <strong>Setup Assistant</strong> will launch automatically. Follow the on-screen instructions. When you reach the user creation step, create a new <strong>Admin</strong> account and finish setup.</p>
+<h3>5 — Promote Your Standard User to Admin</h3>
+<ol>
+<li>Open <strong>System Settings</strong>.</li>
+<li>Go to <strong>Users &amp; Groups</strong>.</li>
+<li>Locate your <strong>Standard User</strong> in the list.</li>
+<li>Hover over the user and click the <strong>ⓘ</strong> (info) button next to their name.</li>
+<li>Toggle <strong>Allow user to administer this computer</strong> to <strong>On</strong>.</li>
+<li>Enter your current login password to confirm.</li>
+</ol>
+<hr />
+<p>🎉 <strong>Done!</strong> Your account now has administrator privileges on macOS 13 and later.</p>

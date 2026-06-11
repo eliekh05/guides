@@ -1,0 +1,94 @@
+DATA:package-managers:Flatpak — Install and Use on Linux:Package Managers (All OSes)
+<h1>Flatpak — Install and Use on Linux</h1>
+<p>Flatpak is a universal package format for Linux. Apps are sandboxed, work on any distro, and are distributed through Flathub — the central Flatpak repository with thousands of apps.</p>
+<hr />
+<h2>Install Flatpak</h2>
+<p><strong>Ubuntu / Debian / Linux Mint:</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>flatpak<span class="w"> </span>-y
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>gnome-software-plugin-flatpak<span class="w"> </span>-y<span class="w">   </span><span class="c1"># for GUI software centre integration</span>
+</code></pre></div>
+
+<p><strong>Fedora:</strong> (pre-installed on Fedora Workstation)</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>flatpak<span class="w"> </span>-y
+</code></pre></div>
+
+<p><strong>Arch:</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>flatpak
+</code></pre></div>
+
+<hr />
+<h2>Add Flathub Repository</h2>
+<div class="codehilite"><pre><span></span><code>flatpak<span class="w"> </span>remote-add<span class="w"> </span>--if-not-exists<span class="w"> </span>flathub<span class="w"> </span>https://dl.flathub.org/repo/flathub.flatpakrepo
+</code></pre></div>
+
+<p><strong>Restart your session</strong> after adding Flathub — Flatpak apps need a new login session to appear in app launchers.</p>
+<hr />
+<h2>Install Apps</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Search for an app</span>
+flatpak<span class="w"> </span>search<span class="w"> </span>firefox
+
+<span class="c1"># Install from Flathub</span>
+flatpak<span class="w"> </span>install<span class="w"> </span>flathub<span class="w"> </span>org.mozilla.firefox
+flatpak<span class="w"> </span>install<span class="w"> </span>flathub<span class="w"> </span>com.spotify.Client
+flatpak<span class="w"> </span>install<span class="w"> </span>flathub<span class="w"> </span>com.visualstudio.code
+
+<span class="c1"># Install without prompt</span>
+flatpak<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>flathub<span class="w"> </span>org.mozilla.firefox
+</code></pre></div>
+
+<hr />
+<h2>Run Apps</h2>
+<div class="codehilite"><pre><span></span><code>flatpak<span class="w"> </span>run<span class="w"> </span>org.mozilla.firefox
+flatpak<span class="w"> </span>run<span class="w"> </span>com.spotify.Client
+</code></pre></div>
+
+<p>Installed Flatpak apps also appear in your application launcher (GNOME Activities, KDE app menu, etc.).</p>
+<hr />
+<h2>Manage Installed Apps</h2>
+<div class="codehilite"><pre><span></span><code>flatpak<span class="w"> </span>list<span class="w">                        </span><span class="c1"># list installed Flatpak apps</span>
+flatpak<span class="w"> </span>list<span class="w"> </span>--app<span class="w">                  </span><span class="c1"># apps only (not runtimes)</span>
+flatpak<span class="w"> </span>info<span class="w"> </span>org.mozilla.firefox<span class="w">    </span><span class="c1"># details about an app</span>
+
+flatpak<span class="w"> </span>update<span class="w">                      </span><span class="c1"># update all installed apps</span>
+flatpak<span class="w"> </span>update<span class="w"> </span>org.mozilla.firefox<span class="w">  </span><span class="c1"># update specific app</span>
+
+flatpak<span class="w"> </span>uninstall<span class="w"> </span>org.mozilla.firefox
+flatpak<span class="w"> </span>uninstall<span class="w"> </span>--unused<span class="w">          </span><span class="c1"># remove unused runtimes to free space</span>
+</code></pre></div>
+
+<hr />
+<h2>Permissions and Sandbox</h2>
+<p>Flatpak apps are sandboxed — they cannot access most of the filesystem by default. View and change permissions:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Install Flatseal for a GUI permission manager</span>
+flatpak<span class="w"> </span>install<span class="w"> </span>flathub<span class="w"> </span>com.github.tchx84.Flatseal
+
+<span class="c1"># View permissions from CLI</span>
+flatpak<span class="w"> </span>info<span class="w"> </span>--show-permissions<span class="w"> </span>org.mozilla.firefox
+
+<span class="c1"># Override a permission</span>
+flatpak<span class="w"> </span>override<span class="w"> </span>--user<span class="w"> </span>--filesystem<span class="o">=</span>home<span class="w"> </span>org.mozilla.firefox<span class="w">    </span><span class="c1"># allow access to home</span>
+flatpak<span class="w"> </span>override<span class="w"> </span>--user<span class="w"> </span>--filesystem<span class="o">=</span>/mnt/data<span class="w"> </span>org.mozilla.firefox<span class="w">  </span><span class="c1"># specific path</span>
+
+<span class="c1"># Reset permissions to defaults</span>
+flatpak<span class="w"> </span>override<span class="w"> </span>--user<span class="w"> </span>--reset<span class="w"> </span>org.mozilla.firefox
+</code></pre></div>
+
+<hr />
+<h2>Free Up Disk Space</h2>
+<p>Flatpak keeps old app versions and runtimes. Clean them up:</p>
+<div class="codehilite"><pre><span></span><code>flatpak<span class="w"> </span>uninstall<span class="w"> </span>--unused<span class="w">          </span><span class="c1"># remove unused runtimes</span>
+flatpak<span class="w"> </span>repair<span class="w">                      </span><span class="c1"># repair broken installations</span>
+</code></pre></div>
+
+<hr />
+<h2>Popular Apps on Flathub</h2>
+<div class="codehilite"><pre><span></span><code>flatpak<span class="w"> </span>install<span class="w"> </span>flathub<span class="w"> </span>com.spotify.Client
+flatpak<span class="w"> </span>install<span class="w"> </span>flathub<span class="w"> </span>com.discordapp.Discord
+flatpak<span class="w"> </span>install<span class="w"> </span>flathub<span class="w"> </span>org.videolan.VLC
+flatpak<span class="w"> </span>install<span class="w"> </span>flathub<span class="w"> </span>org.gimp.GIMP
+flatpak<span class="w"> </span>install<span class="w"> </span>flathub<span class="w"> </span>org.inkscape.Inkscape
+flatpak<span class="w"> </span>install<span class="w"> </span>flathub<span class="w"> </span>com.obsproject.Studio
+flatpak<span class="w"> </span>install<span class="w"> </span>flathub<span class="w"> </span>com.visualstudio.code
+flatpak<span class="w"> </span>install<span class="w"> </span>flathub<span class="w"> </span>com.jetbrains.IntelliJ-IDEA-Community
+flatpak<span class="w"> </span>install<span class="w"> </span>flathub<span class="w"> </span>io.github.prateekmedia.appimagepool
+</code></pre></div>

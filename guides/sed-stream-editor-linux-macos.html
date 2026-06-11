@@ -1,0 +1,76 @@
+DATA:linux:sed — Stream Editor on macOS and Linux:Linux
+<h1>sed — Stream Editor on macOS and Linux</h1>
+<p><code>sed</code> edits text streams non-interactively. Most commonly used for find-and-replace in files and pipelines.</p>
+<hr />
+<h2>Find and Replace</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Replace first occurrence on each line</span>
+sed<span class="w"> </span><span class="s1">&#39;s/old/new/&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Replace ALL occurrences on each line (g = global)</span>
+sed<span class="w"> </span><span class="s1">&#39;s/old/new/g&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Case-insensitive replace</span>
+sed<span class="w"> </span><span class="s1">&#39;s/old/new/gi&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Replace and save to file (-i = in-place)</span>
+sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;s/old/new/g&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># macOS requires empty string after -i</span>
+sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="s1">&#39;s/old/new/g&#39;</span><span class="w"> </span>file.txt
+</code></pre></div>
+
+<hr />
+<h2>Print Specific Lines</h2>
+<div class="codehilite"><pre><span></span><code>sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;5p&#39;</span><span class="w"> </span>file.txt<span class="w">            </span><span class="c1"># print line 5</span>
+sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;5,10p&#39;</span><span class="w"> </span>file.txt<span class="w">         </span><span class="c1"># print lines 5 to 10</span>
+sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;/pattern/p&#39;</span><span class="w"> </span>file.txt<span class="w">    </span><span class="c1"># print lines matching pattern</span>
+</code></pre></div>
+
+<hr />
+<h2>Delete Lines</h2>
+<div class="codehilite"><pre><span></span><code>sed<span class="w"> </span><span class="s1">&#39;3d&#39;</span><span class="w"> </span>file.txt<span class="w">               </span><span class="c1"># delete line 3</span>
+sed<span class="w"> </span><span class="s1">&#39;3,5d&#39;</span><span class="w"> </span>file.txt<span class="w">             </span><span class="c1"># delete lines 3 to 5</span>
+sed<span class="w"> </span><span class="s1">&#39;/pattern/d&#39;</span><span class="w"> </span>file.txt<span class="w">       </span><span class="c1"># delete lines matching pattern</span>
+sed<span class="w"> </span><span class="s1">&#39;/^$/d&#39;</span><span class="w"> </span>file.txt<span class="w">            </span><span class="c1"># delete blank lines</span>
+sed<span class="w"> </span><span class="s1">&#39;/^#/d&#39;</span><span class="w"> </span>file.txt<span class="w">            </span><span class="c1"># delete comment lines</span>
+</code></pre></div>
+
+<hr />
+<h2>Insert and Append</h2>
+<div class="codehilite"><pre><span></span><code>sed<span class="w"> </span><span class="s1">&#39;3i\New line here&#39;</span><span class="w"> </span>file.txt<span class="w">    </span><span class="c1"># insert before line 3</span>
+sed<span class="w"> </span><span class="s1">&#39;3a\New line here&#39;</span><span class="w"> </span>file.txt<span class="w">    </span><span class="c1"># append after line 3</span>
+</code></pre></div>
+
+<hr />
+<h2>Common Real Uses</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Remove trailing whitespace</span>
+sed<span class="w"> </span><span class="s1">&#39;s/[[:space:]]*$//&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Remove leading whitespace</span>
+sed<span class="w"> </span><span class="s1">&#39;s/^[[:space:]]*//&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Comment out a line containing a pattern</span>
+sed<span class="w"> </span><span class="s1">&#39;/ServerName/s/^/#/&#39;</span><span class="w"> </span>config.conf
+
+<span class="c1"># Uncomment lines starting with #</span>
+sed<span class="w"> </span><span class="s1">&#39;s/^#//&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Replace in multiple files at once</span>
+sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;s/localhost/192.168.1.100/g&#39;</span><span class="w"> </span>*.conf
+
+<span class="c1"># Extract lines between patterns</span>
+sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;/START/,/END/p&#39;</span><span class="w"> </span>file.txt
+</code></pre></div>
+
+<hr />
+<h2>macOS vs Linux</h2>
+<p>The key difference: on macOS, <code>-i</code> requires an argument (use <code>''</code> for no backup):</p>
+<div class="codehilite"><pre><span></span><code>sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;s/old/new/g&#39;</span><span class="w"> </span>file.txt<span class="w">        </span><span class="c1"># Linux</span>
+sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="s1">&#39;s/old/new/g&#39;</span><span class="w"> </span>file.txt<span class="w">     </span><span class="c1"># macOS</span>
+</code></pre></div>
+
+<p>For the GNU sed version on macOS (same as Linux):</p>
+<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>gnu-sed
+<span class="c1"># then use gsed instead of sed</span>
+gsed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;s/old/new/g&#39;</span><span class="w"> </span>file.txt
+</code></pre></div>

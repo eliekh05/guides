@@ -1,0 +1,141 @@
+DATA:networking:Fix DNS Issues on Linux and macOS:Networking & DNS
+<h1>Fix DNS Issues on Linux and macOS</h1>
+<p>DNS problems cause websites to fail even when your internet connection is working. Here is how to diagnose and fix them.</p>
+<hr />
+<h2>Check If DNS is the Problem</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># If this works but google.com does not resolve:</span>
+ping<span class="w"> </span><span class="m">1</span>.1.1.1<span class="w">          </span><span class="c1"># works = internet is fine</span>
+ping<span class="w"> </span>google.com<span class="w">       </span><span class="c1"># fails = DNS is broken</span>
+</code></pre></div>
+
+<hr />
+<h2>macOS — Flush DNS Cache</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dscacheutil<span class="w"> </span>-flushcache<span class="p">;</span><span class="w"> </span>sudo<span class="w"> </span>killall<span class="w"> </span>-HUP<span class="w"> </span>mDNSResponder
+</code></pre></div>
+
+<p>This resolves most DNS issues on macOS after network changes or updates.</p>
+<hr />
+<h2>macOS — Change DNS Server</h2>
+<ol>
+<li><strong>System Settings</strong> → <strong>Network</strong> → select connection → <strong>Details</strong> → <strong>DNS</strong> tab</li>
+<li>Click <strong>+</strong> and add:</li>
+<li><code>1.1.1.1</code> (Cloudflare)</li>
+<li><code>8.8.8.8</code> (Google)</li>
+<li>Click <strong>OK</strong> → <strong>Apply</strong></li>
+</ol>
+<p>Or via Terminal:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Set DNS for Wi-Fi interface</span>
+sudo<span class="w"> </span>networksetup<span class="w"> </span>-setdnsservers<span class="w"> </span>Wi-Fi<span class="w"> </span><span class="m">1</span>.1.1.1<span class="w"> </span><span class="m">8</span>.8.8.8
+
+<span class="c1"># Set for Ethernet</span>
+sudo<span class="w"> </span>networksetup<span class="w"> </span>-setdnsservers<span class="w"> </span>Ethernet<span class="w"> </span><span class="m">1</span>.1.1.1<span class="w"> </span><span class="m">8</span>.8.8.8
+
+<span class="c1"># Reset to automatic (DHCP-provided DNS)</span>
+sudo<span class="w"> </span>networksetup<span class="w"> </span>-setdnsservers<span class="w"> </span>Wi-Fi<span class="w"> </span>empty
+</code></pre></div>
+
+<hr />
+<h2>Linux — Check Current DNS</h2>
+<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>/etc/resolv.conf
+resolvectl<span class="w"> </span>status<span class="w">                  </span><span class="c1"># systemd-resolved (Ubuntu 18.04+)</span>
+</code></pre></div>
+
+<hr />
+<h2>Linux — Flush DNS Cache</h2>
+<p><strong>systemd-resolved (Ubuntu, Debian 12+, Fedora):</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemd-resolve<span class="w"> </span>--flush-caches
+resolvectl<span class="w"> </span>flush-caches
+</code></pre></div>
+
+<p><strong>nscd:</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>nscd
+</code></pre></div>
+
+<p><strong>dnsmasq:</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>dnsmasq
+</code></pre></div>
+
+<hr />
+<h2>Linux — Change DNS Server</h2>
+<p><strong>systemd-resolved (Ubuntu 18.04+):</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/systemd/resolved.conf
+</code></pre></div>
+
+<p>Set:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Resolve]</span>
+<span class="na">DNS</span><span class="o">=</span><span class="s">1.1.1.1 8.8.8.8</span>
+<span class="na">FallbackDNS</span><span class="o">=</span><span class="s">1.0.0.1 8.8.4.4</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>systemd-resolved
+</code></pre></div>
+
+<p><strong>Netplan (static network config):</strong></p>
+<p>Add to your <code>.sources</code> or <code>.yaml</code> file in <code>/etc/netplan/</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">nameservers</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">addresses</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.1.1.1</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8.8.8.8</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>netplan<span class="w"> </span>apply
+</code></pre></div>
+
+<hr />
+<h2>Test a Specific DNS Server</h2>
+<div class="codehilite"><pre><span></span><code>dig<span class="w"> </span>@1.1.1.1<span class="w"> </span>google.com<span class="w">              </span><span class="c1"># test Cloudflare</span>
+dig<span class="w"> </span>@8.8.8.8<span class="w"> </span>google.com<span class="w">              </span><span class="c1"># test Google</span>
+nslookup<span class="w"> </span>google.com<span class="w"> </span><span class="m">1</span>.1.1.1<span class="w">          </span><span class="c1"># alternative</span>
+</code></pre></div>
+
+<p>If these work but your normal DNS does not, the problem is with your current DNS server (usually your router or ISP DNS).</p>
+<hr />
+<h2>Common DNS Problem Causes</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All sites fail, ping by IP works</td>
+<td>DNS broken</td>
+<td>Flush cache or change DNS server</td>
+</tr>
+<tr>
+<td>Specific sites fail</td>
+<td>DNS filtering or ISP blocking</td>
+<td>Use 1.1.1.1 or 8.8.8.8</td>
+</tr>
+<tr>
+<td>Sites fail after VPN disconnects</td>
+<td>VPN changed DNS and did not revert</td>
+<td>Restart network or flush cache</td>
+</tr>
+<tr>
+<td>Slow to load sites</td>
+<td>DNS server is slow</td>
+<td>Switch to Cloudflare (1.1.1.1)</td>
+</tr>
+<tr>
+<td>Internal hostnames fail</td>
+<td>DNS server does not know them</td>
+<td>Use split DNS or add entries to /etc/hosts</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>/etc/hosts — Override DNS for Specific Domains</h2>
+<p>Add entries to resolve names locally without DNS:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/hosts<span class="w">   </span><span class="c1"># Linux</span>
+sudo<span class="w"> </span>nano<span class="w"> </span>/private/etc/hosts<span class="w">  </span><span class="c1"># macOS</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="mf">192.168.1.100</span><span class="w">   </span><span class="n">myserver</span><span class="mf">.</span><span class="n">local</span>
+<span class="mf">192.168.1.200</span><span class="w">   </span><span class="n">nas</span><span class="mf">.</span><span class="n">local</span>
+</code></pre></div>
+
+<p>Flush DNS after editing: <code>sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder</code></p>

@@ -1,0 +1,128 @@
+DATA:linux:Aliases and Shortcuts in .zshrc (macOS and Linux):Linux
+<h1>Aliases and Shortcuts in .zshrc (macOS and Linux)</h1>
+<p>Aliases let you type short commands instead of long ones. You define them in <code>~/.zshrc</code> (zsh, default on macOS) or <code>~/.bashrc</code> (bash, default on many Linux distros).</p>
+<hr />
+<h2>Open Your Config File</h2>
+<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>~/.zshrc<span class="w">       </span><span class="c1"># macOS and zsh Linux</span>
+nano<span class="w"> </span>~/.bashrc<span class="w">      </span><span class="c1"># bash Linux</span>
+</code></pre></div>
+
+<hr />
+<h2>Create an Alias</h2>
+<p>Basic syntax:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">alias</span><span class="w"> </span><span class="nv">shortname</span><span class="o">=</span><span class="s1">&#39;full command here&#39;</span>
+</code></pre></div>
+
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Navigation</span>
+<span class="nb">alias</span><span class="w"> </span>..<span class="o">=</span><span class="s1">&#39;cd ..&#39;</span>
+<span class="nb">alias</span><span class="w"> </span>...<span class="o">=</span><span class="s1">&#39;cd ../..&#39;</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">home</span><span class="o">=</span><span class="s1">&#39;cd ~&#39;</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">desk</span><span class="o">=</span><span class="s1">&#39;cd ~/Desktop&#39;</span>
+
+<span class="c1"># ls shortcuts</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">ll</span><span class="o">=</span><span class="s1">&#39;ls -la&#39;</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">la</span><span class="o">=</span><span class="s1">&#39;ls -a&#39;</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">l</span><span class="o">=</span><span class="s1">&#39;ls -lh&#39;</span>
+
+<span class="c1"># Git shortcuts</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">gs</span><span class="o">=</span><span class="s1">&#39;git status&#39;</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">ga</span><span class="o">=</span><span class="s1">&#39;git add .&#39;</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">gc</span><span class="o">=</span><span class="s1">&#39;git commit -m&#39;</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">gp</span><span class="o">=</span><span class="s1">&#39;git push&#39;</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">gl</span><span class="o">=</span><span class="s1">&#39;git log --oneline -10&#39;</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">gpl</span><span class="o">=</span><span class="s1">&#39;git pull&#39;</span>
+
+<span class="c1"># Safety nets</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">rm</span><span class="o">=</span><span class="s1">&#39;rm -i&#39;</span><span class="w">          </span><span class="c1"># Ask before deleting</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">cp</span><span class="o">=</span><span class="s1">&#39;cp -i&#39;</span><span class="w">          </span><span class="c1"># Ask before overwriting</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">mv</span><span class="o">=</span><span class="s1">&#39;mv -i&#39;</span><span class="w">          </span><span class="c1"># Ask before overwriting</span>
+
+<span class="c1"># Shortcuts for common tasks</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">update</span><span class="o">=</span><span class="s1">&#39;sudo apt update &amp;&amp; sudo apt upgrade -y&#39;</span><span class="w">   </span><span class="c1"># Linux</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">brewup</span><span class="o">=</span><span class="s1">&#39;brew update &amp;&amp; brew upgrade &amp;&amp; brew cleanup&#39;</span><span class="w">  </span><span class="c1"># macOS</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">ip</span><span class="o">=</span><span class="s1">&#39;curl ifconfig.me&#39;</span><span class="w">       </span><span class="c1"># Show public IP</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">localip</span><span class="o">=</span><span class="s1">&#39;ipconfig getifaddr en0&#39;</span><span class="w">  </span><span class="c1"># macOS local IP</span>
+
+<span class="c1"># Reload config without restarting terminal</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">reload</span><span class="o">=</span><span class="s1">&#39;source ~/.zshrc&#39;</span>
+</code></pre></div>
+
+<hr />
+<h2>Apply Changes</h2>
+<p>After editing, reload:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">source</span><span class="w"> </span>~/.zshrc
+</code></pre></div>
+
+<hr />
+<h2>Create Functions (for Commands with Arguments)</h2>
+<p>Aliases do not take arguments cleanly. Use functions instead:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Make a folder and cd into it at the same time</span>
+mkcd<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+<span class="o">}</span>
+
+<span class="c1"># Search for text in files</span>
+findtext<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span>grep<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span>.
+<span class="o">}</span>
+
+<span class="c1"># Extract any archive type</span>
+extract<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="k">in</span>
+<span class="w">        </span>*.tar.gz<span class="o">)</span><span class="w">  </span>tar<span class="w"> </span>-xzf<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span>*.tar.bz2<span class="o">)</span><span class="w"> </span>tar<span class="w"> </span>-xjf<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span>*.tar.xz<span class="o">)</span><span class="w">  </span>tar<span class="w"> </span>-xJf<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span>*.zip<span class="o">)</span><span class="w">     </span>unzip<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span>*.gz<span class="o">)</span><span class="w">      </span>gunzip<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span>*.7z<span class="o">)</span><span class="w">      </span>7z<span class="w"> </span>x<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span>*<span class="o">)</span><span class="w">         </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Unknown format: </span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">    </span><span class="k">esac</span>
+<span class="o">}</span>
+
+<span class="c1"># Quick git commit with message</span>
+commit<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span>git<span class="w"> </span>add<span class="w"> </span>.<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<p>Usage:</p>
+<div class="codehilite"><pre><span></span><code>mkcd<span class="w"> </span>new-project
+extract<span class="w"> </span>archive.tar.gz
+commit<span class="w"> </span><span class="s2">&quot;fix login bug&quot;</span>
+</code></pre></div>
+
+<hr />
+<h2>Add to PATH</h2>
+<p>If a tool keeps saying "command not found" after install:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Add a folder to PATH permanently</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.local/bin:</span><span class="nv">$PATH</span><span class="s2">&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;/opt/homebrew/bin:</span><span class="nv">$PATH</span><span class="s2">&quot;</span><span class="w">    </span><span class="c1"># macOS Apple Silicon</span>
+</code></pre></div>
+
+<hr />
+<h2>Useful Environment Variables</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Set default text editor</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">EDITOR</span><span class="o">=</span><span class="s2">&quot;nano&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">VISUAL</span><span class="o">=</span><span class="s2">&quot;nano&quot;</span>
+
+<span class="c1"># Colourful ls output</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">CLICOLOR</span><span class="o">=</span><span class="m">1</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">LSCOLORS</span><span class="o">=</span>GxFxCxDxBxegedabagaced
+
+<span class="c1"># Increase history size</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">HISTSIZE</span><span class="o">=</span><span class="m">10000</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">HISTFILESIZE</span><span class="o">=</span><span class="m">10000</span>
+</code></pre></div>
+
+<hr />
+<h2>View All Active Aliases</h2>
+<div class="codehilite"><pre><span></span><code><span class="nb">alias</span>
+</code></pre></div>
+
+<hr />
+<h2>Remove an Alias for Current Session</h2>
+<div class="codehilite"><pre><span></span><code><span class="nb">unalias</span><span class="w"> </span>gs
+</code></pre></div>
+
+<p>To remove permanently, delete it from <code>~/.zshrc</code> and run <code>source ~/.zshrc</code>.</p>

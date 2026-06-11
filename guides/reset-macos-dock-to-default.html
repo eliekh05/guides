@@ -1,0 +1,51 @@
+DATA:macos:Reset macOS Dock to Default:macOS
+<h1>Reset macOS Dock to Default</h1>
+<p>If your Dock is cluttered, broken, or just not how you want it, this command resets it completely back to Apple's factory default — the same layout you get on a brand new Mac.</p>
+<hr />
+<h2>Steps</h2>
+<ol>
+<li>
+<p>Open <strong>Terminal</strong> (Applications → Utilities → Terminal).</p>
+</li>
+<li>
+<p>Copy and paste the following command and press <strong>Enter</strong>:</p>
+</li>
+</ol>
+<p><code>bash
+   defaults delete com.apple.dock; killall Dock</code></p>
+<ol>
+<li>The Dock will disappear for a second and relaunch automatically with its default layout.</li>
+</ol>
+<p>That is it — no restart needed.</p>
+<hr />
+<h2>What This Does</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>defaults delete com.apple.dock</code></td>
+<td>Deletes your entire Dock preferences file, reverting every setting to Apple's defaults</td>
+</tr>
+<tr>
+<td><code>killall Dock</code></td>
+<td>Immediately restarts the Dock process so the changes take effect</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>What Gets Reset</h2>
+<ul>
+<li>All apps you added to the Dock are removed</li>
+<li>All apps Apple includes by default come back (Finder, Safari, Mail, etc.)</li>
+<li>Dock size, position, and magnification revert to defaults</li>
+<li>Any folders or stacks you pinned are removed</li>
+</ul>
+<hr />
+<blockquote>
+<p><strong>Note:</strong> This cannot be undone. If you want to save your current Dock layout before resetting, take a screenshot of it first so you can manually rebuild it afterwards.</p>
+</blockquote>

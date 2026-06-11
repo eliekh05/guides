@@ -1,0 +1,55 @@
+DATA:system-users:Clone a Drive Using Disk Utility (macOS):System & Users
+<h1>Clone a Drive Using Disk Utility (macOS)</h1>
+<p>Disk Utility's Restore feature lets you clone one drive to another — copying everything exactly, sector by sector. This is useful for migrating to a new drive, creating a full backup, or duplicating a setup to another machine.</p>
+<hr />
+<h2>What You Need</h2>
+<ul>
+<li>The <strong>source drive</strong> (the one you want to clone from)</li>
+<li>The <strong>destination drive</strong> (the one you want to clone to — all data on it will be erased)</li>
+<li>Both drives connected to your Mac at the same time</li>
+</ul>
+<hr />
+<h2>Step 1 — Format the Destination Drive</h2>
+<p>The destination drive must be erased and formatted before cloning.</p>
+<ol>
+<li>Open <strong>Disk Utility</strong> (Applications → Utilities → Disk Utility, or search with Spotlight).</li>
+<li>Select the <strong>destination drive</strong> from the left panel — make sure you select the drive itself, not a volume under it.</li>
+<li>Click <strong>Erase</strong> at the top of the window.</li>
+<li>Set the <strong>Format</strong> to <strong>Mac OS Extended (Journaled)</strong>.</li>
+<li>Click <strong>Erase</strong> and wait for it to finish. The drive will remount automatically.</li>
+</ol>
+<hr />
+<h2>Step 2 — Restore (Clone) the Source to Destination</h2>
+<ol>
+<li>In Disk Utility, select the <strong>destination drive</strong> in the left panel (the one you just erased).</li>
+<li>Click <strong>Restore</strong> at the top of the window.</li>
+<li>In the <strong>Restore</strong> dialog:</li>
+<li><strong>Source:</strong> drag and drop the <strong>source drive</strong> (the one you are cloning from) from the left panel into the Source field.</li>
+<li><strong>Destination:</strong> the destination drive should already be filled in since you selected it before clicking Restore.</li>
+<li>Click <strong>Restore</strong> and enter your password when prompted.</li>
+<li>Wait for the process to complete — this can take anywhere from a few minutes to several hours depending on how much data is on the source drive.</li>
+</ol>
+<blockquote>
+<p><strong>Warning:</strong> The destination drive will be completely overwritten. All existing data on it will be lost.</p>
+</blockquote>
+<hr />
+<h2>Step 3 — Shrink the Image to Minimum Size (Optional)</h2>
+<p>If you cloned to a DMG image file instead of a physical drive, you can compact it to remove unused space:</p>
+<div class="codehilite"><pre><span></span><code>hdiutil<span class="w"> </span>resize<span class="w"> </span>-sectors<span class="w"> </span>min<span class="w"> </span>/path/to/yourimage.dmg
+</code></pre></div>
+
+<p>Replace <code>/path/to/yourimage.dmg</code> with the actual path to your image file.</p>
+<hr />
+<h2>Troubleshooting</h2>
+<h3>The Restore button is greyed out</h3>
+<p>Make sure you selected the <strong>destination drive</strong> in the left panel before clicking Restore, not the source.</p>
+<h3>Source or destination not showing in Disk Utility</h3>
+<p>Go to <strong>View</strong> → <strong>Show All Devices</strong> to make sure all connected drives are visible.</p>
+<h3>Clone fails partway through</h3>
+<p>The source drive may have errors. Run <strong>First Aid</strong> on the source drive first: select it in Disk Utility → click <strong>First Aid</strong> → <strong>Run</strong>.</p>
+<h3>Destination drive not recognised after cloning</h3>
+<p>Eject and reconnect it. If it still does not appear, try the Restore process again.</p>
+<hr />
+<blockquote>
+<p><strong>Note:</strong> For cloning a startup drive (the drive macOS is currently running from), you need to boot from an external drive or macOS Recovery first, then run Disk Utility from there. Disk Utility cannot clone a drive that is actively in use as the boot volume.</p>
+</blockquote>

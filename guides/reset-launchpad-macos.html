@@ -1,0 +1,51 @@
+DATA:system-users:Reset Launchpad on macOS:System & Users
+<h1>Reset Launchpad on macOS</h1>
+<p>Launchpad gets cluttered with ghost icons from deleted apps, broken installs, or apps that no longer exist. This guide covers how to reset it back to default — the right method depending on your macOS version.</p>
+<hr />
+<h2>Method 1 — Terminal Command (macOS Ventura and earlier)</h2>
+<div class="codehilite"><pre><span></span><code>defaults<span class="w"> </span>write<span class="w"> </span>com.apple.dock<span class="w"> </span>ResetLaunchPad<span class="w"> </span>-bool<span class="w"> </span>true<span class="p">;</span><span class="w"> </span>killall<span class="w"> </span>Dock
+</code></pre></div>
+
+<p>The Dock restarts, Launchpad resets to default layout — Apple apps on the first page, third-party apps on subsequent pages.</p>
+<blockquote>
+<p>This command does <strong>not</strong> delete your apps. It only resets the icon layout and removes ghost icons from deleted apps.</p>
+</blockquote>
+<hr />
+<h2>Method 2 — Delete the Launchpad Database (macOS Sequoia 15.2+)</h2>
+<p>The <code>defaults write</code> command stopped working reliably on macOS Sequoia 15.2+. Use this instead:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>find<span class="w"> </span>/private/var/folders/<span class="w"> </span>-type<span class="w"> </span>d<span class="w"> </span>-name<span class="w"> </span>com.apple.dock.launchpad<span class="w"> </span>-exec<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span><span class="o">{}</span><span class="w"> </span>+<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="p">;</span><span class="w"> </span>killall<span class="w"> </span>Dock
+</code></pre></div>
+
+<p>This finds and deletes the Launchpad database files directly, then restarts the Dock which rebuilds them fresh.</p>
+<hr />
+<h2>Method 3 — Delete the Database Files Manually</h2>
+<p>If neither command above works:</p>
+<ol>
+<li>Open <strong>Finder</strong> → press <strong>Command + Shift + G</strong> → go to:
+   <code>~/Library/Application Support/Dock/</code></li>
+<li>Delete all <code>.db</code> files in that folder.</li>
+<li>Restart your Mac or run <code>killall Dock</code> in Terminal.</li>
+</ol>
+<hr />
+<h2>Reset Rows and Columns to Default</h2>
+<p>If you changed the grid size and want to go back to the default (5 rows × 7 columns):</p>
+<div class="codehilite"><pre><span></span><code>defaults<span class="w"> </span>write<span class="w"> </span>com.apple.dock<span class="w"> </span>springboard-rows<span class="w"> </span>-int<span class="w"> </span><span class="m">5</span>
+defaults<span class="w"> </span>write<span class="w"> </span>com.apple.dock<span class="w"> </span>springboard-columns<span class="w"> </span>-int<span class="w"> </span><span class="m">7</span>
+killall<span class="w"> </span>Dock
+</code></pre></div>
+
+<hr />
+<h2>Fix Ghost Icons That Won't Go Away</h2>
+<p>If a specific app icon persists in Launchpad but the app is gone:</p>
+<ol>
+<li>Hold <strong>Option (⌥)</strong> key in Launchpad — icons will wiggle and show an <strong>×</strong> button.</li>
+<li>Click <strong>×</strong> on the ghost icon to remove it.</li>
+</ol>
+<p>If the × does not appear, the app still has a partially installed receipt. Reset with Method 2 above.</p>
+<hr />
+<h2>macOS Tahoe (26) — Launchpad Removed</h2>
+<p>Apple removed Launchpad in macOS Tahoe 26. If you upgraded from Sequoia and miss it, a Terminal workaround existed in early betas but was blocked in later updates. Use <strong>Spotlight (Command + Space)</strong> or the <strong>Applications folder</strong> to find and open apps instead.</p>
+<hr />
+<blockquote>
+<p><strong>Note:</strong> After any reset, macOS rebuilds the Launchpad database on next open. The first open after a reset may take a few extra seconds.</p>
+</blockquote>

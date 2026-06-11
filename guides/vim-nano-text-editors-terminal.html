@@ -1,0 +1,131 @@
+DATA:linux:vim and nano — Terminal Text Editors:Linux
+<h1>vim and nano — Terminal Text Editors</h1>
+<p>Two text editors you will encounter in Terminal. nano is simple and beginner-friendly. vim is powerful but has a learning curve — mainly relevant because it is the default editor on many systems and knowing how to exit it is essential.</p>
+<hr />
+<h2>nano — The Simple One</h2>
+<p>Open or create a file:</p>
+<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>filename.txt
+nano<span class="w"> </span>/etc/hosts<span class="w">          </span><span class="c1"># with sudo if needed: sudo nano /etc/hosts</span>
+</code></pre></div>
+
+<h3>Keyboard shortcuts</h3>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Shortcut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Save</td>
+<td>Ctrl + O, then Enter</td>
+</tr>
+<tr>
+<td>Exit</td>
+<td>Ctrl + X</td>
+</tr>
+<tr>
+<td>Save and exit</td>
+<td>Ctrl + O → Enter → Ctrl + X</td>
+</tr>
+<tr>
+<td>Search</td>
+<td>Ctrl + W</td>
+</tr>
+<tr>
+<td>Search and replace</td>
+<td>Ctrl + \</td>
+</tr>
+<tr>
+<td>Cut line</td>
+<td>Ctrl + K</td>
+</tr>
+<tr>
+<td>Paste</td>
+<td>Ctrl + U</td>
+</tr>
+<tr>
+<td>Go to line number</td>
+<td>Ctrl + _</td>
+</tr>
+<tr>
+<td>Undo</td>
+<td>Alt + U</td>
+</tr>
+<tr>
+<td>Select all</td>
+<td>Alt + A</td>
+</tr>
+</tbody>
+</table>
+<p>Shortcuts are shown at the bottom of the nano screen. <code>^</code> means Ctrl, <code>M-</code> means Alt.</p>
+<hr />
+<h2>vim — The Powerful One</h2>
+<h3>The most important thing: how to exit</h3>
+<p>If you accidentally opened vim, press <code>Esc</code> then type:
+- <code>:q</code> — quit (if no changes)
+- <code>:q!</code> — force quit without saving
+- <code>:wq</code> — save and quit
+- <code>:x</code> — save and quit (same as :wq)
+- <code>ZZ</code> — save and quit (shortcut)</p>
+<h3>Modes</h3>
+<p>vim has three main modes:
+- <strong>Normal mode</strong> — navigate and give commands (default when you open vim)
+- <strong>Insert mode</strong> — type text
+- <strong>Command mode</strong> — run commands (<code>:</code> commands)</p>
+<p>Press <code>i</code> to enter Insert mode. Press <code>Esc</code> to return to Normal mode.</p>
+<h3>Basic navigation (Normal mode)</h3>
+<div class="codehilite"><pre><span></span><code><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="w">     </span><span class="nf">left</span><span class="p">,</span><span class="w"> </span><span class="n">down</span><span class="p">,</span><span class="w"> </span><span class="n">up</span><span class="p">,</span><span class="w"> </span><span class="nf">right</span><span class="w"> </span><span class="p">(</span><span class="ow">or</span><span class="w"> </span><span class="n">arrow</span><span class="w"> </span><span class="n">keys</span><span class="p">)</span>
+<span class="n">w</span><span class="w">               </span><span class="n">jump</span><span class="w"> </span><span class="n">forward</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="n">word</span>
+<span class="n">b</span><span class="w">               </span><span class="n">jump</span><span class="w"> </span><span class="n">back</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="n">word</span>
+<span class="mi">0</span><span class="w">               </span><span class="k">go</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="k">start</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">line</span>
+<span class="err">$</span><span class="w">               </span><span class="k">go</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="k">end</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">line</span>
+<span class="n">gg</span><span class="w">              </span><span class="k">go</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="k">first</span><span class="w"> </span><span class="n">line</span>
+<span class="n">G</span><span class="w">               </span><span class="k">go</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="k">last</span><span class="w"> </span><span class="n">line</span>
+<span class="err">:</span><span class="mi">42</span><span class="w">             </span><span class="k">go</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">line</span><span class="w"> </span><span class="mi">42</span>
+<span class="n">Ctrl</span><span class="o">+</span><span class="n">d</span><span class="w">          </span><span class="k">scroll</span><span class="w"> </span><span class="n">down</span><span class="w"> </span><span class="n">half</span><span class="w"> </span><span class="n">page</span>
+<span class="n">Ctrl</span><span class="o">+</span><span class="n">u</span><span class="w">          </span><span class="k">scroll</span><span class="w"> </span><span class="n">up</span><span class="w"> </span><span class="n">half</span><span class="w"> </span><span class="n">page</span>
+</code></pre></div>
+
+<h3>Editing (Normal mode)</h3>
+<div class="codehilite"><pre><span></span><code>i               insert before cursor
+a               insert after cursor
+o               open new line below and insert
+dd              delete current line
+yy              copy (yank) current line
+p               paste after cursor
+u               undo
+Ctrl+r          redo
+x               delete character under cursor
+</code></pre></div>
+
+<h3>Search in vim</h3>
+<div class="codehilite"><pre><span></span><code><span class="o">/</span><span class="nv">pattern</span><span class="w">        </span><span class="nv">search</span><span class="w"> </span><span class="nv">forward</span>
+?<span class="nv">pattern</span><span class="w">        </span><span class="nv">search</span><span class="w"> </span><span class="nv">backward</span>
+<span class="nv">n</span><span class="w">               </span><span class="k">next</span><span class="w"> </span><span class="nv">match</span>
+<span class="nv">N</span><span class="w">               </span><span class="nv">previous</span><span class="w"> </span><span class="nv">match</span>
+</code></pre></div>
+
+<h3>Save and quit commands</h3>
+<div class="codehilite"><pre><span></span><code>:w              save
+:wq             save and quit
+:q!             quit without saving
+:%s/old/new/g   replace all occurrences of &quot;old&quot; with &quot;new&quot;
+</code></pre></div>
+
+<hr />
+<h2>Change the Default Editor</h2>
+<p>Many tools use <code>$EDITOR</code>. Set it to nano if you keep accidentally getting vim:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;export EDITOR=&quot;nano&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;export VISUAL=&quot;nano&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
+<span class="nb">source</span><span class="w"> </span>~/.zprofile
+</code></pre></div>
+
+<p>For git specifically:</p>
+<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>core.editor<span class="w"> </span><span class="s2">&quot;nano&quot;</span>
+</code></pre></div>
+
+<p>For <code>visudo</code> (change the sudo editor):</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>update-alternatives<span class="w"> </span>--config<span class="w"> </span>editor<span class="w">   </span><span class="c1"># Ubuntu/Debian</span>
+</code></pre></div>

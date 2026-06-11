@@ -1,0 +1,130 @@
+DATA:installation:Install Linux on a Chromebook (Replacing ChromeOS):Installation Guides
+<h1>Install Linux on a Chromebook (Replacing ChromeOS)</h1>
+<blockquote>
+<p>⚠️ <strong>GalliumOS is dead.</strong> It was officially discontinued in December 2022. The project's own wiki advises users to migrate away due to security vulnerabilities from an unpatched kernel and no updates since Ubuntu 18.04 LTS reached end of life in May 2023. Do not install GalliumOS — it is actively unsafe. This guide uses <strong>Linux Mint XFCE</strong> instead, which is the current recommended replacement, supported until 2029.</p>
+</blockquote>
+<p>This guide covers two approaches:
+- <strong>Option A — Built-in Linux (Crostini):</strong> Run Linux apps inside ChromeOS without modifying anything. Easiest and safest.
+- <strong>Option B — Full Linux with MrChromebox firmware:</strong> Replace ChromeOS entirely with Linux Mint. Best performance, full OS.</p>
+<hr />
+<h2>Option A — Linux Apps Inside ChromeOS (No Installation Needed)</h2>
+<p>Modern Chromebooks (2019+) have Linux built in. This runs a Debian container alongside ChromeOS — no firmware changes, no risk, fully reversible.</p>
+<ol>
+<li>Go to <strong>Settings</strong> → <strong>Advanced</strong> → <strong>Developers</strong> → <strong>Linux development environment</strong>.</li>
+<li>Click <strong>Turn On</strong> and follow the setup wizard.</li>
+<li>A Debian-based container installs automatically (takes a few minutes).</li>
+<li>Open the <strong>Terminal</strong> app that appears in your launcher.</li>
+<li>You now have full <code>apt</code> access — install anything from Debian repositories:
+   <code>bash
+   sudo apt update &amp;&amp; sudo apt upgrade -y
+   sudo apt install firefox-esr gimp vlc -y</code></li>
+</ol>
+<p>Linux apps appear in your ChromeOS app launcher and open like any other app. Files are shared between ChromeOS and Linux via the Files app.</p>
+<p><strong>Limitations:</strong> The container has no direct hardware access, no GPU acceleration, and cannot run system-level tools. For most people this is enough.</p>
+<hr />
+<h2>Option B — Full Linux Mint (Replaces ChromeOS)</h2>
+<p>This completely replaces ChromeOS with Linux Mint XFCE — a full desktop OS. You lose ChromeOS permanently (though you can restore it with a recovery USB).</p>
+<h3>Hardware Requirements</h3>
+<p>Most Intel Chromebooks from 2012 onwards are supported. ARM Chromebooks have very limited support — check <a href="https://mrchromebox.tech/supported-devices">mrchromebox.tech/supported-devices</a> before proceeding.</p>
+<p><strong>Confirmed working well:</strong>
+- Intel Haswell, Broadwell, Skylake, Kabylake (2013–2017)
+- Intel Apollo Lake, Gemini Lake (2017–2019)
+- Intel Ice Lake, Tiger Lake (2020–2021)</p>
+<h3>What You Need</h3>
+<ul>
+<li>The Chromebook</li>
+<li>A USB drive (8 GB+)</li>
+<li>A second device to download files</li>
+<li>A screwdriver to remove the write-protect screw on some models (check mrchromebox.tech for your model)</li>
+</ul>
+<hr />
+<h3>Step 1 — Check Your Device on MrChromebox</h3>
+<p>Go to <a href="https://mrchromebox.tech/supported-devices">mrchromebox.tech/supported-devices</a> and find your Chromebook model. Note:
+- Whether it requires a <strong>write-protect screw removal</strong>
+- What firmware options are available (<strong>UEFI Full ROM</strong> is what you want)</p>
+<p>If your device shows <strong>UEFI Full ROM</strong> as available, you can proceed.</p>
+<hr />
+<h3>Step 2 — Enable Developer Mode</h3>
+<ol>
+<li>Shut down the Chromebook.</li>
+<li>Hold <strong>Esc + Refresh</strong> and press <strong>Power</strong>.</li>
+<li>At the Recovery screen, press <strong>Ctrl + D</strong>.</li>
+<li>Press <strong>Enter</strong> to confirm turning off OS verification.</li>
+<li>Wait 5–10 minutes for it to transition. The Chromebook will restart.</li>
+<li>Press <strong>Ctrl + D</strong> at the "OS verification is OFF" screen to boot.</li>
+<li>Complete the basic ChromeOS setup (just enough to get to a browser).</li>
+</ol>
+<hr />
+<h3>Step 3 — Remove Write Protect (If Required)</h3>
+<p>Some Chromebooks have a physical write-protect screw that must be removed before firmware can be flashed. Check mrchromebox.tech for your specific model. If your model does not require this, skip to Step 4.</p>
+<p>If required: power off, remove the bottom cover, find and remove the write-protect screw, and reassemble.</p>
+<hr />
+<h3>Step 4 — Flash MrChromebox UEFI Firmware</h3>
+<ol>
+<li>On the Chromebook, press <strong>Ctrl + Alt + T</strong> to open Crosh.</li>
+<li>Type <code>shell</code> and press Enter.</li>
+<li>Run the MrChromebox firmware utility:
+   <code>bash
+   cd; curl -LO mrchromebox.tech/firmware-util.sh &amp;&amp; sudo bash firmware-util.sh</code></li>
+<li>Select option <strong>2 — Install/Update UEFI (Full ROM) Firmware</strong>.</li>
+<li>Follow the prompts. It will ask to back up your stock firmware to a USB drive — do this.</li>
+<li>Confirm the flash. It takes about a minute.</li>
+<li>Power off when done.</li>
+</ol>
+<hr />
+<h3>Step 5 — Create a Linux Mint USB</h3>
+<p>On another computer:</p>
+<ol>
+<li>Go to <a href="https://linuxmint.com/download.php">linuxmint.com/download.php</a>.</li>
+<li>Download <strong>Linux Mint 22.3 "Zena" — XFCE edition</strong> (lightest, fastest on Chromebook hardware).</li>
+<li>Flash it to your USB drive with <a href="https://etcher.balena.io">balenaEtcher</a>.</li>
+</ol>
+<hr />
+<h3>Step 6 — Install Linux Mint</h3>
+<ol>
+<li>Insert the USB into the Chromebook.</li>
+<li>Power on — with MrChromebox UEFI firmware installed, it will boot from USB automatically if no internal OS is detected.</li>
+<li>Select <strong>Start Linux Mint</strong> at the boot menu.</li>
+<li>Once the live desktop loads, double-click <strong>Install Linux Mint</strong>.</li>
+<li>Choose your language and keyboard layout.</li>
+<li>Check <strong>Install multimedia codecs</strong>.</li>
+<li>On the installation type screen, select <strong>Erase disk and install Linux Mint</strong>.</li>
+<li>Set your time zone, name, username, and password.</li>
+<li>Click <strong>Install Now</strong> and wait (15–25 minutes).</li>
+<li>Restart when prompted. Remove the USB.</li>
+</ol>
+<hr />
+<h3>Step 7 — First Setup in Linux Mint</h3>
+<p>Linux Mint will boot to a full desktop. After login:</p>
+<p><strong>Update the system:</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>upgrade<span class="w"> </span>-y
+</code></pre></div>
+
+<p><strong>Fix Wi-Fi if not connecting</strong> (some Broadcom chips):</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>broadcom-sta-dkms<span class="w"> </span>-y
+sudo<span class="w"> </span>modprobe<span class="w"> </span>wl
+</code></pre></div>
+
+<p><strong>Enable touchpad tap-to-click:</strong>
+Go to <strong>Menu</strong> → <strong>Settings</strong> → <strong>Mouse and Touchpad</strong> → <strong>Touchpad</strong> tab → enable <strong>Tap touchpad to click</strong>.</p>
+<hr />
+<h2>Restoring ChromeOS</h2>
+<p>If you want ChromeOS back:</p>
+<ol>
+<li>On another computer, go to <a href="https://chromeos.google.com/recovery">chromeos.google.com/recovery</a>.</li>
+<li>Install the <strong>Chromebook Recovery Utility</strong> extension in Chrome.</li>
+<li>Create a recovery USB for your specific Chromebook model.</li>
+<li>Insert the USB into your Chromebook and power on while holding <strong>Esc + Refresh + Power</strong>.</li>
+<li>ChromeOS will restore from the USB.</li>
+</ol>
+<p>Note: This also restores the stock firmware — you will need to re-flash MrChromebox firmware if you want Linux again.</p>
+<hr />
+<h2>Troubleshooting</h2>
+<h3>Chromebook boots to black screen after firmware flash</h3>
+<p>Hold the power button for 10 seconds to force off. Try booting with the USB inserted. If it still fails, use the ChromeOS recovery USB to restore stock firmware and try again.</p>
+<h3>Wi-Fi not working after Linux Mint install</h3>
+<p>Most Broadcom chips need the <code>broadcom-sta-dkms</code> package (see Step 7). Use a USB ethernet adapter for temporary internet to download the driver.</p>
+<h3>Touchpad not working properly</h3>
+<p>Linux Mint's touchpad support on Chromebooks is generally good but some models need kernel parameters. Run <code>dmesg | grep touch</code> to identify your touchpad model and search for Linux-specific fixes for it.</p>
+<h3>Keys not mapped correctly (brightness, volume)</h3>
+<p>ChromeOS keyboard mapping differs from standard PC. Install <code>chromebook-function-keys</code> or use the <strong>Keyboard</strong> settings in Linux Mint to remap function keys.</p>

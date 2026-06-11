@@ -1,0 +1,62 @@
+DATA:networking:Share Internet Connection from Mac to Another Device:Networking & DNS
+<h1>Share Internet Connection from Mac to Another Device</h1>
+<p>macOS has a built-in Internet Sharing feature that turns your Mac into a router — useful when you have Ethernet but need to give WiFi to a device that has none, or when you need to share a VPN connection.</p>
+<hr />
+<h2>Common Use Cases</h2>
+<ul>
+<li>Mac is connected via Ethernet, you want to share WiFi to a phone or another laptop</li>
+<li>Mac is connected to a VPN, you want another device to use that VPN without configuring it separately</li>
+<li>Testing a device on an isolated network</li>
+</ul>
+<hr />
+<h2>Step 1 — Open Internet Sharing</h2>
+<ol>
+<li><strong>System Settings</strong> → <strong>General</strong> → <strong>Sharing</strong>.</li>
+<li>Click <strong>Internet Sharing</strong> (do not toggle it yet — configure first).</li>
+</ol>
+<hr />
+<h2>Step 2 — Configure What to Share</h2>
+<ul>
+<li><strong>Share your connection from:</strong> Select your internet source — usually <strong>Ethernet</strong> (if plugged in) or <strong>Wi-Fi</strong> (if sharing to a USB or Thunderbolt device).</li>
+<li><strong>To computers using:</strong> Check <strong>Wi-Fi</strong> to create a hotspot other devices can join.</li>
+</ul>
+<h3>Set a Wi-Fi Password (Recommended)</h3>
+<p>Click <strong>Wi-Fi Options</strong>:
+- <strong>Network Name:</strong> give it a name
+- <strong>Security:</strong> WPA2 Personal
+- <strong>Password:</strong> set a password</p>
+<hr />
+<h2>Step 3 — Enable Internet Sharing</h2>
+<p>Toggle <strong>Internet Sharing</strong> to <strong>On</strong>. Confirm in the dialog.</p>
+<p>A Wi-Fi hotspot with your chosen name will appear on other devices. Connect to it and you are done.</p>
+<hr />
+<h2>Share via USB (iPhone or iPad)</h2>
+<p>If you want to share internet to an iPhone/iPad via USB (useful if the device has no Wi-Fi):</p>
+<ol>
+<li>Connect the device via USB.</li>
+<li>In <strong>To computers using</strong>, check <strong>iPhone USB</strong> or <strong>iPad USB</strong>.</li>
+<li>Toggle Internet Sharing on.</li>
+</ol>
+<hr />
+<h2>Share via Thunderbolt Bridge (Mac to Mac)</h2>
+<p>To share internet from one Mac to another via a Thunderbolt cable:</p>
+<ol>
+<li>Connect both Macs with a Thunderbolt cable.</li>
+<li>On the Mac with internet, set <strong>To computers using</strong> → <strong>Thunderbolt Bridge</strong>.</li>
+<li>Enable Internet Sharing.</li>
+</ol>
+<hr />
+<h2>Troubleshooting</h2>
+<h3>Other devices connect but have no internet</h3>
+<ul>
+<li>Make sure the Mac itself has internet before sharing</li>
+<li>Try disabling and re-enabling Internet Sharing</li>
+<li>Check if a VPN on the Mac is blocking outbound traffic</li>
+</ul>
+<h3>Cannot enable Internet Sharing (greyed out)</h3>
+<ul>
+<li>You cannot share the same interface you are receiving from — for example, you cannot share Wi-Fi via Wi-Fi on older Macs. Use Ethernet to receive and Wi-Fi to share, or vice versa.</li>
+<li>macOS Ventura and later support sharing Wi-Fi via Wi-Fi on Macs with compatible chips.</li>
+</ul>
+<h3>Hotspot disappears after Mac sleeps</h3>
+<p>Internet Sharing disables when the Mac sleeps. Prevent sleep in <strong>System Settings</strong> → <strong>Battery</strong> → <strong>Options</strong> → set <strong>Prevent automatic sleeping when the display is off</strong> to on.</p>

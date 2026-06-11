@@ -1,0 +1,97 @@
+DATA:networking:EAP-TLS Trust Prompt — Cisco ISE and 802.1X Wi-Fi:Networking & DNS
+<h1>EAP-TLS Trust Prompt — Cisco ISE and 802.1X Wi-Fi</h1>
+<p>When connecting to a university or company Wi-Fi network that uses <strong>802.1X authentication with Cisco ISE</strong>, you will see multiple prompts asking to trust a certificate or enter credentials. This happens constantly — after password changes, OS updates, certificate renewals, and sometimes for no obvious reason.</p>
+<p>Yes, this gets asked a lot. No, it is not your email password.</p>
+<hr />
+<h2>What Is Actually Happening</h2>
+<p>Your university or company network does not use a simple Wi-Fi password that anyone can use. Instead it uses <strong>802.1X</strong> — a protocol that authenticates you as an individual. <strong>Cisco ISE</strong> (Identity Services Engine) is the server on your organisation's side that decides who is allowed on the network.</p>
+<p>When you connect, three things happen in order:
+1. Your device and the ISE server verify each other's identity using certificates
+2. You enter your credentials (username and password) so ISE can confirm who you are
+3. ISE grants or denies access based on your account</p>
+<hr />
+<h2>The Three Prompts You Will See on macOS</h2>
+<h3>Prompt 1 — Username and Password (Wi-Fi Credentials)</h3>
+<p>When you first click the network name in Wi-Fi settings, a prompt appears asking for a <strong>username and password</strong>.</p>
+<p>This is asking for the <strong>credentials your IT department gave you when you registered on the system</strong> — your network account, not your personal email or Mac login. It is the same account you use to log into the student or staff portal, the university or company email system, or any other internal system.</p>
+<p>It is <strong>not</strong>:
+- Your personal Gmail, iCloud, or any personal email
+- Your Mac login password
+- Your phone PIN</p>
+<p>If you do not know these credentials, contact IT — they were provided when your account was created on the system.</p>
+<h3>Prompt 2 — "Verify Certificate" dialog</h3>
+<p>After entering your credentials, a window titled <strong>"Verify Certificate"</strong> or <strong>"Authenticating to network..."</strong> appears showing:
+- The RADIUS/ISE server's hostname (something like <code>ise.yourdomain.com</code> or <code>radius.yourorg.edu</code>)
+- The certificate chain — Root CA → Intermediate CA → Server certificate
+- A green <strong>"This certificate is valid"</strong> badge if the certificate is not expired</p>
+<p>You will see a checkbox: <strong>"Always trust [server name]"</strong></p>
+<p><strong>What to do:</strong>
+1. Check the server hostname belongs to your organisation — it should contain your university or company domain
+2. Confirm the certificate shows <strong>"This certificate is valid"</strong> in green
+3. Check <strong>"Always trust"</strong> to avoid seeing this again until the certificate renews
+4. Click <strong>Continue</strong></p>
+<h3>Prompt 3 — "eaptlstrust" password prompt</h3>
+<p>Immediately after clicking Continue, a second smaller prompt appears with:
+- The title <strong><code>eaptlstrust</code></strong>
+- Text: <em>"You are making changes to your Certificate Trust Settings. Enter your password to allow this."</em>
+- Your Mac username already filled in
+- A password field
+- An <strong>"Update Settings"</strong> button</p>
+<p><strong>This is asking for your Mac login password</strong> — the one you use to unlock your screen or log into your Mac itself. Not your network account. Not your email. Your Mac's own password.</p>
+<p>After the certificate trust dialog, macOS needs to update the keychain certificate trust settings — that operation requires your Mac login password to authorise the change.</p>
+<p>Enter your Mac login password and click <strong>Update Settings</strong>. The connection completes and you are on the network.</p>
+<hr />
+<h2>Why It Keeps Asking</h2>
+<p>macOS forgets the trust decision in several situations:
+- After a macOS update
+- After the ISE server's certificate is renewed (usually annually)
+- After IT pushes a new network configuration to your device
+- After you removed and re-added the Wi-Fi network</p>
+<p><strong>Fix for persistent prompts:</strong></p>
+<ol>
+<li>Open <strong>Keychain Access</strong> (search with Spotlight).</li>
+<li>Search for the certificate name shown in the trust prompt.</li>
+<li>Double-click it → expand <strong>Trust</strong> → set <strong>When using this certificate</strong> to <strong>Always Trust</strong>.</li>
+<li>Enter your Mac login password to confirm.</li>
+</ol>
+<p>If it keeps asking even after trusting, forget the network and reconnect from scratch:
+<strong>System Settings</strong> → <strong>Network</strong> → <strong>Wi-Fi</strong> → <strong>Details</strong> → <strong>Forget This Network</strong>, then reconnect.</p>
+<blockquote>
+<p><strong>If EAP-TLS still fails silently after reconnecting:</strong> The client certificate must be in the <strong>System keychain</strong>, not the Login keychain. Open Keychain Access, find the certificate, and if it is under <strong>login</strong>, drag it to <strong>System</strong>. EAP-TLS authentication happens before you log in — the login keychain is locked at that point and the certificate is invisible to the supplicant.</p>
+</blockquote>
+<hr />
+<h2>Windows</h2>
+<p>Windows usually handles 802.1X automatically on domain-joined machines. On a personal Windows device:</p>
+<ol>
+<li>When prompted, enter your <strong>network username</strong> in the format <code>DOMAIN\username</code> or <code>username@yourdomain.com</code> — the IT-provided account, not your personal Microsoft account.</li>
+<li>When asked to trust the server certificate, click <strong>Connect</strong> — Windows saves this automatically.</li>
+</ol>
+<p>If it keeps prompting after every reboot, the ISE CA certificate is missing from your trusted store. Contact IT — they need to push it via Group Policy or provide the certificate file to import manually.</p>
+<hr />
+<h2>Linux</h2>
+<p>Linux requires manual setup. When connecting via NetworkManager (GNOME/KDE):</p>
+<ol>
+<li>Click the network icon → select the network name.</li>
+<li>In the authentication dialog set:</li>
+<li><strong>Security:</strong> WPA &amp; WPA2 Enterprise</li>
+<li><strong>Authentication:</strong> PEAP</li>
+<li><strong>Inner authentication:</strong> MSCHAPv2</li>
+<li><strong>CA Certificate:</strong> the certificate file from IT, or <strong>No CA certificate</strong> if you do not have it</li>
+<li><strong>Username / Password:</strong> your IT-provided network account credentials</li>
+<li>Click <strong>Connect</strong>.</li>
+</ol>
+<hr />
+<h2>If Nothing Works — Contact IT</h2>
+<p>802.1X is controlled server-side. If correct credentials still fail, the cause is almost always one of:</p>
+<ul>
+<li>Your account is locked or has expired</li>
+<li>Your device needs to be registered with IT before it is allowed on</li>
+<li>A new certificate was issued and your device has the old one</li>
+<li><strong>Clock skew</strong> — EAP-TLS silently fails if your device's clock is significantly off from the server's. Set date and time to automatic</li>
+<li><strong><code>12521 EAP-TLS failed SSL/TLS handshake</code></strong> in ISE logs — the ISE server's CA is not trusted by your device. IT needs to push the CA certificate to you</li>
+</ul>
+<p>No amount of retrying fixes any of these — contact IT support.</p>
+<hr />
+<blockquote>
+<p><strong>Summary:</strong> Three prompts, three different passwords. The Wi-Fi username and password prompt wants your <strong>IT-provided network account credentials</strong>. The "Verify Certificate" prompt is confirming the server is legitimate — check it, trust it, click Continue. The <code>eaptlstrust</code> prompt wants your <strong>Mac login password</strong> to save the trust decision to the keychain.</p>
+</blockquote>

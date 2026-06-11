@@ -1,0 +1,144 @@
+DATA:linux:awk — Text Processing on macOS and Linux:Linux
+<h1>awk — Text Processing on macOS and Linux</h1>
+<p><code>awk</code> processes text line by line, splitting each line into fields. It is perfect for extracting columns from logs, CSV files, and command output. Confusing at first — simple once you understand the pattern.</p>
+<hr />
+<h2>Basic Pattern</h2>
+<div class="codehilite"><pre><span></span><code>awk<span class="w"> </span><span class="s1">&#39;{action}&#39;</span><span class="w"> </span>file
+awk<span class="w"> </span><span class="s1">&#39;pattern {action}&#39;</span><span class="w"> </span>file
+</code></pre></div>
+
+<p>awk reads each line, splits it into fields (<code>$1</code>, <code>$2</code>, etc.), and runs your action on it.</p>
+<hr />
+<h2>Print Specific Columns</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Print first column of every line</span>
+awk<span class="w"> </span><span class="s1">&#39;{print $1}&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Print second and fourth columns</span>
+awk<span class="w"> </span><span class="s1">&#39;{print $2, $4}&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Print last column (NF = number of fields)</span>
+awk<span class="w"> </span><span class="s1">&#39;{print $NF}&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Print second-to-last column</span>
+awk<span class="w"> </span><span class="s1">&#39;{print $(NF-1)}&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Print all columns</span>
+awk<span class="w"> </span><span class="s1">&#39;{print $0}&#39;</span><span class="w"> </span>file.txt
+</code></pre></div>
+
+<hr />
+<h2>Filter Lines (Pattern Matching)</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Print lines containing &quot;error&quot;</span>
+awk<span class="w"> </span><span class="s1">&#39;/error/&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Print lines NOT containing &quot;error&quot;</span>
+awk<span class="w"> </span><span class="s1">&#39;!/error/&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Print lines where column 3 equals &quot;active&quot;</span>
+awk<span class="w"> </span><span class="s1">&#39;$3 == &quot;active&quot;&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Print lines where column 2 is greater than 100</span>
+awk<span class="w"> </span><span class="s1">&#39;$2 &gt; 100&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Print lines 5 to 10</span>
+awk<span class="w"> </span><span class="s1">&#39;NR&gt;=5 &amp;&amp; NR&lt;=10&#39;</span><span class="w"> </span>file.txt
+</code></pre></div>
+
+<hr />
+<h2>Change the Field Separator</h2>
+<p>By default awk splits on whitespace. Use <code>-F</code> for other separators:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Parse CSV</span>
+awk<span class="w"> </span>-F<span class="s1">&#39;,&#39;</span><span class="w"> </span><span class="s1">&#39;{print $1}&#39;</span><span class="w"> </span>file.csv
+
+<span class="c1"># Parse /etc/passwd (colon-separated)</span>
+awk<span class="w"> </span>-F<span class="s1">&#39;:&#39;</span><span class="w"> </span><span class="s1">&#39;{print $1, $3}&#39;</span><span class="w"> </span>/etc/passwd
+
+<span class="c1"># Multiple separators</span>
+awk<span class="w"> </span>-F<span class="s1">&#39;[,:]&#39;</span><span class="w"> </span><span class="s1">&#39;{print $1}&#39;</span><span class="w"> </span>file.txt
+</code></pre></div>
+
+<hr />
+<h2>Combine with Other Commands</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Show processes using most memory (print name and memory)</span>
+ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $11, $4}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-k2<span class="w"> </span>-rn<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-10
+
+<span class="c1"># Get IP addresses from ifconfig</span>
+ifconfig<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;/inet /{print $2}&#39;</span>
+
+<span class="c1"># Sum a column</span>
+awk<span class="w"> </span><span class="s1">&#39;{sum += $3} END {print sum}&#39;</span><span class="w"> </span>data.txt
+
+<span class="c1"># Count lines matching a pattern</span>
+awk<span class="w"> </span><span class="s1">&#39;/error/{count++} END {print count}&#39;</span><span class="w"> </span>logfile.txt
+
+<span class="c1"># Print lines between two patterns</span>
+awk<span class="w"> </span><span class="s1">&#39;/START/,/END/&#39;</span><span class="w"> </span>file.txt
+</code></pre></div>
+
+<hr />
+<h2>BEGIN and END Blocks</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Print header, process data, print footer</span>
+awk<span class="w"> </span><span class="s1">&#39;BEGIN {print &quot;Name Age&quot;} {print $1, $2} END {print &quot;Done&quot;}&#39;</span><span class="w"> </span>file.txt
+</code></pre></div>
+
+<ul>
+<li><code>BEGIN</code> runs once before reading any lines</li>
+<li><code>END</code> runs once after reading all lines</li>
+</ul>
+<hr />
+<h2>Built-in Variables</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>$0</code></td>
+<td>Entire current line</td>
+</tr>
+<tr>
+<td><code>$1, $2...</code></td>
+<td>Field 1, 2...</td>
+</tr>
+<tr>
+<td><code>NF</code></td>
+<td>Number of fields in current line</td>
+</tr>
+<tr>
+<td><code>NR</code></td>
+<td>Current line number</td>
+</tr>
+<tr>
+<td><code>FS</code></td>
+<td>Field separator (default: space)</td>
+</tr>
+<tr>
+<td><code>OFS</code></td>
+<td>Output field separator</td>
+</tr>
+<tr>
+<td><code>RS</code></td>
+<td>Record separator (default: newline)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Quick Examples</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Print usernames from /etc/passwd</span>
+awk<span class="w"> </span>-F<span class="s1">&#39;:&#39;</span><span class="w"> </span><span class="s1">&#39;{print $1}&#39;</span><span class="w"> </span>/etc/passwd
+
+<span class="c1"># Show disk usage over 1GB</span>
+df<span class="w"> </span>-h<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;$2 ~ /G/ &amp;&amp; $2+0 &gt; 1&#39;</span>
+
+<span class="c1"># Count words in a file</span>
+awk<span class="w"> </span><span class="s1">&#39;{words += NF} END {print words}&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Print lines with more than 5 fields</span>
+awk<span class="w"> </span><span class="s1">&#39;NF &gt; 5&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Replace a field value</span>
+awk<span class="w"> </span><span class="s1">&#39;{$2 = &quot;replaced&quot;; print}&#39;</span><span class="w"> </span>file.txt
+</code></pre></div>

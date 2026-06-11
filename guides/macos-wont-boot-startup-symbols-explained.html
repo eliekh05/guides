@@ -1,0 +1,144 @@
+DATA:system-users:Mac Won't Boot — What Each Startup Symbol Means:System & Users
+<h1>Mac Won't Boot — What Each Startup Symbol Means</h1>
+<p>When a Mac fails to boot, it shows a symbol instead of starting up normally. Each symbol means something completely different — what you do next depends entirely on which one you see. This guide covers every startup symbol and the correct fix for each.</p>
+<hr />
+<h2>🔲 Black Screen (Nothing at All)</h2>
+<p>The Mac appears completely off — no Apple logo, no chime, no fan noise.</p>
+<p><strong>Possible causes:</strong> Power issue, display issue, SMC problem.</p>
+<p><strong>Fixes in order:</strong>
+1. Hold the power button for 10 seconds to force off. Wait 30 seconds. Press power once.
+2. Check the power cable and adapter — try a different outlet or cable.
+3. Connect to an external monitor (HDMI or USB-C to HDMI). If the external works, the built-in display has a fault.
+4. Reset the SMC — see the <strong>Reset NVRAM and SMC</strong> guide.
+5. If nothing works, the Mac may need hardware repair.</p>
+<hr />
+<h2>🍎 Stuck on Apple Logo (No Progress Bar)</h2>
+<p>The Apple logo appears but the Mac never gets past it, with no loading bar underneath.</p>
+<p><strong>Possible causes:</strong> Corrupted system files, startup disk error, incompatible kernel extension.</p>
+<p><strong>Fixes in order:</strong>
+1. <strong>Wait</strong> — the first boot after a macOS update can take 10–20 minutes. Give it time.
+2. <strong>Safe Mode</strong> — boot with only essential system files:
+   - <strong>Intel Mac:</strong> Hold <strong>Shift</strong> at startup until you see the login screen.
+   - <strong>Apple Silicon:</strong> Hold power, select your startup disk, hold <strong>Shift</strong>, click <strong>Continue in Safe Mode</strong>.
+   - If it boots in Safe Mode, a third-party app or extension is the culprit. Remove recently installed software.
+3. <strong>Run First Aid</strong> — boot into Recovery Mode (see below), open Disk Utility, select your drive, and click <strong>First Aid</strong>.
+4. <strong>Reinstall macOS</strong> from Recovery Mode (does not delete your files).</p>
+<hr />
+<h2>📁 Flashing Folder with Question Mark</h2>
+<p>A folder icon with a flashing question mark appears at startup.</p>
+<p><strong>Meaning:</strong> The Mac cannot find a bootable operating system. The startup disk is missing, damaged, or not selected.</p>
+<p><strong>Fixes in order:</strong>
+1. <strong>Wait</strong> — sometimes this appears briefly before finding the disk. If it boots normally after a few seconds, the issue was temporary.
+2. <strong>Reset NVRAM</strong> — the startup disk selection may be corrupted. Reset NVRAM (hold <strong>Option + Command + P + R</strong> at startup on Intel, or just restart on Apple Silicon — NVRAM resets automatically).
+3. <strong>Select startup disk manually</strong> — boot into Recovery Mode, go to <strong>Startup Disk</strong>, and select your main drive.
+4. <strong>Run Disk Utility First Aid</strong> in Recovery Mode — the drive may have errors.
+5. <strong>Reinstall macOS</strong> if First Aid finds errors it cannot fix.
+6. <strong>Drive hardware failure</strong> — if none of the above work, the SSD/HDD may have died.</p>
+<hr />
+<h2>🚫 Circle with a Diagonal Line (Prohibitory Symbol)</h2>
+<p>A grey or black circle with a line through it (like a no-entry sign).</p>
+<p><strong>Meaning:</strong> macOS found a startup disk but cannot boot from it — usually because the OS on it is incompatible with this Mac (too old or too new for the hardware), or the OS is severely corrupted.</p>
+<p><strong>Common cause:</strong> This often happens after restoring a backup from a different Mac model, or installing an incompatible macOS version.</p>
+<p><strong>Fixes in order:</strong>
+1. <strong>Boot into Recovery Mode</strong> and reinstall macOS — this replaces the OS without deleting your data.
+2. <strong>Select a different startup disk</strong> from Recovery — if you have another bootable volume, try that.
+3. <strong>Erase and reinstall</strong> if Recovery cannot fix the existing installation.</p>
+<hr />
+<h2>🌐 Spinning Globe</h2>
+<p>A spinning globe appears instead of the Apple logo.</p>
+<p><strong>Meaning:</strong> The Mac cannot find a local startup disk and is trying to boot from <strong>Internet Recovery</strong> — downloading a recovery environment from Apple's servers over Wi-Fi.</p>
+<p><strong>This is not necessarily a failure</strong> — if your Mac is booting from Internet Recovery intentionally (you erased the drive or the recovery partition is gone), the globe is expected. Connect to Wi-Fi when prompted.</p>
+<p><strong>If the globe appears unexpectedly:</strong>
+1. Connect to Wi-Fi as prompted — Internet Recovery needs internet to continue.
+2. If Wi-Fi does not appear, the Mac may not be detecting the startup disk. Run Disk Utility once Internet Recovery loads.
+3. If you see a <strong>globe with an exclamation mark (⚠️)</strong>, Internet Recovery failed — usually a network issue. Try a different Wi-Fi network or use Ethernet.</p>
+<hr />
+<h2>❗ Exclamation Mark in a Circle</h2>
+<p>A circle with an exclamation mark, sometimes with <code>support.apple.com/mac/startup</code> shown below.</p>
+<p><strong>Meaning:</strong> The Mac detected a critical firmware or system issue during startup.</p>
+<p><strong>What to do:</strong>
+1. Note any error code shown on screen (starts with <code>-</code> followed by numbers, like <code>-2005F</code>).
+2. Restart and try again — sometimes this clears on a second boot.
+3. Run Apple Diagnostics to check hardware: hold <strong>D</strong> at startup (Intel) or hold power until startup options then hold <strong>Command + D</strong> (Apple Silicon).
+4. If it persists, visit <a href="https://apple.com/support">apple.com/support</a> with the error code.</p>
+<hr />
+<h2>⚙️ Gear Icon with "Options" Text</h2>
+<p>Shows your startup volumes with an Options gear icon.</p>
+<p><strong>Meaning:</strong> You are in <strong>Startup Manager</strong> — this is intentional. You held Option at startup, or the Mac cannot find a default startup disk and is asking you to choose.</p>
+<p><strong>What to do:</strong>
+1. Select your startup disk (usually <strong>Macintosh HD</strong>) and press Enter.
+2. If the correct disk is not listed, it has a problem — see the Flashing Folder section above.
+3. If you want to set a permanent default, go into Recovery → Startup Disk and select it.</p>
+<hr />
+<h2>🔒 Lock Icon</h2>
+<p>A padlock appears at startup.</p>
+<p><strong>Meaning:</strong> A firmware password is set on this Mac. You cannot boot from any external device or change startup settings without it.</p>
+<p><strong>What to do:</strong>
+1. Enter the firmware password — if you do not know it, the Mac was likely previously owned or managed by an organisation.
+2. If you are the owner and forgot it, you need to contact Apple Support with proof of purchase — this cannot be bypassed without Apple's help on modern Macs.</p>
+<hr />
+<h2>How to Enter Recovery Mode</h2>
+<p>You will need Recovery Mode to fix most of the above issues.</p>
+<p><strong>Intel Mac:</strong>
+Restart and immediately hold <strong>Command (⌘) + R</strong> until the Apple logo appears.</p>
+<p><strong>Apple Silicon (M1/M2/M3/M4):</strong>
+Shut down completely. Press and hold the <strong>power button</strong> until you see <strong>"Loading startup options"</strong>. Click <strong>Options</strong> → <strong>Continue</strong>.</p>
+<p>From Recovery Mode you can access: Disk Utility, Reinstall macOS, Terminal, Startup Disk settings.</p>
+<hr />
+<h2>Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+<th>First Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Black screen</td>
+<td>Power or display issue</td>
+<td>Force restart, check power</td>
+</tr>
+<tr>
+<td>Stuck Apple logo</td>
+<td>System file or extension issue</td>
+<td>Safe Mode, then First Aid</td>
+</tr>
+<tr>
+<td>Flashing folder + ?</td>
+<td>No bootable OS found</td>
+<td>Reset NVRAM, then Recovery</td>
+</tr>
+<tr>
+<td>Circle with slash</td>
+<td>Incompatible or corrupt OS</td>
+<td>Reinstall macOS in Recovery</td>
+</tr>
+<tr>
+<td>Spinning globe</td>
+<td>Booting from Internet Recovery</td>
+<td>Connect to Wi-Fi</td>
+</tr>
+<tr>
+<td>Globe + exclamation</td>
+<td>Internet Recovery failed</td>
+<td>Different network or Ethernet</td>
+</tr>
+<tr>
+<td>Exclamation in circle</td>
+<td>Critical firmware issue</td>
+<td>Apple Diagnostics</td>
+</tr>
+<tr>
+<td>Gear + Options</td>
+<td>Startup Manager</td>
+<td>Select your disk</td>
+</tr>
+<tr>
+<td>Lock icon</td>
+<td>Firmware password set</td>
+<td>Enter password or contact Apple</td>
+</tr>
+</tbody>
+</table>

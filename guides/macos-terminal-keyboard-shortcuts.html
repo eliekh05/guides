@@ -1,0 +1,222 @@
+DATA:macos:macOS Terminal Keyboard Shortcuts:macOS
+<h1>macOS Terminal Keyboard Shortcuts</h1>
+<hr />
+<h2>Cursor Movement</h2>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl + A</strong></td>
+<td>Move cursor to beginning of line</td>
+</tr>
+<tr>
+<td><strong>Ctrl + E</strong></td>
+<td>Move cursor to end of line</td>
+</tr>
+<tr>
+<td><strong>Ctrl + F</strong></td>
+<td>Move forward one character</td>
+</tr>
+<tr>
+<td><strong>Ctrl + B</strong></td>
+<td>Move backward one character</td>
+</tr>
+<tr>
+<td><strong>Alt + F</strong></td>
+<td>Move forward one word</td>
+</tr>
+<tr>
+<td><strong>Alt + B</strong></td>
+<td>Move backward one word</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Editing</h2>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl + D</strong></td>
+<td>Delete character under cursor</td>
+</tr>
+<tr>
+<td><strong>Ctrl + H</strong></td>
+<td>Delete character before cursor (backspace)</td>
+</tr>
+<tr>
+<td><strong>Ctrl + K</strong></td>
+<td>Delete from cursor to end of line</td>
+</tr>
+<tr>
+<td><strong>Ctrl + U</strong></td>
+<td>Delete from cursor to beginning of line</td>
+</tr>
+<tr>
+<td><strong>Ctrl + W</strong></td>
+<td>Delete word before cursor</td>
+</tr>
+<tr>
+<td><strong>Alt + D</strong></td>
+<td>Delete word after cursor</td>
+</tr>
+<tr>
+<td><strong>Ctrl + Y</strong></td>
+<td>Paste last deleted text</td>
+</tr>
+<tr>
+<td><strong>Ctrl + T</strong></td>
+<td>Transpose two characters</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>History</h2>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl + P</strong> or <strong>↑</strong></td>
+<td>Previous command</td>
+</tr>
+<tr>
+<td><strong>Ctrl + N</strong> or <strong>↓</strong></td>
+<td>Next command</td>
+</tr>
+<tr>
+<td><strong>Ctrl + R</strong></td>
+<td>Search backward through history</td>
+</tr>
+<tr>
+<td><strong>Ctrl + G</strong></td>
+<td>Cancel history search</td>
+</tr>
+<tr>
+<td><strong>!!</strong></td>
+<td>Repeat last command</td>
+</tr>
+<tr>
+<td><strong>!string</strong></td>
+<td>Repeat last command starting with "string"</td>
+</tr>
+<tr>
+<td><strong>!$</strong></td>
+<td>Last argument of previous command</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Control</h2>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl + C</strong></td>
+<td>Cancel current command</td>
+</tr>
+<tr>
+<td><strong>Ctrl + Z</strong></td>
+<td>Suspend current command (resume with <code>fg</code>)</td>
+</tr>
+<tr>
+<td><strong>Ctrl + D</strong></td>
+<td>Exit shell (when line is empty)</td>
+</tr>
+<tr>
+<td><strong>Ctrl + L</strong></td>
+<td>Clear screen</td>
+</tr>
+<tr>
+<td><strong>Ctrl + S</strong></td>
+<td>Pause output (freeze terminal)</td>
+</tr>
+<tr>
+<td><strong>Ctrl + Q</strong></td>
+<td>Resume output (unfreeze terminal)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Terminal App (macOS)</h2>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Cmd + T</strong></td>
+<td>New tab</td>
+</tr>
+<tr>
+<td><strong>Cmd + W</strong></td>
+<td>Close tab</td>
+</tr>
+<tr>
+<td><strong>Cmd + N</strong></td>
+<td>New window</td>
+</tr>
+<tr>
+<td><strong>Cmd + Shift + ]</strong></td>
+<td>Next tab</td>
+</tr>
+<tr>
+<td><strong>Cmd + Shift + [</strong></td>
+<td>Previous tab</td>
+</tr>
+<tr>
+<td><strong>Cmd + K</strong></td>
+<td>Clear to start (harder clear)</td>
+</tr>
+<tr>
+<td><strong>Cmd + +</strong> / <strong>Cmd + -</strong></td>
+<td>Increase/decrease font size</td>
+</tr>
+<tr>
+<td><strong>Cmd + 0</strong></td>
+<td>Reset font size</td>
+</tr>
+<tr>
+<td><strong>Cmd + F</strong></td>
+<td>Find in output</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Useful Tricks</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Ctrl + R — search history interactively</span>
+<span class="c1"># Type part of a command, keeps finding matches as you type</span>
+<span class="c1"># Press Enter to run, Ctrl+G to cancel, Ctrl+R again for next match</span>
+
+<span class="c1"># !$ — use last argument of previous command</span>
+ls<span class="w"> </span>/very/long/path/to/folder
+<span class="nb">cd</span><span class="w"> </span>!$<span class="w">                    </span><span class="c1"># cd /very/long/path/to/folder</span>
+
+<span class="c1"># !! — repeat last command</span>
+cat<span class="w"> </span>/etc/hosts
+sudo<span class="w"> </span>!!<span class="w">                  </span><span class="c1"># sudo cat /etc/hosts</span>
+
+<span class="c1"># Alt + . — insert last argument of previous command</span>
+</code></pre></div>

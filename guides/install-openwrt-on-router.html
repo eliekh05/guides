@@ -1,0 +1,167 @@
+DATA:installation:Install OpenWrt on a Router:Installation Guides
+<h1>Install OpenWrt on a Router</h1>
+<p>OpenWrt is open-source Linux firmware for routers. It replaces the manufacturer's locked-down firmware with a fully configurable system — real firewall rules, WireGuard VPN, network-wide ad blocking, VLANs, and regular security updates long after the manufacturer stops caring about your hardware.</p>
+<blockquote>
+<p>⚠️ <strong>Flashing the wrong firmware can permanently brick your router.</strong> Read this entire guide before doing anything. The hardware check in Step 1 is not optional.</p>
+</blockquote>
+<hr />
+<h2>Why OpenWrt?</h2>
+<ul>
+<li>Regular security updates — stock firmware often goes unpatched for years</li>
+<li>Network-wide ad blocking with AdGuard Home or Adblock</li>
+<li>WireGuard VPN on the router — all devices protected without per-device setup</li>
+<li>VLAN support — isolate IoT devices, guests, and your main network</li>
+<li>Full SSH access and package management via <code>opkg</code></li>
+<li>Keeps older hardware useful and secure</li>
+</ul>
+<hr />
+<h2>Step 1 — Check Your Router is Supported (Non-Negotiable)</h2>
+<p>Go to the OpenWrt Table of Hardware and find your router's device page. The URL is: <strong>openwrt.org/toh</strong></p>
+<p>Search for your <strong>exact model</strong> and — critically — your <strong>hardware version</strong>. The version number is on a sticker on the bottom of the router (e.g. "Ver 2.0" or "v4").</p>
+<blockquote>
+<p><strong>The same model can have completely different hardware in different versions.</strong> A TP-Link Archer C7 v2 and v5 have different chips and need different firmware files. Getting this wrong = bricked router.</p>
+</blockquote>
+<p>Look for:
+- <strong>Supported current release</strong> — can install latest OpenWrt
+- <strong>Supported</strong> — works but may be on an older release
+- <strong>End of Life</strong> — no longer receiving updates, avoid if possible
+- <strong>Not supported</strong> — stop here, do not attempt</p>
+<p>The most compatible hardware in 2025–2026 uses MediaTek Filogic (MT7981B, MT7986A) or Qualcomm IPQ806x chipsets. Well-supported models include:</p>
+<table>
+<thead>
+<tr>
+<th>Router</th>
+<th>Why it's recommended</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GL.iNet GL-MT6000 (Flint 2)</td>
+<td>Wi-Fi 6, 2.5G Ethernet, ships with OpenWrt-based firmware</td>
+</tr>
+<tr>
+<td>Linksys E8450 / Belkin RT3200</td>
+<td>Wi-Fi 6, 512MB RAM, strong community support</td>
+</tr>
+<tr>
+<td>Netgear Nighthawk R7800</td>
+<td>Excellent long-term support, fast CPU</td>
+</tr>
+<tr>
+<td>TP-Link Archer C7 v2/v5</td>
+<td>Budget-friendly, well-documented</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Step 2 — Download the Correct Firmware</h2>
+<p>On your router's OpenWrt device page, find the firmware section. Download the file labelled:</p>
+<ul>
+<li><strong>"Firmware OpenWrt Install"</strong> or <strong>"factory"</strong> — use this for your <strong>first install</strong> from stock firmware</li>
+<li><strong>"Firmware OpenWrt Upgrade"</strong> or <strong>"sysupgrade"</strong> — use this only when <strong>updating an existing OpenWrt install</strong></li>
+</ul>
+<p>Do not rename the file. Do not download the sysupgrade image for a first install.</p>
+<p>Save the file to your Desktop.</p>
+<hr />
+<h2>Step 3 — Prepare for the Flash</h2>
+<ol>
+<li><strong>Connect your computer to a LAN port on the router</strong> with an Ethernet cable — not via Wi-Fi, and not the WAN/Internet port.</li>
+<li><strong>Disconnect your computer from Wi-Fi</strong> — you want the only connection to be the Ethernet cable to the router.</li>
+<li>The router should be connected to the internet via its WAN port (your modem/ISP connection) as normal.</li>
+</ol>
+<hr />
+<h2>Step 4 — Flash via the Router's Web Interface (Standard Method)</h2>
+<p>This works for most routers and is the safest approach.</p>
+<ol>
+<li>Open a browser and go to your router's admin page — usually <code>192.168.0.1</code> or <code>192.168.1.1</code>. Check the sticker on the router if unsure.</li>
+<li>Log in with the router's admin credentials.</li>
+<li>Find the <strong>Firmware Upgrade</strong> or <strong>Firmware Update</strong> section. Location varies by manufacturer:</li>
+<li>TP-Link: Advanced → System Tools → Firmware Upgrade</li>
+<li>Netgear: Advanced → Administration → Firmware Update</li>
+<li>ASUS: Administration → Firmware Upgrade</li>
+<li>Linksys: Connectivity → Router Firmware Update</li>
+<li>Upload the <strong>factory/install</strong> OpenWrt firmware file you downloaded.</li>
+<li>Confirm the flash. <strong>Do not interrupt power during flashing</strong> — this takes 2–5 minutes.</li>
+<li>The router will reboot into OpenWrt.</li>
+</ol>
+<hr />
+<h2>Step 5 — First Login to OpenWrt</h2>
+<p>After the flash, your router's IP will change. OpenWrt uses <code>192.168.1.1</code> by default.</p>
+<p>Open a browser and go to: <strong>http://192.168.1.1</strong></p>
+<p>The OpenWrt LuCI web interface will load.</p>
+<ul>
+<li><strong>Default username:</strong> <code>root</code></li>
+<li><strong>Default password:</strong> <em>(blank — no password by default)</em></li>
+</ul>
+<p><strong>Set a root password immediately:</strong>
+Go to <strong>System</strong> → <strong>Administration</strong> → <strong>Router Password</strong> → set a strong password → <strong>Save</strong>.</p>
+<hr />
+<h2>Step 6 — Configure Basic Settings</h2>
+<h3>Set your timezone</h3>
+<p><strong>System</strong> → <strong>System</strong> → <strong>General Settings</strong> → <strong>Timezone</strong> → set yours → <strong>Save &amp; Apply</strong>.</p>
+<h3>Configure your WAN connection</h3>
+<p>Go to <strong>Network</strong> → <strong>Interfaces</strong> → click <strong>Edit</strong> on the WAN interface.</p>
+<p>Most home connections use DHCP (automatic IP from ISP). If your ISP uses PPPoE (common with DSL/fibre in some regions), select PPPoE and enter your ISP username and password.</p>
+<p>Click <strong>Save &amp; Apply</strong>.</p>
+<h3>Check internet is working</h3>
+<p>Open a terminal (SSH into the router):</p>
+<div class="codehilite"><pre><span></span><code>ssh<span class="w"> </span>root@192.168.1.1
+ping<span class="w"> </span>-c<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="m">1</span>.1.1.1
+</code></pre></div>
+
+<hr />
+<h2>Step 7 — Update Package Lists and Upgrade</h2>
+<div class="codehilite"><pre><span></span><code>ssh<span class="w"> </span>root@192.168.1.1
+opkg<span class="w"> </span>update
+opkg<span class="w"> </span>list-upgradable<span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-f<span class="w"> </span><span class="m">1</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39; &#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="w"> </span>opkg<span class="w"> </span>upgrade
+</code></pre></div>
+
+<hr />
+<h2>Step 8 — Install Useful Packages</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># AdGuard Home — network-wide ad blocking</span>
+opkg<span class="w"> </span>install<span class="w"> </span>adguardhome
+
+<span class="c1"># WireGuard VPN</span>
+opkg<span class="w"> </span>install<span class="w"> </span>wireguard-tools<span class="w"> </span>luci-proto-wireguard
+
+<span class="c1"># Statistics and traffic monitoring</span>
+opkg<span class="w"> </span>install<span class="w"> </span>luci-app-statistics<span class="w"> </span>collectd
+
+<span class="c1"># USB storage support</span>
+opkg<span class="w"> </span>install<span class="w"> </span>kmod-usb-storage<span class="w"> </span>block-mount
+</code></pre></div>
+
+<p>Packages are managed via LuCI at <strong>System</strong> → <strong>Software</strong>, or via <code>opkg</code> on the command line.</p>
+<hr />
+<h2>Restore Stock Firmware (If Needed)</h2>
+<p>If you want to go back to the manufacturer's firmware:</p>
+<ol>
+<li>Download the stock firmware for your router from the manufacturer's website.</li>
+<li>In OpenWrt LuCI, go to <strong>System</strong> → <strong>Backup/Flash Firmware</strong> → <strong>Flash new firmware image</strong>.</li>
+<li>Upload the stock firmware and flash it.</li>
+</ol>
+<blockquote>
+<p>Some routers require using a recovery mode (holding a reset button during boot, or using TFTP) to flash stock firmware. Check your router's OpenWrt device page for specific recovery instructions.</p>
+</blockquote>
+<hr />
+<h2>Troubleshooting</h2>
+<h3>Router is not responding after flash (possible brick)</h3>
+<p>Do not panic. Most "bricks" are recoverable.</p>
+<ol>
+<li>Try a factory reset: hold the router's reset button for 15–30 seconds with it powered on.</li>
+<li>Try accessing the OpenWrt failsafe mode: power cycle the router and watch for a rapidly flashing LED, then press the reset button once. Connect via Ethernet and access <code>192.168.1.1</code>.</li>
+<li>Check your router's OpenWrt device page for TFTP recovery instructions — most routers have a TFTP recovery mode.</li>
+</ol>
+<h3>Cannot access 192.168.1.1 after flash</h3>
+<p>Your computer may still have an IP address from the old firmware. Release and renew:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># macOS/Linux</span>
+sudo<span class="w"> </span>dhclient<span class="w"> </span>-r<span class="w"> </span>eth0<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>dhclient<span class="w"> </span>eth0
+
+<span class="c1"># Windows</span>
+ipconfig<span class="w"> </span>/release<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ipconfig<span class="w"> </span>/renew
+</code></pre></div>
+
+<h3>Wi-Fi not working after flash</h3>
+<p>OpenWrt disables Wi-Fi by default on first boot for security. Enable it in LuCI: <strong>Network</strong> → <strong>Wireless</strong> → click <strong>Enable</strong> on each radio → <strong>Save &amp; Apply</strong>.</p>
+<h3>Packages fail to install</h3>
+<p>Run <code>opkg update</code> first to refresh the package list, then try installing again.</p>

@@ -1,0 +1,164 @@
+DATA:installation:Install Windows 11 as a VM in Proxmox:Installation Guides
+<h1>Install Windows 11 as a VM in Proxmox</h1>
+<p>Installing Windows 11 in Proxmox is more involved than Linux VMs because Windows 11 requires TPM 2.0, Secure Boot, and UEFI — and Windows does not ship with the VirtIO drivers that Proxmox uses for storage and networking. Without loading those drivers during setup, Windows cannot see your virtual disk and the installer shows no drives at all.</p>
+<p>This guide covers the complete setup including VirtIO drivers, the TPM requirement, bypassing the Microsoft account requirement, and installing the QEMU Guest Agent for full integration.</p>
+<hr />
+<h2>What You Need</h2>
+<ul>
+<li>A working Proxmox installation</li>
+<li>A <strong>Windows 11 ISO</strong> — download from <a href="https://www.microsoft.com/software-download/windows11">microsoft.com/software-download/windows11</a></li>
+<li>The <strong>VirtIO drivers ISO</strong> — download the latest stable from <a href="https://pve.proxmox.com/wiki/Windows_VirtIO_Drivers">pve.proxmox.com/wiki/Windows_VirtIO_Drivers</a> (direct link to latest: <code>https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso</code>)</li>
+<li>At least <strong>4 GB RAM</strong> allocated to the VM (8 GB recommended)</li>
+<li>At least <strong>64 GB storage</strong> for the VM disk</li>
+</ul>
+<hr />
+<h2>Step 1 — Upload Both ISOs to Proxmox</h2>
+<ol>
+<li>In the Proxmox web UI, go to your storage (usually <strong>local</strong>) → <strong>ISO Images</strong> → <strong>Upload</strong>.</li>
+<li>Upload both the <strong>Windows 11 ISO</strong> and the <strong>virtio-win ISO</strong>.</li>
+<li>Wait for both uploads to complete.</li>
+</ol>
+<hr />
+<h2>Step 2 — Create the VM</h2>
+<p>In the Proxmox web UI, click <strong>Create VM</strong> in the top right.</p>
+<h3>General Tab</h3>
+<ul>
+<li><strong>Name:</strong> <code>windows11</code> (or anything you like)</li>
+<li><strong>VM ID:</strong> leave as default</li>
+</ul>
+<h3>OS Tab</h3>
+<ul>
+<li><strong>ISO image:</strong> select your Windows 11 ISO</li>
+<li><strong>Guest OS Type:</strong> Microsoft Windows</li>
+<li><strong>Version:</strong> 11/2022/2025</li>
+<li>✅ <strong>Add additional drive for VirtIO drivers</strong> — check this box. It will appear as an option here.</li>
+<li>Select the <strong>virtio-win ISO</strong> for the additional drive</li>
+</ul>
+<h3>System Tab</h3>
+<ul>
+<li><strong>Machine:</strong> q35</li>
+<li><strong>BIOS:</strong> OVMF (UEFI) — <strong>not</strong> SeaBIOS</li>
+<li>✅ <strong>Add EFI Disk</strong> — check this and select your storage</li>
+<li>✅ <strong>Add TPM</strong> — check this, select your storage, version <strong>v2.0</strong></li>
+<li>✅ <strong>Qemu Agent</strong> — enable this</li>
+</ul>
+<h3>Disks Tab</h3>
+<ul>
+<li><strong>Bus/Device:</strong> SCSI</li>
+<li><strong>Storage:</strong> select your storage</li>
+<li><strong>Disk size:</strong> 64 GB minimum, 100 GB recommended</li>
+<li><strong>Cache:</strong> Write back (better performance) or No cache (safer)</li>
+<li>✅ <strong>Discard</strong> — enable for thin provisioning/TRIM support</li>
+<li>✅ <strong>IO Thread</strong> — enable for better performance</li>
+</ul>
+<h3>CPU Tab</h3>
+<ul>
+<li><strong>Cores:</strong> 2 minimum, 4 recommended</li>
+<li><strong>Type:</strong> host (best performance)</li>
+</ul>
+<h3>Memory Tab</h3>
+<ul>
+<li><strong>Memory:</strong> 4096 MB minimum, 8192 MB recommended</li>
+</ul>
+<h3>Network Tab</h3>
+<ul>
+<li><strong>Model:</strong> VirtIO (paravirtualized) — not E1000 or RTL8139</li>
+</ul>
+<h3>Confirm Tab</h3>
+<ul>
+<li>Do <strong>not</strong> check <strong>Start after created</strong> — you need to verify settings first</li>
+<li>Click <strong>Finish</strong></li>
+</ul>
+<hr />
+<h2>Step 3 — Verify Boot Order</h2>
+<p>Before starting:</p>
+<ol>
+<li>Select your new VM → <strong>Hardware</strong> → confirm both CD drives are there:</li>
+<li>CD Drive 0: Windows 11 ISO</li>
+<li>
+<p>CD Drive 1: virtio-win ISO</p>
+</li>
+<li>
+<p>Go to <strong>Options</strong> → <strong>Boot Order</strong> — make sure the Windows 11 CD drive is first.</p>
+</li>
+</ol>
+<hr />
+<h2>Step 4 — Start the VM and Install Windows</h2>
+<ol>
+<li>Select your VM and click <strong>Start</strong>, then click <strong>Console</strong> to open the display.</li>
+<li>Press any key when prompted to boot from CD — do this quickly.</li>
+<li>Work through the Windows installer:</li>
+<li>Language, time, keyboard → <strong>Next</strong></li>
+<li>Click <strong>Install now</strong></li>
+<li>Enter a product key or click <strong>I don't have a product key</strong></li>
+<li>Select <strong>Windows 11 Pro</strong> → <strong>Next</strong></li>
+<li>Accept the license → <strong>Next</strong></li>
+<li>Select <strong>Custom: Install Windows only (advanced)</strong></li>
+</ol>
+<h3>Load the VirtIO Storage Driver (Critical Step)</h3>
+<p>At the disk selection screen, <strong>no drives will be shown</strong> — this is expected. Click <strong>Load driver</strong>:</p>
+<ol>
+<li>Click <strong>Browse</strong></li>
+<li>Navigate to the VirtIO CD drive (usually D: or E:)</li>
+<li>Open the folder: <code>vioscsi</code> → <code>w11</code> → <code>amd64</code></li>
+<li>Click <strong>OK</strong></li>
+<li>Select <strong>Red Hat VirtIO SCSI pass-through controller</strong> → <strong>Next</strong></li>
+</ol>
+<p>Your virtual disk will now appear. Select it and click <strong>Next</strong>.</p>
+<p>Windows will install and reboot several times. The VM will reboot automatically — leave it running.</p>
+<hr />
+<h2>Step 5 — Complete Windows Setup</h2>
+<p>After installation, Windows will start the OOBE (Out of Box Experience) setup.</p>
+<h3>Skip the Microsoft Account Requirement</h3>
+<p>Windows 11 forces a Microsoft account during setup. To use a local account instead:</p>
+<p>When you reach the <strong>"Let's connect you to a network"</strong> screen, press <strong>Shift + F10</strong> to open Command Prompt, then run:</p>
+<div class="codehilite"><pre><span></span><code>oobe\bypassnro
+</code></pre></div>
+
+<p>The VM will restart and you will now have an <strong>"I don't have internet"</strong> option. Click it and create a local account.</p>
+<blockquote>
+<p><strong>Note:</strong> On Windows 11 24H2 and later, <code>OOBE\BYPASSNRO</code> no longer works. Use this instead at the Shift+F10 command prompt:
+<code>cmd
+start ms-cxh:localonly</code></p>
+</blockquote>
+<p>Complete the rest of setup normally.</p>
+<hr />
+<h2>Step 6 — Install VirtIO Guest Tools (Essential)</h2>
+<p>After reaching the Windows desktop:</p>
+<ol>
+<li>Open <strong>File Explorer</strong> → find the VirtIO CD drive (D: or E:).</li>
+<li>Run <strong><code>virtio-win-guest-tools.exe</code></strong> from the root of the VirtIO disc — this installs everything at once: network drivers, balloon driver, QEMU agent, display driver.</li>
+<li>Follow the installer → <strong>Next</strong> → <strong>Install</strong> → <strong>Finish</strong>.</li>
+<li>Restart the VM.</li>
+</ol>
+<p>After restarting:
+- The VM's IP address will appear in the Proxmox summary tab
+- Shutdown/restart from Proxmox will work cleanly
+- Memory ballooning will be active</p>
+<hr />
+<h2>Step 7 — Switch to RDP for Daily Use</h2>
+<p>The Proxmox noVNC console is fine for setup but slow for daily use. RDP is significantly faster, supports clipboard, and gives proper resolution.</p>
+<ol>
+<li>In Windows, search for <strong>Remote Desktop settings</strong> → enable <strong>Remote Desktop</strong>.</li>
+<li>Find your VM's IP address in the Proxmox summary tab.</li>
+<li>From another machine, open Remote Desktop Connection (Windows) or Microsoft Remote Desktop (macOS/iOS) and connect to the VM's IP.</li>
+</ol>
+<hr />
+<h2>Step 8 — Take a Snapshot</h2>
+<p>Before installing any software, take a clean snapshot:</p>
+<p>In Proxmox, select your VM → <strong>Snapshots</strong> → <strong>Take Snapshot</strong> → name it <code>clean-install</code> → <strong>Take Snapshot</strong>.</p>
+<p>If anything breaks later, you can restore to this state in seconds.</p>
+<hr />
+<h2>Troubleshooting</h2>
+<h3>No drives visible during Windows install</h3>
+<p>You did not load the VirtIO storage driver. Click <strong>Load driver</strong> and navigate to <code>vioscsi\w11\amd64</code> on the VirtIO ISO.</p>
+<h3>No network adapter in Windows</h3>
+<p>The VirtIO network driver is missing. Open <strong>Device Manager</strong> (press Shift+F10 during setup → type <code>devmgmt.msc</code>). Under <strong>Other devices</strong>, right-click the unknown network adapter → <strong>Update driver</strong> → <strong>Browse my computer</strong> → point it to the VirtIO CD → <code>NetKVM\w11\amd64</code>.</p>
+<h3>Mouse pointer is offset in console</h3>
+<p>Install VirtIO Guest Tools (Step 6). The QEMU display driver fixes mouse alignment.</p>
+<h3>Windows says TPM not found</h3>
+<p>Make sure you enabled <strong>Add TPM v2.0</strong> in the System tab when creating the VM. If the VM already exists, go to <strong>Hardware</strong> → <strong>Add</strong> → <strong>TPM State</strong> → select v2.0.</p>
+<h3>VM stuck in restart loop during setup</h3>
+<p>Wait — Windows 11 reboots 2–3 times during installation. Leave it running for at least 15 minutes before assuming something is wrong.</p>
+<h3>OOBE/BYPASSNRO not working (Windows 11 24H2+)</h3>
+<p>Use <code>start ms-cxh:localonly</code> at the Shift+F10 command prompt instead.</p>

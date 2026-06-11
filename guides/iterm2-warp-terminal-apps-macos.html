@@ -1,0 +1,132 @@
+DATA:macos:Better Terminal Apps for macOS — iTerm2, Warp, Ghostty:macOS
+<h1>Better Terminal Apps for macOS — iTerm2, Warp, Ghostty</h1>
+<p>macOS Terminal.app works but has limitations. These are the alternatives worth considering.</p>
+<hr />
+<h2>iTerm2 — The Classic Choice</h2>
+<p><strong>Download:</strong> <a href="https://iterm2.com">iterm2.com</a>
+<strong>Cost:</strong> Free</p>
+<p>The most feature-complete Terminal replacement for macOS. Has been the default choice for developers for years.</p>
+<p><strong>Features that matter:</strong>
+- Split panes — divide the window horizontally and vertically
+- Tab support with customizable colors and badges
+- Search through scrollback with regex
+- Trigger system — run actions when output matches a pattern
+- Instant replay — replay terminal output like a video
+- Shell integration — shows current directory and command in the title bar
+- tmux integration — works natively with tmux sessions
+- Excellent font rendering and color support</p>
+<p><strong>Install via Homebrew:</strong></p>
+<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>--cask<span class="w"> </span>iterm2
+</code></pre></div>
+
+<p><strong>Key shortcuts:</strong>
+- <code>Cmd+D</code> — split vertically
+- <code>Cmd+Shift+D</code> — split horizontally
+- <code>Cmd+Option+Arrow</code> — move between panes
+- <code>Cmd+F</code> — search scrollback
+- <code>Cmd+;</code> — autocomplete from history</p>
+<hr />
+<h2>Warp — AI-Integrated Terminal</h2>
+<p><strong>Download:</strong> <a href="https://www.warp.dev">warp.dev</a>
+<strong>Cost:</strong> Free (Warp Basic), $15/month (Warp AI with full features)</p>
+<p>A newer terminal built in Rust with GPU rendering and built-in AI assistance. The main differentiator is that commands and their output are treated as blocks — you can select, copy, and share entire command-output pairs.</p>
+<p><strong>Features:</strong>
+- AI command suggestions (type what you want to do, get the command)
+- Input editor at the bottom — edit commands like a proper text editor
+- Command blocks — select and share entire command+output sections
+- Built-in workflows — save and share multi-step commands
+- Very fast rendering
+- Works with existing shells (zsh, bash, fish)</p>
+<p><strong>Install:</strong></p>
+<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>--cask<span class="w"> </span>warp
+</code></pre></div>
+
+<hr />
+<h2>Ghostty — Fast and Modern</h2>
+<p><strong>Download:</strong> <a href="https://ghostty.org">ghostty.org</a>
+<strong>Cost:</strong> Free, open-source</p>
+<p>A newer terminal emulator by Mitchell Hashimoto (creator of Vagrant and Terraform). Written in Zig, native on macOS (and Linux), extremely fast, minimal dependencies.</p>
+<p><strong>Features:</strong>
+- Very fast — GPU-accelerated rendering
+- Native macOS look and feel
+- Split panes
+- Multiple windows and tabs
+- Clean default config — works well out of the box
+- Small binary, fast startup</p>
+<p><strong>Install:</strong></p>
+<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>--cask<span class="w"> </span>ghostty
+</code></pre></div>
+
+<hr />
+<h2>Which One to Choose</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>iTerm2</th>
+<th>Warp</th>
+<th>Ghostty</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Speed</td>
+<td>Good</td>
+<td>Very good</td>
+<td>Excellent</td>
+</tr>
+<tr>
+<td>AI features</td>
+<td>No</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Split panes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>tmux integration</td>
+<td>Excellent</td>
+<td>Basic</td>
+<td>Basic</td>
+</tr>
+<tr>
+<td>Customization</td>
+<td>Extensive</td>
+<td>Moderate</td>
+<td>Minimal</td>
+</tr>
+<tr>
+<td>Best for</td>
+<td>Power users, tmux users</td>
+<td>AI-assisted workflows</td>
+<td>Fast, minimal setup</td>
+</tr>
+<tr>
+<td>macOS native look</td>
+<td>No</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>If you use tmux heavily:</strong> iTerm2
+<strong>If you want AI help with commands:</strong> Warp
+<strong>If you want fast and minimal:</strong> Ghostty
+<strong>If you are happy with Terminal.app:</strong> stay there</p>
+<hr />
+<h2>Oh My Zsh — Enhance Any Terminal</h2>
+<p>Regardless of which terminal app you use, Oh My Zsh adds themes, plugins, and autocompletion:</p>
+<div class="codehilite"><pre><span></span><code>sh<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh<span class="k">)</span><span class="s2">&quot;</span>
+</code></pre></div>
+
+<p>Popular plugins to add in <code>~/.zshrc</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">plugins</span><span class="o">=(</span>git<span class="w"> </span>brew<span class="w"> </span>macos<span class="w"> </span>sudo<span class="w"> </span>zsh-autosuggestions<span class="w"> </span>zsh-syntax-highlighting<span class="o">)</span>
+</code></pre></div>
+
+<p>Install community plugins:</p>
+<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>zsh-autosuggestions<span class="w"> </span>zsh-syntax-highlighting
+</code></pre></div>

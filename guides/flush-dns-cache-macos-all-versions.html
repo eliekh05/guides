@@ -1,0 +1,90 @@
+DATA:networking:Flush DNS Cache (All Versions):Networking & DNS
+<h1>Flush DNS Cache (All Versions)</h1>
+<p>The DNS flush command changes with almost every major macOS release. Most guides online are outdated — you run the command, nothing happens, and you assume it did not work. This guide lists the correct command for every macOS version in one place.</p>
+<p>Flushing the DNS cache fixes issues like:
+- Websites not loading after a DNS change
+- Old IP addresses being cached for a domain
+- Browser showing a site that no longer exists at that address
+- Intermittent "Server Not Found" errors</p>
+<hr />
+<h2>How to Flush DNS</h2>
+<ol>
+<li>Open <strong>Terminal</strong> (Applications → Utilities → Terminal).</li>
+<li>Find your macOS version below and run the matching command.</li>
+<li>Enter your login password when prompted (nothing will appear as you type).</li>
+<li>You will see a confirmation message or the prompt will simply return.</li>
+</ol>
+<hr />
+<h2>Commands by macOS Version</h2>
+<h3>macOS 15 (Sequoia) and macOS 14 (Sonoma)</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dscacheutil<span class="w"> </span>-flushcache<span class="p">;</span><span class="w"> </span>sudo<span class="w"> </span>killall<span class="w"> </span>-HUP<span class="w"> </span>mDNSResponder
+</code></pre></div>
+
+<h3>macOS 13 (Ventura)</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dscacheutil<span class="w"> </span>-flushcache<span class="p">;</span><span class="w"> </span>sudo<span class="w"> </span>killall<span class="w"> </span>-HUP<span class="w"> </span>mDNSResponder
+</code></pre></div>
+
+<h3>macOS 12 (Monterey)</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dscacheutil<span class="w"> </span>-flushcache<span class="p">;</span><span class="w"> </span>sudo<span class="w"> </span>killall<span class="w"> </span>-HUP<span class="w"> </span>mDNSResponder
+</code></pre></div>
+
+<h3>macOS 11 (Big Sur)</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dscacheutil<span class="w"> </span>-flushcache<span class="p">;</span><span class="w"> </span>sudo<span class="w"> </span>killall<span class="w"> </span>-HUP<span class="w"> </span>mDNSResponder
+</code></pre></div>
+
+<h3>macOS 10.15 (Catalina)</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dscacheutil<span class="w"> </span>-flushcache<span class="p">;</span><span class="w"> </span>sudo<span class="w"> </span>killall<span class="w"> </span>-HUP<span class="w"> </span>mDNSResponder
+</code></pre></div>
+
+<h3>macOS 10.14 (Mojave)</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dscacheutil<span class="w"> </span>-flushcache<span class="p">;</span><span class="w"> </span>sudo<span class="w"> </span>killall<span class="w"> </span>-HUP<span class="w"> </span>mDNSResponder
+</code></pre></div>
+
+<h3>macOS 10.13 (High Sierra)</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>killall<span class="w"> </span>-HUP<span class="w"> </span>mDNSResponder
+</code></pre></div>
+
+<h3>macOS 10.12 (Sierra)</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>killall<span class="w"> </span>-HUP<span class="w"> </span>mDNSResponder
+</code></pre></div>
+
+<h3>macOS 10.11 (El Capitan)</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dscacheutil<span class="w"> </span>-flushcache<span class="p">;</span><span class="w"> </span>sudo<span class="w"> </span>killall<span class="w"> </span>-HUP<span class="w"> </span>mDNSResponder
+</code></pre></div>
+
+<h3>macOS 10.10 (Yosemite)</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>discoveryutil<span class="w"> </span>mdnsflushcache<span class="p">;</span><span class="w"> </span>sudo<span class="w"> </span>discoveryutil<span class="w"> </span>udnsflushcaches
+</code></pre></div>
+
+<h3>macOS 10.9 (Mavericks) and earlier</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dscacheutil<span class="w"> </span>-flushcache
+</code></pre></div>
+
+<hr />
+<h2>How to Find Your macOS Version</h2>
+<p>Click the <strong>Apple menu ()</strong> → <strong>About This Mac</strong>. The version name and number are shown at the top.</p>
+<hr />
+<h2>What These Commands Do</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dscacheutil -flushcache</code></td>
+<td>Clears the DNS client cache</td>
+</tr>
+<tr>
+<td><code>killall -HUP mDNSResponder</code></td>
+<td>Restarts the mDNSResponder service, which handles DNS resolution</td>
+</tr>
+</tbody>
+</table>
+<p>Running both together (separated by <code>;</code>) ensures both the cache and the service are reset. On some versions only one is needed, but running both is always safe.</p>
+<hr />
+<blockquote>
+<p><strong>Note:</strong> After flushing, close and reopen your browser. Browsers maintain their own DNS cache separately from macOS, and a browser restart is needed for the flush to fully take effect. In Chrome, you can also navigate to <code>chrome://net-internals/#dns</code> and click <strong>Clear host cache</strong>.</p>
+</blockquote>

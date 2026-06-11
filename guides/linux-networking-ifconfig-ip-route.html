@@ -1,0 +1,163 @@
+DATA:networking:Linux Networking Commands — ip, ss, route Explained:Networking & DNS
+<h1>Linux Networking Commands — ip, ss, route Explained</h1>
+<p>The old commands (<code>ifconfig</code>, <code>netstat</code>, <code>route</code>) are deprecated but still common in guides. The modern replacements are faster and more capable. This guide covers both.</p>
+<hr />
+<h2>Show Network Interfaces</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Modern (use this)</span>
+ip<span class="w"> </span>a
+ip<span class="w"> </span>addr<span class="w"> </span>show
+ip<span class="w"> </span>a<span class="w"> </span>show<span class="w"> </span>eth0<span class="w">              </span><span class="c1"># specific interface</span>
+
+<span class="c1"># Old (still works on most systems)</span>
+ifconfig
+ifconfig<span class="w"> </span>eth0
+</code></pre></div>
+
+<hr />
+<h2>Enable / Disable an Interface</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Modern</span>
+sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>eth0<span class="w"> </span>up
+sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>eth0<span class="w"> </span>down
+
+<span class="c1"># Old</span>
+sudo<span class="w"> </span>ifconfig<span class="w"> </span>eth0<span class="w"> </span>up
+sudo<span class="w"> </span>ifconfig<span class="w"> </span>eth0<span class="w"> </span>down
+</code></pre></div>
+
+<hr />
+<h2>Set an IP Address Temporarily</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Modern (removed on reboot)</span>
+sudo<span class="w"> </span>ip<span class="w"> </span>addr<span class="w"> </span>add<span class="w"> </span><span class="m">192</span>.168.1.100/24<span class="w"> </span>dev<span class="w"> </span>eth0
+sudo<span class="w"> </span>ip<span class="w"> </span>addr<span class="w"> </span>del<span class="w"> </span><span class="m">192</span>.168.1.100/24<span class="w"> </span>dev<span class="w"> </span>eth0
+
+<span class="c1"># Old</span>
+sudo<span class="w"> </span>ifconfig<span class="w"> </span>eth0<span class="w"> </span><span class="m">192</span>.168.1.100<span class="w"> </span>netmask<span class="w"> </span><span class="m">255</span>.255.255.0
+</code></pre></div>
+
+<p>For permanent IPs see the <strong>Set a Static IP on Linux Using Netplan</strong> guide.</p>
+<hr />
+<h2>Show Routing Table</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Modern</span>
+ip<span class="w"> </span>route
+ip<span class="w"> </span>route<span class="w"> </span>show
+ip<span class="w"> </span>route<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>default<span class="w">          </span><span class="c1"># show default gateway</span>
+
+<span class="c1"># Old</span>
+route<span class="w"> </span>-n
+netstat<span class="w"> </span>-rn
+</code></pre></div>
+
+<hr />
+<h2>Add / Delete a Route</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Add a route</span>
+sudo<span class="w"> </span>ip<span class="w"> </span>route<span class="w"> </span>add<span class="w"> </span><span class="m">10</span>.0.0.0/24<span class="w"> </span>via<span class="w"> </span><span class="m">192</span>.168.1.1
+
+<span class="c1"># Add default gateway</span>
+sudo<span class="w"> </span>ip<span class="w"> </span>route<span class="w"> </span>add<span class="w"> </span>default<span class="w"> </span>via<span class="w"> </span><span class="m">192</span>.168.1.1
+
+<span class="c1"># Delete a route</span>
+sudo<span class="w"> </span>ip<span class="w"> </span>route<span class="w"> </span>del<span class="w"> </span><span class="m">10</span>.0.0.0/24
+
+<span class="c1"># Temporary — removed on reboot. For permanent routes use Netplan.</span>
+</code></pre></div>
+
+<hr />
+<h2>Show Listening Ports and Connections</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Modern (ss)</span>
+ss<span class="w"> </span>-tlnp<span class="w">                         </span><span class="c1"># TCP listening ports with process</span>
+ss<span class="w"> </span>-ulnp<span class="w">                         </span><span class="c1"># UDP listening ports</span>
+ss<span class="w"> </span>-tunap<span class="w">                        </span><span class="c1"># all TCP/UDP connections</span>
+ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>:22<span class="w">              </span><span class="c1"># who&#39;s on port 22</span>
+
+<span class="c1"># Old (netstat)</span>
+sudo<span class="w"> </span>netstat<span class="w"> </span>-tlnp<span class="w">               </span><span class="c1"># same as ss -tlnp</span>
+sudo<span class="w"> </span>netstat<span class="w"> </span>-an<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>LISTEN
+</code></pre></div>
+
+<p>Flags:
+- <code>-t</code> = TCP
+- <code>-u</code> = UDP
+- <code>-l</code> = listening
+- <code>-n</code> = numeric (don't resolve hostnames)
+- <code>-p</code> = show process name/PID</p>
+<hr />
+<h2>Check What's Using a Port</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>:8080
+sudo<span class="w"> </span>lsof<span class="w"> </span>-i<span class="w"> </span>:8080<span class="w">              </span><span class="c1"># more detail including process</span>
+sudo<span class="w"> </span>fuser<span class="w"> </span><span class="m">8080</span>/tcp<span class="w">             </span><span class="c1"># just the PID</span>
+</code></pre></div>
+
+<hr />
+<h2>Test Connectivity</h2>
+<div class="codehilite"><pre><span></span><code>ping<span class="w"> </span>-c<span class="w"> </span><span class="m">4</span><span class="w"> </span>google.com<span class="w">            </span><span class="c1"># basic connectivity</span>
+ping<span class="w"> </span>-c<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">8</span>.8.8.8<span class="w">               </span><span class="c1"># IP only (tests without DNS)</span>
+traceroute<span class="w"> </span>google.com<span class="w">           </span><span class="c1"># trace the route</span>
+mtr<span class="w"> </span>google.com<span class="w">                  </span><span class="c1"># interactive traceroute</span>
+
+<span class="c1"># Test a specific port</span>
+nc<span class="w"> </span>-zv<span class="w"> </span>google.com<span class="w"> </span><span class="m">443</span><span class="w">           </span><span class="c1"># TCP</span>
+nc<span class="w"> </span>-zu<span class="w"> </span><span class="m">8</span>.8.8.8<span class="w"> </span><span class="m">53</span><span class="w">               </span><span class="c1"># UDP</span>
+telnet<span class="w"> </span>google.com<span class="w"> </span><span class="m">80</span><span class="w">            </span><span class="c1"># alternative</span>
+</code></pre></div>
+
+<hr />
+<h2>DNS Queries</h2>
+<div class="codehilite"><pre><span></span><code>nslookup<span class="w"> </span>google.com
+dig<span class="w"> </span>google.com<span class="w">                  </span><span class="c1"># full DNS response</span>
+dig<span class="w"> </span>google.com<span class="w"> </span>+short<span class="w">           </span><span class="c1"># just the IP</span>
+dig<span class="w"> </span>@8.8.8.8<span class="w"> </span>google.com<span class="w">         </span><span class="c1"># query specific DNS server</span>
+host<span class="w"> </span>google.com<span class="w">                 </span><span class="c1"># simple</span>
+</code></pre></div>
+
+<hr />
+<h2>Network Namespace (Advanced)</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># List namespaces (used by Docker, etc.)</span>
+ip<span class="w"> </span>netns<span class="w"> </span>list
+
+<span class="c1"># Show interfaces in a namespace</span>
+sudo<span class="w"> </span>ip<span class="w"> </span>netns<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>myns<span class="w"> </span>ip<span class="w"> </span>a
+</code></pre></div>
+
+<hr />
+<h2>Old vs New Command Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Old</th>
+<th>New</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Show interfaces</td>
+<td><code>ifconfig</code></td>
+<td><code>ip a</code></td>
+</tr>
+<tr>
+<td>Enable interface</td>
+<td><code>ifconfig eth0 up</code></td>
+<td><code>ip link set eth0 up</code></td>
+</tr>
+<tr>
+<td>Set IP</td>
+<td><code>ifconfig eth0 IP</code></td>
+<td><code>ip addr add IP/PREFIX dev eth0</code></td>
+</tr>
+<tr>
+<td>Show routes</td>
+<td><code>route -n</code></td>
+<td><code>ip route</code></td>
+</tr>
+<tr>
+<td>Add route</td>
+<td><code>route add -net ...</code></td>
+<td><code>ip route add ...</code></td>
+</tr>
+<tr>
+<td>Show connections</td>
+<td><code>netstat -tlnp</code></td>
+<td><code>ss -tlnp</code></td>
+</tr>
+</tbody>
+</table>

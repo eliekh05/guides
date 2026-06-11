@@ -1,0 +1,81 @@
+DATA:installation:Resize a VM Disk in Proxmox:Installation Guides
+<h1>Resize a VM Disk in Proxmox</h1>
+<p>Expanding a VM disk in Proxmox is a two-step process that most guides only half-explain: first resize the virtual disk in Proxmox, then grow the partition and filesystem inside the VM.</p>
+<blockquote>
+<p>⚠️ Always take a snapshot before resizing. Shrinking a disk is not supported — you can only expand.</p>
+</blockquote>
+<hr />
+<h2>Step 1 — Expand the Disk in Proxmox</h2>
+<p><strong>Via the Web UI:</strong>
+1. Select the VM → <strong>Hardware</strong> tab
+2. Select the disk you want to expand
+3. Click <strong>Disk Action</strong> → <strong>Resize</strong>
+4. Enter how much to add (e.g. <code>20</code> to add 20 GB)
+5. Click <strong>Resize disk</strong></p>
+<p><strong>Via the Proxmox shell:</strong></p>
+<div class="codehilite"><pre><span></span><code>qm<span class="w"> </span>resize<span class="w"> </span>VMID<span class="w"> </span>virtio0<span class="w"> </span>+20G<span class="w">      </span><span class="c1"># add 20GB to virtio0</span>
+qm<span class="w"> </span>resize<span class="w"> </span>VMID<span class="w"> </span>scsi0<span class="w"> </span>+20G<span class="w">        </span><span class="c1"># for SCSI disk</span>
+</code></pre></div>
+
+<p>Replace <code>VMID</code> with your VM's ID number and <code>virtio0</code>/<code>scsi0</code> with your disk name.</p>
+<hr />
+<h2>Step 2 — Expand Inside the VM (Linux)</h2>
+<p>Log into the VM and run:</p>
+<h3>Check the current state</h3>
+<div class="codehilite"><pre><span></span><code>lsblk<span class="w">                   </span><span class="c1"># see disk and partition layout</span>
+df<span class="w"> </span>-h<span class="w">                   </span><span class="c1"># see filesystem usage</span>
+</code></pre></div>
+
+<h3>For a simple partition + ext4 (most common)</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Install growpart if not present</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>cloud-guest-utils<span class="w"> </span>-y<span class="w">    </span><span class="c1"># Ubuntu/Debian</span>
+sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>cloud-utils-growpart<span class="w"> </span>-y<span class="w"> </span><span class="c1"># Fedora/RHEL</span>
+
+<span class="c1"># Grow the partition (replace sda and 1 with your disk and partition number)</span>
+sudo<span class="w"> </span>growpart<span class="w"> </span>/dev/sda<span class="w"> </span><span class="m">1</span>
+
+<span class="c1"># Resize the ext4 filesystem</span>
+sudo<span class="w"> </span>resize2fs<span class="w"> </span>/dev/sda1
+
+<span class="c1"># Verify</span>
+df<span class="w"> </span>-h
+</code></pre></div>
+
+<h3>For LVM</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Grow the physical volume</span>
+sudo<span class="w"> </span>pvresize<span class="w"> </span>/dev/sda3
+
+<span class="c1"># Extend the logical volume</span>
+sudo<span class="w"> </span>lvextend<span class="w"> </span>-l<span class="w"> </span>+100%FREE<span class="w"> </span>/dev/ubuntu-vg/ubuntu-lv
+
+<span class="c1"># Resize the filesystem</span>
+sudo<span class="w"> </span>resize2fs<span class="w"> </span>/dev/ubuntu-vg/ubuntu-lv
+</code></pre></div>
+
+<h3>For XFS filesystem</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>growpart<span class="w"> </span>/dev/sda<span class="w"> </span><span class="m">1</span>
+sudo<span class="w"> </span>xfs_growfs<span class="w"> </span>/<span class="w">          </span><span class="c1"># grow XFS on mounted filesystem</span>
+</code></pre></div>
+
+<h3>For Btrfs</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>growpart<span class="w"> </span>/dev/sda<span class="w"> </span><span class="m">1</span>
+sudo<span class="w"> </span>btrfs<span class="w"> </span>filesystem<span class="w"> </span>resize<span class="w"> </span>max<span class="w"> </span>/
+</code></pre></div>
+
+<hr />
+<h2>Step 2 (Windows VM)</h2>
+<p>For a Windows VM, the disk expansion is done inside Windows:</p>
+<ol>
+<li>Open <strong>Disk Management</strong> (right-click Start → Disk Management)</li>
+<li>Right-click the volume you want to expand</li>
+<li>Select <strong>Extend Volume</strong></li>
+<li>Follow the wizard</li>
+</ol>
+<hr />
+<h2>Troubleshooting</h2>
+<h3>growpart says "NOCHANGE: partition 1 is size X. it cannot be grown"</h3>
+<p>The partition is already at the maximum size. The disk was expanded in Proxmox but the partition table was not updated. Check if there is unallocated space after the partition with <code>lsblk</code>. If not, the Proxmox resize may not have saved — try again.</p>
+<h3>resize2fs says "Nothing to do"</h3>
+<p>The partition needs to be grown first with <code>growpart</code> before <code>resize2fs</code>. Do them in order.</p>
+<h3>Cannot resize — snapshot blocking</h3>
+<p>Proxmox cannot resize a disk that has snapshots. Delete all snapshots first, then resize.</p>

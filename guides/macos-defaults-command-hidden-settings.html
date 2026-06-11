@@ -1,0 +1,141 @@
+DATA:macos:macOS defaults Command — Hidden Settings:macOS
+<h1>macOS defaults Command — Hidden Settings</h1>
+<p>The <code>defaults</code> command reads and writes macOS preferences — including settings that are not exposed in System Settings. Many useful behaviors are hidden here.</p>
+<hr />
+<h2>Basic Syntax</h2>
+<div class="codehilite"><pre><span></span><code>defaults<span class="w"> </span><span class="nb">read</span><span class="w"> </span>com.apple.dock<span class="w">                  </span><span class="c1"># read all Dock settings</span>
+defaults<span class="w"> </span><span class="nb">read</span><span class="w"> </span>com.apple.dock<span class="w"> </span>autohide<span class="w">         </span><span class="c1"># read one setting</span>
+defaults<span class="w"> </span>write<span class="w"> </span>com.apple.dock<span class="w"> </span>autohide<span class="w"> </span>-bool<span class="w"> </span><span class="nb">true</span><span class="w">   </span><span class="c1"># write a setting</span>
+defaults<span class="w"> </span>delete<span class="w"> </span>com.apple.dock<span class="w"> </span>autohide<span class="w">       </span><span class="c1"># delete/reset a setting</span>
+</code></pre></div>
+
+<p>After changing most settings, you need to restart the relevant process:</p>
+<div class="codehilite"><pre><span></span><code>killall<span class="w"> </span>Dock
+killall<span class="w"> </span>Finder
+killall<span class="w"> </span>SystemUIServer
+</code></pre></div>
+
+<hr />
+<h2>Finder</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Show hidden files</span>
+defaults<span class="w"> </span>write<span class="w"> </span>com.apple.Finder<span class="w"> </span>AppleShowAllFiles<span class="w"> </span><span class="nb">true</span>
+killall<span class="w"> </span>Finder
+
+<span class="c1"># Show file extensions always</span>
+defaults<span class="w"> </span>write<span class="w"> </span>NSGlobalDomain<span class="w"> </span>AppleShowAllExtensions<span class="w"> </span><span class="nb">true</span>
+killall<span class="w"> </span>Finder
+
+<span class="c1"># Show path bar at bottom of Finder windows</span>
+defaults<span class="w"> </span>write<span class="w"> </span>com.apple.finder<span class="w"> </span>ShowPathbar<span class="w"> </span>-bool<span class="w"> </span><span class="nb">true</span>
+killall<span class="w"> </span>Finder
+
+<span class="c1"># Show status bar</span>
+defaults<span class="w"> </span>write<span class="w"> </span>com.apple.finder<span class="w"> </span>ShowStatusBar<span class="w"> </span>-bool<span class="w"> </span><span class="nb">true</span>
+killall<span class="w"> </span>Finder
+
+<span class="c1"># Search current folder by default (instead of whole Mac)</span>
+defaults<span class="w"> </span>write<span class="w"> </span>com.apple.finder<span class="w"> </span>FXDefaultSearchScope<span class="w"> </span>-string<span class="w"> </span><span class="s2">&quot;SCcf&quot;</span>
+killall<span class="w"> </span>Finder
+
+<span class="c1"># Disable .DS_Store on network drives</span>
+defaults<span class="w"> </span>write<span class="w"> </span>com.apple.desktopservices<span class="w"> </span>DSDontWriteNetworkStores<span class="w"> </span><span class="nb">true</span>
+
+<span class="c1"># Show ~/Library in Finder</span>
+chflags<span class="w"> </span>nohidden<span class="w"> </span>~/Library
+</code></pre></div>
+
+<hr />
+<h2>Dock</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Auto-hide the Dock</span>
+defaults<span class="w"> </span>write<span class="w"> </span>com.apple.dock<span class="w"> </span>autohide<span class="w"> </span>-bool<span class="w"> </span><span class="nb">true</span>
+killall<span class="w"> </span>Dock
+
+<span class="c1"># Remove auto-hide delay</span>
+defaults<span class="w"> </span>write<span class="w"> </span>com.apple.dock<span class="w"> </span>autohide-delay<span class="w"> </span>-float<span class="w"> </span><span class="m">0</span>
+killall<span class="w"> </span>Dock
+
+<span class="c1"># Faster auto-hide animation</span>
+defaults<span class="w"> </span>write<span class="w"> </span>com.apple.dock<span class="w"> </span>autohide-time-modifier<span class="w"> </span>-float<span class="w"> </span><span class="m">0</span>.5
+killall<span class="w"> </span>Dock
+
+<span class="c1"># Show only open apps in the Dock</span>
+defaults<span class="w"> </span>write<span class="w"> </span>com.apple.dock<span class="w"> </span>static-only<span class="w"> </span>-bool<span class="w"> </span><span class="nb">true</span>
+killall<span class="w"> </span>Dock
+
+<span class="c1"># Minimise windows into their app icon</span>
+defaults<span class="w"> </span>write<span class="w"> </span>com.apple.dock<span class="w"> </span>minimize-to-application<span class="w"> </span>-bool<span class="w"> </span><span class="nb">true</span>
+killall<span class="w"> </span>Dock
+
+<span class="c1"># Reset Dock to defaults</span>
+defaults<span class="w"> </span>delete<span class="w"> </span>com.apple.dock
+killall<span class="w"> </span>Dock
+</code></pre></div>
+
+<hr />
+<h2>Screenshots</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Change screenshot save location</span>
+defaults<span class="w"> </span>write<span class="w"> </span>com.apple.screencapture<span class="w"> </span>location<span class="w"> </span>~/Pictures/Screenshots
+
+<span class="c1"># Remove shadow from window screenshots</span>
+defaults<span class="w"> </span>write<span class="w"> </span>com.apple.screencapture<span class="w"> </span>disable-shadow<span class="w"> </span>-bool<span class="w"> </span><span class="nb">true</span>
+
+<span class="c1"># Change screenshot format (png, jpg, pdf, gif, tiff)</span>
+defaults<span class="w"> </span>write<span class="w"> </span>com.apple.screencapture<span class="w"> </span><span class="nb">type</span><span class="w"> </span>jpg
+
+killall<span class="w"> </span>SystemUIServer
+</code></pre></div>
+
+<hr />
+<h2>Keyboard and Input</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Disable press-and-hold accent menu (enables key repeat)</span>
+defaults<span class="w"> </span>write<span class="w"> </span>NSGlobalDomain<span class="w"> </span>ApplePressAndHoldEnabled<span class="w"> </span>-bool<span class="w"> </span><span class="nb">false</span>
+
+<span class="c1"># Set fast key repeat rate</span>
+defaults<span class="w"> </span>write<span class="w"> </span>NSGlobalDomain<span class="w"> </span>KeyRepeat<span class="w"> </span>-int<span class="w"> </span><span class="m">2</span>
+defaults<span class="w"> </span>write<span class="w"> </span>NSGlobalDomain<span class="w"> </span>InitialKeyRepeat<span class="w"> </span>-int<span class="w"> </span><span class="m">15</span>
+
+<span class="c1"># Disable autocorrect</span>
+defaults<span class="w"> </span>write<span class="w"> </span>NSGlobalDomain<span class="w"> </span>NSAutomaticSpellingCorrectionEnabled<span class="w"> </span>-bool<span class="w"> </span><span class="nb">false</span>
+
+<span class="c1"># Disable smart quotes</span>
+defaults<span class="w"> </span>write<span class="w"> </span>NSGlobalDomain<span class="w"> </span>NSAutomaticQuoteSubstitutionEnabled<span class="w"> </span>-bool<span class="w"> </span><span class="nb">false</span>
+</code></pre></div>
+
+<hr />
+<h2>Scrolling and Trackpad</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Natural scrolling off (scroll like Windows/Linux)</span>
+defaults<span class="w"> </span>write<span class="w"> </span>NSGlobalDomain<span class="w"> </span>com.apple.swipescrolldirection<span class="w"> </span>-bool<span class="w"> </span><span class="nb">false</span>
+
+<span class="c1"># Tap to click on trackpad</span>
+defaults<span class="w"> </span>write<span class="w"> </span>com.apple.driver.AppleBluetoothMultitouch.trackpad<span class="w"> </span>Clicking<span class="w"> </span>-bool<span class="w"> </span><span class="nb">true</span>
+</code></pre></div>
+
+<hr />
+<h2>Safari</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Show full URL in address bar</span>
+defaults<span class="w"> </span>write<span class="w"> </span>com.apple.Safari<span class="w"> </span>ShowFullURLInSmartSearchField<span class="w"> </span>-bool<span class="w"> </span><span class="nb">true</span>
+
+<span class="c1"># Enable Developer menu</span>
+defaults<span class="w"> </span>write<span class="w"> </span>com.apple.Safari<span class="w"> </span>IncludeDevelopMenu<span class="w"> </span>-bool<span class="w"> </span><span class="nb">true</span>
+
+<span class="c1"># Disable auto-open of downloaded files</span>
+defaults<span class="w"> </span>write<span class="w"> </span>com.apple.Safari<span class="w"> </span>AutoOpenSafeDownloads<span class="w"> </span>-bool<span class="w"> </span><span class="nb">false</span>
+</code></pre></div>
+
+<hr />
+<h2>Read All Defaults for an App</h2>
+<p>To explore what settings an app has:</p>
+<div class="codehilite"><pre><span></span><code>defaults<span class="w"> </span><span class="nb">read</span><span class="w"> </span>com.apple.Finder
+defaults<span class="w"> </span><span class="nb">read</span><span class="w"> </span>com.apple.dock
+defaults<span class="w"> </span><span class="nb">read</span><span class="w"> </span>com.apple.terminal
+defaults<span class="w"> </span><span class="nb">read</span><span class="w"> </span>com.apple.Safari
+defaults<span class="w"> </span><span class="nb">read</span><span class="w"> </span>NSGlobalDomain<span class="w">          </span><span class="c1"># system-wide settings</span>
+</code></pre></div>
+
+<hr />
+<h2>Revert Any Setting</h2>
+<div class="codehilite"><pre><span></span><code>defaults<span class="w"> </span>delete<span class="w"> </span>com.apple.Finder<span class="w"> </span>AppleShowAllFiles
+killall<span class="w"> </span>Finder
+</code></pre></div>
+
+<p>Deleting a key reverts it to its default value.</p>

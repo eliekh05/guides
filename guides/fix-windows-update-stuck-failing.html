@@ -1,0 +1,170 @@
+DATA:windows:Fix Windows Update Stuck or Failing:Windows
+<h1>Fix Windows Update Stuck or Failing</h1>
+<p>Windows Update failing is one of the most searched Windows problems. The fixes vary depending on the exact symptom — stuck downloading, stuck installing, rolling back, or showing an error code. Work through these in order from simplest to most involved.</p>
+<hr />
+<h2>Step 0 — Check Disk Space First</h2>
+<p>Windows Update silently fails if your C: drive has less than 10 GB free. Feature updates (like 22H2, 23H2, 24H2) need 20–30 GB of working space.</p>
+<p>Check free space in File Explorer. If low, open <strong>Disk Cleanup</strong> (search in Start menu), run it, and also click <strong>Clean up system files</strong> for more space.</p>
+<hr />
+<h2>Step 1 — Run the Windows Update Troubleshooter</h2>
+<p>Windows has a built-in troubleshooter that fixes the most common causes automatically:</p>
+<p><strong>Windows 11:</strong>
+Settings → System → Troubleshoot → Other troubleshooters → Windows Update → <strong>Run</strong></p>
+<p><strong>Windows 10:</strong>
+Settings → Update &amp; Security → Troubleshoot → Additional troubleshooters → Windows Update → <strong>Run the troubleshooter</strong></p>
+<p>Let it run and apply all fixes it finds. Restart and try Windows Update again.</p>
+<hr />
+<h2>Step 2 — Reset the Windows Update Cache</h2>
+<p>Corrupted download cache is one of the most common causes of stuck or failed updates. This clears it completely and forces a fresh download.</p>
+<p>Open <strong>Command Prompt as Administrator</strong> (right-click Start → Terminal/Command Prompt → Run as administrator):</p>
+<div class="codehilite"><pre><span></span><code>net stop wuauserv
+net stop cryptsvc
+net stop bits
+net stop msiserver
+
+ren C:\Windows\SoftwareDistribution SoftwareDistribution.old
+ren C:\Windows\System32\catroot2 catroot2.old
+
+net start wuauserv
+net start cryptsvc
+net start bits
+net start msiserver
+</code></pre></div>
+
+<p>Restart your PC and run Windows Update again.</p>
+<hr />
+<h2>Step 3 — Run DISM and SFC (Fix Corrupted System Files)</h2>
+<blockquote>
+<p><strong>Always run DISM before SFC.</strong> DISM repairs the Windows image that SFC uses as a reference. Running SFC first when the image is corrupted will not fix anything.</p>
+</blockquote>
+<p>Open <strong>Command Prompt as Administrator</strong> and run these in order:</p>
+<div class="codehilite"><pre><span></span><code>DISM /Online /Cleanup-Image /CheckHealth
+DISM /Online /Cleanup-Image /ScanHealth
+DISM /Online /Cleanup-Image /RestoreHealth
+</code></pre></div>
+
+<p>Wait for each to complete. <code>RestoreHealth</code> downloads replacement files from Microsoft — it needs internet and can take 10–30 minutes.</p>
+<p>Then run SFC:</p>
+<div class="codehilite"><pre><span></span><code>sfc /scannow
+</code></pre></div>
+
+<p>Restart after both complete. Try Windows Update again.</p>
+<hr />
+<h2>Step 4 — Manually Install the Update</h2>
+<p>If a specific update keeps failing, install it manually:</p>
+<ol>
+<li>Note the KB number of the failing update (e.g. <code>KB5031354</code>) — visible in <strong>Settings → Windows Update → View update history</strong>.</li>
+<li>Go to <a href="https://catalog.update.microsoft.com">catalog.update.microsoft.com</a>.</li>
+<li>Search for the KB number.</li>
+<li>Download the <code>.msu</code> file matching your Windows version and architecture (x64 for most PCs).</li>
+<li>Run the downloaded file to install it.</li>
+</ol>
+<hr />
+<h2>Step 5 — Fix Network and Proxy Issues</h2>
+<p>VPNs and manual proxy settings silently break Windows Update — it cannot reach Microsoft's servers.</p>
+<ol>
+<li>Disconnect from any VPN.</li>
+<li>Go to <strong>Settings → Network &amp; Internet → Proxy</strong> and make sure <strong>Use a proxy server</strong> is off.</li>
+<li>Open Command Prompt as Administrator and reset network settings:</li>
+</ol>
+<div class="codehilite"><pre><span></span><code>netsh winsock reset
+netsh winhttp reset proxy
+ipconfig /flushdns
+</code></pre></div>
+
+<p>Restart and try again.</p>
+<hr />
+<h2>Step 6 — Fix Update Services</h2>
+<p>If Windows Update services are stopped or set to disabled:</p>
+<p>Open <strong>Command Prompt as Administrator</strong>:</p>
+<div class="codehilite"><pre><span></span><code>sc config wuauserv start= auto
+sc config bits start= auto
+sc config cryptsvc start= auto
+sc config trustedinstaller start= auto
+
+net start wuauserv
+net start bits
+net start cryptsvc
+</code></pre></div>
+
+<hr />
+<h2>Step 7 — Use the Modern Update Command (usoclient)</h2>
+<p><code>wuauclt</code> is deprecated on Windows 10 and 11. Use <code>usoclient</code> to force Windows to scan and install updates:</p>
+<p>Open <strong>Command Prompt as Administrator</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">usoclient</span><span class="w"> </span><span class="n">StartScan</span>
+<span class="n">usoclient</span><span class="w"> </span><span class="n">StartDownload</span>
+<span class="n">usoclient</span><span class="w"> </span><span class="n">StartInstall</span>
+</code></pre></div>
+
+<p>Or force the full cycle in one line:</p>
+<div class="codehilite"><pre><span></span><code>usoclient ScanInstallWait
+</code></pre></div>
+
+<hr />
+<h2>Step 8 — In-Place Upgrade Repair (Last Resort Before Reinstall)</h2>
+<p>If DISM and SFC cannot repair the system, an in-place upgrade reinstalls Windows over itself — keeping all your files, apps, and settings — while replacing all system files with fresh copies.</p>
+<ol>
+<li>Download the <strong>Windows 11 Media Creation Tool</strong> from <a href="https://microsoft.com/software-download/windows11">microsoft.com/software-download/windows11</a> (or Windows 10 equivalent).</li>
+<li>Run it and select <strong>Upgrade this PC now</strong>.</li>
+<li>Choose <strong>Keep personal files and apps</strong>.</li>
+<li>Let it run — this takes 30–60 minutes and reboots several times.</li>
+</ol>
+<p>This is not a reinstall. Your files and apps are preserved.</p>
+<hr />
+<h2>Common Error Codes</h2>
+<table>
+<thead>
+<tr>
+<th>Error Code</th>
+<th>Meaning</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0x80070002</code></td>
+<td>File not found — corrupted cache</td>
+<td>Step 2 (reset cache)</td>
+</tr>
+<tr>
+<td><code>0x80070422</code></td>
+<td>Windows Update service stopped</td>
+<td>Step 6 (fix services)</td>
+</tr>
+<tr>
+<td><code>0x800f0922</code></td>
+<td>Insufficient space or VPN issue</td>
+<td>Step 0 (disk space) + Step 5 (network)</td>
+</tr>
+<tr>
+<td><code>0x80190001</code></td>
+<td>Network/connection error</td>
+<td>Step 5 (network fix)</td>
+</tr>
+<tr>
+<td><code>0x8024402F</code></td>
+<td>Cannot connect to Windows Update</td>
+<td>Step 5 (network fix)</td>
+</tr>
+<tr>
+<td><code>0x800f081f</code></td>
+<td>DISM source not found</td>
+<td>Step 3 (DISM with internet)</td>
+</tr>
+<tr>
+<td><code>0x80073701</code></td>
+<td>Component store corruption</td>
+<td>Step 3 (DISM + SFC)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>If the Update Keeps Rolling Back</h2>
+<p>"Undoing changes made to your computer" appears and the update never completes:</p>
+<ol>
+<li>Pause updates for 1 week in Settings → Windows Update to stop the retry loop.</li>
+<li>Run Step 3 (DISM + SFC) to repair system files.</li>
+<li>Run Step 2 (clear cache).</li>
+<li>Resume updates.</li>
+</ol>
+<p>If a specific update keeps rolling back after everything else, wait — Microsoft sometimes issues a patch for failed updates within a few days. Newer cumulative updates supersede older ones, so if a later update installs successfully, the earlier failed one may disappear from your history.</p>

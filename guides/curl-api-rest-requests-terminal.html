@@ -1,0 +1,128 @@
+DATA:linux:curl for API and REST Requests:Linux
+<h1>curl for API and REST Requests</h1>
+<p>curl is the standard tool for making HTTP requests from the terminal — testing APIs, downloading data, and interacting with web services.</p>
+<hr />
+<h2>Basic GET Request</h2>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>https://api.example.com/data
+curl<span class="w"> </span>-s<span class="w"> </span>https://api.example.com/data<span class="w">          </span><span class="c1"># silent (no progress)</span>
+curl<span class="w"> </span>-s<span class="w"> </span>https://api.example.com/data<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>.<span class="w">   </span><span class="c1"># pretty-print JSON</span>
+</code></pre></div>
+
+<hr />
+<h2>Headers</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Add a header</span>
+curl<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer YOUR_TOKEN&quot;</span><span class="w"> </span>https://api.example.com/data
+curl<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span>https://api.example.com/data
+
+<span class="c1"># Multiple headers</span>
+curl<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer TOKEN&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>-H<span class="w"> </span><span class="s2">&quot;Accept: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">     </span>https://api.example.com/data
+
+<span class="c1"># View response headers</span>
+curl<span class="w"> </span>-I<span class="w"> </span>https://example.com<span class="w">              </span><span class="c1"># headers only</span>
+curl<span class="w"> </span>-v<span class="w"> </span>https://example.com<span class="w">             </span><span class="c1"># verbose: request + response headers + body</span>
+</code></pre></div>
+
+<hr />
+<h2>POST Request</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># JSON body</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://api.example.com/users<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;:&quot;Alice&quot;,&quot;email&quot;:&quot;alice@example.com&quot;}&#39;</span>
+
+<span class="c1"># Form data</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://api.example.com/form<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s2">&quot;username=alice&amp;password=secret&quot;</span>
+
+<span class="c1"># From a file</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://api.example.com/data<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span>@payload.json
+</code></pre></div>
+
+<hr />
+<h2>PUT and PATCH</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># PUT (replace entire resource)</span>
+curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>https://api.example.com/users/123<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;:&quot;Alice Updated&quot;}&#39;</span>
+
+<span class="c1"># PATCH (partial update)</span>
+curl<span class="w"> </span>-X<span class="w"> </span>PATCH<span class="w"> </span>https://api.example.com/users/123<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;email&quot;:&quot;new@email.com&quot;}&#39;</span>
+</code></pre></div>
+
+<hr />
+<h2>DELETE</h2>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span>https://api.example.com/users/123<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer TOKEN&quot;</span>
+</code></pre></div>
+
+<hr />
+<h2>Authentication</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Bearer token</span>
+curl<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer eyJhbGc...&quot;</span><span class="w"> </span>https://api.example.com
+
+<span class="c1"># Basic auth (username:password)</span>
+curl<span class="w"> </span>-u<span class="w"> </span>username:password<span class="w"> </span>https://api.example.com
+
+<span class="c1"># API key as header</span>
+curl<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: your-api-key&quot;</span><span class="w"> </span>https://api.example.com
+
+<span class="c1"># API key as query param</span>
+curl<span class="w"> </span><span class="s2">&quot;https://api.example.com/data?api_key=your-api-key&quot;</span>
+</code></pre></div>
+
+<hr />
+<h2>Save Response to File</h2>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-o<span class="w"> </span>output.json<span class="w"> </span>https://api.example.com/data
+curl<span class="w"> </span>-O<span class="w"> </span>https://example.com/file.pdf<span class="w">           </span><span class="c1"># save with original name</span>
+</code></pre></div>
+
+<hr />
+<h2>Follow Redirects</h2>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-L<span class="w"> </span>https://short.url/abc<span class="w">              </span><span class="c1"># -L follows redirects</span>
+</code></pre></div>
+
+<hr />
+<h2>Show Status Code</h2>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;%{http_code}&quot;</span><span class="w"> </span>https://api.example.com
+<span class="c1"># Outputs: 200</span>
+</code></pre></div>
+
+<hr />
+<h2>Timeout</h2>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>--connect-timeout<span class="w"> </span><span class="m">5</span><span class="w"> </span>--max-time<span class="w"> </span><span class="m">30</span><span class="w"> </span>https://api.example.com
+</code></pre></div>
+
+<hr />
+<h2>Practical Examples</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># GitHub API — get repo info</span>
+curl<span class="w"> </span>-s<span class="w"> </span>https://api.github.com/repos/eliekh05/guides<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;{stars: .stargazers_count, forks: .forks_count}&#39;</span>
+
+<span class="c1"># Weather API (OpenWeatherMap)</span>
+curl<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;https://api.openweathermap.org/data/2.5/weather?q=Beirut&amp;appid=YOUR_KEY&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.main.temp&#39;</span>
+
+<span class="c1"># Check if a URL returns 200</span>
+<span class="nv">STATUS</span><span class="o">=</span><span class="k">$(</span>curl<span class="w"> </span>-s<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;%{http_code}&quot;</span><span class="w"> </span>https://example.com<span class="k">)</span>
+<span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$STATUS</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;200&quot;</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Up&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Down: </span><span class="nv">$STATUS</span><span class="s2">&quot;</span>
+
+<span class="c1"># Post JSON and capture response</span>
+<span class="nv">RESPONSE</span><span class="o">=</span><span class="k">$(</span>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>https://api.example.com/token<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;username&quot;:&quot;alice&quot;,&quot;password&quot;:&quot;secret&quot;}&#39;</span><span class="k">)</span>
+<span class="nv">TOKEN</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$RESPONSE</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.access_token&#39;</span><span class="k">)</span>
+</code></pre></div>
+
+<hr />
+<h2>Common Issues</h2>
+<p><strong>SSL certificate error:</strong></p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-k<span class="w"> </span>https://...<span class="w">    </span><span class="c1"># skip certificate check (insecure, for testing only)</span>
+</code></pre></div>
+
+<p><strong>Proxy:</strong></p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-x<span class="w"> </span>http://proxy:8080<span class="w"> </span>https://api.example.com
+<span class="nb">export</span><span class="w"> </span><span class="nv">https_proxy</span><span class="o">=</span>http://proxy:8080<span class="w">    </span><span class="c1"># set for all curl commands</span>
+</code></pre></div>

@@ -1,0 +1,114 @@
+DATA:installation:Run Windows 11 on Intel Mac with VMware Fusion (Free):Installation Guides
+<h1>Run Windows 11 on Intel Mac with VMware Fusion (Free)</h1>
+<p>VMware Fusion is now completely free for personal use after Broadcom acquired VMware in 2024. On Intel Macs, it can run the standard x86 Windows 11 — no ARM version needed, no workarounds. This is the most straightforward way to run Windows on an Intel Mac.</p>
+<blockquote>
+<p><strong>Intel Mac only.</strong> If you have an Apple Silicon Mac (M1/M2/M3/M4), see the guide <em>Run Windows 11 on Apple Silicon Mac for Free</em> instead — it covers VMware Fusion and UTM for ARM.</p>
+</blockquote>
+<hr />
+<h2>Requirements</h2>
+<ul>
+<li>An Intel Mac running macOS 13 (Ventura) or later — VMware Fusion Pro 25H2 requires macOS Ventura as the minimum host OS</li>
+<li>At least <strong>8 GB RAM</strong> (16 GB recommended — plan to give Windows 4–6 GB)</li>
+<li>At least <strong>60 GB free disk space</strong></li>
+<li>A free Broadcom account to download VMware Fusion</li>
+<li>A Windows 11 license (or use it unactivated for evaluation — minor cosmetic limitations apply)</li>
+</ul>
+<hr />
+<h2>Step 1 — Download VMware Fusion</h2>
+<ol>
+<li>Go to <a href="https://support.broadcom.com">support.broadcom.com</a> and create a free account.</li>
+<li>Once logged in, go to <strong>My Downloads</strong> and search for <strong>VMware Fusion</strong>.</li>
+<li>Select the latest version of <strong>VMware Fusion for macOS</strong> and download it.</li>
+<li>Open the <code>.dmg</code> and drag VMware Fusion to your Applications folder.</li>
+<li>Open VMware Fusion. When asked for a license key, select <strong>Use for Personal Use</strong> — no key required. Despite the label, this unlocks the full free version for both personal and commercial use as of November 2024.</li>
+</ol>
+<hr />
+<h2>Step 2 — Download the Windows 11 ISO</h2>
+<ol>
+<li>Go to <a href="https://www.microsoft.com/software-download/windows11">microsoft.com/software-download/windows11</a>.</li>
+<li>Scroll to <strong>Download Windows 11 Disk Image (ISO) for x64 devices</strong>.</li>
+<li>Select <strong>Windows 11 (multi-edition ISO for x64 devices)</strong>, click <strong>Download Now</strong>, choose your language, and download. About 5–6 GB.</li>
+</ol>
+<hr />
+<h2>Step 3 — Create the Windows 11 Virtual Machine</h2>
+<ol>
+<li>Open <strong>VMware Fusion</strong>.</li>
+<li>Click <strong>+</strong> → <strong>New Virtual Machine</strong>.</li>
+<li>Choose <strong>Install from disc or image</strong> and click <strong>Continue</strong>.</li>
+<li>Click <strong>Choose a disc or disc image</strong> and select your Windows 11 ISO.</li>
+<li>VMware will detect it as Windows 11 automatically.</li>
+<li>You may see <strong>Easy Install</strong> — fill in your name and optionally a Windows product key (you can skip this and activate later).</li>
+<li>Click <strong>Continue</strong> → <strong>Finish</strong>.</li>
+</ol>
+<hr />
+<h2>Step 4 — Configure VM Settings (Before First Boot)</h2>
+<p>Before starting the VM, click <strong>Customize Settings</strong>:</p>
+<ul>
+<li><strong>Processors &amp; Memory:</strong> set RAM to at least <strong>4096 MB</strong> (4 GB), ideally <strong>6144 MB</strong> (6 GB). Set CPU cores to <strong>2–4</strong>.</li>
+<li><strong>Hard Disk:</strong> the default 60 GB is fine. Increase if you plan to install large apps.</li>
+<li><strong>Display:</strong> enable <strong>Accelerate 3D Graphics</strong> for better performance.</li>
+<li><strong>Network Adapter:</strong> leave as <strong>NAT</strong> — shares your Mac's internet connection.</li>
+</ul>
+<p>Close settings and click <strong>Start</strong> to boot.</p>
+<hr />
+<h2>Step 5 — Install Windows 11</h2>
+<p>Windows 11 installs automatically with Easy Install. The VM will reboot a few times — leave it running. When it finishes, Windows will boot to the desktop. Sign in with a Microsoft account or choose <strong>Offline account</strong> for a local account.</p>
+<hr />
+<h2>Step 6 — Install VMware Tools</h2>
+<p>VMware Tools installs display drivers, enables clipboard sharing, and improves mouse behaviour.</p>
+<ol>
+<li>In the VMware Fusion menu bar, go to <strong>Virtual Machine</strong> → <strong>Install VMware Tools</strong>.</li>
+<li>A disc mounts inside Windows. Open it in File Explorer.</li>
+<li>Run <strong>setup.exe</strong> → <strong>Next</strong> → <strong>Next</strong> → <strong>Install</strong> → <strong>Finish</strong>.</li>
+<li>Restart Windows when prompted.</li>
+</ol>
+<p>After restarting, the display will auto-scale to fit the VMware Fusion window and clipboard sharing between macOS and Windows will work.</p>
+<hr />
+<h2>Shared Folder Between macOS and Windows</h2>
+<ol>
+<li>In VMware Fusion, go to <strong>Virtual Machine</strong> → <strong>Settings</strong> → <strong>Sharing</strong>.</li>
+<li>Enable <strong>Share Mac folder with Windows</strong> and add the folders you want to share.</li>
+<li>Inside Windows, shared folders appear under <strong>Network</strong> → <strong>vmware-host</strong> → <strong>Shared Folders</strong> in File Explorer, or as a mapped Z: drive.</li>
+</ol>
+<hr />
+<h2>Useful Settings</h2>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Where to find it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Run Windows in full screen</td>
+<td>View → Full Screen, or press Ctrl+Command+F</td>
+</tr>
+<tr>
+<td>Run Windows in a separate window</td>
+<td>View → Single Window</td>
+</tr>
+<tr>
+<td>Pause the VM</td>
+<td>Virtual Machine → Pause</td>
+</tr>
+<tr>
+<td>Suspend to save state</td>
+<td>Virtual Machine → Suspend</td>
+</tr>
+<tr>
+<td>Take a snapshot before risky changes</td>
+<td>Virtual Machine → Snapshots → Take Snapshot</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Troubleshooting</h2>
+<h3>Windows 11 says "This PC doesn't meet requirements"</h3>
+<p>On Intel Mac, this should not happen in VMware Fusion as it passes the hardware checks automatically. If you see it, make sure the ISO is Windows 11 (not Windows 10) and that VMware detected it correctly during VM creation.</p>
+<h3>Display stays small after VMware Tools install</h3>
+<p>Go to <strong>View</strong> → <strong>Fit Guest to Window</strong> or resize the VMware Fusion window — the guest display should follow.</p>
+<h3>No sound in Windows</h3>
+<p>Go to <strong>Virtual Machine</strong> → <strong>Settings</strong> → <strong>Sound Card</strong> and make sure it is connected.</p>
+<h3>Network not working in Windows</h3>
+<p>Go to <strong>Virtual Machine</strong> → <strong>Settings</strong> → <strong>Network Adapter</strong> → confirm it is set to <strong>NAT</strong> and the adapter is connected.</p>

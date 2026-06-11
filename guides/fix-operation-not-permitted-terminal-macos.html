@@ -1,0 +1,117 @@
+DATA:macos:Fix 'Operation Not Permitted' in Terminal (macOS):macOS
+<h1>Fix 'Operation Not Permitted' in Terminal (macOS)</h1>
+<p>Since macOS Catalina, Terminal commands that access certain files or folders produce this error even when run with <code>sudo</code>. The error looks like this:</p>
+<div class="codehilite"><pre><span></span><code>operation not permitted
+zsh: operation not permitted
+ls: .: Operation not permitted
+</code></pre></div>
+
+<p>This is <strong>not</strong> a password problem or a permissions problem on the files themselves. It is macOS's privacy system blocking Terminal from accessing protected locations.</p>
+<hr />
+<h2>Why This Happens</h2>
+<p>macOS Catalina (10.15) introduced a privacy restriction called <strong>Full Disk Access</strong>. Without it, Terminal — and any shell running inside it — cannot access:</p>
+<ul>
+<li><code>~/Desktop</code></li>
+<li><code>~/Documents</code></li>
+<li><code>~/Downloads</code></li>
+<li>Time Machine backups</li>
+<li>Mail data</li>
+<li>iCloud Drive contents</li>
+<li>Some system folders</li>
+</ul>
+<p>This applies even if you are running <code>sudo</code> as root. The restriction is at the OS privacy layer, above file permissions entirely.</p>
+<hr />
+<h2>Fix 1 — Grant Terminal Full Disk Access (Fixes Most Cases)</h2>
+<ol>
+<li>Open <strong>System Settings</strong> → <strong>Privacy &amp; Security</strong> → <strong>Full Disk Access</strong>.</li>
+<li>Click the <strong>+</strong> button.</li>
+<li>Navigate to <strong>Applications</strong> → <strong>Utilities</strong> → select <strong>Terminal</strong>.</li>
+<li>Click <strong>Open</strong>.</li>
+<li>Make sure the toggle next to <strong>Terminal</strong> is <strong>on</strong>.</li>
+<li>Quit Terminal completely and reopen it.</li>
+</ol>
+<p>If you use a different terminal app (iTerm2, Warp, Ghostty, etc.), add that app instead of Terminal — or add both.</p>
+<hr />
+<h2>Fix 2 — Grant Full Disk Access to the Shell Itself</h2>
+<p>If Fix 1 did not help, the shell binary itself may need access (this is needed when scripts run outside of Terminal.app, such as via SSH or cron):</p>
+<ol>
+<li>Open <strong>System Settings</strong> → <strong>Privacy &amp; Security</strong> → <strong>Full Disk Access</strong>.</li>
+<li>Click <strong>+</strong>.</li>
+<li>Press <strong>Command (⌘) + Shift + G</strong> to open the Go to Folder dialog.</li>
+<li>Type <code>/bin/</code> and press <strong>Enter</strong>.</li>
+<li>Select <strong>zsh</strong> (or <strong>bash</strong> if you use bash) and click <strong>Open</strong>.</li>
+<li>Enable the toggle next to it.</li>
+</ol>
+<hr />
+<h2>Fix 3 — Fix for Scripts That Run via SSH or Automation</h2>
+<p>If you are hitting this error when running scripts remotely via SSH or via launchd/cron (not inside Terminal.app), the parent process needs Full Disk Access — not just Terminal. Options:</p>
+<ul>
+<li>Add <code>/bin/zsh</code> or <code>/bin/bash</code> to Full Disk Access (Fix 2 above)</li>
+<li>Add your SSH client or the app triggering the script</li>
+<li>For launchd scripts, wrap the script in an Automator app and give the Automator app Full Disk Access</li>
+</ul>
+<hr />
+<h2>Fix 4 — Unlock a Specific Locked File</h2>
+<p>If the error is about a specific file rather than a folder, it may be locked:</p>
+<div class="codehilite"><pre><span></span><code>chflags<span class="w"> </span>nouchg<span class="w"> </span>/path/to/file
+</code></pre></div>
+
+<p>Then try your command again. To unlock an entire folder recursively:</p>
+<div class="codehilite"><pre><span></span><code>chflags<span class="w"> </span>-R<span class="w"> </span>nouchg<span class="w"> </span>/path/to/folder
+</code></pre></div>
+
+<hr />
+<h2>Fix 5 — Reset User Permissions (For Persistent Permission Errors)</h2>
+<p>If you are getting permission denied errors across many files and folders and the above fixes did not help, your user's home directory permissions may be broken:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>diskutil<span class="w"> </span>resetUserPermissions<span class="w"> </span>/<span class="w"> </span><span class="k">$(</span>id<span class="w"> </span>-u<span class="k">)</span>
+</code></pre></div>
+
+<p>If this returns <strong>Error -69841</strong>, first run:</p>
+<div class="codehilite"><pre><span></span><code>chflags<span class="w"> </span>-R<span class="w"> </span>nouchg<span class="w"> </span>~
+sudo<span class="w"> </span>diskutil<span class="w"> </span>resetUserPermissions<span class="w"> </span>/<span class="w"> </span><span class="k">$(</span>id<span class="w"> </span>-u<span class="k">)</span>
+</code></pre></div>
+
+<p>Restart your Mac after this completes.</p>
+<hr />
+<h2>Fix 6 — Temporarily Disable SIP (Last Resort)</h2>
+<p>If you need to access truly protected system paths (not just user data), you can temporarily disable SIP. See the <strong>Disable and Enable SIP</strong> guide for full instructions.</p>
+<p>After doing what you need, re-enable SIP immediately.</p>
+<blockquote>
+<p><strong>Only do this if you understand what you are accessing and why.</strong> SIP protects your system — disabling it for casual use is not recommended.</p>
+</blockquote>
+<hr />
+<h2>Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>operation not permitted</code> in Desktop/Documents/Downloads</td>
+<td>Fix 1 — give Terminal Full Disk Access</td>
+</tr>
+<tr>
+<td>Error in script running via SSH or cron</td>
+<td>Fix 2 — give <code>/bin/zsh</code> Full Disk Access</td>
+</tr>
+<tr>
+<td>Specific file locked</td>
+<td>Fix 4 — <code>chflags nouchg</code></td>
+</tr>
+<tr>
+<td>Errors across many files after a migration or restore</td>
+<td>Fix 5 — <code>diskutil resetUserPermissions</code></td>
+</tr>
+<tr>
+<td>Protected system path (<code>/System</code>, <code>/usr</code>)</td>
+<td>Fix 6 — disable SIP temporarily</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<blockquote>
+<p><strong>Note:</strong> After granting Full Disk Access to Terminal, you may need to restart Terminal for the changes to take effect. If the error persists, log out and back into your macOS user account.</p>
+</blockquote>

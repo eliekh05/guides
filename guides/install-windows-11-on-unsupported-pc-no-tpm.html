@@ -1,0 +1,166 @@
+DATA:installation:Install Windows 11 on Unsupported PC (No TPM, No Secure Boot):Installation Guides
+<h1>Install Windows 11 on Unsupported PC (No TPM, No Secure Boot)</h1>
+<p>Windows 11 requires TPM 2.0, Secure Boot, and a supported CPU. If your PC does not meet these requirements, Microsoft's installer will block you. This guide shows you how to bypass those checks and install Windows 11 anyway — using only free, official tools.</p>
+<blockquote>
+<p><strong>Note:</strong> Windows 10 reached end of life on October 14, 2025. It no longer receives security updates. Installing Windows 11 on older hardware is a reasonable way to keep your machine supported.</p>
+<p><strong>Warning:</strong> Installing on unsupported hardware means Microsoft does not guarantee future updates will install. Most cumulative updates have continued to work fine in practice, but major feature updates may re-check hardware requirements.</p>
+</blockquote>
+<hr />
+<h2>Before You Start</h2>
+<h3>Check if TPM is actually off, not missing</h3>
+<p>Many PCs built after 2015 have TPM 2.0 but it is <strong>disabled in BIOS</strong> by default. Before using any bypass, check:</p>
+<ol>
+<li>Press <strong>Windows + R</strong>, type <code>tpm.msc</code>, and press Enter.</li>
+<li>If it says "Compatible TPM cannot be found", go into your BIOS/UEFI and look for:</li>
+<li><strong>Intel:</strong> PTT (Platform Trust Technology) — enable it</li>
+<li><strong>AMD:</strong> fTPM (firmware TPM) — enable it</li>
+<li>Also check that <strong>Secure Boot</strong> is enabled in BIOS.</li>
+</ol>
+<p>If enabling these in BIOS lets the Windows 11 installer pass, you do not need any bypass. If your hardware genuinely lacks TPM, continue below.</p>
+<hr />
+<h2>What You Need</h2>
+<ul>
+<li>A USB flash drive with at least <strong>8 GB</strong> of free space (all data will be erased)</li>
+<li>A PC running Windows 10 (to create the USB)</li>
+<li>A valid Windows 10 or 11 license (the bypass installs Windows — it does not provide a license)</li>
+<li>About 30–60 minutes</li>
+</ul>
+<hr />
+<h2>Method 1 — Rufus (Easiest, Recommended)</h2>
+<p>Rufus is a free, open-source tool that creates a bootable USB and removes the TPM, Secure Boot, and RAM checks automatically. Verified working on Windows 11 25H2.</p>
+<h3>Step 1 — Download the Windows 11 ISO</h3>
+<ol>
+<li>Go to <a href="https://www.microsoft.com/software-download/windows11">microsoft.com/software-download/windows11</a>.</li>
+<li>Scroll to <strong>Download Windows 11 Disk Image (ISO) for x64 devices</strong>.</li>
+<li>Select <strong>Windows 11 (multi-edition ISO for x64 devices)</strong> and click <strong>Download Now</strong>.</li>
+<li>Choose your language and download the ISO. It is about 5–6 GB.</li>
+</ol>
+<h3>Step 2 — Download Rufus</h3>
+<ol>
+<li>Go to <a href="https://rufus.ie">rufus.ie</a> and download the latest version.</li>
+<li>Rufus is portable — no installation needed. Just run the <code>.exe</code> file.</li>
+</ol>
+<h3>Step 3 — Create the Bypassed USB</h3>
+<ol>
+<li>Plug in your USB drive.</li>
+<li>Open Rufus.</li>
+<li>Under <strong>Device</strong>, select your USB drive.</li>
+<li>Under <strong>Boot selection</strong>, click <strong>SELECT</strong> and choose the Windows 11 ISO you downloaded.</li>
+<li>Click <strong>START</strong>.</li>
+<li>Rufus will show a dialog: <strong>"Windows User Experience"</strong>. Check the following boxes:</li>
+<li>✅ <strong>Remove requirement for 4GB+ RAM, Secure Boot and TPM 2.0</strong></li>
+<li>✅ <strong>Remove requirement for an online Microsoft account</strong> <em>(optional but recommended)</em></li>
+<li>Click <strong>OK</strong> and wait for Rufus to finish (5–10 minutes).</li>
+</ol>
+<h3>Step 4 — Boot from the USB and Install</h3>
+<ol>
+<li>Restart your PC and boot from the USB drive.</li>
+<li>The key to press for the boot menu varies by manufacturer: usually <strong>F12</strong>, <strong>F10</strong>, <strong>Esc</strong>, or <strong>Del</strong>. It is shown briefly on screen during startup.</li>
+<li>Follow the Windows setup normally.</li>
+<li>When asked for a product key, click <strong>I don't have a product key</strong> if you are reinstalling on a previously licensed machine — Windows will activate automatically after setup.</li>
+<li>Select <strong>Custom: Install Windows only (advanced)</strong> for a clean install.</li>
+<li>Choose your drive and complete installation.</li>
+</ol>
+<hr />
+<h2>Method 2 — Registry Edit During Install (No Extra Tools)</h2>
+<p>Use this if you cannot run Rufus, or if you already have a standard Windows 11 USB and do not want to recreate it.</p>
+<h3>Step 1 — Create a Standard Windows 11 USB</h3>
+<p>Use Microsoft's Media Creation Tool from <a href="https://www.microsoft.com/software-download/windows11">microsoft.com/software-download/windows11</a> to create a standard bootable USB.</p>
+<h3>Step 2 — Boot from the USB</h3>
+<ol>
+<li>Restart and boot from the USB drive.</li>
+<li>When you reach the <strong>"Install now"</strong> screen, press <strong>Shift + F10</strong> to open Command Prompt.</li>
+</ol>
+<h3>Step 3 — Edit the Registry</h3>
+<p>In Command Prompt, type:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">regedit</span>
+</code></pre></div>
+
+<p>Navigate to:</p>
+<div class="codehilite"><pre><span></span><code>HKEY_LOCAL_MACHINE\SYSTEM\Setup
+</code></pre></div>
+
+<p>Right-click <strong>Setup</strong> → <strong>New</strong> → <strong>Key</strong> → name it <strong>LabConfig</strong>.</p>
+<p>Inside <strong>LabConfig</strong>, create the following DWORD (32-bit) values — right-click in the right panel → <strong>New</strong> → <strong>DWORD (32-bit) Value</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Value Name</th>
+<th>Data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BypassTPMCheck</code></td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>BypassSecureBootCheck</code></td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>BypassRAMCheck</code></td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>BypassCPUCheck</code></td>
+<td><code>1</code>  Check CPU Hard Limit section below</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Close Registry Editor and Command Prompt.</li>
+<li>Click <strong>Install now</strong> and proceed normally.</li>
+</ol>
+<hr />
+<h2>Method 3 — In-Place Upgrade from Windows 10 (No USB Needed)</h2>
+<p>If you want to keep your files and apps and upgrade directly from Windows 10:</p>
+<ol>
+<li>Open Command Prompt as Administrator.</li>
+<li>Run:
+   <code>cmd
+   reg add "HKEY_LOCAL_MACHINE\SYSTEM\Setup\MoSetup" /v AllowUpgradesWithUnsupportedTPMOrCPU /t REG_DWORD /d 1 /f</code></li>
+<li>Download the Windows 11 ISO from Microsoft (see Method 1, Step 1).</li>
+<li>Mount the ISO by double-clicking it in File Explorer.</li>
+<li>Run <code>setup.exe</code> from the mounted drive.</li>
+<li>Choose <strong>Keep personal files and apps</strong> during setup.</li>
+</ol>
+<blockquote>
+<p><strong>Tip:</strong> Disconnect from the internet during the upgrade. Some users on unsupported hardware have reported failures at 70–75% when connected. Reconnect after setup completes.</p>
+</blockquote>
+<hr />
+<h2>CPU Hard Limit (Cannot Be Bypassed)</h2>
+<p>Starting with Windows 11 24H2, CPUs that do not support <strong>SSE 4.2 instructions</strong> cannot run Windows 11 — even with a bypass. This affects CPUs older than approximately 2008. If your CPU is that old, Windows 11 is not an option.</p>
+<p>To check if your CPU supports SSE 4.2, search your exact CPU model on <a href="https://www.cpu-world.com">cpu-world.com</a> or <a href="https://ark.intel.com">ark.intel.com</a>.</p>
+<hr />
+<h2>What You Lose Without TPM and Secure Boot</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BitLocker hardware encryption</td>
+<td>Reduced security — software encryption still works</td>
+</tr>
+<tr>
+<td>Windows Hello (face/fingerprint)</td>
+<td>May not work without TPM</td>
+</tr>
+<tr>
+<td>Future major updates</td>
+<td>Not guaranteed but usually available</td>
+</tr>
+<tr>
+<td>Microsoft warranty/support</td>
+<td>Not applicable to unsupported installs</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<blockquote>
+<p><strong>Summary:</strong> For most people, <strong>Method 1 (Rufus)</strong> is the cleanest and fastest approach. The registry method works equally well if you prefer not to use a third-party tool. Either way, millions of PCs are running Windows 11 this way with no issues.</p>
+</blockquote>

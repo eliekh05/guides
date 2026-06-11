@@ -1,0 +1,88 @@
+DATA:macos:macOS System Information Commands:macOS
+<h1>macOS System Information Commands</h1>
+<hr />
+<h2>System and Hardware</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># macOS version</span>
+sw_vers
+sw_vers<span class="w"> </span>-productVersion<span class="w">          </span><span class="c1"># just the version number (e.g. 15.4.1)</span>
+
+<span class="c1"># Detailed system info</span>
+system_profiler<span class="w"> </span>SPSoftwareDataType<span class="w">     </span><span class="c1"># software info</span>
+system_profiler<span class="w"> </span>SPHardwareDataType<span class="w">     </span><span class="c1"># hardware info</span>
+system_profiler<span class="w"> </span>SPMemoryDataType<span class="w">       </span><span class="c1"># RAM info</span>
+system_profiler<span class="w"> </span>SPStorageDataType<span class="w">      </span><span class="c1"># storage info</span>
+system_profiler<span class="w"> </span>SPDisplaysDataType<span class="w">     </span><span class="c1"># display/GPU info</span>
+system_profiler<span class="w"> </span>SPNetworkDataType<span class="w">      </span><span class="c1"># network interfaces</span>
+
+<span class="c1"># CPU info</span>
+sysctl<span class="w"> </span>-n<span class="w"> </span>machdep.cpu.brand_string<span class="w">    </span><span class="c1"># CPU model</span>
+sysctl<span class="w"> </span>-n<span class="w"> </span>hw.physicalcpu<span class="w">              </span><span class="c1"># physical cores</span>
+sysctl<span class="w"> </span>-n<span class="w"> </span>hw.logicalcpu<span class="w">               </span><span class="c1"># logical cores</span>
+
+<span class="c1"># RAM</span>
+sysctl<span class="w"> </span>-n<span class="w"> </span>hw.memsize<span class="w">                  </span><span class="c1"># total RAM in bytes</span>
+<span class="c1"># Divide by 1073741824 for GB</span>
+</code></pre></div>
+
+<hr />
+<h2>Disk</h2>
+<div class="codehilite"><pre><span></span><code>df<span class="w"> </span>-h<span class="w">                                  </span><span class="c1"># disk usage all volumes</span>
+diskutil<span class="w"> </span>list<span class="w">                          </span><span class="c1"># all disks and partitions</span>
+diskutil<span class="w"> </span>info<span class="w"> </span>/<span class="w">                        </span><span class="c1"># info on root volume</span>
+diskutil<span class="w"> </span>info<span class="w"> </span>disk0<span class="w">                    </span><span class="c1"># info on physical disk</span>
+
+<span class="c1"># Check SMART status</span>
+diskutil<span class="w"> </span>info<span class="w"> </span>disk0<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>SMART
+</code></pre></div>
+
+<hr />
+<h2>Memory and Processes</h2>
+<div class="codehilite"><pre><span></span><code>top<span class="w">                                    </span><span class="c1"># live process view</span>
+top<span class="w"> </span>-o<span class="w"> </span>mem<span class="w">                             </span><span class="c1"># sort by memory</span>
+ps<span class="w"> </span>aux<span class="w">                                 </span><span class="c1"># all processes</span>
+ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>AppName<span class="w">                  </span><span class="c1"># find a specific process</span>
+vm_stat<span class="w">                                </span><span class="c1"># virtual memory stats</span>
+</code></pre></div>
+
+<hr />
+<h2>Battery (MacBook)</h2>
+<div class="codehilite"><pre><span></span><code>pmset<span class="w"> </span>-g<span class="w"> </span>batt<span class="w">                          </span><span class="c1"># battery status</span>
+system_profiler<span class="w"> </span>SPPowerDataType<span class="w">        </span><span class="c1"># detailed battery info</span>
+</code></pre></div>
+
+<hr />
+<h2>Network</h2>
+<div class="codehilite"><pre><span></span><code>ifconfig<span class="w">                               </span><span class="c1"># all network interfaces</span>
+ifconfig<span class="w"> </span>en0<span class="w">                           </span><span class="c1"># ethernet interface</span>
+ifconfig<span class="w"> </span>en1<span class="w">                           </span><span class="c1"># wifi interface (varies)</span>
+networksetup<span class="w"> </span>-listallhardwareports<span class="w">     </span><span class="c1"># list all network ports</span>
+arp<span class="w"> </span>-a<span class="w">                                 </span><span class="c1"># devices on local network</span>
+netstat<span class="w"> </span>-rn<span class="w">                            </span><span class="c1"># routing table</span>
+</code></pre></div>
+
+<hr />
+<h2>Running Services and Daemons</h2>
+<div class="codehilite"><pre><span></span><code>launchctl<span class="w"> </span>list<span class="w">                         </span><span class="c1"># all loaded launch agents/daemons</span>
+launchctl<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>com.apple<span class="w">        </span><span class="c1"># Apple services only</span>
+launchctl<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;^-&quot;</span><span class="w">         </span><span class="c1"># only currently running</span>
+</code></pre></div>
+
+<hr />
+<h2>Serial Number and Hardware IDs</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Serial number</span>
+system_profiler<span class="w"> </span>SPHardwareDataType<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;Serial Number&quot;</span>
+ioreg<span class="w"> </span>-l<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>IOPlatformSerialNumber
+
+<span class="c1"># Hardware UUID</span>
+system_profiler<span class="w"> </span>SPHardwareDataType<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;Hardware UUID&quot;</span>
+
+<span class="c1"># Model identifier (e.g. MacBookPro18,1)</span>
+system_profiler<span class="w"> </span>SPHardwareDataType<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;Model Identifier&quot;</span>
+</code></pre></div>
+
+<hr />
+<h2>Uptime and Login Info</h2>
+<div class="codehilite"><pre><span></span><code>uptime<span class="w">                                 </span><span class="c1"># uptime and load average</span>
+who<span class="w">                                    </span><span class="c1"># logged-in users</span>
+last<span class="w">                                   </span><span class="c1"># login history</span>
+</code></pre></div>

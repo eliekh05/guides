@@ -1,0 +1,106 @@
+DATA:system-users:Check Hardware Information on Linux:System & Users
+<h1>Check Hardware Information on Linux</h1>
+<hr />
+<h2>CPU</h2>
+<div class="codehilite"><pre><span></span><code>lscpu<span class="w">                            </span><span class="c1"># full CPU info</span>
+cat<span class="w"> </span>/proc/cpuinfo<span class="w">               </span><span class="c1"># raw CPU info</span>
+lscpu<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;Model name&quot;</span><span class="w">       </span><span class="c1"># CPU model only</span>
+nproc<span class="w">                           </span><span class="c1"># number of CPU cores</span>
+</code></pre></div>
+
+<hr />
+<h2>RAM</h2>
+<div class="codehilite"><pre><span></span><code>free<span class="w"> </span>-h<span class="w">                          </span><span class="c1"># memory usage (human readable)</span>
+cat<span class="w"> </span>/proc/meminfo<span class="w">               </span><span class="c1"># raw memory info</span>
+vmstat<span class="w"> </span>-s<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-5<span class="w">             </span><span class="c1"># memory statistics</span>
+</code></pre></div>
+
+<hr />
+<h2>Disks</h2>
+<div class="codehilite"><pre><span></span><code>lsblk<span class="w">                            </span><span class="c1"># all block devices (disks, partitions)</span>
+lsblk<span class="w"> </span>-f<span class="w">                         </span><span class="c1"># with filesystem info</span>
+df<span class="w"> </span>-h<span class="w">                            </span><span class="c1"># mounted filesystems and usage</span>
+fdisk<span class="w"> </span>-l<span class="w">                         </span><span class="c1"># partition tables (needs sudo)</span>
+hdparm<span class="w"> </span>-I<span class="w"> </span>/dev/sda<span class="w">               </span><span class="c1"># detailed disk info</span>
+</code></pre></div>
+
+<hr />
+<h2>GPU</h2>
+<div class="codehilite"><pre><span></span><code>lspci<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>vga<span class="w">              </span><span class="c1"># GPU info</span>
+lspci<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;3d\|display\|vga&quot;</span>
+nvidia-smi<span class="w">                       </span><span class="c1"># NVIDIA GPU status (if Nvidia)</span>
+rocm-smi<span class="w">                         </span><span class="c1"># AMD GPU status (if AMD with ROCm)</span>
+glxinfo<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;OpenGL renderer&quot;</span><span class="w"> </span><span class="c1"># OpenGL renderer</span>
+</code></pre></div>
+
+<hr />
+<h2>All PCI Devices</h2>
+<div class="codehilite"><pre><span></span><code>lspci<span class="w">                            </span><span class="c1"># all PCI devices</span>
+lspci<span class="w"> </span>-v<span class="w">                         </span><span class="c1"># verbose</span>
+lspci<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>network<span class="w">          </span><span class="c1"># network cards</span>
+lspci<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>audio<span class="w">            </span><span class="c1"># audio cards</span>
+lspci<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>usb<span class="w">              </span><span class="c1"># USB controllers</span>
+</code></pre></div>
+
+<hr />
+<h2>USB Devices</h2>
+<div class="codehilite"><pre><span></span><code>lsusb<span class="w">                            </span><span class="c1"># all USB devices</span>
+lsusb<span class="w"> </span>-t<span class="w">                         </span><span class="c1"># tree format</span>
+lsusb<span class="w"> </span>-v<span class="w">                         </span><span class="c1"># verbose (detailed)</span>
+</code></pre></div>
+
+<hr />
+<h2>System Information</h2>
+<div class="codehilite"><pre><span></span><code>uname<span class="w"> </span>-a<span class="w">                         </span><span class="c1"># kernel version and architecture</span>
+uname<span class="w"> </span>-r<span class="w">                         </span><span class="c1"># kernel version only</span>
+hostnamectl<span class="w">                      </span><span class="c1"># hostname, OS, kernel</span>
+cat<span class="w"> </span>/etc/os-release<span class="w">              </span><span class="c1"># OS details</span>
+lsb_release<span class="w"> </span>-a<span class="w">                   </span><span class="c1"># Ubuntu/Debian distribution info</span>
+cat<span class="w"> </span>/proc/version<span class="w">                </span><span class="c1"># kernel compile info</span>
+uptime<span class="w">                           </span><span class="c1"># system uptime and load</span>
+</code></pre></div>
+
+<hr />
+<h2>Motherboard / BIOS</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dmidecode<span class="w"> </span>-t<span class="w"> </span>baseboard<span class="w">      </span><span class="c1"># motherboard info</span>
+sudo<span class="w"> </span>dmidecode<span class="w"> </span>-t<span class="w"> </span>bios<span class="w">           </span><span class="c1"># BIOS info</span>
+sudo<span class="w"> </span>dmidecode<span class="w"> </span>-t<span class="w"> </span>processor<span class="w">      </span><span class="c1"># CPU info from BIOS</span>
+sudo<span class="w"> </span>dmidecode<span class="w"> </span>-t<span class="w"> </span>memory<span class="w">         </span><span class="c1"># RAM slot info</span>
+sudo<span class="w"> </span>dmidecode<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-50<span class="w">        </span><span class="c1"># general system info</span>
+</code></pre></div>
+
+<p>Install if missing:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>dmidecode<span class="w"> </span>-y
+</code></pre></div>
+
+<hr />
+<h2>Temperatures and Sensors</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>lm-sensors<span class="w"> </span>-y
+sudo<span class="w"> </span>sensors-detect<span class="w">              </span><span class="c1"># auto-detect sensors (run once)</span>
+sensors<span class="w">                          </span><span class="c1"># show current temperatures</span>
+
+<span class="c1"># For modern systems (alternative)</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>inxi<span class="w"> </span>-y
+inxi<span class="w"> </span>-F<span class="w">                          </span><span class="c1"># full system info including temps</span>
+</code></pre></div>
+
+<hr />
+<h2>All-in-One Summary</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Install inxi for a comprehensive one-command summary</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>inxi<span class="w"> </span>-y
+
+inxi<span class="w"> </span>-F<span class="w">                          </span><span class="c1"># full system info</span>
+inxi<span class="w"> </span>-C<span class="w">                          </span><span class="c1"># CPU info</span>
+inxi<span class="w"> </span>-G<span class="w">                          </span><span class="c1"># GPU info</span>
+inxi<span class="w"> </span>-D<span class="w">                          </span><span class="c1"># disk info</span>
+inxi<span class="w"> </span>-N<span class="w">                          </span><span class="c1"># network info</span>
+inxi<span class="w"> </span>-m<span class="w">                          </span><span class="c1"># memory info</span>
+</code></pre></div>
+
+<hr />
+<h2>Kernel Modules (Drivers)</h2>
+<div class="codehilite"><pre><span></span><code>lsmod<span class="w">                            </span><span class="c1"># loaded kernel modules</span>
+modinfo<span class="w"> </span>module_name<span class="w">              </span><span class="c1"># info about a specific module</span>
+modprobe<span class="w"> </span>module_name<span class="w">             </span><span class="c1"># load a module</span>
+rmmod<span class="w"> </span>module_name<span class="w">                </span><span class="c1"># remove a module</span>
+</code></pre></div>

@@ -1,0 +1,118 @@
+DATA:security:ACL — Access Control Lists on Linux:Security & Apps
+<h1>ACL — Access Control Lists on Linux</h1>
+<p>Standard Linux permissions only allow one owner, one group, and everyone else. ACLs let you grant specific permissions to any number of individual users or groups on a single file or directory without changing ownership or adding users to groups.</p>
+<hr />
+<h2>Install</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>acl<span class="w"> </span>-y<span class="w">        </span><span class="c1"># Ubuntu/Debian</span>
+sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>acl<span class="w"> </span>-y<span class="w">        </span><span class="c1"># Fedora/RHEL</span>
+sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>acl<span class="w">             </span><span class="c1"># Arch</span>
+</code></pre></div>
+
+<p>ACLs work natively on ext4, XFS, and Btrfs — no extra configuration needed on modern systems.</p>
+<hr />
+<h2>View ACL Permissions</h2>
+<div class="codehilite"><pre><span></span><code>getfacl<span class="w"> </span>filename
+getfacl<span class="w"> </span>/path/to/directory
+</code></pre></div>
+
+<p>When a file has ACL entries, <code>ls -la</code> shows a <code>+</code> at the end of the permissions string:</p>
+<div class="codehilite"><pre><span></span><code>-rw-rw-r--+  1 alice  staff  1234 file.txt
+</code></pre></div>
+
+<hr />
+<h2>Set ACL Permissions</h2>
+<div class="codehilite"><pre><span></span><code>setfacl<span class="w"> </span>-m<span class="w"> </span>u:bob:rw<span class="w"> </span>file.txt<span class="w">          </span><span class="c1"># give bob read/write</span>
+setfacl<span class="w"> </span>-m<span class="w"> </span>g:developers:r<span class="w"> </span>file.txt<span class="w">    </span><span class="c1"># give developers group read</span>
+setfacl<span class="w"> </span>-m<span class="w"> </span>u:bob:rX<span class="w"> </span>/path/to/dir<span class="w">      </span><span class="c1"># read/execute on directory</span>
+setfacl<span class="w"> </span>-m<span class="w"> </span>u:bob:rw,g:devs:r<span class="w"> </span>file.txt<span class="w"> </span><span class="c1"># multiple rules at once</span>
+</code></pre></div>
+
+<p>Permission letters: <code>r</code> = read, <code>w</code> = write, <code>x</code> = execute, <code>X</code> = execute only if it is a directory or already executable by someone</p>
+<hr />
+<h2>Default ACLs — Inherit Permissions Automatically</h2>
+<p>Default ACLs on a directory make all new files and subdirectories automatically inherit the specified permissions:</p>
+<div class="codehilite"><pre><span></span><code>setfacl<span class="w"> </span>-d<span class="w"> </span>-m<span class="w"> </span>u:bob:rw<span class="w"> </span>/shared/folder<span class="w">     </span><span class="c1"># new files give bob rw automatically</span>
+getfacl<span class="w"> </span>/shared/folder<span class="w">                     </span><span class="c1"># view defaults</span>
+</code></pre></div>
+
+<hr />
+<h2>Remove ACL Entries</h2>
+<div class="codehilite"><pre><span></span><code>setfacl<span class="w"> </span>-x<span class="w"> </span>u:bob<span class="w"> </span>file.txt<span class="w">       </span><span class="c1"># remove bob&#39;s ACL entry</span>
+setfacl<span class="w"> </span>-x<span class="w"> </span>g:devs<span class="w"> </span>file.txt<span class="w">      </span><span class="c1"># remove group ACL entry</span>
+setfacl<span class="w"> </span>-b<span class="w"> </span>file.txt<span class="w">             </span><span class="c1"># remove ALL ACL entries</span>
+setfacl<span class="w"> </span>-k<span class="w"> </span>/path/to/dir<span class="w">         </span><span class="c1"># remove default ACLs from directory</span>
+</code></pre></div>
+
+<hr />
+<h2>Recursive</h2>
+<div class="codehilite"><pre><span></span><code>setfacl<span class="w"> </span>-R<span class="w"> </span>-m<span class="w"> </span>u:bob:rX<span class="w"> </span>/var/www<span class="w">              </span><span class="c1"># apply recursively</span>
+setfacl<span class="w"> </span>-R<span class="w"> </span>-d<span class="w"> </span>-m<span class="w"> </span>u:bob:rX<span class="w"> </span>/var/www<span class="w">          </span><span class="c1"># recursive + default</span>
+</code></pre></div>
+
+<hr />
+<h2>Backup and Restore</h2>
+<div class="codehilite"><pre><span></span><code>getfacl<span class="w"> </span>-R<span class="w"> </span>/var/www<span class="w"> </span>&gt;<span class="w"> </span>acl-backup.txt<span class="w">         </span><span class="c1"># backup</span>
+setfacl<span class="w"> </span>--restore<span class="o">=</span>acl-backup.txt<span class="w">             </span><span class="c1"># restore</span>
+</code></pre></div>
+
+<hr />
+<h2>Real Examples</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Developer needs read access to production logs without changing ownership</span>
+setfacl<span class="w"> </span>-m<span class="w"> </span>u:developer:r<span class="w"> </span>/var/log/app.log
+
+<span class="c1"># Web server needs to read a config file it does not own</span>
+setfacl<span class="w"> </span>-m<span class="w"> </span>u:www-data:r<span class="w"> </span>/etc/myapp/config.conf
+
+<span class="c1"># Multiple users with different permissions on shared directory</span>
+setfacl<span class="w"> </span>-m<span class="w"> </span>u:alice:rwX,u:bob:rwX,u:charlie:rX<span class="w"> </span>/shared/project
+setfacl<span class="w"> </span>-d<span class="w"> </span>-m<span class="w"> </span>u:alice:rwX,u:bob:rwX,u:charlie:rX<span class="w"> </span>/shared/project
+</code></pre></div>
+
+<hr />
+<h2>Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>View ACLs</td>
+<td><code>getfacl file</code></td>
+</tr>
+<tr>
+<td>Grant user</td>
+<td><code>setfacl -m u:user:rwx file</code></td>
+</tr>
+<tr>
+<td>Grant group</td>
+<td><code>setfacl -m g:group:rx file</code></td>
+</tr>
+<tr>
+<td>Default ACL</td>
+<td><code>setfacl -d -m u:user:rw dir</code></td>
+</tr>
+<tr>
+<td>Remove user ACL</td>
+<td><code>setfacl -x u:user file</code></td>
+</tr>
+<tr>
+<td>Remove all ACLs</td>
+<td><code>setfacl -b file</code></td>
+</tr>
+<tr>
+<td>Recursive</td>
+<td><code>setfacl -R -m u:user:rx dir</code></td>
+</tr>
+<tr>
+<td>Backup</td>
+<td><code>getfacl -R dir &gt; backup.txt</code></td>
+</tr>
+<tr>
+<td>Restore</td>
+<td><code>setfacl --restore=backup.txt</code></td>
+</tr>
+</tbody>
+</table>

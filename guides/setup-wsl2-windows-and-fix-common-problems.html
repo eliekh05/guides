@@ -1,0 +1,217 @@
+DATA:windows:Set Up WSL2 and Fix Common Problems:Windows
+<h1>Set Up WSL2 and Fix Common Problems</h1>
+<p>WSL2 (Windows Subsystem for Linux 2) lets you run a full Linux environment directly inside Windows — no VM, no dual boot. It is genuinely useful but has several well-known problems that trip up almost everyone: slow filesystem when working on Windows files, broken DNS, VPN conflicts, and networking that works differently from native Linux. This guide covers setup and all the common fixes.</p>
+<hr />
+<h2>Install WSL2</h2>
+<p>Open <strong>PowerShell as Administrator</strong> and run:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">wsl</span> <span class="p">-</span><span class="n">-install</span>
+</code></pre></div>
+
+<p>This installs WSL2 with Ubuntu as the default distribution. Restart when prompted.</p>
+<p>After restart, Ubuntu will finish setting up — create a username and password when asked.</p>
+<h3>Install a Different Distribution</h3>
+<div class="codehilite"><pre><span></span><code><span class="c"># List available distributions</span>
+<span class="n">wsl</span> <span class="p">-</span><span class="n">-list</span> <span class="p">-</span><span class="n">-online</span>
+
+<span class="c"># Install a specific one</span>
+<span class="n">wsl</span> <span class="p">-</span><span class="n">-install</span> <span class="n">-d</span> <span class="n">Debian</span>
+<span class="n">wsl</span> <span class="p">-</span><span class="n">-install</span> <span class="n">-d</span> <span class="n">kali-linux</span>
+<span class="n">wsl</span> <span class="p">-</span><span class="n">-install</span> <span class="n">-d</span> <span class="n">openSUSE</span><span class="p">-</span><span class="n">42</span>
+</code></pre></div>
+
+<h3>Check WSL Version</h3>
+<div class="codehilite"><pre><span></span><code><span class="n">wsl</span> <span class="p">-</span><span class="n">-status</span>
+<span class="n">wsl</span> <span class="p">-</span><span class="n">-list</span> <span class="p">-</span><span class="n">-verbose</span>
+</code></pre></div>
+
+<p>Make sure your distro shows <strong>VERSION: 2</strong>. If it shows 1, upgrade it:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">wsl</span> <span class="p">-</span><span class="n">-set-version</span> <span class="n">Ubuntu</span> <span class="n">2</span>
+<span class="n">wsl</span> <span class="p">-</span><span class="n">-set-default-version</span> <span class="n">2</span>
+</code></pre></div>
+
+<hr />
+<h2>The Most Important Thing to Know — Filesystem Location</h2>
+<p><strong>This is what trips up most people.</strong> WSL2 has two filesystems and they perform very differently:</p>
+<table>
+<thead>
+<tr>
+<th>Location</th>
+<th>Speed</th>
+<th>Use for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>~/</code> inside WSL (the Linux filesystem)</td>
+<td>Fast</td>
+<td>Your code, projects, scripts</td>
+</tr>
+<tr>
+<td><code>/mnt/c/</code> (your Windows C: drive from inside WSL)</td>
+<td>Very slow</td>
+<td>Accessing Windows files occasionally</td>
+</tr>
+</tbody>
+</table>
+<p>If your code is in <code>C:\Users\yourname\Projects</code> and you access it via <code>/mnt/c/Users/yourname/Projects</code> inside WSL, everything will be slow — <code>npm install</code> can take 10x longer, <code>git status</code> crawls, and build tools struggle.</p>
+<p><strong>The fix:</strong> keep your project files inside the Linux filesystem (<code>~/projects</code>), not on the Windows drive. Access them from Windows using the <code>\\wsl$\Ubuntu\home\yourname\</code> path in File Explorer.</p>
+<hr />
+<h2>Configure WSL2 Resource Limits</h2>
+<p>By default, WSL2 can use all your RAM and CPU. On a machine with 16 GB RAM, WSL may grab 8 GB and leave Windows starved. Create a config file to set limits.</p>
+<p>Create or edit <code>C:\Users\yourname\.wslconfig</code> in Notepad:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[wsl2]</span>
+<span class="na">memory</span><span class="o">=</span><span class="s">4GB</span>
+<span class="na">processors</span><span class="o">=</span><span class="s">4</span>
+<span class="na">swap</span><span class="o">=</span><span class="s">2GB</span>
+</code></pre></div>
+
+<p>Adjust to your system. Apply changes:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">wsl</span> <span class="p">-</span><span class="n">-shutdown</span>
+</code></pre></div>
+
+<p>Then reopen WSL.</p>
+<hr />
+<h2>Fix DNS Not Working in WSL2</h2>
+<p>DNS breaking in WSL2 is one of the most common issues — especially after VPN connections. You see errors like <code>Temporary failure in name resolution</code> or websites not loading.</p>
+<h3>Fix 1 — Switch to Mirrored Networking (Windows 11 Only)</h3>
+<p>The modern fix. Edit <code>C:\Users\yourname\.wslconfig</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[wsl2]</span>
+<span class="na">networkingMode</span><span class="o">=</span><span class="s">mirrored</span>
+</code></pre></div>
+
+<p>Run <code>wsl --shutdown</code> and reopen WSL. Mirrored mode makes WSL share Windows' network stack directly, fixing most VPN and DNS issues at once.</p>
+<h3>Fix 2 — Set a Static DNS (Works on Windows 10 and 11)</h3>
+<p>Inside WSL, edit <code>/etc/resolv.conf</code>:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/resolv.conf
+</code></pre></div>
+
+<p>Replace everything with:</p>
+<div class="codehilite"><pre><span></span><code>nameserver 1.1.1.1
+nameserver 8.8.8.8
+</code></pre></div>
+
+<p>Then prevent WSL from overwriting it on restart:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/wsl.conf
+</code></pre></div>
+
+<p>Add:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[network]</span>
+<span class="na">generateResolvConf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
+</code></pre></div>
+
+<p>Save, then run <code>wsl --shutdown</code> from PowerShell and reopen WSL.</p>
+<hr />
+<h2>Fix VPN Breaking WSL2 Networking</h2>
+<p>When a VPN is active on Windows, WSL2 often loses internet entirely. Mirrored networking (Fix 1 above) resolves this on Windows 11. On Windows 10, or if mirrored mode does not work:</p>
+<p>Edit <code>C:\Users\yourname\.wslconfig</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[wsl2]</span>
+<span class="na">networkingMode</span><span class="o">=</span><span class="s">mirrored</span>
+<span class="na">dnsTunneling</span><span class="o">=</span><span class="s">true</span>
+<span class="na">firewall</span><span class="o">=</span><span class="s">true</span>
+</code></pre></div>
+
+<p>Run <code>wsl --shutdown</code> and reopen.</p>
+<p>If still broken, check that your VPN software has a setting for "Allow local network access" or "Split tunneling" and enable it.</p>
+<hr />
+<h2>Fix Slow WSL2 Performance</h2>
+<h3>If <code>/mnt/c</code> is slow (expected — see Filesystem section above)</h3>
+<p>Move your projects to the Linux filesystem:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Copy a project from Windows to Linux filesystem</span>
+cp<span class="w"> </span>-r<span class="w"> </span>/mnt/c/Users/yourname/myproject<span class="w"> </span>~/myproject
+<span class="nb">cd</span><span class="w"> </span>~/myproject
+</code></pre></div>
+
+<p>Access it from Windows Explorer: type <code>\\wsl$\Ubuntu\home\yourname\myproject</code> in the address bar.</p>
+<h3>If the Linux filesystem itself is slow</h3>
+<p>The WSL2 virtual disk (<code>.vhdx</code> file) may be fragmented or need optimization:</p>
+<div class="codehilite"><pre><span></span><code><span class="c"># Shut down WSL first</span>
+<span class="n">wsl</span> <span class="p">-</span><span class="n">-shutdown</span>
+
+<span class="c"># Find the VHDX file location</span>
+<span class="c"># Usually: C:\Users\yourname\AppData\Local\Packages\CanonicalGroupLimited.Ubuntu...\LocalState\ext4.vhdx</span>
+
+<span class="c"># Compact the VHDX (run in PowerShell as Admin)</span>
+<span class="nb">Optimize-VHD</span> <span class="n">-Path</span> <span class="s2">&quot;C:\path\to\ext4.vhdx&quot;</span> <span class="n">-Mode</span> <span class="n">Full</span>
+</code></pre></div>
+
+<hr />
+<h2>Access Windows Files from WSL</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Access C: drive</span>
+ls<span class="w"> </span>/mnt/c/
+
+<span class="c1"># Access a specific Windows folder</span>
+<span class="nb">cd</span><span class="w"> </span>/mnt/c/Users/yourname/Desktop
+</code></pre></div>
+
+<h2>Access WSL Files from Windows</h2>
+<p>In File Explorer address bar, type:</p>
+<div class="codehilite"><pre><span></span><code>\\wsl$\Ubuntu\home\yourname
+</code></pre></div>
+
+<p>Or in PowerShell:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">explorer</span><span class="p">.</span><span class="n">exe</span> <span class="p">\\</span><span class="n">wsl</span><span class="p">$\</span><span class="n">Ubuntu</span><span class="p">\</span><span class="n">home</span><span class="p">\</span><span class="n">yourname</span>
+</code></pre></div>
+
+<p>You can also pin this to Quick Access in File Explorer.</p>
+<hr />
+<h2>Run Windows Commands from WSL</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Open a Windows app from WSL</span>
+explorer.exe<span class="w"> </span>.<span class="w">          </span><span class="c1"># Open current folder in File Explorer</span>
+notepad.exe<span class="w"> </span>file.txt<span class="w">    </span><span class="c1"># Open a file in Notepad</span>
+cmd.exe<span class="w"> </span>/c<span class="w"> </span>dir<span class="w">          </span><span class="c1"># Run a Windows cmd command</span>
+</code></pre></div>
+
+<h2>Run WSL Commands from Windows PowerShell</h2>
+<div class="codehilite"><pre><span></span><code><span class="c"># Run a command in WSL</span>
+<span class="n">wsl</span> <span class="nb">ls </span><span class="n">-la</span>
+
+<span class="c"># Run a specific script</span>
+<span class="n">wsl</span> <span class="n">bash</span> <span class="p">~/</span><span class="n">scripts</span><span class="p">/</span><span class="n">myscript</span><span class="p">.</span><span class="n">sh</span>
+
+<span class="c"># Run as a specific distro</span>
+<span class="n">wsl</span> <span class="n">-d</span> <span class="n">Ubuntu</span> <span class="nb">ls </span><span class="n">-la</span>
+</code></pre></div>
+
+<hr />
+<h2>Useful WSL Management Commands</h2>
+<div class="codehilite"><pre><span></span><code><span class="c"># Shut down all WSL instances</span>
+<span class="n">wsl</span> <span class="p">-</span><span class="n">-shutdown</span>
+
+<span class="c"># List installed distributions</span>
+<span class="n">wsl</span> <span class="p">-</span><span class="n">-list</span> <span class="p">-</span><span class="n">-verbose</span>
+
+<span class="c"># Set default distribution</span>
+<span class="n">wsl</span> <span class="p">-</span><span class="n">-set-default</span> <span class="n">Ubuntu</span>
+
+<span class="c"># Uninstall a distribution</span>
+<span class="n">wsl</span> <span class="p">-</span><span class="n">-unregister</span> <span class="n">Ubuntu</span>
+
+<span class="c"># Export a distribution to a backup file</span>
+<span class="n">wsl</span> <span class="p">-</span><span class="n">-export</span> <span class="n">Ubuntu</span> <span class="n">C</span><span class="p">:\</span><span class="n">backup</span><span class="p">\</span><span class="n">ubuntu</span><span class="p">.</span><span class="n">tar</span>
+
+<span class="c"># Import a distribution from backup</span>
+<span class="n">wsl</span> <span class="p">-</span><span class="n">-import</span> <span class="n">Ubuntu</span> <span class="n">C</span><span class="p">:\</span><span class="n">WSL</span><span class="p">\</span><span class="n">Ubuntu</span> <span class="n">C</span><span class="p">:\</span><span class="n">backup</span><span class="p">\</span><span class="n">ubuntu</span><span class="p">.</span><span class="n">tar</span> <span class="p">-</span><span class="n">-version</span> <span class="n">2</span>
+
+<span class="c"># Update WSL itself</span>
+<span class="n">wsl</span> <span class="p">-</span><span class="n">-update</span>
+</code></pre></div>
+
+<hr />
+<h2>Troubleshooting</h2>
+<h3><code>wsl: command not found</code> in PowerShell</h3>
+<p>WSL is not installed. Run <code>wsl --install</code> as Administrator.</p>
+<h3>WSL2 feature not available</h3>
+<p>Go to <strong>Settings → Apps → Optional Features → More Windows features</strong> and enable:
+- <strong>Windows Subsystem for Linux</strong>
+- <strong>Virtual Machine Platform</strong></p>
+<p>Restart and try again.</p>
+<h3><code>Error 0x80370102</code> — virtualisation not enabled</h3>
+<p>Enable Intel VT-x or AMD-V in your BIOS/UEFI settings.</p>
+<h3>WSL opens but immediately closes</h3>
+<p>Your Linux installation may be corrupted. Unregister and reinstall:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">wsl</span> <span class="p">-</span><span class="n">-unregister</span> <span class="n">Ubuntu</span>
+<span class="n">wsl</span> <span class="p">-</span><span class="n">-install</span> <span class="n">-d</span> <span class="n">Ubuntu</span>
+</code></pre></div>
+
+<h3>Docker Desktop conflicts with WSL2</h3>
+<p>Docker Desktop uses WSL2 as its backend. If Docker is installed, it may manage WSL resources. In Docker Desktop settings, go to <strong>Resources → WSL Integration</strong> and configure which distros Docker connects to.</p>

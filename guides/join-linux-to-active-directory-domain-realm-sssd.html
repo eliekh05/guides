@@ -1,0 +1,175 @@
+DATA:networking:Join Linux to a Windows Active Directory Domain (realm + SSSD):Networking & DNS
+<h1>Join Linux to a Windows Active Directory Domain (realm + SSSD)</h1>
+<p>Joining a Linux machine to a Windows Active Directory domain lets AD users log in with their domain credentials instead of local accounts. The standard method uses <code>realmd</code> to handle the join and <code>SSSD</code> to handle ongoing authentication.</p>
+<blockquote>
+<p><strong>Before you start:</strong> Your Linux machine must use the AD domain controller as its DNS server. Most join failures are DNS issues. Kerberos authentication depends entirely on proper DNS resolution.</p>
+</blockquote>
+<hr />
+<h2>Requirements</h2>
+<ul>
+<li>A working Active Directory domain</li>
+<li>DNS pointing to your AD domain controller</li>
+<li>An AD admin account (or an account with permission to join computers)</li>
+<li>Time synchronized between Linux and AD (Kerberos fails if clocks differ by more than 5 minutes)</li>
+</ul>
+<hr />
+<h2>Step 1 — Set DNS to Point to the Domain Controller</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check current DNS</span>
+resolvectl<span class="w"> </span>status<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;DNS Servers&quot;</span>
+cat<span class="w"> </span>/etc/resolv.conf
+
+<span class="c1"># Temporarily set DNS (replace with your DC&#39;s IP)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;nameserver 192.168.1.10&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/resolv.conf
+
+<span class="c1"># Verify DNS resolves your domain</span>
+nslookup<span class="w"> </span>corp.example.com
+</code></pre></div>
+
+<p>For a permanent DNS change, edit your Netplan config — see the <strong>Set a Static IP on Linux Using Netplan</strong> guide.</p>
+<hr />
+<h2>Step 2 — Sync Time</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>timedatectl<span class="w"> </span>set-ntp<span class="w"> </span><span class="nb">true</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>systemd-timesyncd
+timedatectl<span class="w"> </span>status
+</code></pre></div>
+
+<hr />
+<h2>Step 3 — Install Required Packages</h2>
+<p><strong>Ubuntu / Debian:</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>realmd<span class="w"> </span>sssd<span class="w"> </span>sssd-tools<span class="w"> </span>libnss-sss<span class="w"> </span>libpam-sss<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>adcli<span class="w"> </span>samba-common-bin<span class="w"> </span>oddjob<span class="w"> </span>oddjob-mkhomedir<span class="w"> </span>packagekit
+</code></pre></div>
+
+<p><strong>Fedora / RHEL / CentOS:</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>realmd<span class="w"> </span>sssd<span class="w"> </span>sssd-tools<span class="w"> </span>adcli<span class="w"> </span>samba-common-tools<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>oddjob<span class="w"> </span>oddjob-mkhomedir
+</code></pre></div>
+
+<hr />
+<h2>Step 4 — Discover the Domain</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>realm<span class="w"> </span>discover<span class="w"> </span>corp.example.com
+</code></pre></div>
+
+<p>Replace <code>corp.example.com</code> with your actual domain. Expected output:</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">corp</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">com</span>
+<span class="w">  </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="nx">kerberos</span>
+<span class="w">  </span><span class="nx">realm</span><span class="o">-</span><span class="nx">name</span><span class="p">:</span><span class="w"> </span><span class="nx">CORP</span><span class="p">.</span><span class="nx">EXAMPLE</span><span class="p">.</span><span class="nx">COM</span>
+<span class="w">  </span><span class="nx">domain</span><span class="o">-</span><span class="nx">name</span><span class="p">:</span><span class="w"> </span><span class="nx">corp</span><span class="p">.</span><span class="nx">example</span><span class="p">.</span><span class="nx">com</span>
+<span class="w">  </span><span class="nx">configured</span><span class="p">:</span><span class="w"> </span><span class="nx">no</span>
+<span class="w">  </span><span class="nx">server</span><span class="o">-</span><span class="nx">software</span><span class="p">:</span><span class="w"> </span><span class="nx">active</span><span class="o">-</span><span class="nx">directory</span>
+<span class="w">  </span><span class="nx">client</span><span class="o">-</span><span class="nx">software</span><span class="p">:</span><span class="w"> </span><span class="nx">sssd</span>
+<span class="w">  </span><span class="nx">required</span><span class="o">-</span><span class="kn">package</span><span class="p">:</span><span class="w"> </span><span class="nx">sssd</span><span class="o">-</span><span class="nx">tools</span>
+<span class="w">  </span><span class="nx">required</span><span class="o">-</span><span class="kn">package</span><span class="p">:</span><span class="w"> </span><span class="nx">sssd</span>
+<span class="w">  </span><span class="o">...</span>
+</code></pre></div>
+
+<p>If this fails, the problem is DNS — fix Step 1 first.</p>
+<hr />
+<h2>Step 5 — Join the Domain</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>realm<span class="w"> </span>join<span class="w"> </span>--user<span class="o">=</span>Administrator<span class="w"> </span>corp.example.com
+</code></pre></div>
+
+<p>Enter the AD Administrator password when prompted.</p>
+<p><strong>Join and place in a specific Organizational Unit (OU):</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>realm<span class="w"> </span>join<span class="w"> </span>--user<span class="o">=</span>Administrator<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--computer-ou<span class="o">=</span><span class="s2">&quot;OU=LinuxServers,DC=corp,DC=example,DC=com&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>corp.example.com
+</code></pre></div>
+
+<p><strong>Verify the join:</strong></p>
+<div class="codehilite"><pre><span></span><code>realm<span class="w"> </span>list
+</code></pre></div>
+
+<p>Output should show <code>configured: kerberos-member</code>.</p>
+<hr />
+<h2>Step 6 — Enable Home Directory Auto-Creation</h2>
+<p>Without this, AD users who log in will get an error because their home directory doesn't exist:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>pam-auth-update<span class="w"> </span>--enable<span class="w"> </span>mkhomedir
+</code></pre></div>
+
+<p>Or manually add to <code>/etc/pam.d/common-session</code>:</p>
+<div class="codehilite"><pre><span></span><code>session required pam_mkhomedir.so skel=/etc/skel/ umask=0022
+</code></pre></div>
+
+<hr />
+<h2>Step 7 — Test AD User Login</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check if AD user is recognized (use full domain format)</span>
+id<span class="w"> </span>john@corp.example.com
+
+<span class="c1"># Or if use_fully_qualified_names is disabled:</span>
+id<span class="w"> </span>john
+
+<span class="c1"># Check if you can get a Kerberos ticket</span>
+kinit<span class="w"> </span>john@CORP.EXAMPLE.COM
+klist
+</code></pre></div>
+
+<hr />
+<h2>Step 8 — Allow AD Users to sudo (Optional)</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>visudo
+</code></pre></div>
+
+<p>Add:</p>
+<div class="codehilite"><pre><span></span><code><span class="cp"># Allow specific AD user</span>
+<span class="n">john</span><span class="err">@</span><span class="n">corp</span><span class="p">.</span><span class="n">example</span><span class="p">.</span><span class="n">com</span><span class="w"> </span><span class="n">ALL</span><span class="o">=</span><span class="p">(</span><span class="n">ALL</span><span class="o">:</span><span class="n">ALL</span><span class="p">)</span><span class="w"> </span><span class="n">ALL</span>
+
+<span class="cp"># Allow entire AD group</span>
+<span class="nf">%domain</span><span class="err">\</span><span class="w"> </span><span class="n">admins</span><span class="err">@</span><span class="n">corp</span><span class="p">.</span><span class="n">example</span><span class="p">.</span><span class="n">com</span><span class="w"> </span><span class="n">ALL</span><span class="o">=</span><span class="p">(</span><span class="n">ALL</span><span class="o">:</span><span class="n">ALL</span><span class="p">)</span><span class="w"> </span><span class="n">ALL</span>
+</code></pre></div>
+
+<p>Note: spaces in group names must be escaped with <code>\</code>.</p>
+<hr />
+<h2>SSSD Configuration</h2>
+<p>The main config is at <code>/etc/sssd/sssd.conf</code> — must be <code>0600</code> permissions and owned by <code>root:root</code>:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>/etc/sssd/sssd.conf
+sudo<span class="w"> </span>chown<span class="w"> </span>root:root<span class="w"> </span>/etc/sssd/sssd.conf
+</code></pre></div>
+
+<p><strong>Useful settings to add/change in <code>/etc/sssd/sssd.conf</code>:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="k">[domain/corp.example.com]</span>
+<span class="c1"># Login with just username (not user@domain)</span>
+<span class="na">use_fully_qualified_names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">False</span>
+
+<span class="c1"># Cache credentials for offline login</span>
+<span class="na">cache_credentials</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">True</span>
+
+<span class="c1"># Restrict who can log in (AD group)</span>
+<span class="na">ad_access_filter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">memberOf=CN=LinuxUsers,OU=Groups,DC=corp,DC=example,DC=com</span>
+
+<span class="c1"># Home directory format</span>
+<span class="na">override_homedir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/home/%u</span>
+</code></pre></div>
+
+<p>Restart SSSD after changes:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>sssd
+</code></pre></div>
+
+<hr />
+<h2>Leave the Domain</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>realm<span class="w"> </span>leave<span class="w"> </span>corp.example.com
+</code></pre></div>
+
+<hr />
+<h2>Troubleshooting</h2>
+<h3><code>realm discover</code> returns nothing</h3>
+<p>DNS is wrong. Confirm <code>nslookup corp.example.com</code> returns your DC's IP.</p>
+<h3><code>realm join</code> fails with "Message stream modified"</h3>
+<p>Known issue with Windows Server 2025 and older realm/adcli versions. Update packages:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>upgrade<span class="w"> </span>realmd<span class="w"> </span>adcli<span class="w"> </span>-y
+</code></pre></div>
+
+<h3>SSSD not starting after join</h3>
+<p>Check permissions:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>/etc/sssd/sssd.conf
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>sssd
+sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>sssd
+</code></pre></div>
+
+<h3>AD users can be looked up but can't login</h3>
+<p>Home directory doesn't exist. Enable <code>mkhomedir</code> (Step 6).</p>
+<h3>Clock skew error</h3>
+<p>Time difference between Linux and DC is too large. Sync NTP (Step 2).</p>
+<h3>Check SSSD logs</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>/var/log/sssd/sssd_corp.example.com.log
+</code></pre></div>

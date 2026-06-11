@@ -1,0 +1,74 @@
+DATA:security:Enable and Configure macOS Firewall:Security & Apps
+<h1>Enable and Configure macOS Firewall</h1>
+<p>macOS has a built-in application firewall. The GUI in System Settings is minimal — it only lets you turn it on and block incoming connections per app. The real control is via <code>socketfilterfw</code> in Terminal.</p>
+<hr />
+<h2>Enable via System Settings</h2>
+<ol>
+<li><strong>System Settings</strong> → <strong>Network</strong> → <strong>Firewall</strong>.</li>
+<li>Toggle <strong>Firewall</strong> to <strong>On</strong>.</li>
+</ol>
+<p><strong>Options:</strong>
+- <strong>Block all incoming connections</strong> — blocks everything except basic internet services. Very strict. Breaks file sharing, screen sharing, and some apps.
+- <strong>Automatically allow built-in software</strong> — Apple apps bypass the firewall. On by default.
+- <strong>Automatically allow downloaded signed software</strong> — signed apps bypass the firewall. On by default.
+- <strong>Enable stealth mode</strong> — Mac does not respond to ping or port scans. Good for public Wi-Fi.</p>
+<hr />
+<h2>Enable Stealth Mode (Recommended for Public Wi-Fi)</h2>
+<ol>
+<li>System Settings → Network → Firewall → <strong>Options</strong>.</li>
+<li>Check <strong>Enable stealth mode</strong>.</li>
+</ol>
+<p>Or via Terminal:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--setstealthmode<span class="w"> </span>on
+</code></pre></div>
+
+<hr />
+<h2>Control the Firewall via Terminal (socketfilterfw)</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check current status</span>
+sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--getglobalstate
+
+<span class="c1"># Enable the firewall</span>
+sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--setglobalstate<span class="w"> </span>on
+
+<span class="c1"># Disable the firewall</span>
+sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--setglobalstate<span class="w"> </span>off
+
+<span class="c1"># Enable stealth mode</span>
+sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--setstealthmode<span class="w"> </span>on
+
+<span class="c1"># Block all incoming connections</span>
+sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--setblockall<span class="w"> </span>on
+
+<span class="c1"># List all rules (which apps are allowed or blocked)</span>
+sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--listapps
+</code></pre></div>
+
+<hr />
+<h2>Allow or Block a Specific App</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Allow an app through the firewall</span>
+sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--add<span class="w"> </span>/Applications/AppName.app
+
+<span class="c1"># Block an app</span>
+sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--blockapp<span class="w"> </span>/Applications/AppName.app
+
+<span class="c1"># Remove a rule</span>
+sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--remove<span class="w"> </span>/Applications/AppName.app
+</code></pre></div>
+
+<hr />
+<h2>Recommended Settings for Most Users</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Enable firewall</span>
+sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--setglobalstate<span class="w"> </span>on
+
+<span class="c1"># Enable stealth mode</span>
+sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--setstealthmode<span class="w"> </span>on
+
+<span class="c1"># Allow signed apps automatically (keeps things working)</span>
+sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--setallowsigned<span class="w"> </span>on
+sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--setallowsignedapp<span class="w"> </span>on
+</code></pre></div>
+
+<hr />
+<blockquote>
+<p><strong>Note:</strong> macOS's firewall only controls <strong>incoming</strong> connections. It does not block apps from making outgoing connections. For outbound control (blocking apps from phoning home), use a third-party tool like <strong>Little Snitch</strong> or <strong>Lulu</strong> (free).</p>
+</blockquote>

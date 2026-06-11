@@ -1,0 +1,210 @@
+DATA:package-managers:xbps — Package Manager for Void Linux:Package Managers (All OSes)
+<h1>xbps — Package Manager for Void Linux</h1>
+<p>XBPS (X Binary Package System) is the package manager for Void Linux. Unlike apt, pacman, or dnf which are all derived from or inspired by earlier systems, XBPS was designed and implemented from scratch in C by the Void Linux team. It is fast, transactional (if something breaks mid-install it rolls back cleanly), and uses RSA-signed packages for security.</p>
+<p>The main difference from other package managers is that <strong>XBPS is not one command — it is a collection of separate tools</strong>, each with a specific job. Once you understand that, it clicks.</p>
+<hr />
+<h2>The Core Commands</h2>
+<p>Most general package management is done with these commands:</p>
+<ul>
+<li><code>xbps-query</code> — searches for and displays information about packages</li>
+<li><code>xbps-install</code> — installs and updates packages, and syncs repository indexes</li>
+<li><code>xbps-remove</code> — removes installed packages, and can also remove orphaned packages and cached files</li>
+<li><code>xbps-reconfigure</code> — runs configuration steps for installed packages</li>
+<li><code>xbps-alternatives</code> — lists or sets alternatives provided by installed packages</li>
+</ul>
+<hr />
+<h2>Essential Commands</h2>
+<h3>Sync repositories and update everything</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>xbps-install<span class="w"> </span>-Su
+</code></pre></div>
+
+<p><code>-S</code> syncs the repository index. <code>-u</code> upgrades all outdated packages. Always sync before upgrading.</p>
+<blockquote>
+<p><strong>Important:</strong> XBPS must use a separate transaction to update itself. If your update includes the xbps package, you will need to run the above command a second time to apply the rest of the updates.</p>
+</blockquote>
+<h3>Install a package</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>xbps-install<span class="w"> </span>-S<span class="w"> </span>package-name
+</code></pre></div>
+
+<p>Always include <code>-S</code> to sync first — without it you might install an outdated version.</p>
+<h3>Install multiple packages</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>xbps-install<span class="w"> </span>-S<span class="w"> </span>git<span class="w"> </span>vim<span class="w"> </span>curl<span class="w"> </span>wget
+</code></pre></div>
+
+<h3>Install temporarily for evaluation</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>xbps-install<span class="w"> </span>-A<span class="w"> </span>package-name
+</code></pre></div>
+
+<p><code>-A</code> marks the package as an automatic dependency. The package and its dependencies will be removed automatically when <code>xbps-remove -o</code> is run — useful for trying something without permanently adding it to your install.</p>
+<h3>Remove a package</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>xbps-remove<span class="w"> </span>package-name
+</code></pre></div>
+
+<h3>Remove a package and its now-unneeded dependencies</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>xbps-remove<span class="w"> </span>-R<span class="w"> </span>package-name
+</code></pre></div>
+
+<h3>Remove orphaned packages and clean cache</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>xbps-remove<span class="w"> </span>-Oo
+</code></pre></div>
+
+<p><code>-O</code> removes obsolete cached packages. <code>-o</code> removes orphaned packages (installed as dependencies but no longer needed by anything).</p>
+<hr />
+<h2>Searching</h2>
+<h3>Search repositories for a package</h3>
+<div class="codehilite"><pre><span></span><code>xbps-query<span class="w"> </span>-Rs<span class="w"> </span>search-term
+</code></pre></div>
+
+<p><code>-R</code> searches remote repositories. Without <code>-R</code>, it only searches locally installed packages.</p>
+<h3>Search locally installed packages</h3>
+<div class="codehilite"><pre><span></span><code>xbps-query<span class="w"> </span>-s<span class="w"> </span>pattern
+</code></pre></div>
+
+<h3>Get detailed info about a package</h3>
+<div class="codehilite"><pre><span></span><code>xbps-query<span class="w"> </span>-R<span class="w"> </span>package-name<span class="w">      </span><span class="c1"># from repo</span>
+xbps-query<span class="w"> </span>package-name<span class="w">         </span><span class="c1"># if installed</span>
+</code></pre></div>
+
+<h3>List all installed packages</h3>
+<div class="codehilite"><pre><span></span><code>xbps-query<span class="w"> </span>-l
+</code></pre></div>
+
+<h3>Find which package provides a specific file</h3>
+<div class="codehilite"><pre><span></span><code>xbps-query<span class="w"> </span>-Ro<span class="w"> </span>/usr/bin/filename
+</code></pre></div>
+
+<h3>List files provided by an installed package</h3>
+<div class="codehilite"><pre><span></span><code>xbps-query<span class="w"> </span>-f<span class="w"> </span>package-name
+</code></pre></div>
+
+<hr />
+<h2>Non-Free and Multilib Repositories</h2>
+<p>Void Linux only includes free software by default. To enable non-free software:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>xbps-install<span class="w"> </span>-S<span class="w"> </span>void-repo-nonfree
+sudo<span class="w"> </span>xbps-install<span class="w"> </span>-S
+</code></pre></div>
+
+<p>For 32-bit compatibility on 64-bit systems:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>xbps-install<span class="w"> </span>-S<span class="w"> </span>void-repo-multilib
+sudo<span class="w"> </span>xbps-install<span class="w"> </span>-S<span class="w"> </span>void-repo-multilib-nonfree
+</code></pre></div>
+
+<p>List all active repositories:</p>
+<div class="codehilite"><pre><span></span><code>xbps-query<span class="w"> </span>-L
+</code></pre></div>
+
+<hr />
+<h2>Holding Packages (Prevent Updates)</h2>
+<p>To prevent a package from being updated:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>xbps-pkgdb<span class="w"> </span>-m<span class="w"> </span>hold<span class="w"> </span>package-name
+</code></pre></div>
+
+<p>To remove the hold:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>xbps-pkgdb<span class="w"> </span>-m<span class="w"> </span>unhold<span class="w"> </span>package-name
+</code></pre></div>
+
+<hr />
+<h2>Fixing and Maintaining</h2>
+<h3>Check package database integrity</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>xbps-pkgdb<span class="w"> </span>-a
+</code></pre></div>
+
+<h3>Reconfigure a package (useful after config file changes)</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>xbps-reconfigure<span class="w"> </span>-f<span class="w"> </span>package-name
+</code></pre></div>
+
+<h3>Find processes using outdated binaries after an update</h3>
+<p>XBPS does not restart services when they are updated. Use <code>xcheckrestart</code> from the <code>xtools</code> package to find processes running different versions than what is on disk:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>xbps-install<span class="w"> </span>-S<span class="w"> </span>xtools
+xcheckrestart
+</code></pre></div>
+
+<p>Any process listed needs a restart to use the updated version.</p>
+<hr />
+<h2>xlocate — Find Files Across All Packages</h2>
+<p><code>xlocate</code> works like <code>locate</code>, but for files in the Void package repositories. Install <code>xtools</code> to get it:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>xbps-install<span class="w"> </span>-S<span class="w"> </span>xtools
+xlocate<span class="w"> </span>-S<span class="w">                    </span><span class="c1"># Update the xlocate database</span>
+xlocate<span class="w"> </span>filename-or-pattern<span class="w">   </span><span class="c1"># Find which package provides a file</span>
+</code></pre></div>
+
+<hr />
+<h2>Kernel Management</h2>
+<p>Old kernels are not removed automatically when new ones are installed — this is intentional to allow rollback. However, this will eventually fill up <code>/boot</code>. Remove old kernels with <code>vkpurge</code>:</p>
+<div class="codehilite"><pre><span></span><code>vkpurge<span class="w"> </span>list<span class="w">                    </span><span class="c1"># List removable kernels</span>
+sudo<span class="w"> </span>vkpurge<span class="w"> </span>rm<span class="w"> </span>all<span class="w">             </span><span class="c1"># Remove all removable old kernels</span>
+sudo<span class="w"> </span>vkpurge<span class="w"> </span>rm<span class="w"> </span><span class="m">6</span>.1.*<span class="w">           </span><span class="c1"># Remove kernels matching a pattern</span>
+</code></pre></div>
+
+<hr />
+<h2>Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sync + upgrade all</td>
+<td><code>sudo xbps-install -Su</code></td>
+</tr>
+<tr>
+<td>Install a package</td>
+<td><code>sudo xbps-install -S pkg</code></td>
+</tr>
+<tr>
+<td>Install temporarily</td>
+<td><code>sudo xbps-install -A pkg</code></td>
+</tr>
+<tr>
+<td>Remove a package</td>
+<td><code>sudo xbps-remove pkg</code></td>
+</tr>
+<tr>
+<td>Remove + deps</td>
+<td><code>sudo xbps-remove -R pkg</code></td>
+</tr>
+<tr>
+<td>Remove orphans + cache</td>
+<td><code>sudo xbps-remove -Oo</code></td>
+</tr>
+<tr>
+<td>Search repos</td>
+<td><code>xbps-query -Rs term</code></td>
+</tr>
+<tr>
+<td>Search installed</td>
+<td><code>xbps-query -s term</code></td>
+</tr>
+<tr>
+<td>Package info</td>
+<td><code>xbps-query -R pkg</code></td>
+</tr>
+<tr>
+<td>List installed</td>
+<td><code>xbps-query -l</code></td>
+</tr>
+<tr>
+<td>List repos</td>
+<td><code>xbps-query -L</code></td>
+</tr>
+<tr>
+<td>Hold package</td>
+<td><code>sudo xbps-pkgdb -m hold pkg</code></td>
+</tr>
+<tr>
+<td>Check integrity</td>
+<td><code>sudo xbps-pkgdb -a</code></td>
+</tr>
+<tr>
+<td>Find file in repos</td>
+<td><code>xlocate filename</code></td>
+</tr>
+<tr>
+<td>Find what owns file</td>
+<td><code>xbps-query -Ro /path/to/file</code></td>
+</tr>
+</tbody>
+</table>

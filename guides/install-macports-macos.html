@@ -1,0 +1,133 @@
+DATA:package-managers:MacPorts — Install and Use on macOS:Package Managers (All OSes)
+<h1>MacPorts — Install and Use on macOS</h1>
+<p>MacPorts is an alternative to Homebrew for macOS. It compiles software from source rather than installing pre-built binaries, which means better customisation and sometimes better compatibility — especially for older software or scientific packages. It has been around since 2002 and maintains over 25,000 ports.</p>
+<hr />
+<h2>Homebrew vs MacPorts — When to Use Which</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Homebrew</th>
+<th>MacPorts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Installation method</td>
+<td>Pre-built binaries (faster)</td>
+<td>Compiles from source (slower, more compatible)</td>
+</tr>
+<tr>
+<td>Number of packages</td>
+<td>~8,000 formulae</td>
+<td>~25,000 ports</td>
+</tr>
+<tr>
+<td>Install location</td>
+<td><code>/opt/homebrew</code> or <code>/usr/local</code></td>
+<td><code>/opt/local</code></td>
+</tr>
+<tr>
+<td>Conflict with system libs</td>
+<td>Possible</td>
+<td>Isolated — uses its own copies of everything</td>
+</tr>
+<tr>
+<td>Best for</td>
+<td>General use, developer tools</td>
+<td>Scientific software, older packages, strict isolation</td>
+</tr>
+<tr>
+<td>Speed of installs</td>
+<td>Fast</td>
+<td>Slow (compiling takes time)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Use MacPorts if:</strong> you need a package not in Homebrew, you need strict library isolation, or you are installing scientific or research software.</p>
+<p><strong>Use Homebrew if:</strong> you want fast installs and a larger community.</p>
+<p>You can run both at the same time — they install to different directories and do not conflict.</p>
+<hr />
+<h2>Step 1 — Install Xcode Command Line Tools</h2>
+<p>MacPorts requires Xcode CLT:</p>
+<div class="codehilite"><pre><span></span><code>xcode-select<span class="w"> </span>--install
+</code></pre></div>
+
+<hr />
+<h2>Step 2 — Download and Install MacPorts</h2>
+<ol>
+<li>Go to <a href="https://www.macports.org/install.php">macports.org/install.php</a>.</li>
+<li>Download the <code>.pkg</code> installer for your macOS version.</li>
+<li>Open the <code>.pkg</code> and follow the installer.</li>
+<li>Open a new Terminal window — MacPorts adds itself to your PATH automatically.</li>
+</ol>
+<p>Verify:</p>
+<div class="codehilite"><pre><span></span><code>port<span class="w"> </span>version
+</code></pre></div>
+
+<hr />
+<h2>Essential Commands</h2>
+<h3>Install a package</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>port<span class="w"> </span>install<span class="w"> </span>wget
+</code></pre></div>
+
+<p>MacPorts requires <code>sudo</code> — unlike Homebrew, it installs to a system directory.</p>
+<h3>Search for a package</h3>
+<div class="codehilite"><pre><span></span><code>port<span class="w"> </span>search<span class="w"> </span>python
+port<span class="w"> </span>search<span class="w"> </span>--name<span class="w"> </span>python<span class="w">  </span><span class="c1"># Search by name only</span>
+</code></pre></div>
+
+<h3>Get info about a package</h3>
+<div class="codehilite"><pre><span></span><code>port<span class="w"> </span>info<span class="w"> </span>python312
+</code></pre></div>
+
+<h3>Update MacPorts and all ports</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>port<span class="w"> </span>selfupdate
+sudo<span class="w"> </span>port<span class="w"> </span>upgrade<span class="w"> </span>outdated
+</code></pre></div>
+
+<h3>List installed ports</h3>
+<div class="codehilite"><pre><span></span><code>port<span class="w"> </span>installed
+</code></pre></div>
+
+<h3>Remove a package</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>port<span class="w"> </span>uninstall<span class="w"> </span>wget
+</code></pre></div>
+
+<h3>Remove a package and everything it depends on (if nothing else needs it)</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>port<span class="w"> </span>uninstall<span class="w"> </span>--follow-dependencies<span class="w"> </span>wget
+</code></pre></div>
+
+<h3>Clean up old versions</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>port<span class="w"> </span>reclaim
+</code></pre></div>
+
+<hr />
+<h2>Variants — Customise What Gets Compiled</h2>
+<p>MacPorts supports variants — optional features you enable or disable at compile time:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># See available variants for a port</span>
+port<span class="w"> </span>variants<span class="w"> </span>python312
+
+<span class="c1"># Install with a specific variant enabled</span>
+sudo<span class="w"> </span>port<span class="w"> </span>install<span class="w"> </span>python312<span class="w"> </span>+universal
+
+<span class="c1"># Install with a variant disabled</span>
+sudo<span class="w"> </span>port<span class="w"> </span>install<span class="w"> </span>ffmpeg<span class="w"> </span>-x11
+</code></pre></div>
+
+<p>Common variants:
+- <code>+universal</code> — build for both Intel and Apple Silicon
+- <code>+quartz</code> — use native macOS rendering instead of X11
+- <code>+ssl</code> — enable SSL support</p>
+<hr />
+<h2>Fix: port command not found after install</h2>
+<p>If <code>port</code> is not found after installing MacPorts:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;export PATH=&quot;/opt/local/bin:/opt/local/sbin:$PATH&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
+<span class="nb">source</span><span class="w"> </span>~/.zprofile
+</code></pre></div>
+
+<hr />
+<h2>Uninstall MacPorts</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>port<span class="w"> </span>-fp<span class="w"> </span>uninstall<span class="w"> </span>--follow-dependencies<span class="w"> </span>installed
+sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/opt/local<span class="w"> </span>/Applications/DarwinPorts<span class="w"> </span>/Applications/MacPorts<span class="w"> </span>/Library/LaunchDaemons/org.macports.*<span class="w"> </span>/Library/Receipts/DarwinPorts*.pkg<span class="w"> </span>/Library/Receipts/MacPorts*.pkg<span class="w"> </span>/Library/StartupItems/DarwinPortsStartup<span class="w"> </span>/Library/Tcl/darwinports1.0<span class="w"> </span>/Library/Tcl/macports1.0<span class="w"> </span>~/.macports
+</code></pre></div>

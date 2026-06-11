@@ -1,0 +1,103 @@
+DATA:system-users:Fix Spotlight Not Working or Showing Wrong Results (macOS):System & Users
+<h1>Fix Spotlight Not Working or Showing Wrong Results (macOS)</h1>
+<p>Spotlight stops working or shows stale results after macOS updates, migrating from another Mac, or when the index gets corrupted. The fix is always some form of reindex — the question is how deep a reindex you need.</p>
+<hr />
+<h2>Fix 1 — Restart Spotlight's Process (Quickest)</h2>
+<p>Sometimes Spotlight's background process (<code>mds</code>) gets stuck. Kill it and it restarts automatically:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>killall<span class="w"> </span>mds
+</code></pre></div>
+
+<p>Wait 30 seconds and try Spotlight again. If results look right, done.</p>
+<hr />
+<h2>Fix 2 — Reindex via System Settings (No Terminal)</h2>
+<ol>
+<li>Open <strong>System Settings</strong> → <strong>Siri &amp; Spotlight</strong> → <strong>Spotlight Privacy</strong>.</li>
+<li>Click <strong>+</strong> and add your <strong>Macintosh HD</strong> (your main drive).</li>
+<li>Wait 5 seconds.</li>
+<li>Select it in the list and click <strong>−</strong> to remove it.</li>
+<li>Click <strong>Done</strong> and quit System Settings.</li>
+</ol>
+<p>Spotlight will start reindexing immediately. A progress bar appears in the Spotlight window while it works. This takes 15–60 minutes depending on drive size.</p>
+<hr />
+<h2>Fix 3 — Reindex via Terminal (Faster, More Reliable)</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>mdutil<span class="w"> </span>-E<span class="w"> </span>/
+</code></pre></div>
+
+<p>This erases the existing index and forces a complete rebuild. Enter your password when prompted. Indexing starts immediately in the background.</p>
+<p>To check indexing status:</p>
+<div class="codehilite"><pre><span></span><code>mdutil<span class="w"> </span>-s<span class="w"> </span>/
+</code></pre></div>
+
+<p>Output will say <code>Indexing enabled</code> with a percentage, or <code>Indexing enabled</code> when complete.</p>
+<hr />
+<h2>Fix 4 — Full Nuclear Reindex (For Persistent Corruption)</h2>
+<p>If Fix 3 does not resolve it, the index database files themselves are corrupted. Delete them manually:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>mdutil<span class="w"> </span>-i<span class="w"> </span>off<span class="w"> </span>/
+sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/.Spotlight-V100
+sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/.Spotlight-V200
+sudo<span class="w"> </span>mdutil<span class="w"> </span>-i<span class="w"> </span>on<span class="w"> </span>/
+sudo<span class="w"> </span>mdutil<span class="w"> </span>-E<span class="w"> </span>/
+</code></pre></div>
+
+<p>This completely wipes all Spotlight data and starts from scratch. Takes longer than Fix 3 but resolves deeper corruption.</p>
+<hr />
+<h2>Fix 5 — Restart SystemUIServer</h2>
+<p>If Spotlight opens but the window is blank or frozen:</p>
+<div class="codehilite"><pre><span></span><code>killall<span class="w"> </span>SystemUIServer
+</code></pre></div>
+
+<p>SystemUIServer manages the Spotlight UI. Killing it restarts it immediately — no reboot needed.</p>
+<hr />
+<h2>Fix 6 — Check Spotlight Privacy Exclusions</h2>
+<p>If certain folders or files are not appearing in results, they may have been added to the Privacy exclusion list.</p>
+<ol>
+<li><strong>System Settings</strong> → <strong>Siri &amp; Spotlight</strong> → <strong>Spotlight Privacy</strong>.</li>
+<li>Check if your home folder or any important folder is listed.</li>
+<li>Select it and click <strong>−</strong> to remove the exclusion.</li>
+</ol>
+<hr />
+<h2>Fix 7 — Check Disk for Errors</h2>
+<p>A failing drive causes repeated Spotlight index corruption. Before spending more time reindexing:</p>
+<ol>
+<li>Open <strong>Disk Utility</strong> → select your main drive → <strong>First Aid</strong> → <strong>Run</strong>.</li>
+<li>If it finds errors it cannot fix, the drive needs attention — backup everything first.</li>
+</ol>
+<hr />
+<h2>mds_stores Using High CPU After a Reindex</h2>
+<p><code>mds_stores</code> appearing at 100%+ CPU in Activity Monitor after a reindex is normal — Spotlight is actively indexing. It will calm down after indexing completes. Give it time. If it is still high after several hours, run Fix 4.</p>
+<hr />
+<h2>Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spotlight not opening</td>
+<td>Fix 5 — restart SystemUIServer</td>
+</tr>
+<tr>
+<td>Results missing or wrong</td>
+<td>Fix 2 or Fix 3 — reindex</td>
+</tr>
+<tr>
+<td>Results wrong after migration</td>
+<td>Fix 4 — full nuclear reindex</td>
+</tr>
+<tr>
+<td>Specific folder not appearing</td>
+<td>Fix 6 — check Privacy exclusions</td>
+</tr>
+<tr>
+<td>mds_stores high CPU</td>
+<td>Normal during indexing — wait it out</td>
+</tr>
+<tr>
+<td>Repeated corruption</td>
+<td>Fix 7 — check disk with First Aid</td>
+</tr>
+</tbody>
+</table>

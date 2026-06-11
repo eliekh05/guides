@@ -1,0 +1,63 @@
+DATA:windows:Enable Hyper-V on Windows 11:Windows
+<h1>Enable Hyper-V on Windows 11</h1>
+<p>Hyper-V is Windows' built-in hypervisor. It is required for Docker Desktop, WSL2, Android emulators, and Windows Sandbox. It is only available on Windows 11 Pro, Enterprise, and Education — not Home.</p>
+<hr />
+<h2>Check Your Windows Edition</h2>
+<div class="codehilite"><pre><span></span><code>winver
+</code></pre></div>
+
+<p>If it says <strong>Home</strong>, Hyper-V is not available. You can either upgrade to Pro or use WSL2 without enabling full Hyper-V.</p>
+<hr />
+<h2>Method 1 — Windows Features (GUI)</h2>
+<ol>
+<li>Press <strong>Windows + R</strong> → type <code>optionalfeatures</code> → Enter.</li>
+<li>Scroll to find <strong>Hyper-V</strong> and expand it.</li>
+<li>Check:</li>
+<li>✅ Hyper-V Management Tools</li>
+<li>✅ Hyper-V Platform</li>
+<li>Click <strong>OK</strong>.</li>
+<li>Restart when prompted.</li>
+</ol>
+<hr />
+<h2>Method 2 — PowerShell</h2>
+<p>Open <strong>PowerShell as Administrator</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">Enable-WindowsOptionalFeature</span> <span class="n">-Online</span> <span class="n">-FeatureName</span> <span class="n">Microsoft-Hyper-V</span> <span class="n">-All</span>
+</code></pre></div>
+
+<p>Restart when prompted.</p>
+<hr />
+<h2>Method 3 — DISM</h2>
+<div class="codehilite"><pre><span></span><code>DISM /Online /Enable-Feature /All /FeatureName:Microsoft-Hyper-V
+</code></pre></div>
+
+<hr />
+<h2>Verify Hyper-V Is Enabled</h2>
+<div class="codehilite"><pre><span></span><code>systeminfo | find &quot;Hyper-V&quot;
+</code></pre></div>
+
+<p>Should show:</p>
+<div class="codehilite"><pre><span></span><code><span class="nv">Hyper</span><span class="o">-</span><span class="nv">V</span><span class="w"> </span><span class="nv">Requirements</span>:<span class="w"> </span><span class="nv">A</span><span class="w"> </span><span class="nv">hypervisor</span><span class="w"> </span><span class="nv">has</span><span class="w"> </span><span class="nv">been</span><span class="w"> </span><span class="nv">detected</span>.<span class="w"> </span><span class="nv">Features</span><span class="w"> </span><span class="nv">required</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="nv">Hyper</span><span class="o">-</span><span class="nv">V</span><span class="w"> </span><span class="nv">will</span><span class="w"> </span><span class="nv">not</span><span class="w"> </span><span class="nv">be</span><span class="w"> </span><span class="nv">displayed</span>.
+</code></pre></div>
+
+<hr />
+<h2>Hyper-V Conflicts With Other Hypervisors</h2>
+<p>Hyper-V runs at the hardware level and can interfere with VirtualBox and older VMware versions. When Hyper-V is on:</p>
+<ul>
+<li><strong>VirtualBox</strong> — works in VirtualBox 6.1+ with Hyper-V backend, older versions run very slowly</li>
+<li><strong>VMware Workstation</strong> — works fine in modern versions (17+)</li>
+<li><strong>Android Studio emulator</strong> — works with HAXM or Hyper-V backend</li>
+</ul>
+<p>If you need to disable Hyper-V temporarily for an incompatible app:</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">bcdedit</span><span class="w"> </span><span class="o">/</span><span class="nx">set</span><span class="w"> </span><span class="nx">hypervisorlaunchtype</span><span class="w"> </span><span class="nx">off</span>
+</code></pre></div>
+
+<p>Restart. Re-enable with:</p>
+<div class="codehilite"><pre><span></span><code><span class="nx">bcdedit</span><span class="w"> </span><span class="o">/</span><span class="nx">set</span><span class="w"> </span><span class="nx">hypervisorlaunchtype</span><span class="w"> </span><span class="kt">auto</span>
+</code></pre></div>
+
+<hr />
+<h2>Enable Virtualisation in BIOS (If Hyper-V Fails to Enable)</h2>
+<p>Hyper-V requires hardware virtualisation (Intel VT-x or AMD-V) to be enabled in BIOS. If you see errors during installation, restart → enter BIOS → enable:
+- <strong>Intel VT-x</strong> / <strong>Intel Virtualization Technology</strong>
+- <strong>AMD-V</strong> / <strong>SVM Mode</strong></p>
+<p>Save and restart.</p>

@@ -1,0 +1,131 @@
+DATA:linux:Compress and Archive Files on Linux and macOS:Linux
+<h1>Compress and Archive Files on Linux and macOS</h1>
+<hr />
+<h2>tar</h2>
+<p>tar creates archives. Add <code>z</code>, <code>j</code>, or <code>J</code> to compress.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Create archives</span>
+tar<span class="w"> </span>-czf<span class="w"> </span>archive.tar.gz<span class="w"> </span>folder/<span class="w">         </span><span class="c1"># gzip compressed</span>
+tar<span class="w"> </span>-cjf<span class="w"> </span>archive.tar.bz2<span class="w"> </span>folder/<span class="w">        </span><span class="c1"># bzip2 compressed (smaller, slower)</span>
+tar<span class="w"> </span>-cJf<span class="w"> </span>archive.tar.xz<span class="w"> </span>folder/<span class="w">         </span><span class="c1"># xz compressed (smallest, slowest)</span>
+tar<span class="w"> </span>-cf<span class="w"> </span>archive.tar<span class="w"> </span>folder/<span class="w">             </span><span class="c1"># uncompressed</span>
+
+<span class="c1"># Extract archives</span>
+tar<span class="w"> </span>-xzf<span class="w"> </span>archive.tar.gz<span class="w">                 </span><span class="c1"># extract gzip</span>
+tar<span class="w"> </span>-xjf<span class="w"> </span>archive.tar.bz2<span class="w">               </span><span class="c1"># extract bzip2</span>
+tar<span class="w"> </span>-xJf<span class="w"> </span>archive.tar.xz<span class="w">                </span><span class="c1"># extract xz</span>
+tar<span class="w"> </span>-xf<span class="w"> </span>archive.tar<span class="w">                     </span><span class="c1"># extract uncompressed</span>
+
+<span class="c1"># Extract to specific directory</span>
+tar<span class="w"> </span>-xzf<span class="w"> </span>archive.tar.gz<span class="w"> </span>-C<span class="w"> </span>/target/dir/
+
+<span class="c1"># List contents without extracting</span>
+tar<span class="w"> </span>-tzf<span class="w"> </span>archive.tar.gz
+
+<span class="c1"># Extract a single file</span>
+tar<span class="w"> </span>-xzf<span class="w"> </span>archive.tar.gz<span class="w"> </span>path/to/specific/file.txt
+
+<span class="c1"># Verbose (see files as they process)</span>
+tar<span class="w"> </span>-czvf<span class="w"> </span>archive.tar.gz<span class="w"> </span>folder/
+</code></pre></div>
+
+<p>Memory trick: <code>c</code>reate <code>z</code>ip <code>f</code>ile = czf. E<code>x</code>tract <code>z</code>ip <code>f</code>ile = xzf.</p>
+<hr />
+<h2>gzip / gunzip</h2>
+<p>For single files (not folders):</p>
+<div class="codehilite"><pre><span></span><code>gzip<span class="w"> </span>file.txt<span class="w">               </span><span class="c1"># creates file.txt.gz, removes original</span>
+gzip<span class="w"> </span>-k<span class="w"> </span>file.txt<span class="w">            </span><span class="c1"># keep original</span>
+gzip<span class="w"> </span>-d<span class="w"> </span>file.txt.gz<span class="w">         </span><span class="c1"># decompress (same as gunzip)</span>
+gunzip<span class="w"> </span>file.txt.gz
+gzip<span class="w"> </span>-l<span class="w"> </span>file.txt.gz<span class="w">         </span><span class="c1"># show compression ratio</span>
+</code></pre></div>
+
+<hr />
+<h2>zip / unzip</h2>
+<div class="codehilite"><pre><span></span><code>zip<span class="w"> </span>archive.zip<span class="w"> </span>file1<span class="w"> </span>file2
+zip<span class="w"> </span>-r<span class="w"> </span>archive.zip<span class="w"> </span>folder/<span class="w">          </span><span class="c1"># recursive (folders)</span>
+zip<span class="w"> </span>-r<span class="w"> </span>archive.zip<span class="w"> </span>folder/<span class="w"> </span>-x<span class="w"> </span><span class="s2">&quot;*.git&quot;</span><span class="w"> </span>-x<span class="w"> </span><span class="s2">&quot;node_modules/*&quot;</span><span class="w">  </span><span class="c1"># exclude patterns</span>
+
+unzip<span class="w"> </span>archive.zip
+unzip<span class="w"> </span>archive.zip<span class="w"> </span>-d<span class="w"> </span>/target/dir/<span class="w">   </span><span class="c1"># extract to directory</span>
+unzip<span class="w"> </span>-l<span class="w"> </span>archive.zip<span class="w">                </span><span class="c1"># list contents</span>
+unzip<span class="w"> </span>archive.zip<span class="w"> </span>specific-file.txt<span class="w"> </span><span class="c1"># extract one file</span>
+</code></pre></div>
+
+<hr />
+<h2>7z</h2>
+<p>Better compression ratio than zip:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>p7zip-full<span class="w"> </span>-y
+
+7z<span class="w"> </span>a<span class="w"> </span>archive.7z<span class="w"> </span>folder/<span class="w">             </span><span class="c1"># create</span>
+7z<span class="w"> </span>x<span class="w"> </span>archive.7z<span class="w">                     </span><span class="c1"># extract</span>
+7z<span class="w"> </span>l<span class="w"> </span>archive.7z<span class="w">                     </span><span class="c1"># list</span>
+7z<span class="w"> </span>e<span class="w"> </span>archive.7z<span class="w"> </span>-o/target/<span class="w">          </span><span class="c1"># extract to folder</span>
+</code></pre></div>
+
+<hr />
+<h2>Compressed File Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Extension</th>
+<th>Create</th>
+<th>Extract</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.tar.gz</code> / <code>.tgz</code></td>
+<td><code>tar -czf out.tar.gz folder/</code></td>
+<td><code>tar -xzf file.tar.gz</code></td>
+</tr>
+<tr>
+<td><code>.tar.bz2</code></td>
+<td><code>tar -cjf out.tar.bz2 folder/</code></td>
+<td><code>tar -xjf file.tar.bz2</code></td>
+</tr>
+<tr>
+<td><code>.tar.xz</code></td>
+<td><code>tar -cJf out.tar.xz folder/</code></td>
+<td><code>tar -xJf file.tar.xz</code></td>
+</tr>
+<tr>
+<td><code>.tar</code></td>
+<td><code>tar -cf out.tar folder/</code></td>
+<td><code>tar -xf file.tar</code></td>
+</tr>
+<tr>
+<td><code>.gz</code></td>
+<td><code>gzip file</code></td>
+<td><code>gunzip file.gz</code></td>
+</tr>
+<tr>
+<td><code>.zip</code></td>
+<td><code>zip -r out.zip folder/</code></td>
+<td><code>unzip file.zip</code></td>
+</tr>
+<tr>
+<td><code>.7z</code></td>
+<td><code>7z a out.7z folder/</code></td>
+<td><code>7z x file.7z</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Extract Any Archive (Universal Function)</h2>
+<p>Add to <code>~/.zshrc</code>:</p>
+<div class="codehilite"><pre><span></span><code>extract<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="k">in</span>
+<span class="w">        </span>*.tar.gz<span class="p">|</span>*.tgz<span class="o">)</span><span class="w"> </span>tar<span class="w"> </span>-xzf<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span>*.tar.bz2<span class="o">)</span><span class="w">      </span>tar<span class="w"> </span>-xjf<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span>*.tar.xz<span class="o">)</span><span class="w">       </span>tar<span class="w"> </span>-xJf<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span>*.tar<span class="o">)</span><span class="w">          </span>tar<span class="w"> </span>-xf<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w">  </span><span class="p">;;</span>
+<span class="w">        </span>*.gz<span class="o">)</span><span class="w">           </span>gunzip<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w">   </span><span class="p">;;</span>
+<span class="w">        </span>*.zip<span class="o">)</span><span class="w">          </span>unzip<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w">    </span><span class="p">;;</span>
+<span class="w">        </span>*.7z<span class="o">)</span><span class="w">           </span>7z<span class="w"> </span>x<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w">     </span><span class="p">;;</span>
+<span class="w">        </span>*.rar<span class="o">)</span><span class="w">          </span>unrar<span class="w"> </span>x<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w">  </span><span class="p">;;</span>
+<span class="w">        </span>*<span class="o">)</span><span class="w">              </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Unknown format: </span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">    </span><span class="k">esac</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<p>Then just: <code>extract anything.tar.gz</code></p>

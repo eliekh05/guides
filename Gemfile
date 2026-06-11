@@ -1,9 +1,0 @@
-source "https://rubygems.org"
-
-gem "jekyll"
-gem "jekyll-remote-theme"
-gem "just-the-docs"
-
-group :jekyll_plugins do
-  gem "jekyll-remote-theme"
-end

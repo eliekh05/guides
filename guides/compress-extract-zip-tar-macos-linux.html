@@ -1,0 +1,167 @@
+DATA:macos:Compress and Extract Files (zip, tar, gz) on macOS and Linux:macOS
+<h1>Compress and Extract Files (zip, tar, gz) on macOS and Linux</h1>
+<hr />
+<h2>zip and unzip</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Create a zip</span>
+zip<span class="w"> </span>archive.zip<span class="w"> </span>file1.txt<span class="w"> </span>file2.txt
+
+<span class="c1"># Zip an entire folder</span>
+zip<span class="w"> </span>-r<span class="w"> </span>archive.zip<span class="w"> </span>myfolder/
+
+<span class="c1"># Extract a zip</span>
+unzip<span class="w"> </span>archive.zip
+
+<span class="c1"># Extract to a specific folder</span>
+unzip<span class="w"> </span>archive.zip<span class="w"> </span>-d<span class="w"> </span>/path/to/destination/
+
+<span class="c1"># List contents without extracting</span>
+unzip<span class="w"> </span>-l<span class="w"> </span>archive.zip
+
+<span class="c1"># Extract a single file from a zip</span>
+unzip<span class="w"> </span>archive.zip<span class="w"> </span>specificfile.txt
+</code></pre></div>
+
+<hr />
+<h2>tar — the confusing one</h2>
+<p>The flags that trip everyone up:</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>c</code></td>
+<td>Create archive</td>
+</tr>
+<tr>
+<td><code>x</code></td>
+<td>Extract archive</td>
+</tr>
+<tr>
+<td><code>t</code></td>
+<td>List contents</td>
+</tr>
+<tr>
+<td><code>f</code></td>
+<td>Next argument is the filename</td>
+</tr>
+<tr>
+<td><code>v</code></td>
+<td>Verbose (show files as they process)</td>
+</tr>
+<tr>
+<td><code>z</code></td>
+<td>Use gzip compression (.tar.gz)</td>
+</tr>
+<tr>
+<td><code>j</code></td>
+<td>Use bzip2 compression (.tar.bz2)</td>
+</tr>
+<tr>
+<td><code>J</code></td>
+<td>Use xz compression (.tar.xz)</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Create a .tar.gz (most common)</span>
+tar<span class="w"> </span>-czf<span class="w"> </span>archive.tar.gz<span class="w"> </span>myfolder/
+
+<span class="c1"># Extract a .tar.gz</span>
+tar<span class="w"> </span>-xzf<span class="w"> </span>archive.tar.gz
+
+<span class="c1"># Extract to a specific folder</span>
+tar<span class="w"> </span>-xzf<span class="w"> </span>archive.tar.gz<span class="w"> </span>-C<span class="w"> </span>/path/to/destination/
+
+<span class="c1"># List contents without extracting</span>
+tar<span class="w"> </span>-tzf<span class="w"> </span>archive.tar.gz
+
+<span class="c1"># Create .tar.bz2 (smaller, slower)</span>
+tar<span class="w"> </span>-cjf<span class="w"> </span>archive.tar.bz2<span class="w"> </span>myfolder/
+
+<span class="c1"># Extract .tar.bz2</span>
+tar<span class="w"> </span>-xjf<span class="w"> </span>archive.tar.bz2
+
+<span class="c1"># Create uncompressed tar</span>
+tar<span class="w"> </span>-cf<span class="w"> </span>archive.tar<span class="w"> </span>myfolder/
+
+<span class="c1"># Extract uncompressed tar</span>
+tar<span class="w"> </span>-xf<span class="w"> </span>archive.tar
+</code></pre></div>
+
+<blockquote>
+<p><strong>Memory trick:</strong> <code>czf</code> = <strong>C</strong>reate <strong>Z</strong>ipped <strong>F</strong>ile. <code>xzf</code> = e<strong>X</strong>tract <strong>Z</strong>ipped <strong>F</strong>ile.</p>
+</blockquote>
+<hr />
+<h2>gz files (single file, not a folder)</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Compress a single file</span>
+gzip<span class="w"> </span>file.txt<span class="w">        </span><span class="c1"># creates file.txt.gz, removes original</span>
+
+<span class="c1"># Keep the original</span>
+gzip<span class="w"> </span>-k<span class="w"> </span>file.txt
+
+<span class="c1"># Decompress</span>
+gunzip<span class="w"> </span>file.txt.gz
+
+<span class="c1"># Or</span>
+gzip<span class="w"> </span>-d<span class="w"> </span>file.txt.gz
+</code></pre></div>
+
+<hr />
+<h2>7z (if installed)</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Install</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>p7zip-full<span class="w"> </span>-y<span class="w">   </span><span class="c1"># Ubuntu/Debian</span>
+brew<span class="w"> </span>install<span class="w"> </span>p7zip<span class="w">               </span><span class="c1"># macOS</span>
+
+<span class="c1"># Create</span>
+7z<span class="w"> </span>a<span class="w"> </span>archive.7z<span class="w"> </span>myfolder/
+
+<span class="c1"># Extract</span>
+7z<span class="w"> </span>x<span class="w"> </span>archive.7z
+
+<span class="c1"># Extract to folder</span>
+7z<span class="w"> </span>x<span class="w"> </span>archive.7z<span class="w"> </span>-o/path/to/destination/
+</code></pre></div>
+
+<hr />
+<h2>Quick reference</h2>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Zip a folder</td>
+<td><code>zip -r out.zip folder/</code></td>
+</tr>
+<tr>
+<td>Unzip</td>
+<td><code>unzip file.zip</code></td>
+</tr>
+<tr>
+<td>Create tar.gz</td>
+<td><code>tar -czf out.tar.gz folder/</code></td>
+</tr>
+<tr>
+<td>Extract tar.gz</td>
+<td><code>tar -xzf file.tar.gz</code></td>
+</tr>
+<tr>
+<td>List tar.gz contents</td>
+<td><code>tar -tzf file.tar.gz</code></td>
+</tr>
+<tr>
+<td>Compress single file</td>
+<td><code>gzip file.txt</code></td>
+</tr>
+<tr>
+<td>Decompress .gz</td>
+<td><code>gunzip file.gz</code></td>
+</tr>
+</tbody>
+</table>

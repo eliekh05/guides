@@ -1,0 +1,86 @@
+DATA:macos:Time Machine — Complete Setup and Restore Guide:macOS
+<h1>Time Machine — Complete Setup and Restore Guide</h1>
+<hr />
+<h2>Set Up Time Machine</h2>
+<ol>
+<li>Connect an external drive (USB, Thunderbolt, or NAS).</li>
+<li><strong>System Settings → General → Time Machine</strong>.</li>
+<li>Click <strong>Add Backup Disk</strong>.</li>
+<li>Select your external drive.</li>
+<li>Optionally enable <strong>Encrypt Backup</strong> — recommended.</li>
+<li>Click <strong>Done</strong>.</li>
+</ol>
+<p>Time Machine starts the first backup automatically (usually within a few minutes). The first backup takes a long time — subsequent ones are fast because only changed files are backed up.</p>
+<hr />
+<h2>What Gets Backed Up</h2>
+<p>Time Machine backs up everything by default including apps, settings, documents, photos, and system files.</p>
+<p><strong>Exclude folders you do not need backed up:</strong>
+1. System Settings → Time Machine → <strong>Options</strong>.
+2. Click <strong>+</strong> and add folders to exclude — good candidates:
+   - Downloads (if you re-download things)
+   - Virtual machine disk files (very large)
+   - <code>node_modules/</code>, <code>.venv/</code>, <code>.gradle/</code> — they rebuild from config files</p>
+<hr />
+<h2>Backup Schedule</h2>
+<p>Time Machine backs up:
+- Every hour for the past 24 hours
+- Once a day for the past month
+- Once a week for all previous months</p>
+<p>It automatically deletes the oldest backups when the drive fills up.</p>
+<hr />
+<h2>Restore Individual Files</h2>
+<ol>
+<li>Open the folder in Finder that contained the file.</li>
+<li>Click the <strong>Time Machine</strong> icon in the menu bar → <strong>Enter Time Machine</strong>.</li>
+<li>Use the timeline on the right to go back in time.</li>
+<li>Navigate to the file → click <strong>Restore</strong>.</li>
+</ol>
+<p>The file is restored to its original location. If the original location still has a file with the same name, you are asked whether to keep both.</p>
+<hr />
+<h2>Restore Your Entire Mac</h2>
+<p>For a full system restore after a hardware failure, new Mac, or after erasing:</p>
+<ol>
+<li>Start your Mac in <strong>Recovery Mode</strong>:</li>
+<li><strong>Intel Mac:</strong> hold <strong>Cmd + R</strong> during startup</li>
+<li><strong>Apple Silicon:</strong> hold <strong>power button</strong> until startup options appear → <strong>Options</strong></li>
+<li>Select <strong>Restore From Time Machine</strong>.</li>
+<li>Select your Time Machine backup drive.</li>
+<li>Choose the backup to restore from (usually the latest).</li>
+<li>Select your destination disk.</li>
+<li>Click <strong>Restore</strong> and wait — this takes 30 minutes to several hours depending on how much data you have.</li>
+</ol>
+<hr />
+<h2>Restore to a New Mac (Migration Assistant)</h2>
+<p>When setting up a new Mac, you can restore from Time Machine during the initial setup:</p>
+<ol>
+<li>During macOS Setup Assistant, when asked <strong>How do you want to transfer your information</strong>, select <strong>From a Mac, Time Machine backup, or Startup disk</strong>.</li>
+<li>Connect your Time Machine drive.</li>
+<li>Select the backup.</li>
+<li>Choose what to transfer (everything, or specific categories).</li>
+</ol>
+<p>You can also run Migration Assistant later: <strong>Applications → Utilities → Migration Assistant</strong>.</p>
+<hr />
+<h2>Check Backup Status</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check when last backup happened</span>
+tmutil<span class="w"> </span>latestbackup
+
+<span class="c1"># List all backups</span>
+tmutil<span class="w"> </span>listbackups
+
+<span class="c1"># Show backup destination</span>
+tmutil<span class="w"> </span>destinationinfo
+</code></pre></div>
+
+<hr />
+<h2>Force a Backup Now</h2>
+<div class="codehilite"><pre><span></span><code>tmutil<span class="w"> </span>startbackup
+</code></pre></div>
+
+<p>Or from the menu bar: click Time Machine icon → <strong>Back Up Now</strong>.</p>
+<hr />
+<h2>Backup Verification</h2>
+<p>Occasionally verify your backup is healthy:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>tmutil<span class="w"> </span>verifychecksums<span class="w"> </span>/Volumes/YOUR_BACKUP_DRIVE
+</code></pre></div>
+
+<p>Also open Disk Utility → select your Time Machine drive → <strong>First Aid</strong> → <strong>Run</strong> to check the drive itself.</p>

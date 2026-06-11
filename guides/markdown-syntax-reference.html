@@ -1,0 +1,125 @@
+DATA:macos:Markdown Syntax Reference:macOS
+<h1>Markdown Syntax Reference</h1>
+<p>Markdown is a lightweight way to format text. It is used by GitHub, this site, Notion, many documentation tools, and chat apps.</p>
+<hr />
+<h2>Headings</h2>
+<div class="codehilite"><pre><span></span><code># Heading 1
+## Heading 2
+### Heading 3
+#### Heading 4
+</code></pre></div>
+
+<hr />
+<h2>Text Formatting</h2>
+<div class="codehilite"><pre><span></span><code>**bold**
+<span class="gs">*italic*</span>
+~~strikethrough~~
+<span class="sb">`inline code`</span>
+**_bold and italic_**
+</code></pre></div>
+
+<p>Result: <strong>bold</strong>, <em>italic</em>, ~~strikethrough~~, <code>inline code</code></p>
+<hr />
+<h2>Links and Images</h2>
+<div class="codehilite"><pre><span></span><code><span class="p">[</span><span class="n">Link</span><span class="w"> </span><span class="n">text</span><span class="p">](</span><span class="n">https</span><span class="o">:</span><span class="c1">//example.com)</span>
+<span class="p">[</span><span class="n">Link</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">title</span><span class="p">](</span><span class="n">https</span><span class="o">:</span><span class="c1">//example.com &quot;Title here&quot;)</span>
+<span class="o">!</span><span class="p">[</span><span class="n">Alt</span><span class="w"> </span><span class="n">text</span><span class="p">](</span><span class="n">image</span><span class="p">.</span><span class="n">png</span><span class="p">)</span>
+<span class="o">!</span><span class="p">[</span><span class="n">Alt</span><span class="w"> </span><span class="n">text</span><span class="p">](</span><span class="n">https</span><span class="o">:</span><span class="c1">//example.com/image.png)</span>
+</code></pre></div>
+
+<hr />
+<h2>Lists</h2>
+<p><strong>Unordered:</strong></p>
+<div class="codehilite"><pre><span></span><code>- Item one
+- Item two
+  - Nested item
+  - Nested item
+- Item three
+</code></pre></div>
+
+<p><strong>Ordered:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="mf">1.</span><span class="w"> </span><span class="n">First</span>
+<span class="mf">2.</span><span class="w"> </span><span class="n">Second</span>
+<span class="mf">3.</span><span class="w"> </span><span class="n">Third</span>
+</code></pre></div>
+
+<hr />
+<h2>Code</h2>
+<p><strong>Inline:</strong> wrap in backticks: <code>`code`</code></p>
+<p><strong>Block:</strong> wrap in triple backticks with optional language:</p>
+<div class="codehilite"><pre><span></span><code>```bash
+sudo apt update
+```
+
+```python
+print(&quot;Hello&quot;)
+```
+</code></pre></div>
+
+<hr />
+<h2>Tables</h2>
+<div class="codehilite"><pre><span></span><code>| Column 1 | Column 2 | Column 3 |
+|---|---|---|
+| Cell | Cell | Cell |
+| Cell | Cell | Cell |
+</code></pre></div>
+
+<p>Alignment:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">|</span> <span class="nv">Left</span> <span class="p">|</span> <span class="nv">Center</span> <span class="p">|</span> <span class="nv">Right</span> <span class="p">|</span>
+<span class="p">|</span><span class="o">:-</span><span class="s s-Atom">--</span><span class="p">|</span><span class="o">:-</span><span class="s s-Atom">--:</span><span class="p">|</span><span class="s s-Atom">---:</span><span class="p">|</span>
+<span class="p">|</span> <span class="s s-Atom">text</span> <span class="p">|</span> <span class="s s-Atom">text</span> <span class="p">|</span> <span class="s s-Atom">text</span> <span class="p">|</span>
+</code></pre></div>
+
+<hr />
+<h2>Blockquotes</h2>
+<div class="codehilite"><pre><span></span><code>&gt; This is a blockquote
+&gt; It can span multiple lines
+
+&gt; &gt; Nested blockquote
+</code></pre></div>
+
+<hr />
+<h2>Horizontal Rule</h2>
+<div class="codehilite"><pre><span></span><code>---
+</code></pre></div>
+
+<hr />
+<h2>Task Lists (GitHub Markdown)</h2>
+<div class="codehilite"><pre><span></span><code><span class="o">-</span><span class="w"> </span><span class="o">[</span><span class="n">x</span><span class="o">]</span><span class="w"> </span><span class="n">Done</span>
+<span class="o">-</span><span class="w"> </span><span class="o">[</span><span class="n"> </span><span class="o">]</span><span class="w"> </span><span class="ow">Not</span><span class="w"> </span><span class="n">done</span>
+<span class="o">-</span><span class="w"> </span><span class="o">[</span><span class="n">x</span><span class="o">]</span><span class="w"> </span><span class="n">Also</span><span class="w"> </span><span class="n">done</span>
+</code></pre></div>
+
+<hr />
+<h2>Footnotes (GitHub / Just the Docs)</h2>
+<div class="codehilite"><pre><span></span><code>This has a footnote.[^1]
+
+[^1]: This is the footnote text.
+</code></pre></div>
+
+<hr />
+<h2>Escaping Characters</h2>
+<p>Put <code>\</code> before a character to show it literally:</p>
+<div class="codehilite"><pre><span></span><code>\*not italic\*
+\# not a heading
+\`not code\`
+</code></pre></div>
+
+<hr />
+<h2>HTML in Markdown</h2>
+<p>Most Markdown renderers accept inline HTML:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">&lt;</span><span class="nt">br</span><span class="p">&gt;</span>                        line break
+<span class="p">&lt;</span><span class="nt">details</span><span class="p">&gt;&lt;</span><span class="nt">summary</span><span class="p">&gt;</span>Title<span class="p">&lt;/</span><span class="nt">summary</span><span class="p">&gt;</span>Content<span class="p">&lt;/</span><span class="nt">details</span><span class="p">&gt;</span>    collapsible
+</code></pre></div>
+
+<hr />
+<h2>Just the Docs Specific (This Site)</h2>
+<div class="codehilite"><pre><span></span><code><span class="nn">---</span>
+<span class="nt">layout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span>
+<span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Page</span><span class="nv"> </span><span class="s">Title&quot;</span>
+<span class="nt">parent</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;macOS&quot;</span>
+<span class="nt">nav_order</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="nn">---</span>
+</code></pre></div>
+
+<p>Front matter at the top of every <code>.md</code> file sets where the page appears in the sidebar.</p>

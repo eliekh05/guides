@@ -1,0 +1,194 @@
+DATA:package-managers:pacman — Package Manager for Arch Linux:Package Managers (All OSes)
+<h1>pacman — Package Manager for Arch Linux</h1>
+<p><code>pacman</code> is the package manager for Arch Linux and all Arch-based distributions (Manjaro, EndeavourOS, Garuda, etc.). It is fast, simple, and works with both the official Arch repositories and the AUR (Arch User Repository).</p>
+<hr />
+<h2>Essential Commands</h2>
+<h3>Update the package database and upgrade all packages</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>pacman<span class="w"> </span>-Syu
+</code></pre></div>
+
+<p>Always run this before installing anything. <code>-S</code> syncs, <code>-y</code> refreshes the database, <code>-u</code> upgrades.</p>
+<h3>Install a package</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>wget
+</code></pre></div>
+
+<p>Install multiple packages:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>wget<span class="w"> </span>curl<span class="w"> </span>git<span class="w"> </span>vim
+</code></pre></div>
+
+<h3>Remove a package</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>pacman<span class="w"> </span>-R<span class="w"> </span>wget
+</code></pre></div>
+
+<p>Remove a package and all its dependencies not needed by anything else:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>pacman<span class="w"> </span>-Rs<span class="w"> </span>wget
+</code></pre></div>
+
+<p>Remove a package, dependencies, and its configuration files:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>pacman<span class="w"> </span>-Rns<span class="w"> </span>wget
+</code></pre></div>
+
+<h3>Search for a package</h3>
+<div class="codehilite"><pre><span></span><code>pacman<span class="w"> </span>-Ss<span class="w"> </span>python<span class="w">  </span><span class="c1"># Search in repositories</span>
+pacman<span class="w"> </span>-Qs<span class="w"> </span>python<span class="w">  </span><span class="c1"># Search only in installed packages</span>
+</code></pre></div>
+
+<h3>Get info about a package</h3>
+<div class="codehilite"><pre><span></span><code>pacman<span class="w"> </span>-Si<span class="w"> </span>python<span class="w">   </span><span class="c1"># Info from repository</span>
+pacman<span class="w"> </span>-Qi<span class="w"> </span>python<span class="w">   </span><span class="c1"># Info for installed package</span>
+</code></pre></div>
+
+<h3>List all installed packages</h3>
+<div class="codehilite"><pre><span></span><code>pacman<span class="w"> </span>-Q
+</code></pre></div>
+
+<p>List installed packages with their versions:</p>
+<div class="codehilite"><pre><span></span><code>pacman<span class="w"> </span>-Q<span class="w"> </span><span class="p">|</span><span class="w"> </span>less
+</code></pre></div>
+
+<p>List only explicitly installed packages (not dependencies):</p>
+<div class="codehilite"><pre><span></span><code>pacman<span class="w"> </span>-Qe
+</code></pre></div>
+
+<hr />
+<h2>Cleaning Up</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Remove cached package versions that are no longer installed</span>
+sudo<span class="w"> </span>pacman<span class="w"> </span>-Sc
+
+<span class="c1"># Remove ALL cached packages (frees the most space)</span>
+sudo<span class="w"> </span>pacman<span class="w"> </span>-Scc
+
+<span class="c1"># Remove orphaned packages (installed as dependencies but no longer needed)</span>
+sudo<span class="w"> </span>pacman<span class="w"> </span>-Rns<span class="w"> </span><span class="k">$(</span>pacman<span class="w"> </span>-Qtdq<span class="k">)</span>
+</code></pre></div>
+
+<hr />
+<h2>The AUR (Arch User Repository)</h2>
+<p>The AUR contains community-maintained packages not in the official repos. You need an AUR helper to install from it — <code>yay</code> is the most popular.</p>
+<h3>Install yay</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>--needed<span class="w"> </span>git<span class="w"> </span>base-devel
+git<span class="w"> </span>clone<span class="w"> </span>https://aur.archlinux.org/yay.git
+<span class="nb">cd</span><span class="w"> </span>yay
+makepkg<span class="w"> </span>-si
+</code></pre></div>
+
+<h3>Use yay to install AUR packages</h3>
+<div class="codehilite"><pre><span></span><code>yay<span class="w"> </span>-S<span class="w"> </span>google-chrome
+yay<span class="w"> </span>-S<span class="w"> </span>visual-studio-code-bin
+</code></pre></div>
+
+<p><code>yay</code> uses the same syntax as <code>pacman</code> and also works for official repo packages:</p>
+<div class="codehilite"><pre><span></span><code>yay<span class="w"> </span>-Syu<span class="w">          </span><span class="c1"># Update everything including AUR packages</span>
+yay<span class="w"> </span>-Ss<span class="w"> </span>keyword<span class="w">   </span><span class="c1"># Search official repos and AUR</span>
+yay<span class="w"> </span>-R<span class="w"> </span>package<span class="w">    </span><span class="c1"># Remove a package</span>
+</code></pre></div>
+
+<blockquote>
+<p><strong>Note:</strong> AUR helpers like <code>yay</code> are not officially supported by Arch Linux. Always check the PKGBUILD of AUR packages before installing — it is a shell script that runs on your machine.</p>
+</blockquote>
+<hr />
+<h2>pacman.conf — Key Settings</h2>
+<p>The main config file is <code>/etc/pacman.conf</code>. Useful options:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Enable colored output</span>
+<span class="nb nb-Type">Color</span>
+
+<span class="c1"># Show download progress bar</span>
+<span class="n">ILoveCandy</span><span class="w">  </span><span class="c1"># (optional Easter egg — changes the progress bar)</span>
+
+<span class="c1"># Enable parallel downloads (faster)</span>
+<span class="n">ParallelDownloads</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span>
+</code></pre></div>
+
+<p>Edit with:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/pacman.conf
+</code></pre></div>
+
+<hr />
+<h2>Common Errors and Fixes</h2>
+<h3><code>error: failed to synchronize all databases</code></h3>
+<p>Your package database is out of date or mirrors are slow:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>pacman<span class="w"> </span>-Syy<span class="w">  </span><span class="c1"># Force refresh the database</span>
+</code></pre></div>
+
+<p>Or update your mirrors:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>reflector
+sudo<span class="w"> </span>reflector<span class="w"> </span>--country<span class="w"> </span><span class="s1">&#39;YOUR_COUNTRY&#39;</span><span class="w"> </span>--latest<span class="w"> </span><span class="m">10</span><span class="w"> </span>--sort<span class="w"> </span>rate<span class="w"> </span>--save<span class="w"> </span>/etc/pacman.d/mirrorlist
+sudo<span class="w"> </span>pacman<span class="w"> </span>-Syyu
+</code></pre></div>
+
+<h3><code>error: target not found</code></h3>
+<p>The package does not exist in the official repos. Search the AUR instead:</p>
+<div class="codehilite"><pre><span></span><code>yay<span class="w"> </span>-Ss<span class="w"> </span>package_name
+</code></pre></div>
+
+<h3><code>conflicting files</code> error</h3>
+<p>A file already exists where pacman wants to install:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>--overwrite<span class="w"> </span><span class="s1">&#39;*&#39;</span><span class="w"> </span>package_name
+</code></pre></div>
+
+<p>Only use this if you understand what is being overwritten.</p>
+<h3>Database is locked</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>rm<span class="w"> </span>/var/lib/pacman/db.lck
+</code></pre></div>
+
+<h3>Keyring issues after a long time without updates</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>pacman<span class="w"> </span>-Sy<span class="w"> </span>archlinux-keyring
+sudo<span class="w"> </span>pacman<span class="w"> </span>-Su
+</code></pre></div>
+
+<hr />
+<h2>pacman Flag Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-S</code></td>
+<td>Sync (install/upgrade from repo)</td>
+</tr>
+<tr>
+<td><code>-R</code></td>
+<td>Remove</td>
+</tr>
+<tr>
+<td><code>-Q</code></td>
+<td>Query (search installed packages)</td>
+</tr>
+<tr>
+<td><code>-U</code></td>
+<td>Upgrade (install from local file)</td>
+</tr>
+<tr>
+<td><code>-D</code></td>
+<td>Database (modify install reason)</td>
+</tr>
+<tr>
+<td><code>-y</code></td>
+<td>Refresh database</td>
+</tr>
+<tr>
+<td><code>-u</code></td>
+<td>Upgrade all outdated packages</td>
+</tr>
+<tr>
+<td><code>-s</code></td>
+<td>Search</td>
+</tr>
+<tr>
+<td><code>-i</code></td>
+<td>Show info</td>
+</tr>
+<tr>
+<td><code>-n</code></td>
+<td>Also remove config files</td>
+</tr>
+<tr>
+<td><code>-c</code></td>
+<td>Clean cache</td>
+</tr>
+</tbody>
+</table>

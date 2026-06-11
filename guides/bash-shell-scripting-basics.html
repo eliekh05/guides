@@ -1,0 +1,216 @@
+DATA:linux:Shell Scripting Basics (bash and zsh):Linux
+<h1>Shell Scripting Basics (bash and zsh)</h1>
+<hr />
+<h2>Create and Run a Script</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Create a script</span>
+nano<span class="w"> </span>myscript.sh
+
+<span class="c1"># Make it executable</span>
+chmod<span class="w"> </span>+x<span class="w"> </span>myscript.sh
+
+<span class="c1"># Run it</span>
+./myscript.sh
+bash<span class="w"> </span>myscript.sh<span class="w">        </span><span class="c1"># run with bash explicitly</span>
+</code></pre></div>
+
+<hr />
+<h2>Script Header (Shebang)</h2>
+<p>Always start with a shebang line telling the system which interpreter to use:</p>
+<div class="codehilite"><pre><span></span><code><span class="ch">#!/bin/bash              # bash</span>
+<span class="c1">#!/bin/zsh               # zsh</span>
+<span class="c1">#!/usr/bin/env bash      # portable — finds bash in PATH</span>
+<span class="c1">#!/usr/bin/env python3   # works for Python too</span>
+</code></pre></div>
+
+<hr />
+<h2>Variables</h2>
+<div class="codehilite"><pre><span></span><code><span class="ch">#!/bin/bash</span>
+
+<span class="nv">name</span><span class="o">=</span><span class="s2">&quot;Alice&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Hello, </span><span class="nv">$name</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Hello, </span><span class="si">${</span><span class="nv">name</span><span class="si">}</span><span class="s2">!&quot;</span><span class="w">     </span><span class="c1"># braces needed when followed by more text</span>
+
+<span class="c1"># Command output in a variable</span>
+<span class="nv">current_date</span><span class="o">=</span><span class="k">$(</span>date<span class="k">)</span>
+<span class="nv">files</span><span class="o">=</span><span class="k">$(</span>ls<span class="w"> </span>/tmp<span class="k">)</span>
+
+<span class="c1"># Read-only variable</span>
+<span class="nb">readonly</span><span class="w"> </span><span class="nv">PI</span><span class="o">=</span><span class="m">3</span>.14159
+
+<span class="c1"># Unset a variable</span>
+<span class="nb">unset</span><span class="w"> </span>name
+</code></pre></div>
+
+<hr />
+<h2>User Input</h2>
+<div class="codehilite"><pre><span></span><code><span class="nb">read</span><span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;Enter your name: &quot;</span><span class="w"> </span>username
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Hello, </span><span class="nv">$username</span><span class="s2">&quot;</span>
+
+<span class="c1"># Read with a timeout</span>
+<span class="nb">read</span><span class="w"> </span>-t<span class="w"> </span><span class="m">10</span><span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;Enter within 10 seconds: &quot;</span><span class="w"> </span>input
+
+<span class="c1"># Silent input (for passwords)</span>
+<span class="nb">read</span><span class="w"> </span>-s<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;Enter password: &quot;</span><span class="w"> </span>password
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w">    </span><span class="c1"># newline after silent read</span>
+</code></pre></div>
+
+<hr />
+<h2>Conditionals</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># if/elif/else</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$name</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Alice&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Hello, Alice&quot;</span>
+<span class="k">elif</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$name</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Bob&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Hello, Bob&quot;</span>
+<span class="k">else</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Hello, stranger&quot;</span>
+<span class="k">fi</span>
+
+<span class="c1"># One-line</span>
+<span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$name</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Alice&quot;</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;It&#39;s Alice&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Not Alice&quot;</span>
+</code></pre></div>
+
+<h3>Comparison Operators</h3>
+<p><strong>Strings:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$a</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$b</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w">      </span><span class="c1"># equal</span>
+<span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$a</span><span class="s2">&quot;</span><span class="w"> </span>!<span class="o">=</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$b</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w">     </span><span class="c1"># not equal</span>
+<span class="o">[</span><span class="w"> </span>-z<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$a</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w">          </span><span class="c1"># empty string</span>
+<span class="o">[</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$a</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w">          </span><span class="c1"># non-empty string</span>
+</code></pre></div>
+
+<p><strong>Numbers:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$a</span><span class="s2">&quot;</span><span class="w"> </span>-eq<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$b</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w">    </span><span class="c1"># equal</span>
+<span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$a</span><span class="s2">&quot;</span><span class="w"> </span>-ne<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$b</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w">    </span><span class="c1"># not equal</span>
+<span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$a</span><span class="s2">&quot;</span><span class="w"> </span>-gt<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$b</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w">    </span><span class="c1"># greater than</span>
+<span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$a</span><span class="s2">&quot;</span><span class="w"> </span>-lt<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$b</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w">    </span><span class="c1"># less than</span>
+<span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$a</span><span class="s2">&quot;</span><span class="w"> </span>-ge<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$b</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w">    </span><span class="c1"># greater or equal</span>
+<span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$a</span><span class="s2">&quot;</span><span class="w"> </span>-le<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$b</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w">    </span><span class="c1"># less or equal</span>
+</code></pre></div>
+
+<p><strong>Files:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w">       </span><span class="c1"># file exists</span>
+<span class="o">[</span><span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$dir</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w">        </span><span class="c1"># directory exists</span>
+<span class="o">[</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$path</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w">       </span><span class="c1"># exists (file or dir)</span>
+<span class="o">[</span><span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w">       </span><span class="c1"># readable</span>
+<span class="o">[</span><span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w">       </span><span class="c1"># writable</span>
+<span class="o">[</span><span class="w"> </span>-x<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w">       </span><span class="c1"># executable</span>
+<span class="o">[</span><span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w">       </span><span class="c1"># non-empty file</span>
+</code></pre></div>
+
+<hr />
+<h2>Loops</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># for loop over a list</span>
+<span class="k">for</span><span class="w"> </span>item<span class="w"> </span><span class="k">in</span><span class="w"> </span>apple<span class="w"> </span>banana<span class="w"> </span>cherry<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$item</span><span class="s2">&quot;</span>
+<span class="k">done</span>
+
+<span class="c1"># for loop over files</span>
+<span class="k">for</span><span class="w"> </span>file<span class="w"> </span><span class="k">in</span><span class="w"> </span>/tmp/*.log<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Processing </span><span class="nv">$file</span><span class="s2">&quot;</span>
+<span class="k">done</span>
+
+<span class="c1"># for loop with range</span>
+<span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="o">{</span><span class="m">1</span>..10<span class="o">}</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$i</span><span class="s2">&quot;</span>
+<span class="k">done</span>
+
+<span class="c1"># C-style for loop</span>
+<span class="k">for</span><span class="w"> </span><span class="o">((</span><span class="nv">i</span><span class="o">=</span><span class="m">0</span><span class="p">;</span><span class="w"> </span>i&lt;<span class="m">5</span><span class="p">;</span><span class="w"> </span>i++<span class="o">))</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$i</span><span class="s2">&quot;</span>
+<span class="k">done</span>
+
+<span class="c1"># while loop</span>
+<span class="nv">count</span><span class="o">=</span><span class="m">0</span>
+<span class="k">while</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$count</span><span class="w"> </span>-lt<span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$count</span><span class="s2">&quot;</span>
+<span class="w">    </span><span class="o">((</span>count++<span class="o">))</span>
+<span class="k">done</span>
+
+<span class="c1"># Loop over lines in a file</span>
+<span class="k">while</span><span class="w"> </span><span class="nv">IFS</span><span class="o">=</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>line<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$line</span><span class="s2">&quot;</span>
+<span class="k">done</span><span class="w"> </span>&lt;<span class="w"> </span>/path/to/file.txt
+</code></pre></div>
+
+<hr />
+<h2>Functions</h2>
+<div class="codehilite"><pre><span></span><code>greet<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="nb">local</span><span class="w"> </span><span class="nv">name</span><span class="o">=</span><span class="nv">$1</span><span class="w">      </span><span class="c1"># local = scoped to function</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Hello, </span><span class="nv">$name</span><span class="s2">&quot;</span>
+<span class="o">}</span>
+
+greet<span class="w"> </span><span class="s2">&quot;Alice&quot;</span>
+greet<span class="w"> </span><span class="s2">&quot;Bob&quot;</span>
+
+<span class="c1"># Function with return value</span>
+add<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="nb">local</span><span class="w"> </span><span class="nv">result</span><span class="o">=</span><span class="k">$((</span><span class="w"> </span><span class="nv">$1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">$2</span><span class="w"> </span><span class="k">))</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$result</span><span class="w">       </span><span class="c1"># use echo to &quot;return&quot; a value</span>
+<span class="o">}</span>
+
+<span class="nv">sum</span><span class="o">=</span><span class="k">$(</span>add<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="m">5</span><span class="k">)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Sum: </span><span class="nv">$sum</span><span class="s2">&quot;</span>
+</code></pre></div>
+
+<hr />
+<h2>Arguments</h2>
+<div class="codehilite"><pre><span></span><code><span class="nv">$0</span><span class="w">          </span><span class="c1"># script name</span>
+<span class="nv">$1</span>,<span class="w"> </span><span class="nv">$2</span>...<span class="w">   </span><span class="c1"># positional arguments</span>
+<span class="nv">$#</span><span class="w">          </span><span class="c1"># number of arguments</span>
+<span class="nv">$@</span><span class="w">          </span><span class="c1"># all arguments (as separate words)</span>
+<span class="nv">$*</span><span class="w">          </span><span class="c1"># all arguments (as one word)</span>
+
+<span class="c1"># Example</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Script: </span><span class="nv">$0</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;First arg: </span><span class="nv">$1</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;All args: </span><span class="nv">$@</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Arg count: </span><span class="nv">$#</span><span class="s2">&quot;</span>
+</code></pre></div>
+
+<hr />
+<h2>Exit Codes</h2>
+<div class="codehilite"><pre><span></span><code><span class="nv">$?</span><span class="w">          </span><span class="c1"># exit code of last command (0 = success, non-zero = error)</span>
+
+<span class="nb">command</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Success&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Failed&quot;</span>
+
+<span class="c1"># Exit with a code</span>
+<span class="nb">exit</span><span class="w"> </span><span class="m">0</span><span class="w">       </span><span class="c1"># success</span>
+<span class="nb">exit</span><span class="w"> </span><span class="m">1</span><span class="w">       </span><span class="c1"># generic error</span>
+</code></pre></div>
+
+<hr />
+<h2>Error Handling</h2>
+<div class="codehilite"><pre><span></span><code><span class="ch">#!/bin/bash</span>
+<span class="nb">set</span><span class="w"> </span>-e<span class="w">           </span><span class="c1"># exit immediately if any command fails</span>
+<span class="nb">set</span><span class="w"> </span>-u<span class="w">           </span><span class="c1"># treat unset variables as errors</span>
+<span class="nb">set</span><span class="w"> </span>-o<span class="w"> </span>pipefail<span class="w">  </span><span class="c1"># catch failures in pipes</span>
+
+<span class="c1"># Or just the common combo:</span>
+<span class="nb">set</span><span class="w"> </span>-euo<span class="w"> </span>pipefail
+</code></pre></div>
+
+<hr />
+<h2>Practical Template</h2>
+<div class="codehilite"><pre><span></span><code><span class="ch">#!/usr/bin/env bash</span>
+<span class="nb">set</span><span class="w"> </span>-euo<span class="w"> </span>pipefail
+
+<span class="c1"># Variables</span>
+<span class="nv">LOG_FILE</span><span class="o">=</span><span class="s2">&quot;/var/log/myscript.log&quot;</span>
+<span class="nv">DATE</span><span class="o">=</span><span class="k">$(</span>date<span class="w"> </span>+%Y-%m-%d<span class="k">)</span>
+
+log<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;[</span><span class="k">$(</span>date<span class="w"> </span><span class="s1">&#39;+%H:%M:%S&#39;</span><span class="k">)</span><span class="s2">] </span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tee<span class="w"> </span>-a<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$LOG_FILE</span><span class="s2">&quot;</span>
+<span class="o">}</span>
+
+main<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span>log<span class="w"> </span><span class="s2">&quot;Starting script&quot;</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>!<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;/etc/config&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">        </span>log<span class="w"> </span><span class="s2">&quot;Error: config file not found&quot;</span>
+<span class="w">        </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span>
+<span class="w">    </span><span class="k">fi</span>
+
+<span class="w">    </span>log<span class="w"> </span><span class="s2">&quot;Done&quot;</span>
+<span class="o">}</span>
+
+main<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span>
+</code></pre></div>

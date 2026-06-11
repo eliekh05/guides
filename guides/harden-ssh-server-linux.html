@@ -1,0 +1,120 @@
+DATA:security:Harden SSH Server on Linux:Security & Apps
+<h1>Harden SSH Server on Linux</h1>
+<p>A default SSH install accepts password logins and allows root access — both are unnecessary attack surfaces. This guide locks SSH down to keys-only, disables root login, and applies other hardening steps.</p>
+<blockquote>
+<p><strong>Before starting:</strong> Make sure you have a working SSH key set up and can log in with it. If you disable password auth without a working key, you will be locked out.</p>
+</blockquote>
+<hr />
+<h2>The Config File</h2>
+<p>All SSH server settings live in:</p>
+<div class="codehilite"><pre><span></span><code>/etc/ssh/sshd_config
+</code></pre></div>
+
+<p>On modern systems, drop-in files in <code>/etc/ssh/sshd_config.d/</code> override the main file. Using drop-ins is cleaner — create <code>/etc/ssh/sshd_config.d/99-hardening.conf</code>.</p>
+<hr />
+<h2>Essential Hardening Settings</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/ssh/sshd_config.d/99-hardening.conf
+</code></pre></div>
+
+<p>Paste:</p>
+<div class="codehilite"><pre><span></span><code>#<span class="w"> </span><span class="nv">Disable</span><span class="w"> </span><span class="nv">root</span><span class="w"> </span><span class="nv">login</span>
+<span class="nv">PermitRootLogin</span><span class="w"> </span><span class="nv">no</span>
+
+#<span class="w"> </span><span class="nv">Keys</span><span class="w"> </span><span class="nv">only</span><span class="w"> </span>—<span class="w"> </span><span class="nv">no</span><span class="w"> </span><span class="nv">passwords</span>
+<span class="nv">PasswordAuthentication</span><span class="w"> </span><span class="nv">no</span>
+<span class="nv">PubkeyAuthentication</span><span class="w"> </span><span class="nv">yes</span>
+<span class="nv">AuthenticationMethods</span><span class="w"> </span><span class="nv">publickey</span>
+
+#<span class="w"> </span><span class="nv">Disable</span><span class="w"> </span><span class="nv">other</span><span class="w"> </span><span class="nv">auth</span><span class="w"> </span><span class="nv">methods</span>
+<span class="nv">KbdInteractiveAuthentication</span><span class="w"> </span><span class="nv">no</span>
+<span class="nv">ChallengeResponseAuthentication</span><span class="w"> </span><span class="nv">no</span>
+<span class="nv">UsePAM</span><span class="w"> </span><span class="nv">yes</span>
+
+#<span class="w"> </span><span class="k">Disconnect</span><span class="w"> </span><span class="nv">idle</span><span class="w"> </span><span class="nv">sessions</span><span class="w"> </span><span class="nv">after</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="nv">minutes</span>
+<span class="nv">ClientAliveInterval</span><span class="w"> </span><span class="mi">300</span>
+<span class="nv">ClientAliveCountMax</span><span class="w"> </span><span class="mi">0</span>
+
+#<span class="w"> </span><span class="nv">Only</span><span class="w"> </span><span class="nv">allow</span><span class="w"> </span><span class="nv">specific</span><span class="w"> </span><span class="nv">users</span><span class="w"> </span><span class="ss">(</span><span class="nv">optional</span><span class="w"> </span><span class="nv">but</span><span class="w"> </span><span class="nv">recommended</span><span class="ss">)</span>
+<span class="nv">AllowUsers</span><span class="w"> </span><span class="nv">yourusername</span>
+
+#<span class="w"> </span><span class="nv">Disable</span><span class="w"> </span><span class="nv">X11</span><span class="w"> </span><span class="nv">forwarding</span><span class="w"> </span><span class="ss">(</span><span class="nv">not</span><span class="w"> </span><span class="nv">needed</span><span class="w"> </span><span class="nv">on</span><span class="w"> </span><span class="nv">servers</span><span class="ss">)</span>
+<span class="nv">X11Forwarding</span><span class="w"> </span><span class="nv">no</span>
+
+#<span class="w"> </span><span class="nv">Restrict</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">IPv4</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nv">you</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="nv">not</span><span class="w"> </span><span class="nv">use</span><span class="w"> </span><span class="nv">IPv6</span>
+#<span class="nv">AddressFamily</span><span class="w"> </span><span class="nv">inet</span>
+
+#<span class="w"> </span><span class="nv">Change</span><span class="w"> </span><span class="nv">SSH</span><span class="w"> </span><span class="nv">port</span><span class="w"> </span><span class="ss">(</span><span class="nv">optional</span><span class="w"> </span>—<span class="w"> </span><span class="nv">reduces</span><span class="w"> </span><span class="nv">noise</span><span class="w"> </span><span class="nv">in</span><span class="w"> </span><span class="nv">logs</span><span class="ss">)</span>
+#<span class="nv">Port</span><span class="w"> </span><span class="mi">2222</span>
+</code></pre></div>
+
+<p>Apply:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>sshd<span class="w"> </span>-t<span class="w">              </span><span class="c1"># test config for errors — ALWAYS do this first</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>sshd
+</code></pre></div>
+
+<hr />
+<h2>Verify You Can Still Log In</h2>
+<p><strong>Before closing your current SSH session</strong>, open a second terminal and test logging in. If it works, you are good. If it does not, fix the config in the existing session.</p>
+<hr />
+<h2>Disable Password Auth System-Wide (Ubuntu/Debian)</h2>
+<p>Ubuntu enables password auth by default in a separate file. Override it:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/ssh/sshd_config.d/50-cloud-init.conf
+</code></pre></div>
+
+<p>If <code>PasswordAuthentication yes</code> is there, change it to <code>no</code>, or delete the file if you have no cloud-init dependency.</p>
+<hr />
+<h2>Use Ed25519 Keys (More Secure Than RSA)</h2>
+<p>If you have not set up keys yet:</p>
+<div class="codehilite"><pre><span></span><code>ssh-keygen<span class="w"> </span>-t<span class="w"> </span>ed25519<span class="w"> </span>-C<span class="w"> </span><span class="s2">&quot;your@email.com&quot;</span>
+ssh-copy-id<span class="w"> </span>-i<span class="w"> </span>~/.ssh/id_ed25519.pub<span class="w"> </span>user@server
+</code></pre></div>
+
+<hr />
+<h2>2FA on SSH (Optional but Strong)</h2>
+<p>Install Google Authenticator for time-based OTP:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>libpam-google-authenticator<span class="w"> </span>-y
+google-authenticator<span class="w">       </span><span class="c1"># run as the user who will SSH in</span>
+</code></pre></div>
+
+<p>Edit <code>/etc/pam.d/sshd</code> — add at the top:</p>
+<div class="codehilite"><pre><span></span><code>auth required pam_google_authenticator.so
+</code></pre></div>
+
+<p>In sshd_config:</p>
+<div class="codehilite"><pre><span></span><code>AuthenticationMethods publickey,keyboard-interactive
+KbdInteractiveAuthentication yes
+</code></pre></div>
+
+<p>Restart sshd. Now login requires both your SSH key AND a TOTP code.</p>
+<hr />
+<h2>Quick Checklist</h2>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Command to verify</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Root login disabled</td>
+<td><code>grep PermitRootLogin /etc/ssh/sshd_config*</code></td>
+</tr>
+<tr>
+<td>Password auth off</td>
+<td><code>grep PasswordAuthentication /etc/ssh/sshd_config*</code></td>
+</tr>
+<tr>
+<td>Key auth enabled</td>
+<td><code>grep PubkeyAuthentication /etc/ssh/sshd_config*</code></td>
+</tr>
+<tr>
+<td>Fail2ban watching SSH</td>
+<td><code>sudo fail2ban-client status sshd</code></td>
+</tr>
+<tr>
+<td>UFW allowing SSH</td>
+<td><code>sudo ufw status</code></td>
+</tr>
+</tbody>
+</table>

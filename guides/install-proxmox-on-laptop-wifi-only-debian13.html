@@ -1,0 +1,282 @@
+DATA:installation:Install Proxmox on a Laptop (WiFi Only) via Debian 13:Installation Guides
+<h1>Install Proxmox on a Laptop (WiFi Only) via Debian 13</h1>
+<p>The official Proxmox ISO installer assumes you have an Ethernet connection and will fail or leave you with a broken network setup on a WiFi-only laptop. This guide skips the Proxmox ISO entirely and installs Proxmox on top of <strong>Debian 13 (Trixie)</strong> — the current stable release — using <code>apt</code>. You get the same full Proxmox VE with no subscription required, and WiFi working from the start.</p>
+<blockquote>
+<p><strong>Why not the Proxmox ISO?</strong> The Proxmox ISO does not include WiFi drivers or <code>wpa_supplicant</code>. It expects Ethernet during installation and sets up a Linux bridge (<code>vmbr0</code>) that is incompatible with WiFi by default. This method avoids all of that.</p>
+</blockquote>
+<hr />
+<h2>What You Need</h2>
+<ul>
+<li>A laptop with a working WiFi card (most Intel and Realtek cards work out of the box on Debian)</li>
+<li>A USB drive (8 GB minimum) to install Debian from</li>
+<li>Your WiFi network name (SSID) and password</li>
+<li>At least <strong>4 GB RAM</strong> and <strong>32 GB storage</strong> recommended</li>
+<li>Another device to download files and flash the USB from</li>
+</ul>
+<hr />
+<h2>Part 1 — Install Debian 13 (Trixie)</h2>
+<h3>Step 1 — Download Debian 13</h3>
+<p>Go to <a href="https://www.debian.org/distrib/netinst">debian.org/distrib/netinst</a> and download the <strong>amd64 netinst ISO</strong> (the small installer, about 650 MB). Make sure you are downloading Debian 13 — the page will show the current stable version.</p>
+<blockquote>
+<p><strong>Always check <a href="https://www.debian.org/releases">debian.org/releases</a> to confirm the current stable version before downloading.</strong> At the time of writing this guide, the current stable release is <strong>Debian 13 (Trixie) 13.4</strong>.</p>
+</blockquote>
+<h3>Step 2 — Flash the USB Drive</h3>
+<p>Download <a href="https://etcher.balena.io">balenaEtcher</a> on your current machine, open it, select the Debian ISO and your USB drive, and click Flash.</p>
+<h3>Step 3 — Boot from USB</h3>
+<p>Restart your laptop and boot from the USB drive. The key to open the boot menu varies by manufacturer — usually <strong>F12</strong>, <strong>F10</strong>, <strong>Esc</strong>, or <strong>Del</strong>. It is shown briefly on screen at startup.</p>
+<h3>Step 4 — Install Debian</h3>
+<p>When the Debian installer loads:</p>
+<ol>
+<li>Select <strong>Graphical Install</strong> (easier) or <strong>Install</strong> (text-based, both work).</li>
+<li>Choose your language, location, and keyboard layout.</li>
+<li><strong>Network setup:</strong> The installer will detect your WiFi card and ask for your network. Select your WiFi SSID and enter the password. If your card is not detected, try the non-free firmware ISO instead (link is on the same Debian download page — labelled "unofficial non-free").</li>
+<li><strong>Hostname:</strong> Set it to something simple like <code>proxmox</code> — you will reference this later.</li>
+<li><strong>Domain name:</strong> Leave blank or use <code>local</code>.</li>
+<li>Set a <strong>root password</strong> — remember this, you will need it.</li>
+<li>Create a <strong>regular user</strong> for yourself as well.</li>
+<li><strong>Partitioning:</strong> Choose <strong>Guided — use entire disk</strong> unless you have specific needs. Accept the defaults.</li>
+<li><strong>Software selection:</strong> On the tasksel screen, <strong>uncheck everything except "SSH server" and "standard system utilities"</strong>. You do not want a desktop environment — Proxmox has its own web interface.</li>
+<li>Install GRUB to the primary drive when prompted.</li>
+<li>Reboot when installation finishes. Remove the USB drive.</li>
+</ol>
+<h3>Step 5 — Log In and Get Your IP Address</h3>
+<p>Log in as <strong>root</strong> with the password you set.</p>
+<p>Find your WiFi interface name and current IP:</p>
+<div class="codehilite"><pre><span></span><code>ip<span class="w"> </span>a
+</code></pre></div>
+
+<p>Look for an interface named something like <code>wlan0</code>, <code>wlp2s0</code>, or <code>wlp0s20f3</code>. Note the IP address next to <code>inet</code> — you will use this to access Proxmox from your browser later.</p>
+<hr />
+<h2>Part 2 — Prepare Debian for Proxmox</h2>
+<h3>Step 6 — Set a Static Hostname and /etc/hosts</h3>
+<p>Proxmox requires your hostname to resolve to your machine's IP — not <code>127.0.0.1</code>. Replace <code>YOUR_IP</code> with the IP from the previous step and <code>proxmox</code> with whatever hostname you chose:</p>
+<div class="codehilite"><pre><span></span><code>hostnamectl<span class="w"> </span>set-hostname<span class="w"> </span>proxmox
+</code></pre></div>
+
+<p>Edit <code>/etc/hosts</code>:</p>
+<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>/etc/hosts
+</code></pre></div>
+
+<p>Make sure it looks like this (replace <code>192.168.1.100</code> with your actual IP):</p>
+<div class="codehilite"><pre><span></span><code><span class="mf">127.0.0.1</span><span class="w">       </span><span class="n">localhost</span>
+<span class="mf">192.168.1.100</span><span class="w">   </span><span class="n">proxmox</span><span class="mf">.</span><span class="n">local</span><span class="w"> </span><span class="n">proxmox</span>
+
+<span class="err">#</span><span class="w"> </span><span class="n">The</span><span class="w"> </span><span class="n">following</span><span class="w"> </span><span class="n">lines</span><span class="w"> </span><span class="n">are</span><span class="w"> </span><span class="n">desirable</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="n">IPv6</span><span class="w"> </span><span class="n">capable</span><span class="w"> </span><span class="n">hosts</span>
+<span class="p">::</span><span class="mf">1</span><span class="w">             </span><span class="n">localhost</span><span class="w"> </span><span class="n">ip6</span><span class="o">-</span><span class="n">localhost</span><span class="w"> </span><span class="n">ip6</span><span class="o">-</span><span class="n">loopback</span>
+<span class="n">ff02</span><span class="p">::</span><span class="mf">1</span><span class="w">         </span><span class="n">ip6</span><span class="o">-</span><span class="n">allnodes</span>
+<span class="n">ff02</span><span class="p">::</span><span class="mf">2</span><span class="w">         </span><span class="n">ip6</span><span class="o">-</span><span class="n">allrouters</span>
+</code></pre></div>
+
+<p>Save with <strong>Ctrl+X → Y → Enter</strong>.</p>
+<p>Verify it resolves correctly:</p>
+<div class="codehilite"><pre><span></span><code>hostname<span class="w"> </span>--ip-address
+</code></pre></div>
+
+<p>It should return your actual IP, not <code>127.0.0.1</code>. If it returns <code>127.0.0.1</code>, fix the <code>/etc/hosts</code> file before continuing — Proxmox installation will fail otherwise.</p>
+<h3>Step 7 — Update Debian</h3>
+<div class="codehilite"><pre><span></span><code>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>apt<span class="w"> </span>full-upgrade<span class="w"> </span>-y
+</code></pre></div>
+
+<p>Reboot after:</p>
+<div class="codehilite"><pre><span></span><code>reboot
+</code></pre></div>
+
+<p>Log back in as root.</p>
+<hr />
+<h2>Part 3 — Install Proxmox VE</h2>
+<h3>Step 8 — Add the Proxmox GPG Key</h3>
+<div class="codehilite"><pre><span></span><code>wget<span class="w"> </span>https://enterprise.proxmox.com/debian/proxmox-archive-keyring-trixie.gpg<span class="w"> </span>-O<span class="w"> </span>/usr/share/keyrings/proxmox-archive-keyring.gpg
+</code></pre></div>
+
+<p>Control + X 
+Y
+ENTER/RETURN (depending on keyboard)</p>
+<h3>Step 9 — Add the Proxmox No-Subscription Repository</h3>
+<p>This is the free repo — no license needed. It receives the same packages as the enterprise repo, just slightly earlier in the release cycle.</p>
+<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>/etc/apt/sources.list.d/proxmox.sources
+</code></pre></div>
+
+<p>in the window that open add the following</p>
+<div class="codehilite"><pre><span></span><code><span class="n">Types</span><span class="p">:</span><span class="w"> </span><span class="n">deb</span>
+<span class="n">URIs</span><span class="p">:</span><span class="w"> </span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">download</span><span class="o">.</span><span class="n">proxmox</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">debian</span><span class="o">/</span><span class="n">pve</span>
+<span class="n">Suites</span><span class="p">:</span><span class="w"> </span><span class="n">trixie</span>
+<span class="n">Components</span><span class="p">:</span><span class="w"> </span><span class="n">pve</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">subscription</span>
+<span class="n">Signed</span><span class="o">-</span><span class="n">By</span><span class="p">:</span><span class="w"> </span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">keyrings</span><span class="o">/</span><span class="n">proxmox</span><span class="o">-</span><span class="n">archive</span><span class="o">-</span><span class="n">keyring</span><span class="o">.</span><span class="n">gpg</span>
+</code></pre></div>
+
+<p>Control + X 
+Y
+ENTER/RETURN (depending on keyboard)</p>
+<h3>Step 10 — Update and Install the Proxmox Kernel</h3>
+<div class="codehilite"><pre><span></span><code>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>apt<span class="w"> </span>full-upgrade<span class="w"> </span>-y
+apt<span class="w"> </span>install<span class="w"> </span>proxmox-default-kernel<span class="w"> </span>-y
+reboot
+</code></pre></div>
+
+<p>After rebooting, log back in as root. You are now running the Proxmox kernel.</p>
+<p>Verify:</p>
+<div class="codehilite"><pre><span></span><code>uname<span class="w"> </span>-r
+</code></pre></div>
+
+<p>You should see something like <code>6.8.12-4-pve</code> or similar — the <code>-pve</code> suffix confirms the Proxmox kernel is active.</p>
+<h3>Step 11 — Install Proxmox VE</h3>
+<div class="codehilite"><pre><span></span><code>apt<span class="w"> </span>install<span class="w"> </span>proxmox-ve<span class="w"> </span>postfix<span class="w"> </span>open-iscsi<span class="w"> </span>chrony<span class="w"> </span>-y
+</code></pre></div>
+
+<p>During installation, <strong>Postfix</strong> (mail server) will ask how to configure itself. For most home lab setups, select <strong>No configuration</strong> and press Enter. You can configure it properly later if needed. Reboot after installation you can work on  network and other steps</p>
+<h3>Step 12 — Remove the Debian Kernel and os-prober</h3>
+<p>The Debian default kernel is no longer needed and os-prober can cause issues with VM disk partitions being detected as bootable drives:</p>
+<div class="codehilite"><pre><span></span><code>apt<span class="w"> </span>remove<span class="w"> </span>linux-image-amd64<span class="w"> </span><span class="s1">&#39;linux-image-6.*&#39;</span><span class="w"> </span>-y
+update-grub
+apt<span class="w"> </span>remove<span class="w"> </span>os-prober<span class="w"> </span>-y
+</code></pre></div>
+
+<blockquote>
+<p><strong>Note:</strong> The <code>linux-image-6.*</code> pattern removes any Debian 6.x kernels. If the command shows nothing to remove, that is fine.</p>
+</blockquote>
+<hr />
+<h2>Part 4 — Configure WiFi for Proxmox</h2>
+<p>Proxmox uses <code>ifupdown</code> for networking, not NetworkManager. Your Debian WiFi connection may have been managed by <code>wpa_supplicant</code> already — we just need to make it permanent and compatible with Proxmox's networking stack.</p>
+<h3>Step 13 — Find Your WiFi Interface Name</h3>
+<div class="codehilite"><pre><span></span><code>ip<span class="w"> </span>a
+</code></pre></div>
+
+<p>Look for the wireless interface — it will be something like <code>wlan0</code>, <code>wlp2s0</code>, or <code>wlp0s20f3</code>. Note the exact name — you will use it in the next step.</p>
+<h3>Step 14 — Configure WiFi in /etc/network/interfaces</h3>
+<p>Edit the network interfaces file:</p>
+<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>/etc/network/interfaces
+</code></pre></div>
+
+<p>Replace the entire contents with the following. Substitute <code>wlp2s0</code> with your actual interface name, and fill in your WiFi credentials:</p>
+<div class="codehilite"><pre><span></span><code><span class="kt">auto</span><span class="w"> </span><span class="nx">lo</span>
+<span class="nx">iface</span><span class="w"> </span><span class="nx">lo</span><span class="w"> </span><span class="nx">inet</span><span class="w"> </span><span class="nx">loopback</span>
+
+<span class="err">#</span><span class="w"> </span><span class="nx">WiFi</span><span class="w"> </span><span class="err">—</span><span class="w"> </span><span class="nx">replace</span><span class="w"> </span><span class="nx">wlp2s0</span><span class="w"> </span><span class="nx">with</span><span class="w"> </span><span class="nx">your</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nx">name</span>
+<span class="kt">auto</span><span class="w"> </span><span class="nx">wlp2s0</span>
+<span class="nx">iface</span><span class="w"> </span><span class="nx">wlp2s0</span><span class="w"> </span><span class="nx">inet</span><span class="w"> </span><span class="nx">dhcp</span>
+<span class="w">    </span><span class="nx">wpa</span><span class="o">-</span><span class="nx">ssid</span><span class="w"> </span><span class="s">&quot;YOUR_WIFI_SSID&quot;</span>
+<span class="w">    </span><span class="nx">wpa</span><span class="o">-</span><span class="nx">psk</span><span class="w"> </span><span class="s">&quot;YOUR_WIFI_PASSWORD&quot;</span>
+<span class="w">    </span><span class="nx">pre</span><span class="o">-</span><span class="nx">up</span><span class="w"> </span><span class="nx">rfkill</span><span class="w"> </span><span class="nx">unblock</span><span class="w"> </span><span class="nx">all</span>
+<span class="w">    </span><span class="nx">pre</span><span class="o">-</span><span class="nx">up</span><span class="w"> </span><span class="nx">ip</span><span class="w"> </span><span class="nx">link</span><span class="w"> </span><span class="nx">set</span><span class="w"> </span><span class="nx">wlp2s0</span><span class="w"> </span><span class="nx">up</span>
+
+<span class="err">#</span><span class="w"> </span><span class="nx">Internal</span><span class="w"> </span><span class="nx">VM</span><span class="w"> </span><span class="nx">bridge</span><span class="w"> </span><span class="err">—</span><span class="w"> </span><span class="nx">no</span><span class="w"> </span><span class="nx">physical</span><span class="w"> </span><span class="nx">port</span><span class="p">,</span><span class="w"> </span><span class="nx">uses</span><span class="w"> </span><span class="nx">NAT</span><span class="w"> </span><span class="nx">via</span><span class="w"> </span><span class="nx">WiFi</span>
+<span class="kt">auto</span><span class="w"> </span><span class="nx">vmbr0</span>
+<span class="nx">iface</span><span class="w"> </span><span class="nx">vmbr0</span><span class="w"> </span><span class="nx">inet</span><span class="w"> </span><span class="nx">static</span>
+<span class="w">    </span><span class="nx">address</span><span class="w"> </span><span class="m m-Double">10.10.100.1</span><span class="o">/</span><span class="mi">24</span>
+<span class="w">    </span><span class="nx">bridge</span><span class="o">-</span><span class="nx">ports</span><span class="w"> </span><span class="nx">none</span>
+<span class="w">    </span><span class="nx">bridge</span><span class="o">-</span><span class="nx">stp</span><span class="w"> </span><span class="nx">off</span>
+<span class="w">    </span><span class="nx">bridge</span><span class="o">-</span><span class="nx">fd</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">    </span><span class="nx">post</span><span class="o">-</span><span class="nx">up</span><span class="w"> </span><span class="nx">echo</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="o">/</span><span class="nx">proc</span><span class="o">/</span><span class="nx">sys</span><span class="o">/</span><span class="nx">net</span><span class="o">/</span><span class="nx">ipv4</span><span class="o">/</span><span class="nx">ip_forward</span>
+<span class="w">    </span><span class="nx">post</span><span class="o">-</span><span class="nx">up</span><span class="w"> </span><span class="nx">iptables</span><span class="w"> </span><span class="o">-</span><span class="nx">t</span><span class="w"> </span><span class="nx">nat</span><span class="w"> </span><span class="o">-</span><span class="nx">A</span><span class="w"> </span><span class="nx">POSTROUTING</span><span class="w"> </span><span class="o">-</span><span class="nx">s</span><span class="w"> </span><span class="err">&#39;</span><span class="m m-Double">10.10.100.0</span><span class="o">/</span><span class="mi">24</span><span class="err">&#39;</span><span class="w"> </span><span class="o">-</span><span class="nx">o</span><span class="w"> </span><span class="nx">wlp2s0</span><span class="w"> </span><span class="o">-</span><span class="nx">j</span><span class="w"> </span><span class="nx">MASQUERADE</span>
+<span class="w">    </span><span class="nx">post</span><span class="o">-</span><span class="nx">down</span><span class="w"> </span><span class="nx">iptables</span><span class="w"> </span><span class="o">-</span><span class="nx">t</span><span class="w"> </span><span class="nx">nat</span><span class="w"> </span><span class="o">-</span><span class="nx">D</span><span class="w"> </span><span class="nx">POSTROUTING</span><span class="w"> </span><span class="o">-</span><span class="nx">s</span><span class="w"> </span><span class="err">&#39;</span><span class="m m-Double">10.10.100.0</span><span class="o">/</span><span class="mi">24</span><span class="err">&#39;</span><span class="w"> </span><span class="o">-</span><span class="nx">o</span><span class="w"> </span><span class="nx">wlp2s0</span><span class="w"> </span><span class="o">-</span><span class="nx">j</span><span class="w"> </span><span class="nx">MASQUERADE</span>
+</code></pre></div>
+
+<p>Save with <strong>Ctrl+X → Y → Enter</strong>.</p>
+<blockquote>
+<p><strong>Why <code>vmbr0</code> has no bridge port:</strong> WiFi access points reject bridged frames with unknown MAC addresses, so you cannot bridge WiFi like Ethernet. Instead, <code>vmbr0</code> is an internal virtual bridge and NAT routes traffic from VMs through the WiFi interface to the internet. Your VMs will have internet access but will be on their own <code>10.10.100.x</code> subnet.</p>
+</blockquote>
+<h3>Step 15 — Install dnsmasq for VM DHCP</h3>
+<p>This gives your VMs automatic IP addresses on the <code>10.10.100.x</code> subnet:</p>
+<div class="codehilite"><pre><span></span><code>apt<span class="w"> </span>install<span class="w"> </span>dnsmasq<span class="w"> </span>-y
+</code></pre></div>
+
+<p>Remove the dnsmasq config:</p>
+<div class="codehilite"><pre><span></span><code>rm<span class="w"> </span>-rf<span class="w"> </span>/etc/dnsmasq.conf
+</code></pre></div>
+
+<p>Edit the dnsmasq config:</p>
+<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>/etc/dnsmasq.conf
+</code></pre></div>
+
+<p>add these lines:</p>
+<h1>Global Settings</h1>
+<div class="codehilite"><pre><span></span><code><span class="n">server</span><span class="o">=</span><span class="mf">1.1</span><span class="o">.</span><span class="mf">1.1</span>
+<span class="n">server</span><span class="o">=</span><span class="mf">8.8</span><span class="o">.</span><span class="mf">8.8</span>
+<span class="n">dhcp</span><span class="o">-</span><span class="n">leasefile</span><span class="o">=/</span><span class="k">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">misc</span><span class="o">/</span><span class="n">dnsmasq</span><span class="o">.</span><span class="n">leases</span>
+<span class="n">bind</span><span class="o">-</span><span class="n">interfaces</span>
+</code></pre></div>
+
+<h1>--- Configuration for vmbr0 ---</h1>
+<div class="codehilite"><pre><span></span><code>interface=vmbr0
+dhcp-range=set:net0,10.10.0.1,10.10.0.200,24h
+dhcp-option=tag:net0,3,10.10.0.1
+</code></pre></div>
+
+<p>Save and restart dnsmasq:</p>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>restart<span class="w"> </span>dnsmasq
+systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>dnsmasq
+</code></pre></div>
+
+<h3>Step 16 — Apply the Network Configuration</h3>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>restart<span class="w"> </span>networking
+</code></pre></div>
+
+<p>Test that WiFi is connected:</p>
+<div class="codehilite"><pre><span></span><code>ping<span class="w"> </span>-c<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="m">8</span>.8.8.8
+</code></pre></div>
+
+<p>If ping works, your host has internet. If not, check your SSID and password in <code>/etc/network/interfaces</code> and run <code>systemctl restart networking</code> again.</p>
+<hr />
+<h2>Part 5 — Laptop-Specific Settings</h2>
+<h3>Step 17 — Prevent Sleep When Lid is Closed</h3>
+<p>By default, closing a laptop lid suspends it — which kills your Proxmox server. Fix this:</p>
+<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>/etc/systemd/logind.conf
+</code></pre></div>
+
+<p>Find and set these lines (uncomment them if they start with <code>#</code>):</p>
+<div class="codehilite"><pre><span></span><code>HandleLidSwitch=ignore
+HandleLidSwitchExternalPower=ignore
+HandleLidSwitchDocked=ignore
+LidSwitchIgnoreInhibited=no
+</code></pre></div>
+
+<p>Apply the change:</p>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>restart<span class="w"> </span>systemd-logind
+</code></pre></div>
+
+<hr />
+<h2>Part 6 — Access the Proxmox Web Interface</h2>
+<h3>Step 18 — Open Proxmox in a Browser</h3>
+<p>From another device on the same network, open a browser and go to:</p>
+<div class="codehilite"><pre><span></span><code>https://YOUR_LAPTOP_IP:8006
+</code></pre></div>
+
+<p>Replace <code>YOUR_LAPTOP_IP</code> with the IP address you noted earlier (the one from <code>ip a</code>).</p>
+<p>Your browser will show a certificate warning — this is normal. Proxmox uses a self-signed certificate by default. Click <strong>Advanced</strong> → <strong>Proceed</strong> (or equivalent in your browser).</p>
+<p>Log in with:
+- <strong>Username:</strong> <code>root</code>
+- <strong>Password:</strong> your Debian root password
+- <strong>Realm:</strong> Linux PAM standard authentication</p>
+<h3>Step 19 — Disable the Subscription Nag (Optional)</h3>
+<p>Proxmox shows a popup on login saying you have no subscription check <a href="proxmox-no-subscription-repo-setup">proxmox-no-subscription-repo-setup</a> guide to remove it</p>
+<p>The popup will be gone after a browser refresh. This edit is cosmetic only and does not affect functionality.</p>
+<hr />
+<h2>Troubleshooting</h2>
+<h3>WiFi connects but VMs have no internet</h3>
+<p>Make sure IP forwarding and NAT are active:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="m">1</span><span class="w"> </span>&gt;<span class="w"> </span>/proc/sys/net/ipv4/ip_forward
+iptables<span class="w"> </span>-t<span class="w"> </span>nat<span class="w"> </span>-L<span class="w"> </span>-n<span class="w"> </span>-v
+</code></pre></div>
+
+<p>You should see a MASQUERADE rule for <code>10.10.100.0/24</code>. If not, bring <code>vmbr0</code> down and up again:</p>
+<div class="codehilite"><pre><span></span><code>ifdown<span class="w"> </span>vmbr0<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>ifup<span class="w"> </span>vmbr0
+</code></pre></div>
+
+<h3>Can't reach Proxmox web UI on port 8006</h3>
+<p>Check if the service is running:</p>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>status<span class="w"> </span>pveproxy
+</code></pre></div>
+
+<p>Check the port is listening:</p>
+<div class="codehilite"><pre><span></span><code>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="m">8006</span>
+</code></pre></div>
+
+<p>If nothing is listening, Proxmox did not install correctly — re-run <code>apt install proxmox-ve -y</code>.</p>
+<h3>hostname --ip-address returns 127.0.0.1</h3>
+<p>Your <code>/etc/hosts</code> file is wrong. Make sure the line with your actual IP comes before the <code>127.0.1.1</code> line, and that your hostname matches exactly.</p>
+<h3>WiFi card not detected during Debian install</h3>
+<p>Download the <strong>non-free firmware</strong> ISO from the Debian download page (labelled "unofficial non-free"). It includes proprietary drivers for Broadcom, Realtek, and other WiFi chips that require firmware blobs.</p>
+<hr />
+<blockquote>
+<p><strong>Summary:</strong> Install Debian 13 (Trixie) with WiFi working, add the Proxmox no-subscription repo, install <code>proxmox-ve</code>, configure a NAT bridge so VMs can reach the internet through WiFi, and prevent the lid from putting the laptop to sleep. That is everything needed for a fully functional Proxmox home lab on a laptop with no Ethernet.</p>
+</blockquote>

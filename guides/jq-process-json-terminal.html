@@ -1,0 +1,167 @@
+DATA:linux:jq — Process JSON in Terminal:Linux
+<h1>jq — Process JSON in Terminal</h1>
+<p><code>jq</code> parses, filters, and transforms JSON from the command line. Essential for working with APIs, config files, and log files.</p>
+<hr />
+<h2>Install</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>jq<span class="w"> </span>-y<span class="w">      </span><span class="c1"># Ubuntu/Debian</span>
+sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>jq<span class="w"> </span>-y<span class="w">      </span><span class="c1"># Fedora/RHEL</span>
+sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>jq<span class="w">            </span><span class="c1"># Arch</span>
+brew<span class="w"> </span>install<span class="w"> </span>jq<span class="w">              </span><span class="c1"># macOS</span>
+</code></pre></div>
+
+<hr />
+<h2>Basic Usage</h2>
+<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;{&quot;name&quot;:&quot;Alice&quot;,&quot;age&quot;:30}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>.
+<span class="c1"># Pretty-prints the JSON</span>
+
+cat<span class="w"> </span>data.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>.
+<span class="c1"># Pretty-print a file</span>
+</code></pre></div>
+
+<hr />
+<h2>Access Fields</h2>
+<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;{&quot;name&quot;:&quot;Alice&quot;,&quot;age&quot;:30}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.name&#39;</span>
+<span class="c1"># &quot;Alice&quot;</span>
+
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;{&quot;user&quot;:{&quot;name&quot;:&quot;Alice&quot;,&quot;city&quot;:&quot;Beirut&quot;}}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.user.city&#39;</span>
+<span class="c1"># &quot;Beirut&quot;</span>
+
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;{&quot;items&quot;:[1,2,3]}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.items[0]&#39;</span>
+<span class="c1"># 1</span>
+
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;{&quot;items&quot;:[1,2,3]}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.items[-1]&#39;</span>
+<span class="c1"># 3 (last element)</span>
+
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;{&quot;items&quot;:[1,2,3,4,5]}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.items[1:3]&#39;</span>
+<span class="c1"># [2,3] (slice)</span>
+</code></pre></div>
+
+<hr />
+<h2>Arrays</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># All elements</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;[{&quot;name&quot;:&quot;Alice&quot;},{&quot;name&quot;:&quot;Bob&quot;}]&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.[].name&#39;</span>
+<span class="c1"># &quot;Alice&quot;</span>
+<span class="c1"># &quot;Bob&quot;</span>
+
+<span class="c1"># Length</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;[1,2,3]&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;length&#39;</span>
+<span class="c1"># 3</span>
+
+<span class="c1"># Filter array by condition</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;[{&quot;name&quot;:&quot;Alice&quot;,&quot;age&quot;:30},{&quot;name&quot;:&quot;Bob&quot;,&quot;age&quot;:25}]&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>jq<span class="w"> </span><span class="s1">&#39;.[] | select(.age &gt; 28)&#39;</span>
+</code></pre></div>
+
+<hr />
+<h2>Transform and Select</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Extract specific fields</span>
+curl<span class="w"> </span>-s<span class="w"> </span>https://api.github.com/repos/eliekh05/guides<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;{name: .name, stars: .stargazers_count}&#39;</span>
+
+<span class="c1"># Map over array</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;[1,2,3,4]&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;map(. * 2)&#39;</span>
+<span class="c1"># [2,4,6,8]</span>
+
+<span class="c1"># Filter array</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;[1,2,3,4,5]&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;[.[] | select(. &gt; 3)]&#39;</span>
+<span class="c1"># [4,5]</span>
+
+<span class="c1"># Get only values without keys</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;{&quot;a&quot;:1,&quot;b&quot;:2}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;values&#39;</span>
+<span class="c1"># [1,2]</span>
+
+<span class="c1"># Get only keys</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;{&quot;a&quot;:1,&quot;b&quot;:2}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;keys&#39;</span>
+<span class="c1"># [&quot;a&quot;,&quot;b&quot;]</span>
+</code></pre></div>
+
+<hr />
+<h2>Raw Output (No Quotes)</h2>
+<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;{&quot;name&quot;:&quot;Alice&quot;}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;.name&#39;</span>
+<span class="c1"># Alice  (no quotes, useful for scripts)</span>
+</code></pre></div>
+
+<hr />
+<h2>Combine with curl for API Work</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Get JSON from an API and extract a field</span>
+curl<span class="w"> </span>-s<span class="w"> </span>https://api.github.com/users/eliekh05<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.public_repos&#39;</span>
+
+<span class="c1"># Get multiple fields</span>
+curl<span class="w"> </span>-s<span class="w"> </span>https://api.github.com/users/eliekh05<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;{repos: .public_repos, followers: .followers}&#39;</span>
+
+<span class="c1"># Loop through results</span>
+curl<span class="w"> </span>-s<span class="w"> </span>https://api.github.com/users/eliekh05/repos<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.[].name&#39;</span>
+
+<span class="c1"># Get the first result</span>
+curl<span class="w"> </span>-s<span class="w"> </span>https://api.github.com/users/eliekh05/repos<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.[0]&#39;</span>
+</code></pre></div>
+
+<hr />
+<h2>Modify JSON</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Add a field</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;{&quot;name&quot;:&quot;Alice&quot;}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;. + {&quot;age&quot;: 30}&#39;</span>
+
+<span class="c1"># Update a field</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;{&quot;name&quot;:&quot;Alice&quot;,&quot;age&quot;:25}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.age = 30&#39;</span>
+
+<span class="c1"># Delete a field</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;{&quot;name&quot;:&quot;Alice&quot;,&quot;age&quot;:30}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;del(.age)&#39;</span>
+</code></pre></div>
+
+<hr />
+<h2>Compact Output (No Formatting)</h2>
+<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>pretty.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-c<span class="w"> </span>.
+<span class="c1"># Outputs on single line</span>
+</code></pre></div>
+
+<hr />
+<h2>Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>jq .</code></td>
+<td>Pretty-print</td>
+</tr>
+<tr>
+<td><code>jq '.key'</code></td>
+<td>Get field value</td>
+</tr>
+<tr>
+<td><code>jq '.a.b'</code></td>
+<td>Nested field</td>
+</tr>
+<tr>
+<td><code>jq '.[0]'</code></td>
+<td>Array index</td>
+</tr>
+<tr>
+<td><code>jq '.[]'</code></td>
+<td>All array items</td>
+</tr>
+<tr>
+<td><code>jq -r '.key'</code></td>
+<td>Raw output (no quotes)</td>
+</tr>
+<tr>
+<td><code>jq 'length'</code></td>
+<td>Length of array/object</td>
+</tr>
+<tr>
+<td><code>jq 'keys'</code></td>
+<td>Object keys</td>
+</tr>
+<tr>
+<td><code>jq 'map(f)'</code></td>
+<td>Transform array</td>
+</tr>
+<tr>
+<td><code>jq 'select(cond)'</code></td>
+<td>Filter by condition</td>
+</tr>
+</tbody>
+</table>

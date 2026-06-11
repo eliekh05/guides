@@ -1,0 +1,82 @@
+DATA:windows:Fix Windows 11 Slow Boot:Windows
+<h1>Fix Windows 11 Slow Boot</h1>
+<hr />
+<h2>Fix 1 — Disable Startup Apps</h2>
+<p>The most common cause. Apps that launch at startup slow down the boot process significantly.</p>
+<ol>
+<li>Press <strong>Ctrl + Shift + Esc</strong> to open Task Manager.</li>
+<li>Click the <strong>Startup apps</strong> tab.</li>
+<li>Sort by <strong>Startup impact</strong> — look for High impact apps you do not need at startup.</li>
+<li>Right-click → <strong>Disable</strong> for anything you do not need immediately on login.</li>
+</ol>
+<p>Common unnecessary startup items: Spotify, Discord, Teams, OneDrive (if you do not use it), Skype, game launchers.</p>
+<hr />
+<h2>Fix 2 — Disable Fast Startup (Fixes Slow Boot Paradox)</h2>
+<p>Fast Startup is supposed to make Windows boot faster but on many systems it actually causes longer boot times, update hangs, and driver issues.</p>
+<ol>
+<li>Open <strong>Control Panel</strong> → <strong>Power Options</strong> → <strong>Choose what the power buttons do</strong>.</li>
+<li>Click <strong>Change settings that are currently unavailable</strong>.</li>
+<li>Uncheck <strong>Turn on fast startup</strong>.</li>
+<li>Click <strong>Save changes</strong>.</li>
+</ol>
+<p>Restart and check if boot time improves.</p>
+<hr />
+<h2>Fix 3 — Run SFC and DISM</h2>
+<p>Corrupted system files cause slow boots. Fix them:</p>
+<p>Open <strong>Command Prompt as Administrator</strong>:</p>
+<div class="codehilite"><pre><span></span><code>DISM /Online /Cleanup-Image /RestoreHealth
+sfc /scannow
+</code></pre></div>
+
+<p>Restart after both complete.</p>
+<hr />
+<h2>Fix 4 — Adjust Virtual Memory</h2>
+<p>If you have limited RAM, Windows using the wrong page file settings can slow boot:</p>
+<ol>
+<li>Search <strong>Adjust the appearance and performance of Windows</strong> in Start menu.</li>
+<li>Click <strong>Advanced</strong> tab → <strong>Virtual memory</strong> → <strong>Change</strong>.</li>
+<li>Uncheck <strong>Automatically manage paging file size</strong>.</li>
+<li>Select your C: drive → <strong>System managed size</strong> → <strong>Set</strong> → <strong>OK</strong>.</li>
+<li>Restart.</li>
+</ol>
+<hr />
+<h2>Fix 5 — Check SSD Health</h2>
+<p>A failing or degraded SSD slows everything — boot, app launches, and file access.</p>
+<p>Open <strong>PowerShell as Administrator</strong>:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">Get-PhysicalDisk</span> <span class="p">|</span> <span class="nb">Select </span><span class="n">FriendlyName</span><span class="p">,</span> <span class="n">HealthStatus</span><span class="p">,</span> <span class="n">OperationalStatus</span>
+</code></pre></div>
+
+<p>If HealthStatus shows anything other than <strong>Healthy</strong>, the drive is failing.</p>
+<p>Also check with:</p>
+<div class="codehilite"><pre><span></span><code>wmic diskdrive get status
+</code></pre></div>
+
+<hr />
+<h2>Fix 6 — Update or Roll Back Display / Storage Drivers</h2>
+<p>Bad drivers slow the boot process significantly — especially display and storage drivers.</p>
+<ol>
+<li>Press <strong>Windows + X</strong> → <strong>Device Manager</strong>.</li>
+<li>Expand <strong>Display adapters</strong> — right-click your GPU → <strong>Update driver</strong>.</li>
+<li>Expand <strong>Disk drives</strong> — right-click your SSD → <strong>Update driver</strong>.</li>
+<li>If boot was fast before a recent driver update, right-click → <strong>Properties</strong> → <strong>Driver</strong> tab → <strong>Roll Back Driver</strong>.</li>
+</ol>
+<hr />
+<h2>Fix 7 — Clean Boot to Find the Culprit</h2>
+<p>If none of the above work, a third-party service or app is causing the slow boot.</p>
+<ol>
+<li>Press <strong>Windows + R</strong> → type <code>msconfig</code> → Enter.</li>
+<li><strong>Services</strong> tab → check <strong>Hide all Microsoft services</strong> → <strong>Disable all</strong>.</li>
+<li><strong>Startup</strong> tab → <strong>Open Task Manager</strong> → disable all startup items.</li>
+<li>Click <strong>OK</strong> → <strong>Restart</strong>.</li>
+</ol>
+<p>If Windows boots fast in clean boot, re-enable services and startup items in batches to find the culprit.</p>
+<hr />
+<h2>Measure Actual Boot Time</h2>
+<div class="codehilite"><pre><span></span><code><span class="gh">#</span> Check last boot time
+systeminfo | find &quot;Boot Time&quot;
+
+<span class="gh">#</span> Or in PowerShell
+(Get-Date) - (gcim Win32_OperatingSystem).LastBootUpTime
+</code></pre></div>
+
+<p>For detailed boot analysis, open <strong>Event Viewer</strong> → <strong>Applications and Services Logs</strong> → <strong>Microsoft</strong> → <strong>Windows</strong> → <strong>Diagnostics-Performance</strong> → <strong>Operational</strong>. Event ID <strong>100</strong> shows total boot time.</p>

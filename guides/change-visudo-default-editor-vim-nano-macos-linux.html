@@ -1,0 +1,34 @@
+DATA:macos:Change the Visudo Default Editor:macOS
+<h1>Change the Visudo Default Editor</h1>
+<p><code>visudo</code> opens the sudoers file using a default text editor. This guide shows how to switch that editor between <strong>vi</strong> and <strong>nano</strong>.</p>
+<p><strong>Requirements:</strong> Ubuntu 10.04 or later, or macOS 10.8 or later.</p>
+<hr />
+<h2>Steps</h2>
+<ol>
+<li>
+<p>Open <strong>Terminal</strong>.</p>
+</li>
+<li>
+<p>Run the following command to open the sudoers file safely:
+   <code>bash
+   sudo visudo</code></p>
+</li>
+<li>
+<p>Find the line that sets the editor. It will look like one of these:
+   <code>Defaults editor=/usr/bin/vi
+   Defaults editor=/usr/bin/nano</code></p>
+</li>
+<li>
+<p>To switch <strong>to nano</strong>, change it to:
+     <code>Defaults editor=/usr/bin/nano</code></p>
+</li>
+<li>To switch <strong>to vi</strong>, change it to:
+     <code>Defaults editor=/usr/bin/vi</code></li>
+</ol>
+<p>If neither line exists, add your preferred one.</p>
+<ol>
+<li>Save and exit the editor:</li>
+<li><strong>Ubuntu / Linux (nano):</strong> Press <code>Ctrl+X</code>, then <code>Y</code>, then <code>Enter</code>.</li>
+<li><strong>macOS (vi):</strong> Type <code>:wq</code> and press <code>Enter</code>.</li>
+</ol>
+<p>The next time you run <code>sudo visudo</code>, it will open with your chosen editor.</p>

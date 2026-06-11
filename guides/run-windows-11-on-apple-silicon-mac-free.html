@@ -1,0 +1,209 @@
+DATA:installation:Run Windows 11 on Apple Silicon Mac for Free (M1 / M2 / M3 / M4):Installation Guides
+<h1>Run Windows 11 on Apple Silicon Mac for Free (M1 / M2 / M3 / M4)</h1>
+<p>Boot Camp is gone on Apple Silicon Macs. You cannot install Windows natively or dual-boot it. The only supported path is <strong>virtualization</strong> — running Windows inside macOS as a virtual machine. This guide covers two completely free options: <strong>VMware Fusion</strong> (easiest, best performance) and <strong>UTM</strong> (free and open-source).</p>
+<blockquote>
+<p><strong>Important:</strong> Apple Silicon Macs can only run <strong>Windows 11 ARM</strong> — not the standard x86 version. Windows 11 ARM includes a built-in emulation layer that runs most regular Windows apps, but some software (especially antivirus, low-level utilities, and older games) may not work.</p>
+</blockquote>
+<hr />
+<h2>Which Option Should You Choose?</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>VMware Fusion</th>
+<th>UTM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cost</td>
+<td>Free (personal use)</td>
+<td>Free</td>
+</tr>
+<tr>
+<td>Setup difficulty</td>
+<td>Medium</td>
+<td>Medium–Hard</td>
+</tr>
+<tr>
+<td>Performance</td>
+<td>Excellent</td>
+<td>Good</td>
+</tr>
+<tr>
+<td>3D / DirectX</td>
+<td>DirectX 11 via Metal</td>
+<td>No GPU acceleration</td>
+</tr>
+<tr>
+<td>Good for</td>
+<td>Productivity, apps, dev</td>
+<td>Tinkering, lightweight use</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Recommendation:</strong> Use <strong>VMware Fusion</strong> for most users. Use <strong>UTM</strong> if you want fully open-source software or VMware's registration process is a barrier.</p>
+<hr />
+<h2>Option A — VMware Fusion (Free, Best Performance)</h2>
+<p>VMware Fusion is now free for personal use after Broadcom acquired VMware. It supports DirectX 11 via Apple's Metal graphics API and delivers very good performance on all M-series Macs.</p>
+<h3>Step 1 — Register and Download VMware Fusion</h3>
+<ol>
+<li>Go to <a href="https://support.broadcom.com">support.broadcom.com</a>.</li>
+<li>Create a free account (required — there is no way around this).</li>
+<li>After logging in, go to <strong>My Downloads</strong>.</li>
+<li>Search for <strong>VMware Fusion</strong>.</li>
+<li>Select the latest version for macOS and download it.</li>
+<li>Open the <code>.dmg</code> and drag VMware Fusion to your Applications folder.</li>
+</ol>
+<h3>Step 2 — Get the Windows 11 ARM ISO</h3>
+<p>Microsoft does not sell Windows 11 ARM directly to individuals, but it is available free through the <strong>Windows Insider Preview</strong> program.</p>
+<ol>
+<li>Go to <a href="https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewARM64">microsoft.com/en-us/software-download/windowsinsiderpreviewARM64</a>.</li>
+<li>Sign in with a free Microsoft account.</li>
+<li>Join the <strong>Windows Insider Program</strong> if prompted — choose the <strong>Release Preview</strong> channel (most stable).</li>
+<li>Select <strong>Windows 11 Client ARM64 Insider Preview</strong> and download the ISO. It is about 5–6 GB.</li>
+</ol>
+<blockquote>
+<p><strong>Alternative:</strong> Some versions of VMware Fusion have a <strong>"Get Windows"</strong> button built into the new VM wizard that downloads the ISO for you automatically. Try this first when creating a new VM — it saves steps.</p>
+</blockquote>
+<h3>Step 3 — Create the Windows 11 Virtual Machine</h3>
+<ol>
+<li>Open <strong>VMware Fusion</strong>.</li>
+<li>Click <strong>+</strong> → <strong>New Virtual Machine</strong>.</li>
+<li>Choose <strong>Install from disc or image</strong> and click <strong>Continue</strong>.</li>
+<li>Drag your Windows 11 ARM ISO into the window, or click <strong>Choose a disc or disc image</strong> to locate it.</li>
+<li>VMware will detect it as Windows 11 ARM automatically.</li>
+<li>Click <strong>Continue</strong> → <strong>Finish</strong>.</li>
+<li>VMware may ask to confirm firmware settings — accept the defaults (UEFI with Secure Boot enabled).</li>
+</ol>
+<h3>Step 4 — Install Windows</h3>
+<ol>
+<li>The VM will start and boot into the Windows installer automatically.</li>
+<li>Select your language and keyboard layout.</li>
+<li>Click <strong>Install now</strong>.</li>
+<li>When asked for a product key, click <strong>I don't have a product key</strong> — you can activate later with a Windows 11 license, or use it unactivated for evaluation (minor cosmetic limitations apply).</li>
+<li>Select <strong>Windows 11 Pro</strong> and click <strong>Next</strong>.</li>
+<li>Accept the license agreement.</li>
+<li>Choose <strong>Custom: Install Windows only</strong>.</li>
+<li>Select the virtual disk and click <strong>Next</strong>. Installation takes 10–20 minutes.</li>
+</ol>
+<h3>Step 5 — Install VMware Tools (Important)</h3>
+<p>After Windows finishes installing and you reach the desktop:</p>
+<ol>
+<li>In the VMware Fusion menu bar, go to <strong>Virtual Machine</strong> → <strong>Install VMware Tools</strong>.</li>
+<li>A disc image will mount inside Windows. Open it in File Explorer.</li>
+<li>Run <strong>setup.exe</strong> and follow the prompts.</li>
+<li>Restart the VM when prompted.</li>
+</ol>
+<p>VMware Tools installs drivers for display scaling, clipboard sharing between macOS and Windows, and better mouse integration.</p>
+<h3>Step 6 — Configure for Best Performance (Optional)</h3>
+<ol>
+<li>Shut down the Windows VM.</li>
+<li>In VMware Fusion, select the VM and click <strong>Settings</strong> (the wrench icon).</li>
+<li>Under <strong>Processors &amp; Memory</strong>: allocate at least <strong>4 GB RAM</strong> (8 GB recommended if your Mac has 16 GB+) and <strong>4 CPU cores</strong>.</li>
+<li>Under <strong>Display</strong>: enable <strong>Accelerate 3D Graphics</strong> for better performance.</li>
+<li>Start the VM again.</li>
+</ol>
+<hr />
+<h2>Option B — UTM (Fully Free and Open-Source)</h2>
+<p>UTM is a free macOS app that wraps QEMU. It is a good option if you want entirely open-source software or prefer not to register with Broadcom. Performance is slightly lower than VMware Fusion, and there is no 3D/DirectX acceleration.</p>
+<h3>Step 1 — Download UTM</h3>
+<ul>
+<li><strong>Free version:</strong> <a href="https://mac.getutm.app">mac.getutm.app</a> — download and drag to Applications.</li>
+<li><strong>Mac App Store version:</strong> $9.99 — same app, gets automatic updates.</li>
+</ul>
+<h3>Step 2 — Get the Windows 11 ARM ISO</h3>
+<p>Use the same Microsoft Insider Preview method from <strong>Option A, Step 2</strong> above.</p>
+<p>Alternatively, use <strong>CrystalFetch</strong> (free Mac App Store app) which automates the ISO download for you:
+1. Install CrystalFetch from the Mac App Store.
+2. Open it, select <strong>Windows 11 ARM64</strong>, and click Download.
+3. It will download the official ISO directly from Microsoft.</p>
+<h3>Step 3 — Create the Virtual Machine</h3>
+<ol>
+<li>Open <strong>UTM</strong> and click <strong>+</strong> (Create a New Virtual Machine).</li>
+<li>Select <strong>Virtualize</strong> (not Emulate — this runs natively on ARM for full speed).</li>
+<li>Select <strong>Windows</strong>.</li>
+<li>Check <strong>Import VHDX Image</strong> — leave this unchecked unless you have an existing VHDX.</li>
+<li>Under <strong>Boot ISO Image</strong>, click <strong>Browse</strong> and select your Windows 11 ARM ISO.</li>
+<li>Click <strong>Continue</strong>.</li>
+<li>Set <strong>Memory</strong> to at least 4096 MB (4 GB). 8 GB is better.</li>
+<li>Set <strong>CPU Cores</strong> to 4.</li>
+<li>Set <strong>Storage</strong> to at least 64 GB.</li>
+<li>Click <strong>Continue</strong> → <strong>Save</strong>.</li>
+</ol>
+<h3>Step 4 — Install Windows</h3>
+<ol>
+<li>Click the <strong>Play</strong> button to start the VM.</li>
+<li>When you see "Press any key to boot from CD/DVD..." — click inside the VM window and press any key quickly.</li>
+<li>The Windows installer will start. Follow the same steps as Option A, Step 4.</li>
+<li>Installation takes 15–25 minutes.</li>
+</ol>
+<h3>Step 5 — Install SPICE Guest Tools</h3>
+<p>After Windows is installed and you are at the desktop:</p>
+<ol>
+<li>In UTM's toolbar, click the drive icon and select <strong>Install Guest Tools</strong> — this mounts the SPICE tools disc inside Windows.</li>
+<li>In Windows, open File Explorer → This PC, and run the <code>spice-guest-tools</code> installer from the mounted drive.</li>
+<li>Restart the VM.</li>
+</ol>
+<p>SPICE tools enable clipboard sharing and better display resolution support.</p>
+<h3>Step 6 — Fix Network if Not Working</h3>
+<p>Some users find that network stops working after installing guest tools. If this happens:</p>
+<ol>
+<li>Shut down the VM.</li>
+<li>In UTM, click <strong>Edit</strong> (the sliders icon) on your VM.</li>
+<li>Go to <strong>Network</strong> → change <strong>Network Mode</strong> from <strong>Shared Network</strong> to <strong>Emulated VLAN</strong>.</li>
+<li>Start the VM again.</li>
+</ol>
+<hr />
+<h2>Shared Folder Between macOS and Windows</h2>
+<h3>VMware Fusion:</h3>
+<p>Go to <strong>Settings</strong> → <strong>Sharing</strong> → enable <strong>Share Mac folder with Windows</strong> and choose a folder.</p>
+<h3>UTM:</h3>
+<ol>
+<li>In UTM settings for the VM, go to <strong>Shared Directory</strong> and select a macOS folder.</li>
+<li>Inside Windows, open File Explorer. The shared folder appears as a network drive under <strong>\mac\Shared</strong>.</li>
+</ol>
+<hr />
+<h2>Limitations on Apple Silicon</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Works?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard Windows x86 apps</td>
+<td>✅ Most work via ARM emulation</td>
+</tr>
+<tr>
+<td>Office, browsers, productivity apps</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td>DirectX 11 games (VMware)</td>
+<td>✅ Many work</td>
+</tr>
+<tr>
+<td>DirectX 12 games</td>
+<td>❌ Not supported</td>
+</tr>
+<tr>
+<td>Antivirus software</td>
+<td>⚠️ Varies by vendor</td>
+</tr>
+<tr>
+<td>Windows Hello</td>
+<td>❌ No biometric hardware</td>
+</tr>
+<tr>
+<td>Native dual boot</td>
+<td>❌ Not possible on Apple Silicon</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<blockquote>
+<p><strong>Summary:</strong> VMware Fusion is the better choice for most people — more polished, better performance, and DirectX 11 support. UTM is the right pick if you want fully open-source software and do not mind a slightly more manual process. Both are completely free.</p>
+</blockquote>

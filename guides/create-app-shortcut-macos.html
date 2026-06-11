@@ -1,0 +1,141 @@
+DATA:macos:Create a .app Shortcut on macOS:macOS
+<h1>Create a .app Shortcut on macOS</h1>
+<p>Sometimes you want a clickable <code>.app</code> file that runs a script, opens a specific URL, launches another app with certain settings, or chains multiple actions together. macOS has two built-in ways to do this — Script Editor for simple AppleScript apps, and Automator for more complex workflows.</p>
+<hr />
+<h2>Method 1 — Script Editor (Simplest)</h2>
+<p>Script Editor lets you write a few lines of AppleScript and save the result as a double-clickable <code>.app</code> file.</p>
+<ol>
+<li>Open <strong>Script Editor</strong> (Applications → Utilities → Script Editor, or search with Spotlight).</li>
+<li>Write your script. Examples:</li>
+</ol>
+<p><strong>Open a specific website in the default browser:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="nb">open location</span> <span class="s2">&quot;https://example.com&quot;</span>
+</code></pre></div>
+
+<p><strong>Open a folder in Finder:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Finder&quot;</span>
+    <span class="nb">open</span> <span class="nv">POSIX</span> <span class="nv">file</span> <span class="s2">&quot;/Users/yourname/Documents/MyProject&quot;</span>
+    <span class="nb">activate</span>
+<span class="k">end</span> <span class="k">tell</span>
+</code></pre></div>
+
+<p><strong>Run a shell command:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="nb">do shell script</span> <span class="s2">&quot;your-command-here&quot;</span>
+</code></pre></div>
+
+<p><strong>Run a shell command with admin rights:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="nb">do shell script</span> <span class="s2">&quot;your-command-here&quot;</span> <span class="nv">with</span> <span class="nv">administrator</span> <span class="nv">privileges</span>
+</code></pre></div>
+
+<p><strong>Launch an app and open a file:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="k">tell</span> <span class="nb">application</span> <span class="s2">&quot;Visual Studio Code&quot;</span>
+    <span class="nb">open</span> <span class="s2">&quot;/Users/yourname/Projects/myproject&quot;</span>
+    <span class="nb">activate</span>
+<span class="k">end</span> <span class="k">tell</span>
+</code></pre></div>
+
+<ol>
+<li>Press <strong>Command + R</strong> to test the script.</li>
+<li>Go to <strong>File</strong> → <strong>Export</strong>.</li>
+<li>Set <strong>File Format</strong> to <strong>Application</strong>.</li>
+<li>Choose where to save it and click <strong>Save</strong>.</li>
+</ol>
+<p>The result is a <code>.app</code> file you can double-click, put in your Dock, or add to Login Items.</p>
+<hr />
+<h2>Method 2 — Automator (More Powerful)</h2>
+<p>Automator is better for workflows involving multiple steps, file operations, or things that do not fit into a few lines of AppleScript.</p>
+<ol>
+<li>Open <strong>Automator</strong> (Applications → Automator).</li>
+<li>Click <strong>New Document</strong> → select <strong>Application</strong> → click <strong>Choose</strong>.</li>
+<li>In the left panel search bar, search for the action you want. Drag it into the workflow area on the right.</li>
+</ol>
+<p><strong>Common useful actions:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Launch Application</strong></td>
+<td>Opens a specific app</td>
+</tr>
+<tr>
+<td><strong>Run Shell Script</strong></td>
+<td>Runs any Terminal command</td>
+</tr>
+<tr>
+<td><strong>Run AppleScript</strong></td>
+<td>Runs AppleScript code</td>
+</tr>
+<tr>
+<td><strong>Open URLs</strong></td>
+<td>Opens one or more URLs</td>
+</tr>
+<tr>
+<td><strong>Get Specified Finder Items</strong></td>
+<td>Selects specific files to pass to the next action</td>
+</tr>
+<tr>
+<td><strong>Move Finder Items</strong></td>
+<td>Moves selected files to a folder</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Chain actions by dragging multiple ones into the workflow — output from one feeds into the next.</li>
+<li>Click <strong>Run</strong> (play button) to test.</li>
+<li><strong>File</strong> → <strong>Save</strong> → the file saves as a <code>.app</code> automatically.</li>
+</ol>
+<hr />
+<h2>Method 3 — Shell Script as .app via Automator</h2>
+<p>The easiest way to turn a shell script into a clickable app:</p>
+<ol>
+<li>Open <strong>Automator</strong> → <strong>New Document</strong> → <strong>Application</strong>.</li>
+<li>Search for <strong>Run Shell Script</strong> in the action library and drag it in.</li>
+<li>Paste your shell script into the text area.</li>
+<li>Set <strong>Shell</strong> to <code>/bin/zsh</code> (default on modern macOS).</li>
+<li><strong>File</strong> → <strong>Save</strong> → save as a <code>.app</code>.</li>
+</ol>
+<p>Example — a one-click Homebrew update app:</p>
+<div class="codehilite"><pre><span></span><code>/opt/homebrew/bin/brew<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>/opt/homebrew/bin/brew<span class="w"> </span>upgrade<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>/opt/homebrew/bin/brew<span class="w"> </span>cleanup
+</code></pre></div>
+
+<blockquote>
+<p>Always use full paths in Automator shell scripts — <code>/opt/homebrew/bin/brew</code> not just <code>brew</code> — because Automator does not load your shell PATH.</p>
+</blockquote>
+<hr />
+<h2>Add to Dock</h2>
+<p>Drag any <code>.app</code> file to your Dock. It will stay there permanently.</p>
+<hr />
+<h2>Change the App Icon</h2>
+<p>To give your custom app a custom icon:</p>
+<ol>
+<li>Find an image you want to use (<code>.png</code> or <code>.icns</code>).</li>
+<li>Open the image in <strong>Preview</strong> → <strong>Edit</strong> → <strong>Select All</strong> → <strong>Copy</strong> (Command + C).</li>
+<li>Right-click your <code>.app</code> file → <strong>Get Info</strong>.</li>
+<li>Click the small icon in the top-left of the Get Info window (it gets highlighted).</li>
+<li>Press <strong>Command + V</strong> to paste the new icon.</li>
+</ol>
+<hr />
+<h2>Add to Login Items (Auto-Launch at Startup)</h2>
+<ol>
+<li><strong>System Settings</strong> → <strong>General</strong> → <strong>Login Items &amp; Extensions</strong>.</li>
+<li>Under <strong>Open at Login</strong>, click <strong>+</strong> and select your <code>.app</code> file.</li>
+</ol>
+<hr />
+<h2>Troubleshooting</h2>
+<h3>App opens then immediately closes</h3>
+<p>The script ran and finished — this is normal if the script has no UI. If you want it to stay open, add a dialog at the end:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">display dialog</span> <span class="s2">&quot;Done!&quot;</span> <span class="nb">buttons</span> <span class="p">{</span><span class="s2">&quot;OK&quot;</span><span class="p">}</span> <span class="nv">default</span> <span class="nb">button</span> <span class="s2">&quot;OK&quot;</span>
+</code></pre></div>
+
+<h3>"App is damaged and can't be opened"</h3>
+<p>Your app was saved to a location that got quarantined. Run in Terminal:</p>
+<div class="codehilite"><pre><span></span><code>xattr<span class="w"> </span>-r<span class="w"> </span>-d<span class="w"> </span>com.apple.quarantine<span class="w"> </span>/path/to/YourApp.app
+</code></pre></div>
+
+<h3>Shell commands not found in Automator</h3>
+<p>Use full paths: <code>/opt/homebrew/bin/brew</code>, <code>/usr/bin/python3</code>, <code>/usr/local/bin/node</code> etc.</p>

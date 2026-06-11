@@ -1,0 +1,173 @@
+DATA:installation:Install ChromeOS with Brunch Framework on a Laptop:Installation Guides
+<h1>Install ChromeOS with Brunch Framework on a Laptop</h1>
+<blockquote>
+<p>⚠️ <strong>Read this before starting.</strong> Brunch is still technically working but is increasingly unreliable on newer Chrome OS versions and has no active developer support. Issues reported on GitHub as recently as 2026 are going unanswered. If your goal is simply to run ChromeOS on a PC laptop, <strong><a href="install-chrome-os-flex-laptop-pc">Chrome OS Flex</a></strong> is the official, maintained, and far easier alternative. Use Brunch only if you specifically need Google Play Store or Android app support, which Chrome OS Flex does not have.</p>
+<p><strong>Hardware requirement:</strong> Brunch only supports <strong>Intel 8th gen or newer</strong>, or <strong>AMD Ryzen</strong>. Older Intel CPUs are not supported — use Chrome OS Flex instead.</p>
+<p>⚠️ <strong>Installing ChromeOS with Brunch will erase all data on your internal storage.</strong> Back up everything first.</p>
+</blockquote>
+<hr />
+<h2>Why Use Brunch Instead of Chrome OS Flex?</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Brunch</th>
+<th>Chrome OS Flex</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Google Play Store / Android apps</td>
+<td>✅ Yes</td>
+<td>❌ No</td>
+</tr>
+<tr>
+<td>Linux (Crostini)</td>
+<td>✅ Yes</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td>Official Google support</td>
+<td>❌ No</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td>Works on older Intel CPUs (pre-8th gen)</td>
+<td>❌ No</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td>Ease of setup</td>
+<td>Hard</td>
+<td>Easy</td>
+</tr>
+<tr>
+<td>Actively maintained</td>
+<td>⚠️ Barely</td>
+<td>✅ Yes</td>
+</tr>
+</tbody>
+</table>
+<p>If you do not need Android apps, use Chrome OS Flex. If you do, continue with this guide.</p>
+<hr />
+<h2>Requirements</h2>
+<ul>
+<li><strong>Intel 8th gen+ or AMD Ryzen CPU</strong> (check with <code>lscpu</code> in Linux or Task Manager → CPU on Windows)</li>
+<li><strong>UEFI firmware</strong> (must be enabled in BIOS — Legacy BIOS is not supported)</li>
+<li><strong>16 GB+ USB drive</strong> (for the Ubuntu live environment)</li>
+<li><strong>Wi-Fi or Ethernet</strong> connection</li>
+<li><strong>ChromeOS Recovery Image</strong> — download from <a href="https://cros.download/recovery">cros.download/recovery</a></li>
+<li><strong>Brunch Framework</strong> — download latest release from <a href="https://github.com/sebanc/brunch/releases">github.com/sebanc/brunch/releases</a></li>
+<li><strong>Ubuntu ISO</strong> — <a href="https://ubuntu.com/download/desktop">ubuntu.com/download/desktop</a></li>
+<li><strong>balenaEtcher</strong> — <a href="https://etcher.balena.io">etcher.balena.io</a></li>
+</ul>
+<hr />
+<h2>Part 1 — Choose the Right ChromeOS Recovery Image</h2>
+<p>Each ChromeOS image is built for specific hardware. Choose based on your CPU generation:</p>
+<table>
+<thead>
+<tr>
+<th>CPU Generation</th>
+<th>Board Name to Use</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8th–10th Gen Intel</td>
+<td><code>hatch</code></td>
+<td>Most compatible for this range</td>
+</tr>
+<tr>
+<td>11th Gen Intel</td>
+<td><code>volteer</code></td>
+<td></td>
+</tr>
+<tr>
+<td>12th–13th Gen Intel</td>
+<td><code>brya</code></td>
+<td></td>
+</tr>
+<tr>
+<td>AMD Ryzen</td>
+<td><code>guybrush</code> or <code>zork</code></td>
+<td>Try both if one does not boot</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> These are starting points. If one board does not boot, try another from the same generation. Community forums like <a href="https://reddit.com/r/Brunch">r/Brunch</a> have per-model recommendations.</p>
+</blockquote>
+<p>At <a href="https://cros.download/recovery">cros.download/recovery</a>, search for your board name and download the latest <code>.bin.zip</code> file.</p>
+<hr />
+<h2>Part 2 — Create a Bootable Ubuntu USB</h2>
+<ol>
+<li>Download the Ubuntu ISO and open <strong>balenaEtcher</strong>.</li>
+<li>Select the Ubuntu ISO → select your USB drive → click <strong>Flash</strong>.</li>
+<li>Wait for it to finish.</li>
+</ol>
+<hr />
+<h2>Part 3 — Boot from the USB</h2>
+<ol>
+<li>Insert the USB into your laptop.</li>
+<li>Restart and enter the boot menu — usually <strong>F12</strong>, <strong>F9</strong>, <strong>Esc</strong>, or <strong>Del</strong> depending on your manufacturer.</li>
+<li>Select the USB drive.</li>
+<li>At the GRUB menu, select <strong>Try or Install Ubuntu</strong>.</li>
+<li>Select <strong>Try Ubuntu</strong> — do not install it.</li>
+</ol>
+<hr />
+<h2>Part 4 — Install ChromeOS with Brunch</h2>
+<blockquote>
+<p>⚠️ <strong>Triple-check the destination drive.</strong> The next step will erase it completely. Run <code>lsblk</code> to identify your internal drive by size.</p>
+</blockquote>
+<ol>
+<li>
+<p>Download the <strong>Brunch Framework ZIP</strong> from GitHub into the Ubuntu live session (use Firefox in Ubuntu).</p>
+</li>
+<li>
+<p>Extract the Brunch ZIP — right-click → Extract Here.</p>
+</li>
+<li>
+<p>Extract the ChromeOS <code>.bin.zip</code> file — right-click → Extract Here.</p>
+</li>
+<li>
+<p>Copy the <code>.bin</code> file into the Brunch folder.</p>
+</li>
+<li>
+<p>Open <strong>Terminal</strong> (Ctrl+Alt+T in Ubuntu) and navigate to the Brunch folder:
+   <code>bash
+   cd ~/Downloads/brunch_folder_name</code></p>
+</li>
+<li>
+<p>Check your internal drive:
+   <code>bash
+   lsblk</code>
+   Identify it by size — usually <code>/dev/nvme0n1</code> (NVMe SSD) or <code>/dev/sda</code> (SATA).</p>
+</li>
+<li>
+<p>Run the installer:
+   <code>bash
+   sudo bash chromeos-install.sh -src YOUR_RECOVERY_FILE.bin -dst /dev/YOUR_DRIVE</code>
+   Replace <code>YOUR_RECOVERY_FILE.bin</code> with the actual filename and <code>/dev/YOUR_DRIVE</code> with your internal drive.</p>
+</li>
+<li>
+<p>Type <code>Y</code> when prompted to confirm.</p>
+</li>
+<li>
+<p>Wait for <strong>"Installation complete"</strong> — do not interrupt this.</p>
+</li>
+<li>
+<p>Shut down. Remove the USB drive. Power on.</p>
+</li>
+</ol>
+<hr />
+<h2>Part 5 — First Boot and Setup</h2>
+<p>ChromeOS will take a few minutes on the first boot as it expands the partition. If it boots to a ChromeOS setup screen, everything worked. Sign in with your Google account.</p>
+<p>If it does not boot (black screen or boot loop):
+- Try a different board image (same CPU generation, different board name)
+- Make sure UEFI is enabled and Secure Boot is disabled in BIOS
+- Check <a href="https://github.com/sebanc/brunch/issues">github.com/sebanc/brunch/issues</a> for your specific symptom</p>
+<hr />
+<blockquote>
+<p><strong>Summary:</strong> Brunch is for people who specifically need Android apps on a non-Chromebook PC. It is harder to set up, less reliable than Chrome OS Flex, and barely maintained. If you just want ChromeOS on a laptop, use Chrome OS Flex instead — it takes 20 minutes and just works.</p>
+</blockquote>

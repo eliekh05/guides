@@ -1,0 +1,62 @@
+DATA:windows:Fix Windows 11 No Internet After Update:Windows
+<h1>Fix Windows 11 No Internet After Update</h1>
+<p>After a Windows update, network adapters sometimes lose their settings or drivers get corrupted. Here is how to fix it.</p>
+<hr />
+<h2>Fix 1 — Reset Network Stack</h2>
+<p>Open <strong>Command Prompt as Administrator</strong> and run all of these:</p>
+<div class="codehilite"><pre><span></span><code>netsh winsock reset
+netsh int ip reset
+netsh int tcp reset
+ipconfig /release
+ipconfig /flushdns
+ipconfig /renew
+</code></pre></div>
+
+<p>Restart your PC and test.</p>
+<hr />
+<h2>Fix 2 — Reinstall Network Adapter Driver</h2>
+<ol>
+<li>Right-click Start → <strong>Device Manager</strong>.</li>
+<li>Expand <strong>Network adapters</strong>.</li>
+<li>Right-click your adapter → <strong>Uninstall device</strong>.</li>
+<li>Check <strong>Attempt to remove the driver for this device</strong>.</li>
+<li>Click <strong>Uninstall</strong>.</li>
+<li>Restart Windows — it reinstalls the driver automatically.</li>
+</ol>
+<hr />
+<h2>Fix 3 — Run Network Troubleshooter</h2>
+<p><strong>Settings → System → Troubleshoot → Other troubleshooters → Internet Connections → Run</strong></p>
+<hr />
+<h2>Fix 4 — Reset TCP/IP and Winsock More Thoroughly</h2>
+<div class="codehilite"><pre><span></span><code>netsh int ip reset resetlog.txt
+netsh winsock reset catalog
+netsh advfirewall reset
+</code></pre></div>
+
+<p>Restart after running these.</p>
+<hr />
+<h2>Fix 5 — Check DHCP Service Is Running</h2>
+<div class="codehilite"><pre><span></span><code>sc query dhcp
+net start dhcp
+</code></pre></div>
+
+<p>Or in <strong>Services</strong> (<code>services.msc</code>): find <strong>DHCP Client</strong> → make sure it is <strong>Running</strong> and set to <strong>Automatic</strong>.</p>
+<hr />
+<h2>Fix 6 — Roll Back Network Driver</h2>
+<p>If a specific driver update broke connectivity:</p>
+<ol>
+<li><strong>Device Manager</strong> → <strong>Network adapters</strong> → right-click your adapter → <strong>Properties</strong>.</li>
+<li><strong>Driver</strong> tab → <strong>Roll Back Driver</strong> (if available).</li>
+</ol>
+<hr />
+<h2>Fix 7 — Update or Manually Install the Driver</h2>
+<p>If rolling back is not available and the automatically reinstalled driver still does not work:</p>
+<ol>
+<li>Note your adapter name from Device Manager.</li>
+<li>Go to your laptop/motherboard manufacturer's website and download the network driver manually.</li>
+<li>Install it.</li>
+</ol>
+<hr />
+<h2>Fix 8 — Reset Network Settings Completely</h2>
+<p><strong>Settings → Network &amp; Internet → Advanced network settings → Network reset</strong></p>
+<p>This removes all network adapters and resets all networking components. You will need to re-enter WiFi passwords.</p>

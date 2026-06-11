@@ -1,0 +1,135 @@
+DATA:linux:tar — Archive and Compress Files (Linux and macOS):Linux
+<h1>tar — Archive and Compress Files (Linux and macOS)</h1>
+<p><code>tar</code> is the standard archiving tool on Linux and macOS. The flags confuse people. This is the complete reference.</p>
+<hr />
+<h2>The Essential Commands</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Create a .tar.gz archive</span>
+tar<span class="w"> </span>-czf<span class="w"> </span>archive.tar.gz<span class="w"> </span>folder/
+
+<span class="c1"># Extract a .tar.gz archive</span>
+tar<span class="w"> </span>-xzf<span class="w"> </span>archive.tar.gz
+
+<span class="c1"># Create a .tar.bz2 (smaller, slower)</span>
+tar<span class="w"> </span>-cjf<span class="w"> </span>archive.tar.bz2<span class="w"> </span>folder/
+
+<span class="c1"># Extract .tar.bz2</span>
+tar<span class="w"> </span>-xjf<span class="w"> </span>archive.tar.bz2
+
+<span class="c1"># Create .tar.xz (smallest, slowest)</span>
+tar<span class="w"> </span>-cJf<span class="w"> </span>archive.tar.xz<span class="w"> </span>folder/
+
+<span class="c1"># Extract .tar.xz</span>
+tar<span class="w"> </span>-xJf<span class="w"> </span>archive.tar.xz
+
+<span class="c1"># Extract to a specific directory</span>
+tar<span class="w"> </span>-xzf<span class="w"> </span>archive.tar.gz<span class="w"> </span>-C<span class="w"> </span>/path/to/destination/
+
+<span class="c1"># List contents without extracting</span>
+tar<span class="w"> </span>-tzf<span class="w"> </span>archive.tar.gz
+</code></pre></div>
+
+<hr />
+<h2>Flag Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>c</code></td>
+<td>Create archive</td>
+</tr>
+<tr>
+<td><code>x</code></td>
+<td>Extract</td>
+</tr>
+<tr>
+<td><code>t</code></td>
+<td>List contents</td>
+</tr>
+<tr>
+<td><code>f</code></td>
+<td>Next argument is the filename (always use this)</td>
+</tr>
+<tr>
+<td><code>v</code></td>
+<td>Verbose — show each file</td>
+</tr>
+<tr>
+<td><code>z</code></td>
+<td>gzip compression (.tar.gz)</td>
+</tr>
+<tr>
+<td><code>j</code></td>
+<td>bzip2 compression (.tar.bz2)</td>
+</tr>
+<tr>
+<td><code>J</code></td>
+<td>xz compression (.tar.xz)</td>
+</tr>
+<tr>
+<td><code>C</code></td>
+<td>Change to directory before operation</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Memory trick:</strong> <code>czf</code> = Create Zipped File. <code>xzf</code> = eXtract Zipped File.</p>
+<hr />
+<h2>Useful Options</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Exclude a folder</span>
+tar<span class="w"> </span>-czf<span class="w"> </span>archive.tar.gz<span class="w"> </span>folder/<span class="w"> </span>--exclude<span class="o">=</span><span class="s1">&#39;folder/.git&#39;</span>
+
+<span class="c1"># Exclude multiple patterns</span>
+tar<span class="w"> </span>-czf<span class="w"> </span>archive.tar.gz<span class="w"> </span>folder/<span class="w"> </span>--exclude<span class="o">=</span><span class="s1">&#39;*.log&#39;</span><span class="w"> </span>--exclude<span class="o">=</span><span class="s1">&#39;node_modules&#39;</span>
+
+<span class="c1"># Verbose — show progress</span>
+tar<span class="w"> </span>-czvf<span class="w"> </span>archive.tar.gz<span class="w"> </span>folder/
+
+<span class="c1"># Append files to existing archive (uncompressed tar only)</span>
+tar<span class="w"> </span>-rf<span class="w"> </span>archive.tar<span class="w"> </span>newfile.txt
+
+<span class="c1"># Extract only specific files</span>
+tar<span class="w"> </span>-xzf<span class="w"> </span>archive.tar.gz<span class="w"> </span>folder/specific-file.txt
+
+<span class="c1"># Show size of archive before creating (dry run)</span>
+tar<span class="w"> </span>-czvf<span class="w"> </span>/dev/null<span class="w"> </span>folder/<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l
+</code></pre></div>
+
+<hr />
+<h2>Multi-Format Extract (Auto-detect)</h2>
+<p>Use this function in <code>~/.zshrc</code> to extract any archive type:</p>
+<div class="codehilite"><pre><span></span><code>extract<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="k">in</span>
+<span class="w">        </span>*.tar.gz<span class="p">|</span>*.tgz<span class="o">)</span><span class="w">   </span>tar<span class="w"> </span>-xzf<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span>*.tar.bz2<span class="p">|</span>*.tbz2<span class="o">)</span><span class="w"> </span>tar<span class="w"> </span>-xjf<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span>*.tar.xz<span class="o">)</span><span class="w">          </span>tar<span class="w"> </span>-xJf<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span>*.tar<span class="o">)</span><span class="w">             </span>tar<span class="w"> </span>-xf<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span>*.gz<span class="o">)</span><span class="w">              </span>gunzip<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span>*.bz2<span class="o">)</span><span class="w">             </span>bunzip2<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span>*.zip<span class="o">)</span><span class="w">             </span>unzip<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span>*.7z<span class="o">)</span><span class="w">              </span>7z<span class="w"> </span>x<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span>*<span class="o">)</span><span class="w">                 </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Unknown format: </span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">    </span><span class="k">esac</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<hr />
+<h2>Common Real Uses</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Backup a directory with date in filename</span>
+tar<span class="w"> </span>-czf<span class="w"> </span>backup-<span class="k">$(</span>date<span class="w"> </span>+%Y%m%d<span class="k">)</span>.tar.gz<span class="w"> </span>/home/user/data/
+
+<span class="c1"># Create archive and pipe to remote server (no temp file needed)</span>
+tar<span class="w"> </span>-czf<span class="w"> </span>-<span class="w"> </span>/home/user/data/<span class="w"> </span><span class="p">|</span><span class="w"> </span>ssh<span class="w"> </span>user@server<span class="w"> </span><span class="s2">&quot;cat &gt; backup.tar.gz&quot;</span>
+
+<span class="c1"># Extract and pipe from remote (no local temp file)</span>
+ssh<span class="w"> </span>user@server<span class="w"> </span><span class="s2">&quot;cat backup.tar.gz&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tar<span class="w"> </span>-xzf<span class="w"> </span>-
+
+<span class="c1"># Compare archive contents with current files</span>
+tar<span class="w"> </span>-dzf<span class="w"> </span>archive.tar.gz
+
+<span class="c1"># Test archive integrity</span>
+tar<span class="w"> </span>-tzf<span class="w"> </span>archive.tar.gz<span class="w"> </span>&gt;<span class="w"> </span>/dev/null<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Corrupted&quot;</span>
+</code></pre></div>

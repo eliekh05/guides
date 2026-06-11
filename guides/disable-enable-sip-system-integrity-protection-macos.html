@@ -1,0 +1,149 @@
+DATA:security:Disable and Enable SIP (System Integrity Protection) on macOS:Security & Apps
+<h1>Disable and Enable SIP (System Integrity Protection) on macOS</h1>
+<p>SIP (System Integrity Protection) is a macOS security feature that prevents any software — including root — from modifying protected system files and folders. It is on by default and should stay on in normal use.</p>
+<p>Some tools require it to be temporarily disabled: OCLP (OpenCore Legacy Patcher), yabai (window manager), certain kernel extensions, and some developer tools. This guide covers how to do it correctly on both Intel and Apple Silicon Macs.</p>
+<blockquote>
+<p><strong>Always re-enable SIP after you are done.</strong> Leaving SIP off makes your Mac significantly more vulnerable.</p>
+</blockquote>
+<hr />
+<h2>Check Current SIP Status</h2>
+<p>Before doing anything, check whether SIP is already disabled:</p>
+<div class="codehilite"><pre><span></span><code>csrutil<span class="w"> </span>status
+</code></pre></div>
+
+<p>Output will say one of:
+- <code>System Integrity Protection status: enabled.</code> — SIP is on
+- <code>System Integrity Protection status: disabled.</code> — SIP is already off
+- <code>System Integrity Protection status: unknown (Custom Configuration).</code> — partially disabled</p>
+<hr />
+<h2>Disable SIP — Intel Mac</h2>
+<ol>
+<li><strong>Shut down</strong> your Mac completely.</li>
+<li>Press the power button and immediately hold <strong>Command (⌘) + R</strong>.</li>
+<li>Keep holding until you see the Apple logo or a spinning globe — you are in Recovery Mode.</li>
+<li>When the macOS Utilities window appears, go to <strong>Utilities</strong> → <strong>Terminal</strong> in the menu bar.</li>
+<li>In Terminal, type:
+   <code>bash
+   csrutil disable</code></li>
+<li>Press <strong>Enter</strong>. You will see:
+   <code>Successfully disabled System Integrity Protection. Please restart the machine for the changes to take effect.</code></li>
+<li>Click the Apple menu → <strong>Restart</strong>.</li>
+</ol>
+<hr />
+<h2>Disable SIP — Apple Silicon (M1 / M2 / M3 / M4)</h2>
+<p>The process is slightly different on Apple Silicon:</p>
+<ol>
+<li><strong>Shut down</strong> your Mac completely.</li>
+<li>Press and hold the <strong>power button</strong> until you see <strong>"Loading startup options..."</strong></li>
+<li>Click <strong>Options</strong> → <strong>Continue</strong>.</li>
+<li>Select your user and enter your password if prompted.</li>
+<li>Go to <strong>Utilities</strong> → <strong>Terminal</strong> in the menu bar.</li>
+<li>In Terminal, type:
+   <code>bash
+   csrutil disable</code></li>
+<li>Press <strong>Enter</strong>.</li>
+<li>Type <code>Y</code> and press <strong>Enter</strong> to confirm when prompted.</li>
+<li>Enter your admin password.</li>
+<li>Click the Apple menu → <strong>Restart</strong>.</li>
+</ol>
+<hr />
+<h2>Re-enable SIP</h2>
+<p>The process is identical to disabling — boot into Recovery Mode and run:</p>
+<div class="codehilite"><pre><span></span><code>csrutil<span class="w"> </span><span class="nb">enable</span>
+</code></pre></div>
+
+<p>Then restart.</p>
+<p><strong>This is the same steps for both Intel and Apple Silicon</strong> — just follow the same boot process above for your chip type, but use <code>csrutil enable</code> instead.</p>
+<hr />
+<h2>Partially Disable SIP (Advanced)</h2>
+<p>Some tools only need specific SIP protections disabled rather than all of them. For example, yabai only needs filesystem protection disabled:</p>
+<div class="codehilite"><pre><span></span><code>csrutil<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--without<span class="w"> </span>fs
+</code></pre></div>
+
+<p>Available flags:</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>What it disables</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--without fs</code></td>
+<td>Filesystem protection (allows modifying system files)</td>
+</tr>
+<tr>
+<td><code>--without debug</code></td>
+<td>Debugging restrictions</td>
+</tr>
+<tr>
+<td><code>--without nvram</code></td>
+<td>NVRAM protection</td>
+</tr>
+<tr>
+<td><code>--without dtrace</code></td>
+<td>DTrace restrictions</td>
+</tr>
+<tr>
+<td><code>--without kext</code></td>
+<td>Kernel extension restrictions</td>
+</tr>
+</tbody>
+</table>
+<p>Always check the documentation for the tool you are installing to see exactly which protection it needs disabled.</p>
+<hr />
+<h2>What SIP Protects</h2>
+<p>When SIP is enabled, the following are fully protected from modification by any user or app:</p>
+<ul>
+<li><code>/System</code></li>
+<li><code>/usr</code> (except <code>/usr/local</code>)</li>
+<li><code>/bin</code></li>
+<li><code>/sbin</code></li>
+<li><code>/var</code></li>
+<li>Pre-installed Apple apps in <code>/Applications</code></li>
+<li>System kernel extensions</li>
+</ul>
+<p>SIP does <strong>not</strong> protect your home folder (<code>~</code>), <code>/usr/local</code>, or anything in <code>/Applications</code> that you installed yourself.</p>
+<hr />
+<h2>Common Reasons to Disable SIP</h2>
+<table>
+<thead>
+<tr>
+<th>Tool / Task</th>
+<th>Why SIP needs to be off</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OpenCore Legacy Patcher (OCLP)</td>
+<td>Applies root patches to system volume</td>
+</tr>
+<tr>
+<td>yabai window manager</td>
+<td>Requires disabling scripting additions protection</td>
+</tr>
+<tr>
+<td>Installing unsigned kexts</td>
+<td>SIP blocks unsigned kernel extensions</td>
+</tr>
+<tr>
+<td>Certain antivirus or VPN system extensions</td>
+<td>Some require elevated system access</td>
+</tr>
+<tr>
+<td>Custom font installation to system fonts</td>
+<td>Protected path</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Troubleshooting</h2>
+<h3><code>csrutil: command not found</code></h3>
+<p>You are not in Recovery Mode. You cannot disable SIP from a normal Terminal session — it must be done from Recovery.</p>
+<h3>SIP re-enables after macOS update</h3>
+<p>This is expected behaviour. Some major macOS updates re-enable SIP. Check the status with <code>csrutil status</code> after each update and disable it again if needed.</p>
+<h3>Recovery Mode does not load (shows globe or gets stuck)</h3>
+<p>Hold the power button to force shut down. Try again. If you see a spinning globe, your Mac is trying to download Recovery over the internet — wait for it or connect to Wi-Fi.</p>
+<h3><code>csrutil disable</code> requires a password on Apple Silicon</h3>
+<p>This is by design on Apple Silicon — you must authenticate to make security changes in Recovery Mode.</p>

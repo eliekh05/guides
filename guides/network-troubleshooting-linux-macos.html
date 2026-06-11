@@ -1,0 +1,122 @@
+DATA:networking:Network Troubleshooting on macOS and Linux:Networking & DNS
+<h1>Network Troubleshooting on macOS and Linux</h1>
+<p>A systematic approach to diagnosing network problems — from no internet to DNS failures to unreachable servers.</p>
+<hr />
+<h2>Step 1 — Is the Interface Up?</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Linux</span>
+ip<span class="w"> </span>a
+ip<span class="w"> </span>link<span class="w"> </span>show
+
+<span class="c1"># macOS</span>
+ifconfig
+networksetup<span class="w"> </span>-listallhardwareports
+</code></pre></div>
+
+<p>Look for your interface (eth0, en0, wlan0, etc.). Check it shows an IP address and <code>state UP</code>.</p>
+<hr />
+<h2>Step 2 — Can You Reach the Gateway?</h2>
+<p>Find your gateway:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Linux</span>
+ip<span class="w"> </span>route<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>default<span class="w">        </span><span class="c1"># e.g. &quot;default via 192.168.1.1&quot;</span>
+
+<span class="c1"># macOS</span>
+netstat<span class="w"> </span>-rn<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>default
+route<span class="w"> </span>-n<span class="w"> </span>get<span class="w"> </span>default
+</code></pre></div>
+
+<p>Ping the gateway:</p>
+<div class="codehilite"><pre><span></span><code>ping<span class="w"> </span>-c<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">192</span>.168.1.1
+</code></pre></div>
+
+<p>If this fails: the problem is between you and your router — cable, WiFi, or local network config.</p>
+<hr />
+<h2>Step 3 — Can You Reach the Internet by IP?</h2>
+<div class="codehilite"><pre><span></span><code>ping<span class="w"> </span>-c<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">1</span>.1.1.1
+ping<span class="w"> </span>-c<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">8</span>.8.8.8
+</code></pre></div>
+
+<p>If this works but Step 4 fails: DNS is broken.
+If this fails: routing or firewall issue.</p>
+<hr />
+<h2>Step 4 — Does DNS Work?</h2>
+<div class="codehilite"><pre><span></span><code>nslookup<span class="w"> </span>google.com
+dig<span class="w"> </span>google.com
+host<span class="w"> </span>google.com
+</code></pre></div>
+
+<p>Check which DNS server is being used:</p>
+<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>/etc/resolv.conf<span class="w">             </span><span class="c1"># Linux</span>
+scutil<span class="w"> </span>--dns<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>nameserver<span class="w">   </span><span class="c1"># macOS</span>
+</code></pre></div>
+
+<p>Manually test with a known good DNS server:</p>
+<div class="codehilite"><pre><span></span><code>dig<span class="w"> </span>@8.8.8.8<span class="w"> </span>google.com<span class="w">          </span><span class="c1"># test against Google DNS</span>
+dig<span class="w"> </span>@1.1.1.1<span class="w"> </span>google.com<span class="w">          </span><span class="c1"># test against Cloudflare DNS</span>
+</code></pre></div>
+
+<hr />
+<h2>Step 5 — Check Firewall</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Linux</span>
+sudo<span class="w"> </span>ufw<span class="w"> </span>status
+sudo<span class="w"> </span>iptables<span class="w"> </span>-L<span class="w"> </span>-n
+sudo<span class="w"> </span>nft<span class="w"> </span>list<span class="w"> </span>ruleset
+
+<span class="c1"># macOS</span>
+sudo<span class="w"> </span>/usr/libexec/ApplicationFirewall/socketfilterfw<span class="w"> </span>--getglobalstate
+</code></pre></div>
+
+<hr />
+<h2>Step 6 — Check If a Port is Open</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Test TCP port</span>
+nc<span class="w"> </span>-zv<span class="w"> </span>hostname<span class="w"> </span><span class="m">443</span>
+nc<span class="w"> </span>-zv<span class="w"> </span><span class="m">192</span>.168.1.100<span class="w"> </span><span class="m">22</span>
+
+<span class="c1"># Test UDP port</span>
+nc<span class="w"> </span>-zvu<span class="w"> </span>hostname<span class="w"> </span><span class="m">53</span>
+
+<span class="c1"># Check what is listening locally</span>
+ss<span class="w"> </span>-tlnp<span class="w">         </span><span class="c1"># Linux</span>
+sudo<span class="w"> </span>lsof<span class="w"> </span>-iTCP<span class="w"> </span>-sTCP:LISTEN<span class="w">    </span><span class="c1"># macOS</span>
+</code></pre></div>
+
+<hr />
+<h2>Step 7 — Trace the Route</h2>
+<div class="codehilite"><pre><span></span><code>traceroute<span class="w"> </span>google.com<span class="w">            </span><span class="c1"># macOS and Linux</span>
+traceroute<span class="w"> </span>-T<span class="w"> </span>google.com<span class="w">         </span><span class="c1"># TCP-based (better through firewalls)</span>
+mtr<span class="w"> </span>google.com<span class="w">                   </span><span class="c1"># live continuous traceroute</span>
+</code></pre></div>
+
+<p>Where the route stops or shows high latency is where the problem is.</p>
+<hr />
+<h2>Reset Network Stack</h2>
+<p><strong>Linux:</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>NetworkManager<span class="w">    </span><span class="c1"># restart NetworkManager</span>
+sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>eth0<span class="w"> </span>down<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>eth0<span class="w"> </span>up<span class="w">   </span><span class="c1"># restart interface</span>
+sudo<span class="w"> </span>dhclient<span class="w"> </span>-r<span class="w"> </span>eth0<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>dhclient<span class="w"> </span>eth0<span class="w">              </span><span class="c1"># release and renew DHCP</span>
+</code></pre></div>
+
+<p><strong>macOS:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Renew DHCP</span>
+ipconfig<span class="w"> </span><span class="nb">set</span><span class="w"> </span>en0<span class="w"> </span>DHCP
+
+<span class="c1"># Flush DNS</span>
+sudo<span class="w"> </span>dscacheutil<span class="w"> </span>-flushcache<span class="p">;</span><span class="w"> </span>sudo<span class="w"> </span>killall<span class="w"> </span>-HUP<span class="w"> </span>mDNSResponder
+
+<span class="c1"># Restart network interface</span>
+sudo<span class="w"> </span>ifconfig<span class="w"> </span>en0<span class="w"> </span>down<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>ifconfig<span class="w"> </span>en0<span class="w"> </span>up
+
+<span class="c1"># Reset all network settings (nuclear — removes all saved WiFi etc.)</span>
+sudo<span class="w"> </span>rm<span class="w"> </span>/Library/Preferences/SystemConfiguration/NetworkInterfaces.plist
+sudo<span class="w"> </span>rm<span class="w"> </span>/Library/Preferences/SystemConfiguration/preferences.plist
+<span class="c1"># Then restart</span>
+</code></pre></div>
+
+<hr />
+<h2>Quick Diagnosis Flowchart</h2>
+<div class="codehilite"><pre><span></span><code><span class="nx">No</span><span class="w"> </span><span class="nx">internet</span><span class="p">?</span>
+<span class="err">├──</span><span class="w"> </span><span class="nx">Can</span><span class="w"> </span><span class="nx">ping</span><span class="w"> </span><span class="m m-Double">192.168.1.1</span><span class="p">?</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nx">No</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nx">Check</span><span class="w"> </span><span class="nx">cable</span><span class="o">/</span><span class="nx">WiFi</span><span class="p">,</span><span class="w"> </span><span class="nx">check</span><span class="w"> </span><span class="nx">IP</span><span class="w"> </span><span class="nx">address</span>
+<span class="err">├──</span><span class="w"> </span><span class="nx">Can</span><span class="w"> </span><span class="nx">ping</span><span class="w"> </span><span class="m m-Double">1.1.1.1</span><span class="p">?</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nx">No</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nx">Check</span><span class="w"> </span><span class="nx">routing</span><span class="p">,</span><span class="w"> </span><span class="nx">check</span><span class="w"> </span><span class="nx">firewall</span>
+<span class="err">├──</span><span class="w"> </span><span class="nx">Can</span><span class="w"> </span><span class="nx">ping</span><span class="w"> </span><span class="m m-Double">1.1.1.1</span><span class="w"> </span><span class="nx">but</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="nx">google</span><span class="p">.</span><span class="nx">com</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nx">DNS</span><span class="w"> </span><span class="nx">broken</span>
+<span class="err">│</span><span class="w">   </span><span class="err">└──</span><span class="w"> </span><span class="nx">Fix</span><span class="p">:</span><span class="w"> </span><span class="nx">change</span><span class="w"> </span><span class="nx">DNS</span><span class="w"> </span><span class="nx">to</span><span class="w"> </span><span class="m m-Double">1.1.1.1</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="m m-Double">8.8.8.8</span>
+<span class="err">└──</span><span class="w"> </span><span class="nx">Can</span><span class="w"> </span><span class="nx">ping</span><span class="w"> </span><span class="nx">google</span><span class="p">.</span><span class="nx">com</span><span class="w"> </span><span class="nx">but</span><span class="w"> </span><span class="nx">browser</span><span class="w"> </span><span class="nx">fails</span><span class="w"> </span><span class="err">→</span><span class="w"> </span><span class="nx">Check</span><span class="w"> </span><span class="nx">proxy</span><span class="p">,</span><span class="w"> </span><span class="nx">browser</span><span class="w"> </span><span class="nx">settings</span>
+</code></pre></div>

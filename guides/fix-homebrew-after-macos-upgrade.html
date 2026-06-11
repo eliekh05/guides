@@ -1,0 +1,96 @@
+DATA:package-managers:Fix Homebrew After a macOS Upgrade:Package Managers (All OSes)
+<h1>Fix Homebrew After a macOS Upgrade</h1>
+<p>After upgrading macOS, Homebrew often breaks — packages stop working, <code>brew</code> command disappears, or you get <code>dyld: Library not loaded</code> errors. This is one of the most searched Homebrew problems and happens on almost every major macOS upgrade.</p>
+<hr />
+<h2>Step 1 — Reinstall Xcode Command Line Tools</h2>
+<p>Following a macOS upgrade it may be necessary to reinstall the Xcode Command Line Tools. This is the first thing to do after any major macOS update:</p>
+<div class="codehilite"><pre><span></span><code>xcode-select<span class="w"> </span>--install
+</code></pre></div>
+
+<p>A dialog will appear asking to install the tools. Click <strong>Install</strong> and wait for it to finish (5–15 minutes). Then run:</p>
+<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>brew<span class="w"> </span>upgrade
+</code></pre></div>
+
+<p>If this fixes everything, you are done. If not, continue below.</p>
+<hr />
+<h2>Step 2 — Fix broken packages with dyld errors</h2>
+<p>After a macOS upgrade you may see errors like:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">dyld</span><span class="p">:</span><span class="w"> </span><span class="n">Library</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">loaded</span><span class="p">:</span><span class="w"> </span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">homebrew</span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">icu4c</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">libicui18n</span><span class="o">.</span><span class="mf">76.</span><span class="n">dylib</span>
+</code></pre></div>
+
+<p>This means a package's dependencies were upgraded but the package itself was not relinked. Fix it:</p>
+<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>upgrade
+brew<span class="w"> </span>link<span class="w"> </span>--overwrite<span class="w"> </span><span class="k">$(</span>brew<span class="w"> </span>list<span class="k">)</span>
+</code></pre></div>
+
+<p>If specific packages are still broken:</p>
+<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>reinstall<span class="w"> </span>PACKAGE_NAME
+</code></pre></div>
+
+<hr />
+<h2>Step 3 — Fix brew Command Not Found After Upgrade</h2>
+<p>If <code>brew</code> itself is gone from your PATH after a macOS upgrade:</p>
+<p><strong>Apple Silicon:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;eval &quot;$(/opt/homebrew/bin/brew shellenv)&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
+<span class="nb">source</span><span class="w"> </span>~/.zprofile
+</code></pre></div>
+
+<p><strong>Intel Mac:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;eval &quot;$(/usr/local/bin/brew shellenv)&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
+<span class="nb">source</span><span class="w"> </span>~/.zprofile
+</code></pre></div>
+
+<p>Then verify:</p>
+<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>--version
+</code></pre></div>
+
+<hr />
+<h2>Step 4 — Run brew doctor</h2>
+<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>doctor
+</code></pre></div>
+
+<p>This checks your Homebrew installation for problems and tells you exactly what to fix. Read each warning and follow the suggested fix. Run it again after each fix until it says <code>Your system is ready to brew</code>.</p>
+<hr />
+<h2>Step 5 — Fix Two Homebrew Installations (Migration Assistant Issue)</h2>
+<p>When using tools such as Apple's Migration Assistant, it's possible to have two Homebrew installations unintentionally. This causes conflicts where some packages work and others do not.</p>
+<p>Check for duplicate installations:</p>
+<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>/opt/homebrew/bin/brew<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Apple Silicon Homebrew found&quot;</span>
+ls<span class="w"> </span>/usr/local/bin/brew<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Intel Homebrew found&quot;</span>
+</code></pre></div>
+
+<p>If both exist on an Apple Silicon Mac, the Intel one at <code>/usr/local</code> is the wrong one. Remove it:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/usr/local/Homebrew
+sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/usr/local/Cellar
+</code></pre></div>
+
+<p>Then reinstall Homebrew fresh for Apple Silicon:</p>
+<div class="codehilite"><pre><span></span><code>/bin/bash<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh<span class="k">)</span><span class="s2">&quot;</span>
+</code></pre></div>
+
+<p>Reinstall your packages:</p>
+<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>PACKAGE_NAME
+</code></pre></div>
+
+<hr />
+<h2>Step 6 — Full Reinstall (Last Resort)</h2>
+<p>If nothing else works, a clean reinstall is the most reliable fix:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># First export your current package list</span>
+brew<span class="w"> </span>list<span class="w"> </span>--formula<span class="w"> </span>&gt;<span class="w"> </span>~/brew-formulas.txt
+brew<span class="w"> </span>list<span class="w"> </span>--cask<span class="w"> </span>&gt;<span class="w"> </span>~/brew-casks.txt
+
+<span class="c1"># Uninstall Homebrew</span>
+/bin/bash<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh<span class="k">)</span><span class="s2">&quot;</span>
+
+<span class="c1"># Reinstall Homebrew</span>
+/bin/bash<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh<span class="k">)</span><span class="s2">&quot;</span>
+
+<span class="c1"># Reinstall all formulas</span>
+xargs<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>&lt;<span class="w"> </span>~/brew-formulas.txt
+
+<span class="c1"># Reinstall all casks</span>
+xargs<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>--cask<span class="w"> </span>&lt;<span class="w"> </span>~/brew-casks.txt
+</code></pre></div>
+
+<hr />
+<h2>macOS Version Support</h2>
+<p>In September 2026 or later, Homebrew will not run on macOS Catalina 10.15 and earlier, and macOS Intel x86_64 will move to Tier 3. If you are on an old macOS version and Homebrew stops receiving updates, upgrading macOS or switching to a supported version is the long-term fix.</p>

@@ -1,0 +1,238 @@
+DATA:linux:Terminal Basics for macOS and Linux:Linux
+<h1>Terminal Basics for macOS and Linux</h1>
+<p>Most guides on this site assume you know how to use the Terminal. If you have never used it before, this guide gives you everything you need to follow any other guide here.</p>
+<hr />
+<h2>Opening Terminal</h2>
+<p><strong>macOS:</strong>
+- Press <strong>Command (⌘) + Space</strong> to open Spotlight, type <code>Terminal</code>, press Enter
+- Or: Applications → Utilities → Terminal</p>
+<p><strong>Linux (Ubuntu/Debian):</strong>
+- Press <strong>Ctrl + Alt + T</strong>
+- Or search for Terminal in your app launcher</p>
+<hr />
+<h2>How Terminal Works</h2>
+<p>Terminal is a text interface to your computer. You type a command, press <strong>Enter</strong>, and the computer runs it. The output appears below your command.</p>
+<p>The <strong>prompt</strong> is the line waiting for your input. It usually looks like:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">yourname</span><span class="nv">@macbook</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="o">%</span>
+</code></pre></div>
+
+<ul>
+<li><code>yourname</code> — your username</li>
+<li><code>macbook</code> — your computer name</li>
+<li><code>~</code> — your current folder (<code>~</code> means your home folder)</li>
+<li><code>%</code> or <code>$</code> — indicates the shell is ready for input</li>
+</ul>
+<hr />
+<h2>Navigating Folders</h2>
+<h3>Where am I?</h3>
+<div class="codehilite"><pre><span></span><code><span class="nb">pwd</span>
+</code></pre></div>
+
+<p>Prints your current folder path (Print Working Directory).</p>
+<h3>What is in this folder?</h3>
+<div class="codehilite"><pre><span></span><code>ls
+</code></pre></div>
+
+<p>Lists files and folders. To show hidden files too:</p>
+<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>-a
+</code></pre></div>
+
+<p>To show details (permissions, size, date):</p>
+<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>-la
+</code></pre></div>
+
+<h3>Move into a folder</h3>
+<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>Documents
+</code></pre></div>
+
+<p>Move into a subfolder:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>Documents/Projects/myproject
+</code></pre></div>
+
+<p>Move up one level:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>..
+</code></pre></div>
+
+<p>Go back to your home folder from anywhere:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>~
+</code></pre></div>
+
+<p>Or just:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">cd</span>
+</code></pre></div>
+
+<p>Go to a full path:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>/Applications
+<span class="nb">cd</span><span class="w"> </span>/usr/local/bin
+</code></pre></div>
+
+<blockquote>
+<p><strong>Tip:</strong> Press <strong>Tab</strong> after typing part of a folder or file name to auto-complete it. Press Tab twice to see all options.</p>
+</blockquote>
+<hr />
+<h2>Working with Files and Folders</h2>
+<h3>Create a folder</h3>
+<div class="codehilite"><pre><span></span><code>mkdir<span class="w"> </span>myfolder
+mkdir<span class="w"> </span>-p<span class="w"> </span>parent/child/grandchild<span class="w">   </span><span class="c1"># Create nested folders at once</span>
+</code></pre></div>
+
+<h3>Create an empty file</h3>
+<div class="codehilite"><pre><span></span><code>touch<span class="w"> </span>myfile.txt
+</code></pre></div>
+
+<h3>Copy a file</h3>
+<div class="codehilite"><pre><span></span><code>cp<span class="w"> </span>source.txt<span class="w"> </span>destination.txt
+cp<span class="w"> </span>source.txt<span class="w"> </span>/path/to/destination/
+</code></pre></div>
+
+<p>Copy a folder and everything inside it:</p>
+<div class="codehilite"><pre><span></span><code>cp<span class="w"> </span>-r<span class="w"> </span>myfolder<span class="w"> </span>/path/to/destination/
+</code></pre></div>
+
+<h3>Move or rename a file</h3>
+<div class="codehilite"><pre><span></span><code>mv<span class="w"> </span>oldname.txt<span class="w"> </span>newname.txt<span class="w">          </span><span class="c1"># Rename</span>
+mv<span class="w"> </span>myfile.txt<span class="w"> </span>/path/to/destination/<span class="w"> </span><span class="c1"># Move</span>
+</code></pre></div>
+
+<h3>Delete a file</h3>
+<div class="codehilite"><pre><span></span><code>rm<span class="w"> </span>myfile.txt
+</code></pre></div>
+
+<p>Delete a folder and everything inside it:</p>
+<div class="codehilite"><pre><span></span><code>rm<span class="w"> </span>-rf<span class="w"> </span>myfolder
+</code></pre></div>
+
+<blockquote>
+<p>⚠️ <code>rm -rf</code> deletes permanently — there is no Trash. Double-check before running this.</p>
+</blockquote>
+<h3>View file contents</h3>
+<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>myfile.txt
+</code></pre></div>
+
+<p>For large files, scroll through page by page:</p>
+<div class="codehilite"><pre><span></span><code>less<span class="w"> </span>myfile.txt
+</code></pre></div>
+
+<p>Press <strong>Q</strong> to quit less.</p>
+<hr />
+<h2>Running Commands as Administrator</h2>
+<p>Some commands need admin rights. Add <code>sudo</code> before them:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update
+sudo<span class="w"> </span>rm<span class="w"> </span>/protected-file
+</code></pre></div>
+
+<p>You will be prompted for your <strong>login password</strong> (not an email password). Nothing appears as you type — that is normal. Press Enter when done.</p>
+<hr />
+<h2>Reading Command Output</h2>
+<p>Commands print their output directly below. When a command finishes, the prompt appears again. If the prompt never comes back, the command is still running — wait for it, or press <strong>Ctrl + C</strong> to cancel it.</p>
+<hr />
+<h2>Common Shortcuts</h2>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Tab</strong></td>
+<td>Auto-complete a file or folder name</td>
+</tr>
+<tr>
+<td><strong>Up arrow</strong></td>
+<td>Go back through previous commands</td>
+</tr>
+<tr>
+<td><strong>Ctrl + C</strong></td>
+<td>Cancel the running command</td>
+</tr>
+<tr>
+<td><strong>Ctrl + L</strong></td>
+<td>Clear the screen</td>
+</tr>
+<tr>
+<td><strong>Ctrl + A</strong></td>
+<td>Move cursor to beginning of line</td>
+</tr>
+<tr>
+<td><strong>Ctrl + E</strong></td>
+<td>Move cursor to end of line</td>
+</tr>
+<tr>
+<td><strong>Ctrl + R</strong></td>
+<td>Search through command history</td>
+</tr>
+<tr>
+<td><strong>q</strong></td>
+<td>Quit most viewer programs (like <code>less</code>, <code>man</code>)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>The Pipe <code>|</code> — Chain Commands Together</h2>
+<p>The pipe sends the output of one command as the input to the next:</p>
+<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>-la<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;.txt&quot;</span><span class="w">      </span><span class="c1"># List files, then filter for .txt only</span>
+cat<span class="w"> </span>file.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>less<span class="w">        </span><span class="c1"># View a file page by page</span>
+</code></pre></div>
+
+<hr />
+<h2>Redirect Output to a File</h2>
+<p>Save command output to a file instead of printing to screen:</p>
+<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>-la<span class="w"> </span>&gt;<span class="w"> </span>filelist.txt<span class="w">     </span><span class="c1"># Save to file (overwrites)</span>
+ls<span class="w"> </span>-la<span class="w"> </span>&gt;&gt;<span class="w"> </span>filelist.txt<span class="w">    </span><span class="c1"># Append to file</span>
+</code></pre></div>
+
+<p>Redirect errors separately:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">command</span><span class="w"> </span><span class="m">2</span>&gt;<span class="w"> </span>errors.txt<span class="w">          </span><span class="c1"># Save errors only</span>
+<span class="nb">command</span><span class="w"> </span>&gt;<span class="w"> </span>output.txt<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w">      </span><span class="c1"># Save both output and errors</span>
+</code></pre></div>
+
+<hr />
+<h2>Editing Files in Terminal</h2>
+<p><strong>nano</strong> is the easiest text editor — it works like a basic notepad:</p>
+<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>myfile.txt
+</code></pre></div>
+
+<ul>
+<li>Type to edit</li>
+<li><strong>Ctrl + O</strong> then <strong>Enter</strong> to save</li>
+<li><strong>Ctrl + X</strong> to exit</li>
+</ul>
+<p><strong>vim</strong> is also available but has a steeper learning curve. If you accidentally open vim:
+- Press <strong>Esc</strong>
+- Type <code>:q!</code> and press <strong>Enter</strong> to quit without saving
+- Type <code>:wq</code> and press <strong>Enter</strong> to save and quit</p>
+<hr />
+<h2>Finding Things</h2>
+<p>Find a file by name:</p>
+<div class="codehilite"><pre><span></span><code>find<span class="w"> </span>/<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;myfile.txt&quot;</span><span class="w">         </span><span class="c1"># Search entire system</span>
+find<span class="w"> </span>~<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;myfile.txt&quot;</span><span class="w">         </span><span class="c1"># Search your home folder</span>
+find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.log&quot;</span><span class="w">              </span><span class="c1"># Find all .log files in current folder</span>
+</code></pre></div>
+
+<p>Search inside a file for text:</p>
+<div class="codehilite"><pre><span></span><code>grep<span class="w"> </span><span class="s2">&quot;search term&quot;</span><span class="w"> </span>myfile.txt
+grep<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;search term&quot;</span><span class="w"> </span>/path/<span class="w">      </span><span class="c1"># Search recursively in all files</span>
+grep<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;search term&quot;</span><span class="w"> </span>myfile.txt<span class="w">  </span><span class="c1"># Case-insensitive search</span>
+</code></pre></div>
+
+<hr />
+<h2>Get Help for Any Command</h2>
+<div class="codehilite"><pre><span></span><code>man<span class="w"> </span>ls<span class="w">          </span><span class="c1"># Manual page for ls</span>
+man<span class="w"> </span>brew
+man<span class="w"> </span>sudo
+</code></pre></div>
+
+<p>Press <strong>Q</strong> to exit the manual. Or use <code>--help</code>:</p>
+<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>--help
+brew<span class="w"> </span>--help
+</code></pre></div>
+
+<hr />
+<h2>Common Beginner Mistakes</h2>
+<p><strong>"Permission denied"</strong> — add <code>sudo</code> before the command, or check that you own the file.</p>
+<p><strong>"No such file or directory"</strong> — the path is wrong. Check spelling, check you are in the right folder with <code>pwd</code>, and use Tab to auto-complete.</p>
+<p><strong>"Command not found"</strong> — the program is not installed, or it is not in your PATH. Try installing it with <code>brew install NAME</code> (macOS) or <code>sudo apt install NAME</code> (Ubuntu/Debian).</p>
+<p><strong>Command seems frozen</strong> — press <strong>Ctrl + C</strong> to cancel, or wait if it is a long-running process.</p>
+<p><strong>Accidentally opened vim</strong> — press <strong>Esc</strong>, then type <code>:q!</code> and press <strong>Enter</strong>.</p>

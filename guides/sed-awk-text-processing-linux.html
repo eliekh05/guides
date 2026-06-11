@@ -1,0 +1,181 @@
+DATA:linux:sed and awk — Text Processing on Linux and macOS:Linux
+<h1>sed and awk — Text Processing on Linux and macOS</h1>
+<p><code>sed</code> edits text streams and files by pattern. <code>awk</code> processes structured text data column by column. Both are available on every Unix/Linux/macOS system and are essential for scripting.</p>
+<hr />
+<h2>sed — Stream Editor</h2>
+<h3>Find and Replace</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Replace first occurrence per line</span>
+sed<span class="w"> </span><span class="s1">&#39;s/old/new/&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Replace ALL occurrences (global flag)</span>
+sed<span class="w"> </span><span class="s1">&#39;s/old/new/g&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Case-insensitive replace</span>
+sed<span class="w"> </span><span class="s1">&#39;s/old/new/gI&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Replace and save to file (in-place)</span>
+sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;s/old/new/g&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># macOS in-place (requires a backup extension or empty string)</span>
+sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span><span class="s1">&#39;s/old/new/g&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Preview before applying (dry run)</span>
+sed<span class="w"> </span><span class="s1">&#39;s/old/new/g&#39;</span><span class="w"> </span>file.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>head
+</code></pre></div>
+
+<h3>Delete Lines</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Delete lines containing a pattern</span>
+sed<span class="w"> </span><span class="s1">&#39;/pattern/d&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Delete blank lines</span>
+sed<span class="w"> </span><span class="s1">&#39;/^$/d&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Delete specific line number</span>
+sed<span class="w"> </span><span class="s1">&#39;5d&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Delete line range</span>
+sed<span class="w"> </span><span class="s1">&#39;3,7d&#39;</span><span class="w"> </span>file.txt
+</code></pre></div>
+
+<h3>Print Specific Lines</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Print only line 5</span>
+sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;5p&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Print lines 3 to 7</span>
+sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;3,7p&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Print lines matching pattern</span>
+sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;/error/p&#39;</span><span class="w"> </span>file.txt
+</code></pre></div>
+
+<h3>Add Lines</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Insert a line before line 3</span>
+sed<span class="w"> </span><span class="s1">&#39;3i\New line here&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Append a line after line 3</span>
+sed<span class="w"> </span><span class="s1">&#39;3a\New line here&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Add line after matching pattern</span>
+sed<span class="w"> </span><span class="s1">&#39;/pattern/a\Added after match&#39;</span><span class="w"> </span>file.txt
+</code></pre></div>
+
+<h3>Practical Examples</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Remove all comments from a config file</span>
+sed<span class="w"> </span><span class="s1">&#39;/^#/d&#39;</span><span class="w"> </span>config.conf
+
+<span class="c1"># Remove trailing whitespace</span>
+sed<span class="w"> </span><span class="s1">&#39;s/[[:space:]]*$//&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Change http to https in a file</span>
+sed<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;s/http:\/\//https:\/\//g&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Extract IP addresses</span>
+cat<span class="w"> </span>access.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;s/^\([0-9.]*\) .*/\1/p&#39;</span>
+</code></pre></div>
+
+<hr />
+<h2>awk — Column/Field Processing</h2>
+<p>awk splits each line into fields by a delimiter (default: whitespace). Fields are referenced as <code>$1</code>, <code>$2</code>, <code>$3</code>, etc. <code>$0</code> is the whole line.</p>
+<h3>Print Specific Columns</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Print first column (field)</span>
+awk<span class="w"> </span><span class="s1">&#39;{print $1}&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Print first and third fields</span>
+awk<span class="w"> </span><span class="s1">&#39;{print $1, $3}&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Print last field</span>
+awk<span class="w"> </span><span class="s1">&#39;{print $NF}&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Print second-to-last field</span>
+awk<span class="w"> </span><span class="s1">&#39;{print $(NF-1)}&#39;</span><span class="w"> </span>file.txt
+</code></pre></div>
+
+<h3>Custom Delimiter</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># CSV: split by comma</span>
+awk<span class="w"> </span>-F<span class="s1">&#39;,&#39;</span><span class="w"> </span><span class="s1">&#39;{print $2}&#39;</span><span class="w"> </span>file.csv
+
+<span class="c1"># Split by colon (like /etc/passwd)</span>
+awk<span class="w"> </span>-F<span class="s1">&#39;:&#39;</span><span class="w"> </span><span class="s1">&#39;{print $1, $3}&#39;</span><span class="w"> </span>/etc/passwd
+
+<span class="c1"># Split by multiple characters</span>
+awk<span class="w"> </span>-F<span class="s1">&#39;[,;]&#39;</span><span class="w"> </span><span class="s1">&#39;{print $1}&#39;</span><span class="w"> </span>file.txt
+</code></pre></div>
+
+<h3>Filter Lines</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Print lines where field 3 is greater than 100</span>
+awk<span class="w"> </span><span class="s1">&#39;$3 &gt; 100&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Print lines matching pattern</span>
+awk<span class="w"> </span><span class="s1">&#39;/error/&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Print lines where first field equals &quot;root&quot;</span>
+awk<span class="w"> </span><span class="s1">&#39;$1 == &quot;root&quot;&#39;</span><span class="w"> </span>/etc/passwd
+</code></pre></div>
+
+<h3>Math and Aggregation</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Sum the values in column 2</span>
+awk<span class="w"> </span><span class="s1">&#39;{sum += $2} END {print sum}&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Count lines matching pattern</span>
+awk<span class="w"> </span><span class="s1">&#39;/error/ {count++} END {print count}&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Average of column 3</span>
+awk<span class="w"> </span><span class="s1">&#39;{sum += $3; count++} END {print sum/count}&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Print line number with content</span>
+awk<span class="w"> </span><span class="s1">&#39;{print NR, $0}&#39;</span><span class="w"> </span>file.txt
+</code></pre></div>
+
+<h3>Practical Examples</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Show username and shell from /etc/passwd</span>
+awk<span class="w"> </span>-F<span class="s1">&#39;:&#39;</span><span class="w"> </span><span class="s1">&#39;{print $1, $7}&#39;</span><span class="w"> </span>/etc/passwd
+
+<span class="c1"># Show disk usage for each filesystem (from df -h)</span>
+df<span class="w"> </span>-h<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $1, $5}&#39;</span>
+
+<span class="c1"># Find processes using more than 10% CPU</span>
+ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;$3 &gt; 10 {print $1, $2, $3, $11}&#39;</span>
+
+<span class="c1"># Extract IP addresses from log</span>
+awk<span class="w"> </span><span class="s1">&#39;{print $1}&#39;</span><span class="w"> </span>access.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span><span class="p">|</span><span class="w"> </span>uniq<span class="w"> </span>-c<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-rn<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-10
+
+<span class="c1"># Sum file sizes from ls -l</span>
+ls<span class="w"> </span>-l<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{sum += $5} END {print &quot;Total:&quot;, sum}&#39;</span>
+</code></pre></div>
+
+<hr />
+<h2>sed vs awk — When to Use Which</h2>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Tool</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Find and replace text</td>
+<td><code>sed</code></td>
+</tr>
+<tr>
+<td>Delete/add specific lines</td>
+<td><code>sed</code></td>
+</tr>
+<tr>
+<td>Work with columns/fields</td>
+<td><code>awk</code></td>
+</tr>
+<tr>
+<td>Math operations on data</td>
+<td><code>awk</code></td>
+</tr>
+<tr>
+<td>Filter by pattern</td>
+<td>Either</td>
+</tr>
+<tr>
+<td>Transform CSV/TSV</td>
+<td><code>awk</code></td>
+</tr>
+</tbody>
+</table>

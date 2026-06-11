@@ -1,0 +1,57 @@
+DATA:system-users:Back Up Using Time Machine to a DMG File (macOS):System & Users
+<h1>Back Up Using Time Machine to a DMG File (macOS)</h1>
+<p>By default, Time Machine backs up to a physical external drive. But you can also point Time Machine at a <strong>DMG disk image file</strong> — useful if you want to store your backup on a network share, inside a folder on a larger drive, or keep it as a portable file you can move around.</p>
+<hr />
+<h2>Step 1 — Create a Blank DMG in Disk Utility</h2>
+<ol>
+<li>Open <strong>Disk Utility</strong> (Applications → Utilities → Disk Utility).</li>
+<li>In the menu bar, go to <strong>File</strong> → <strong>New Image</strong> → <strong>Blank Image</strong>.</li>
+<li>Configure the image:</li>
+<li><strong>Save As:</strong> give it a name like <code>TimeMachineBackup</code></li>
+<li><strong>Where:</strong> choose where to save it (external drive, NAS mount, or local folder)</li>
+<li><strong>Size:</strong> set it larger than the data you want to back up — at least 1.5× your Mac's used storage</li>
+<li><strong>Format:</strong> <code>Mac OS Extended (Journaled)</code></li>
+<li><strong>Encryption:</strong> optional but recommended for sensitive data</li>
+<li><strong>Image Format:</strong> <code>sparse bundle disk image</code> (this grows dynamically as backup data fills it)</li>
+<li>Click <strong>Save</strong>. Disk Utility will create and mount the DMG automatically.</li>
+</ol>
+<hr />
+<h2>Step 2 — Find the Volume Name</h2>
+<p>Once the DMG is mounted, it will appear as a drive in Disk Utility and on your Desktop. Note the volume name — you will need it in the next step. It will be something like <code>TimeMachineBackup</code> or whatever you named it.</p>
+<p>You can also check it from Terminal:</p>
+<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>/Volumes/
+</code></pre></div>
+
+<p>Your mounted DMG will appear in the list.</p>
+<hr />
+<h2>Step 3 — Set the DMG as the Time Machine Destination</h2>
+<p>Open <strong>Terminal</strong> and run:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>tmutil<span class="w"> </span>setdestination<span class="w"> </span>/Volumes/TimeMachineBackup
+</code></pre></div>
+
+<p>Replace <code>TimeMachineBackup</code> with the actual name of your mounted DMG volume from Step 2.</p>
+<p>Enter your password when prompted.</p>
+<hr />
+<h2>Step 4 — Start the Backup</h2>
+<ol>
+<li>Open <strong>System Settings</strong> → <strong>General</strong> → <strong>Time Machine</strong> (or <strong>System Preferences</strong> → <strong>Time Machine</strong> on older macOS).</li>
+<li>Your DMG should now appear as the selected backup disk.</li>
+<li>Click <strong>Back Up Now</strong> to start the first backup, or let it run automatically.</li>
+</ol>
+<hr />
+<h2>Important Notes</h2>
+<h3>You must mount the DMG before each backup</h3>
+<p>Time Machine cannot back up to the DMG if it is not mounted. Before each backup session, double-click the DMG file to mount it, then let Time Machine run.</p>
+<p>To automate this, you can create a Login Item or a launchd plist that mounts the DMG on startup — see the <strong>Fix launchd / plist Scripts Not Running</strong> guide for how to schedule tasks automatically.</p>
+<h3>Sparse bundle vs sparse image</h3>
+<p>Use <strong>sparse bundle</strong> (not sparse image or read/write image) — it stores the backup in small band files, which makes the overall file more resilient to corruption and easier to copy incrementally over a network.</p>
+<h3>Encrypted DMG</h3>
+<p>If you enabled encryption when creating the DMG, you will need to enter the DMG password each time you mount it before Time Machine can back up to it.</p>
+<hr />
+<h2>Troubleshooting</h2>
+<h3>"Time Machine could not complete the backup"</h3>
+<p>The DMG is probably not mounted. Mount it by double-clicking the <code>.sparsebundle</code> file, then try the backup again.</p>
+<h3>Time Machine destination missing after restart</h3>
+<p>The DMG is not set to auto-mount on login. Add it to your Login Items: <strong>System Settings</strong> → <strong>General</strong> → <strong>Login Items</strong> → click <strong>+</strong> and add the DMG file.</p>
+<h3>The DMG is full</h3>
+<p>Open Disk Utility, select the mounted DMG, and use <strong>Images</strong> → <strong>Resize</strong> to increase its size. Sparse bundles expand dynamically up to their maximum size — you can increase the maximum if needed.</p>

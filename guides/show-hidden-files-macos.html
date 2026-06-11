@@ -1,0 +1,71 @@
+DATA:macos:Show Hidden Files and Folders on macOS:macOS
+<h1>Show Hidden Files and Folders on macOS</h1>
+<p>Files and folders whose names start with a <code>.</code> are hidden by default on macOS. System files, configuration files, and developer tools like <code>.ssh</code>, <code>.zshrc</code>, and <code>.DS_Store</code> are all hidden this way. Here are all the ways to reveal them.</p>
+<hr />
+<h2>In Finder — Keyboard Shortcut (Quickest)</h2>
+<p>Press <strong>Command (⌘) + Shift + .</strong> (period) while a Finder window is open.</p>
+<p>Hidden files and folders will appear greyed out. Press the same shortcut again to hide them.</p>
+<p>This is a toggle — works instantly with no settings to change.</p>
+<hr />
+<h2>In Finder — Make Hidden Files Permanently Visible</h2>
+<p>If you want hidden files always visible without pressing the shortcut every time:</p>
+<ol>
+<li>Open <strong>Terminal</strong> (Applications → Utilities → Terminal).</li>
+<li>Run:
+   <code>bash
+   defaults write com.apple.Finder AppleShowAllFiles true
+   killall Finder</code></li>
+<li>Finder will restart and show all hidden files from now on.</li>
+</ol>
+<p>To hide them again:</p>
+<div class="codehilite"><pre><span></span><code>defaults<span class="w"> </span>write<span class="w"> </span>com.apple.Finder<span class="w"> </span>AppleShowAllFiles<span class="w"> </span><span class="nb">false</span>
+killall<span class="w"> </span>Finder
+</code></pre></div>
+
+<hr />
+<h2>In Terminal — Show Hidden Files in a Folder Listing</h2>
+<p>The <code>ls</code> command hides dotfiles by default. Add the <code>-a</code> flag to show everything:</p>
+<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>-a<span class="w"> </span>~/
+</code></pre></div>
+
+<p>To also show details (permissions, size, dates):</p>
+<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>-la<span class="w"> </span>~/
+</code></pre></div>
+
+<p>Common hidden folders you will see:
+- <code>.ssh</code> — SSH keys and config
+- <code>.zshrc</code> / <code>.bash_profile</code> — shell configuration
+- <code>.DS_Store</code> — Finder metadata (safe to ignore)
+- <code>.Trash</code> — deleted files
+- <code>.config</code> — app config files</p>
+<hr />
+<h2>Access the Hidden ~/Library Folder</h2>
+<p>The <code>~/Library</code> folder is hidden by default but is not a dotfile — it needs a different method.</p>
+<p><strong>In Finder:</strong>
+Hold <strong>Option (⌥)</strong> and click the <strong>Go</strong> menu in the menu bar. <strong>Library</strong> appears as an option while Option is held.</p>
+<p><strong>In Terminal:</strong></p>
+<div class="codehilite"><pre><span></span><code>open<span class="w"> </span>~/Library
+</code></pre></div>
+
+<p><strong>Make it permanently visible:</strong></p>
+<div class="codehilite"><pre><span></span><code>chflags<span class="w"> </span>nohidden<span class="w"> </span>~/Library
+</code></pre></div>
+
+<p>To hide it again:</p>
+<div class="codehilite"><pre><span></span><code>chflags<span class="w"> </span>hidden<span class="w"> </span>~/Library
+</code></pre></div>
+
+<hr />
+<h2>In the Open/Save Dialog (In Any App)</h2>
+<p>When any open or save dialog is open, press <strong>Command + Shift + .</strong> to toggle hidden files — the same shortcut as in Finder. Useful when you need to navigate to a hidden folder while saving a file.</p>
+<hr />
+<h2>Show System Files (Beyond Just Dotfiles)</h2>
+<p>macOS also hides system-level files using a different mechanism. To show everything including those:</p>
+<div class="codehilite"><pre><span></span><code>defaults<span class="w"> </span>write<span class="w"> </span>com.apple.Finder<span class="w"> </span>AppleShowAllFiles<span class="w"> </span><span class="nb">true</span>
+defaults<span class="w"> </span>write<span class="w"> </span>NSGlobalDomain<span class="w"> </span>AppleShowAllExtensions<span class="w"> </span><span class="nb">true</span>
+killall<span class="w"> </span>Finder
+</code></pre></div>
+
+<blockquote>
+<p><strong>Note:</strong> Revealing system files shows a lot of things you should not modify. Only do this if you know what you are looking for.</p>
+</blockquote>

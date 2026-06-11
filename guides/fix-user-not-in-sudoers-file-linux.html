@@ -1,0 +1,169 @@
+DATA:linux:Fix 'User is Not in the Sudoers File' on Linux:Linux
+<h1>Fix 'User is Not in the Sudoers File' on Linux</h1>
+<p>When you run <code>sudo</code> and see:</p>
+<div class="codehilite"><pre><span></span><code>username is not in the sudoers file. This incident will be reported.
+</code></pre></div>
+
+<p>Your user account does not have permission to use <code>sudo</code>. The fix depends on whether you have root access or not.</p>
+<blockquote>
+<p><strong>"This incident will be reported"</strong> — this just means the failed attempt is logged to <code>/var/log/auth.log</code> (Debian/Ubuntu) or <code>/var/log/secure</code> (Fedora/RHEL). Nothing bad happens. It is a warning, not a threat.</p>
+</blockquote>
+<hr />
+<h2>Before You Start — Which Group Does Your Distro Use?</h2>
+<table>
+<thead>
+<tr>
+<th>Distro</th>
+<th>sudo group name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ubuntu, Debian, Linux Mint, Pop!_OS</td>
+<td><code>sudo</code></td>
+</tr>
+<tr>
+<td>Fedora, RHEL, CentOS, AlmaLinux, Rocky</td>
+<td><code>wheel</code></td>
+</tr>
+<tr>
+<td>Arch Linux</td>
+<td><code>wheel</code> (must be enabled in sudoers first)</td>
+</tr>
+<tr>
+<td>Void Linux</td>
+<td><code>wheel</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Method 1 — Add User to the sudo Group (Easiest, Recommended)</h2>
+<h3>If you have root access or another sudo user on the machine:</h3>
+<p>Switch to root or another sudo-capable user, then run:</p>
+<p><strong>Ubuntu / Debian / Linux Mint:</strong></p>
+<div class="codehilite"><pre><span></span><code>usermod<span class="w"> </span>-aG<span class="w"> </span>sudo<span class="w"> </span>username
+</code></pre></div>
+
+<p><strong>Fedora / RHEL / CentOS / Arch / Void:</strong></p>
+<div class="codehilite"><pre><span></span><code>usermod<span class="w"> </span>-aG<span class="w"> </span>wheel<span class="w"> </span>username
+</code></pre></div>
+
+<p>Replace <code>username</code> with the actual username.</p>
+<p>Then <strong>log out and back in</strong> — group changes do not take effect until the next login.</p>
+<p>To apply immediately without logging out:</p>
+<div class="codehilite"><pre><span></span><code>newgrp<span class="w"> </span>sudo<span class="w">    </span><span class="c1"># Ubuntu/Debian</span>
+newgrp<span class="w"> </span>wheel<span class="w">   </span><span class="c1"># Fedora/Arch</span>
+</code></pre></div>
+
+<p>Verify it worked:</p>
+<div class="codehilite"><pre><span></span><code>groups<span class="w"> </span>username
+sudo<span class="w"> </span>whoami<span class="w">    </span><span class="c1"># should print: root</span>
+</code></pre></div>
+
+<hr />
+<h2>Method 2 — Edit sudoers with visudo (For Specific User Permissions)</h2>
+<blockquote>
+<p><strong>Never edit <code>/etc/sudoers</code> directly with nano or vim.</strong> If you introduce a typo, sudo stops working for everyone including root. Always use <code>visudo</code> — it validates the file before saving.</p>
+</blockquote>
+<p>As root:</p>
+<div class="codehilite"><pre><span></span><code>visudo
+</code></pre></div>
+
+<p>Find the line:</p>
+<div class="codehilite"><pre><span></span><code>root    ALL=(ALL:ALL) ALL
+</code></pre></div>
+
+<p>Add your user directly below it:</p>
+<div class="codehilite"><pre><span></span><code>root        ALL=(ALL:ALL) ALL
+yourusername ALL=(ALL:ALL) ALL
+</code></pre></div>
+
+<p>Save and exit (<code>Ctrl+X → Y → Enter</code> in nano, or <code>:wq</code> in vim).</p>
+<p><strong>What <code>ALL=(ALL:ALL) ALL</code> means:</strong>
+- First <code>ALL</code> — applies to all hosts
+- <code>(ALL:ALL)</code> — can run commands as any user and any group
+- Last <code>ALL</code> — can run all commands</p>
+<h3>Alternatively, add to <code>/etc/sudoers.d/</code> (Cleaner)</h3>
+<p>Instead of editing the main sudoers file, create a new file in the drop-in directory:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;yourusername ALL=(ALL:ALL) ALL&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>/etc/sudoers.d/yourusername
+chmod<span class="w"> </span><span class="m">440</span><span class="w"> </span>/etc/sudoers.d/yourusername
+</code></pre></div>
+
+<p>This keeps the main sudoers file untouched and is easier to reverse.</p>
+<hr />
+<h2>Method 3 — Fresh Debian Install (sudo Not Installed or User Not Added)</h2>
+<p>Debian's installer creates a root account separately and does not add your user to sudo by default — unlike Ubuntu which makes the first user a sudo member automatically. This is the most common cause on fresh Debian setups.</p>
+<p>Switch to root:</p>
+<div class="codehilite"><pre><span></span><code>su<span class="w"> </span>-
+</code></pre></div>
+
+<p>Install sudo if missing:</p>
+<div class="codehilite"><pre><span></span><code>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>sudo<span class="w"> </span>-y
+</code></pre></div>
+
+<p>Add your user:</p>
+<div class="codehilite"><pre><span></span><code>usermod<span class="w"> </span>-aG<span class="w"> </span>sudo<span class="w"> </span>yourusername
+</code></pre></div>
+
+<p>Log out and back in.</p>
+<hr />
+<h2>Method 4 — Locked Out Completely (No Root Access, No sudo Users)</h2>
+<p>If you have no root password and no other sudo user, you need to boot into recovery mode.</p>
+<h3>Ubuntu / Debian — Recovery Mode</h3>
+<ol>
+<li>Restart the machine.</li>
+<li>Hold <strong>Shift</strong> (Ubuntu) or press <strong>Esc</strong> repeatedly (Debian) during boot to show the GRUB menu.</li>
+<li>Select <strong>Advanced options</strong> → <strong>recovery mode</strong>.</li>
+<li>In the recovery menu, select <strong>root — Drop to root shell prompt</strong>.</li>
+<li>Remount the filesystem as writable:
+   <code>bash
+   mount -o remount,rw /</code></li>
+<li>Add your user to sudo:
+   <code>bash
+   usermod -aG sudo yourusername</code></li>
+<li>Type <code>exit</code> → select <strong>resume</strong> to reboot.</li>
+</ol>
+<h3>Fedora / RHEL — Single User Mode</h3>
+<ol>
+<li>Restart and hold <strong>Shift</strong> at boot to open GRUB.</li>
+<li>Press <strong>e</strong> on the default entry.</li>
+<li>Find the line starting with <code>linux</code> and add <code>single</code> or <code>init=/bin/bash</code> at the end.</li>
+<li>Press <strong>Ctrl+X</strong> to boot.</li>
+<li>Remount if needed: <code>mount -o remount,rw /</code></li>
+<li>Run <code>usermod -aG wheel yourusername</code></li>
+<li>Reboot: <code>exec /sbin/init</code></li>
+</ol>
+<hr />
+<h2>Method 5 — Broken sudoers File (Syntax Error)</h2>
+<p>If you edited <code>/etc/sudoers</code> directly and introduced an error, sudo is broken for everyone. Fix it:</p>
+<h3>If you can still <code>su</code> to root:</h3>
+<div class="codehilite"><pre><span></span><code>su<span class="w"> </span>-
+visudo<span class="w"> </span>-f<span class="w"> </span>/etc/sudoers<span class="w">   </span><span class="c1"># Opens the broken file with syntax checking</span>
+</code></pre></div>
+
+<p>Fix the syntax error, save. Sudo will work again immediately.</p>
+<h3>If you cannot <code>su</code> either (badly locked out):</h3>
+<p>Boot into recovery mode (Method 4) and run:</p>
+<div class="codehilite"><pre><span></span><code>visudo<span class="w"> </span>-f<span class="w"> </span>/etc/sudoers
+</code></pre></div>
+
+<p>Or restore from backup if one exists:</p>
+<div class="codehilite"><pre><span></span><code>cp<span class="w"> </span>/etc/sudoers.bak<span class="w"> </span>/etc/sudoers
+</code></pre></div>
+
+<hr />
+<h2>Troubleshooting</h2>
+<h3>Added user to group but still getting the error</h3>
+<p>You need to log out and back in. The group membership update does not apply to already-running sessions. Confirm the user is in the group:</p>
+<div class="codehilite"><pre><span></span><code>groups<span class="w"> </span>yourusername
+</code></pre></div>
+
+<h3><code>su: Authentication failure</code> when trying to switch to root</h3>
+<p>The root account may be locked (Ubuntu locks it by default). Use recovery mode (Method 4) instead.</p>
+<h3><code>visudo: /etc/sudoers: Permission denied</code></h3>
+<p>You are not running as root. Run <code>su -</code> first, then <code>visudo</code>.</p>
+<h3><code>sudo: sudo must be owned by uid 0 and have the setuid bit set</code></h3>
+<p>The sudo binary's permissions are wrong. From a root shell:</p>
+<div class="codehilite"><pre><span></span><code>chown<span class="w"> </span>root:root<span class="w"> </span>/usr/bin/sudo
+chmod<span class="w"> </span><span class="m">4755</span><span class="w"> </span>/usr/bin/sudo
+</code></pre></div>

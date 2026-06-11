@@ -1,0 +1,136 @@
+DATA:scheduling:Run a Script at Startup or Login on macOS:Task Scheduling
+<h1>Run a Script at Startup or Login on macOS</h1>
+<p>There are three ways to run something automatically on macOS. Each one runs at a different time and in a different context — picking the wrong one is why scripts that work in Terminal silently fail when automated.</p>
+<hr />
+<h2>Which Method to Use</h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>When it runs</th>
+<th>Runs as</th>
+<th>Best for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Login Items</strong></td>
+<td>After you log in, as your user</td>
+<td>Your user</td>
+<td>Opening apps, simple scripts</td>
+</tr>
+<tr>
+<td><strong>launchd User Agent</strong></td>
+<td>After you log in, as your user</td>
+<td>Your user</td>
+<td>Scripts, scheduled tasks, persistent daemons</td>
+</tr>
+<tr>
+<td><strong>launchd System Daemon</strong></td>
+<td>At boot, before login</td>
+<td>root</td>
+<td>System-level tasks, server processes</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Method 1 — Login Items (Easiest, Apps Only)</h2>
+<p>Best for launching apps or simple scripts at login. No Terminal required.</p>
+<ol>
+<li><strong>System Settings</strong> → <strong>General</strong> → <strong>Login Items &amp; Extensions</strong>.</li>
+<li>Under <strong>Open at Login</strong>, click <strong>+</strong>.</li>
+<li>Select your app or script.</li>
+</ol>
+<p>For scripts, wrap them in an <code>.app</code> first — see the <strong>Create a .app Shortcut on macOS</strong> guide.</p>
+<hr />
+<h2>Method 2 — launchd User Agent (Recommended for Scripts)</h2>
+<p>LaunchAgents run after you log in, as your own user. They can run on a schedule or be triggered by events.</p>
+<h3>Create the plist file</h3>
+<p>Create a file at <code>~/Library/LaunchAgents/com.yourname.scriptname.plist</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="cp">&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot;</span>
+<span class="cp">  &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;</span>
+<span class="nt">&lt;plist</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;dict&gt;</span>
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>Label<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;string&gt;</span>com.yourname.scriptname<span class="nt">&lt;/string&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>ProgramArguments<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;array&gt;</span>
+<span class="w">        </span><span class="nt">&lt;string&gt;</span>/bin/zsh<span class="nt">&lt;/string&gt;</span>
+<span class="w">        </span><span class="nt">&lt;string&gt;</span>/Users/yourname/scripts/myscript.zsh<span class="nt">&lt;/string&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/array&gt;</span>
+
+<span class="w">    </span><span class="cm">&lt;!-- Run once at login --&gt;</span>
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>RunAtLoad<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;true/&gt;</span>
+
+<span class="w">    </span><span class="cm">&lt;!-- Optional: also run on a schedule (9 AM daily) --&gt;</span>
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>StartCalendarInterval<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;dict&gt;</span>
+<span class="w">        </span><span class="nt">&lt;key&gt;</span>Hour<span class="nt">&lt;/key&gt;</span>
+<span class="w">        </span><span class="nt">&lt;integer&gt;</span>9<span class="nt">&lt;/integer&gt;</span>
+<span class="w">        </span><span class="nt">&lt;key&gt;</span>Minute<span class="nt">&lt;/key&gt;</span>
+<span class="w">        </span><span class="nt">&lt;integer&gt;</span>0<span class="nt">&lt;/integer&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/dict&gt;</span>
+
+<span class="w">    </span><span class="cm">&lt;!-- Log output for debugging --&gt;</span>
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>StandardOutPath<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;string&gt;</span>/tmp/myscript.log<span class="nt">&lt;/string&gt;</span>
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>StandardErrorPath<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;string&gt;</span>/tmp/myscript-error.log<span class="nt">&lt;/string&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>EnvironmentVariables<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;dict&gt;</span>
+<span class="w">        </span><span class="nt">&lt;key&gt;</span>PATH<span class="nt">&lt;/key&gt;</span>
+<span class="w">        </span><span class="nt">&lt;string&gt;</span>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin<span class="nt">&lt;/string&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/dict&gt;</span>
+<span class="nt">&lt;/dict&gt;</span>
+<span class="nt">&lt;/plist&gt;</span>
+</code></pre></div>
+
+<p>Replace <code>yourname</code> and <code>scriptname</code> with your own values. Replace the script path with your actual script path.</p>
+<h3>Load it</h3>
+<div class="codehilite"><pre><span></span><code>launchctl<span class="w"> </span>load<span class="w"> </span>~/Library/LaunchAgents/com.yourname.scriptname.plist
+</code></pre></div>
+
+<h3>Verify it loaded</h3>
+<div class="codehilite"><pre><span></span><code>launchctl<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>com.yourname.scriptname
+</code></pre></div>
+
+<p>The three columns are: PID, exit code, label. Exit code <code>0</code> = ran successfully.</p>
+<h3>Unload it</h3>
+<div class="codehilite"><pre><span></span><code>launchctl<span class="w"> </span>unload<span class="w"> </span>~/Library/LaunchAgents/com.yourname.scriptname.plist
+</code></pre></div>
+
+<h3>Reload after changes</h3>
+<div class="codehilite"><pre><span></span><code>launchctl<span class="w"> </span>unload<span class="w"> </span>~/Library/LaunchAgents/com.yourname.scriptname.plist
+launchctl<span class="w"> </span>load<span class="w"> </span>~/Library/LaunchAgents/com.yourname.scriptname.plist
+</code></pre></div>
+
+<hr />
+<h2>Method 3 — launchd System Daemon (Boot-time, Runs as Root)</h2>
+<p>System Daemons run at boot before any user logs in. Use this only when you need something to run system-wide or before login.</p>
+<p>Place the plist in <code>/Library/LaunchDaemons/</code> (not your home folder). The plist format is identical to Method 2 except:
+- Add <code>&lt;key&gt;UserName&lt;/key&gt;&lt;string&gt;youruser&lt;/string&gt;</code> if you want it to run as a specific user rather than root
+- Load it with: <code>sudo launchctl load /Library/LaunchDaemons/com.yourname.daemon.plist</code></p>
+<hr />
+<h2>Common Issues</h2>
+<h3>Script works in Terminal but not in launchd</h3>
+<p>launchd does not load your shell profile, so commands like <code>brew</code>, <code>python3</code>, <code>node</code> are not found.</p>
+<p>Fix: use full paths in your script and set PATH in the plist <code>EnvironmentVariables</code> key (as shown above).</p>
+<h3>Script needs Full Disk Access</h3>
+<p>Since macOS Catalina, scripts that access Desktop, Documents, Downloads, or iCloud via launchd need Full Disk Access granted to <code>/bin/zsh</code>:</p>
+<p><strong>System Settings → Privacy &amp; Security → Full Disk Access → + → /bin/zsh</strong></p>
+<h3>Check what went wrong</h3>
+<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>/tmp/myscript-error.log
+</code></pre></div>
+
+<hr />
+<h2>Remove a Login Item or Agent</h2>
+<p><strong>Login Items (Method 1):</strong>
+System Settings → General → Login Items → select it → click <strong>−</strong></p>
+<p><strong>launchd Agent (Method 2):</strong></p>
+<div class="codehilite"><pre><span></span><code>launchctl<span class="w"> </span>unload<span class="w"> </span>~/Library/LaunchAgents/com.yourname.scriptname.plist
+rm<span class="w"> </span>~/Library/LaunchAgents/com.yourname.scriptname.plist
+</code></pre></div>

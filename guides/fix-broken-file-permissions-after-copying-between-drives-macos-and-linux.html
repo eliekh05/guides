@@ -1,0 +1,171 @@
+DATA:linux:Fix Broken File Permissions After Copying Drives:Linux
+<h1>Fix Broken File Permissions After Copying Drives</h1>
+<p>When you copy files between drives — especially from NTFS or exFAT to APFS or HFS+ — files can end up with wrong permissions, missing execute bits, or corrupted extended attributes. This makes files read-only, scripts non-executable, or apps that refuse to launch.</p>
+<hr />
+<h2>Why This Happens</h2>
+<p>Different file systems handle permissions and metadata differently:</p>
+<table>
+<thead>
+<tr>
+<th>File System</th>
+<th>Permissions</th>
+<th>Extended Attributes (xattr)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>APFS / HFS+ (Mac)</td>
+<td>✅ Full Unix permissions</td>
+<td>✅ Supported</td>
+</tr>
+<tr>
+<td>ext4 (Linux)</td>
+<td>✅ Full Unix permissions</td>
+<td>✅ Supported</td>
+</tr>
+<tr>
+<td>exFAT</td>
+<td>❌ No Unix permissions</td>
+<td>❌ Not supported</td>
+</tr>
+<tr>
+<td>NTFS (Windows)</td>
+<td>Different permission model</td>
+<td>Partially supported</td>
+</tr>
+<tr>
+<td>FAT32</td>
+<td>❌ No Unix permissions</td>
+<td>❌ Not supported</td>
+</tr>
+</tbody>
+</table>
+<p>When files from exFAT or FAT32 land on APFS, macOS assigns default permissions that may not match what the files need. Extended attributes (invisible metadata used by macOS for things like Gatekeeper quarantine flags, Finder tags, and resource forks) are also lost.</p>
+<hr />
+<h2>Fix 1 — Restore Execute Permission on Scripts</h2>
+<p>If shell scripts or binaries no longer run after copying, they have lost their execute bit:</p>
+<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span>+x<span class="w"> </span>/path/to/script.sh
+</code></pre></div>
+
+<p>To fix an entire folder of scripts recursively:</p>
+<div class="codehilite"><pre><span></span><code>chmod<span class="w"> </span>-R<span class="w"> </span>+x<span class="w"> </span>/path/to/folder/
+</code></pre></div>
+
+<blockquote>
+<p><strong>Use with care on folders containing mixed content.</strong> This gives execute permission to every file, including data files that do not need it. For a more targeted approach, use Fix 2.</p>
+</blockquote>
+<hr />
+<h2>Fix 2 — Restore Permissions to a Specific Pattern</h2>
+<p>To restore execute permission only on <code>.sh</code> files inside a folder:</p>
+<div class="codehilite"><pre><span></span><code>find<span class="w"> </span>/path/to/folder<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.sh&quot;</span><span class="w"> </span>-exec<span class="w"> </span>chmod<span class="w"> </span>+x<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+</code></pre></div>
+
+<p>To fix only directories (so you can navigate into them):</p>
+<div class="codehilite"><pre><span></span><code>find<span class="w"> </span>/path/to/folder<span class="w"> </span>-type<span class="w"> </span>d<span class="w"> </span>-exec<span class="w"> </span>chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+</code></pre></div>
+
+<p>To fix only regular files (not directories):</p>
+<div class="codehilite"><pre><span></span><code>find<span class="w"> </span>/path/to/folder<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-exec<span class="w"> </span>chmod<span class="w"> </span><span class="m">644</span><span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span>
+</code></pre></div>
+
+<hr />
+<h2>Fix 3 — Restore Ownership</h2>
+<p>If files were copied as root or from another user account, they may be owned by the wrong user. Your account will not be able to edit them:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span><span class="w"> </span>/path/to/folder
+</code></pre></div>
+
+<p>This sets you as the owner of the folder and everything inside it.</p>
+<hr />
+<h2>Fix 4 — Remove Quarantine Attributes Added During Copy</h2>
+<p>macOS sometimes applies quarantine attributes to files copied from external drives, even if they are not downloads. This can cause apps to be blocked:</p>
+<div class="codehilite"><pre><span></span><code>xattr<span class="w"> </span>-r<span class="w"> </span>-d<span class="w"> </span>com.apple.quarantine<span class="w"> </span>/path/to/app.app
+</code></pre></div>
+
+<p>To check what extended attributes are on a file:</p>
+<div class="codehilite"><pre><span></span><code>xattr<span class="w"> </span>-l<span class="w"> </span>/path/to/file
+</code></pre></div>
+
+<p>To remove all extended attributes from a file (use with caution):</p>
+<div class="codehilite"><pre><span></span><code>xattr<span class="w"> </span>-c<span class="w"> </span>/path/to/file
+</code></pre></div>
+
+<hr />
+<h2>Fix 5 — Use <code>rsync</code> Instead of Finder for Copying</h2>
+<p>The Finder copy does not preserve Unix permissions when copying to or from exFAT or NTFS. Using <code>rsync</code> with the right flags preserves permissions, timestamps, and symbolic links:</p>
+<div class="codehilite"><pre><span></span><code>rsync<span class="w"> </span>-av<span class="w"> </span>--progress<span class="w"> </span>/source/folder/<span class="w"> </span>/destination/folder/
+</code></pre></div>
+
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-a</code></td>
+<td>Archive mode: preserves permissions, timestamps, symlinks, and ownership</td>
+</tr>
+<tr>
+<td><code>-v</code></td>
+<td>Verbose: shows what is being copied</td>
+</tr>
+<tr>
+<td><code>--progress</code></td>
+<td>Shows progress for large files</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> <code>rsync -a</code> can only preserve permissions if the destination file system supports them. Copying to exFAT or FAT32 will still lose permissions regardless of the tool used.</p>
+</blockquote>
+<hr />
+<h2>Fix 6 — Run Disk Utility First Aid (macOS)</h2>
+<p>If permissions are broken system-wide (not just on copied files), the volume itself may have errors:</p>
+<ol>
+<li>Open <strong>Disk Utility</strong> (Applications → Utilities → Disk Utility).</li>
+<li>Select your drive from the left sidebar.</li>
+<li>Click <strong>First Aid</strong> → <strong>Run</strong>.</li>
+<li>Let it complete and check for errors.</li>
+</ol>
+<hr />
+<h2>Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Script won't run (no execute bit)</td>
+<td><code>chmod +x /path/to/script.sh</code></td>
+</tr>
+<tr>
+<td>Entire folder not executable</td>
+<td><code>chmod -R +x /path/to/folder/</code></td>
+</tr>
+<tr>
+<td>Files owned by wrong user</td>
+<td><code>sudo chown -R $(whoami) /path/to/folder</code></td>
+</tr>
+<tr>
+<td>App blocked by quarantine flag</td>
+<td><code>xattr -r -d com.apple.quarantine /path/to/app.app</code></td>
+</tr>
+<tr>
+<td>Check what attributes a file has</td>
+<td><code>xattr -l /path/to/file</code></td>
+</tr>
+<tr>
+<td>Copy with permissions preserved</td>
+<td><code>rsync -av /source/ /destination/</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<blockquote>
+<p><strong>Note:</strong> If you regularly transfer files between Windows (NTFS) and Mac (APFS), consider using a tool like <strong>Paragon NTFS</strong> or <strong>Tuxera NTFS</strong> which provides better interoperability than macOS's built-in read-only NTFS support.</p>
+</blockquote>

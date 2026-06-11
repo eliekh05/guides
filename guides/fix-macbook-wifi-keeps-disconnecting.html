@@ -1,0 +1,142 @@
+DATA:networking:Fix MacBook Wi-Fi Keeps Disconnecting:Networking & DNS
+<h1>Fix MacBook Wi-Fi Keeps Disconnecting</h1>
+<p>MacBook Wi-Fi dropping repeatedly is one of the most common and frustrating Mac problems. It has several different causes — each with a different fix. Work through these in order from most to least common.</p>
+<hr />
+<h2>Fix 1 — Renew DHCP Lease (Most Common Cause)</h2>
+<p>A stale DHCP lease causes the router to stop recognising your Mac, dropping the connection at the IP level even though Wi-Fi appears connected.</p>
+<ol>
+<li>Open <strong>System Settings</strong> → <strong>Network</strong> → <strong>Wi-Fi</strong> → <strong>Details</strong>.</li>
+<li>Go to the <strong>TCP/IP</strong> tab.</li>
+<li>Click <strong>Renew DHCP Lease</strong>.</li>
+<li>Click <strong>OK</strong>.</li>
+</ol>
+<p>Test for a few minutes. If disconnections stop, this was the cause.</p>
+<hr />
+<h2>Fix 2 — Switch to 5GHz Band</h2>
+<p>If your router broadcasts both 2.4GHz and 5GHz on the same network name, macOS often connects to the congested 2.4GHz band. The 2.4GHz band is shared with microwaves, Bluetooth, and neighbouring networks — causing drops even when signal looks strong.</p>
+<p><strong>Check which band you're on:</strong>
+Hold <strong>Option (⌥)</strong> and click the Wi-Fi icon in your menu bar. Look for <strong>Channel</strong> — channels 1–13 are 2.4GHz, channels 36+ are 5GHz.</p>
+<p><strong>Fix:</strong> Log into your router settings and split the two bands into separate network names — e.g. <code>HomeWifi</code> (2.4GHz) and <code>HomeWifi_5G</code> (5GHz). Connect your Mac to the 5GHz network.</p>
+<hr />
+<h2>Fix 3 — Delete Saved Wi-Fi Network Profile (Fixes Corrupted Profiles)</h2>
+<p>macOS stores Wi-Fi profiles that can become corrupted after a router firmware update, password change, or macOS update. A corrupted profile causes connect-then-drop loops.</p>
+<ol>
+<li>Go to <strong>System Settings</strong> → <strong>Network</strong> → <strong>Wi-Fi</strong>.</li>
+<li>Click <strong>Details</strong> next to your network name.</li>
+<li>Click <strong>Forget This Network</strong>.</li>
+<li>Reconnect by selecting the network and entering the password fresh.</li>
+</ol>
+<hr />
+<h2>Fix 4 — Create a New Network Location</h2>
+<p>If Fix 3 did not help, your entire network configuration may be corrupted. Creating a new Location gives macOS a completely fresh set of network settings.</p>
+<ol>
+<li>Open <strong>System Settings</strong> → <strong>Network</strong>.</li>
+<li>Click the <strong>Location</strong> dropdown at the top → <strong>Edit Locations</strong>.</li>
+<li>Click <strong>+</strong> → name it something like <code>Home</code> → click <strong>Done</strong>.</li>
+<li>Select the new location.</li>
+<li>Connect to your Wi-Fi network — macOS will treat it as a first-time connection.</li>
+</ol>
+<hr />
+<h2>Fix 5 — Flush DNS Cache and Remove Old Keychain Entry</h2>
+<p>A corrupted DNS cache or outdated Wi-Fi password stored in Keychain can cause connection timeouts that look like disconnections.</p>
+<p><strong>Flush DNS:</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dscacheutil<span class="w"> </span>-flushcache<span class="p">;</span><span class="w"> </span>sudo<span class="w"> </span>killall<span class="w"> </span>-HUP<span class="w"> </span>mDNSResponder
+</code></pre></div>
+
+<p><strong>Remove old Keychain entry:</strong>
+1. Open <strong>Keychain Access</strong> (search with Spotlight).
+2. Search for your Wi-Fi network name.
+3. Delete any entries for it.
+4. Reconnect to Wi-Fi and enter the password fresh — it will save a clean entry.</p>
+<hr />
+<h2>Fix 6 — Disable Wi-Fi Power Nap and Power Saving</h2>
+<p>macOS throttles Wi-Fi when the Mac is idle or on battery, which can cause drops.</p>
+<ol>
+<li>Open <strong>System Settings</strong> → <strong>Battery</strong>.</li>
+<li>Click <strong>Options</strong> (or scroll to find advanced settings).</li>
+<li>Disable <strong>Enable Power Nap</strong>.</li>
+<li>On MacBooks, also try: go to <strong>Wi-Fi Details</strong> → <strong>Hardware</strong> tab → set <strong>Configure IPv6</strong> to <strong>Link-local only</strong> (reduces background IPv6 probing that can destabilise connections).</li>
+</ol>
+<hr />
+<h2>Fix 7 — Reset Wi-Fi Module via Terminal</h2>
+<p>This clears the Wi-Fi module's state without rebooting:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>ifconfig<span class="w"> </span>en0<span class="w"> </span>down
+sudo<span class="w"> </span>ifconfig<span class="w"> </span>en0<span class="w"> </span>up
+</code></pre></div>
+
+<p>Or turn Wi-Fi off and on via menu bar. For a deeper reset:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>networksetup<span class="w"> </span>-setairportpower<span class="w"> </span>en0<span class="w"> </span>off
+sudo<span class="w"> </span>networksetup<span class="w"> </span>-setairportpower<span class="w"> </span>en0<span class="w"> </span>on
+</code></pre></div>
+
+<hr />
+<h2>Fix 8 — Check for Software Conflicts</h2>
+<p>VPNs, firewalls, and network monitoring apps can intercept Wi-Fi traffic and cause drops. If you installed any of these around the time problems started:</p>
+<ol>
+<li>Temporarily disable or uninstall the app.</li>
+<li>Test Wi-Fi stability for 30 minutes.</li>
+<li>If drops stop, the app is the cause — check for an update or contact the developer.</li>
+</ol>
+<p>Common culprits: Little Snitch, Lulu, Cisco AnyConnect, old versions of Norton or McAfee.</p>
+<hr />
+<h2>Fix 9 — Run Apple Wireless Diagnostics</h2>
+<p>macOS has a built-in tool that scans for Wi-Fi problems:</p>
+<ol>
+<li>Hold <strong>Option (⌥)</strong> and click the <strong>Wi-Fi icon</strong> in the menu bar.</li>
+<li>Select <strong>Open Wireless Diagnostics</strong>.</li>
+<li>Click <strong>Continue</strong> and let it run.</li>
+<li>Go to <strong>Window</strong> → <strong>Scan</strong> to see all nearby networks and identify channel congestion.</li>
+<li>Go to <strong>Window</strong> → <strong>Performance</strong> to watch signal strength and transmit rate in real time.</li>
+</ol>
+<p>The tool will flag specific issues it finds and suggest fixes.</p>
+<hr />
+<h2>Fix 10 — Reset NVRAM and SMC</h2>
+<p>If nothing above has worked, the Wi-Fi card's stored settings or power management firmware may be corrupted. See the <strong>Reset NVRAM and SMC</strong> guide for full instructions — resetting both often resolves persistent Wi-Fi hardware issues.</p>
+<hr />
+<h2>Troubleshooting Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Most Likely Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Drops every few minutes</td>
+<td>Stale DHCP lease</td>
+<td>Fix 1</td>
+</tr>
+<tr>
+<td>Slow then drops</td>
+<td>2.4GHz congestion</td>
+<td>Fix 2</td>
+</tr>
+<tr>
+<td>Connects then immediately drops</td>
+<td>Corrupted network profile</td>
+<td>Fix 3</td>
+</tr>
+<tr>
+<td>Drops after macOS update</td>
+<td>Corrupted network config</td>
+<td>Fix 4</td>
+</tr>
+<tr>
+<td>Drops overnight or when idle</td>
+<td>Power Nap/power saving</td>
+<td>Fix 6</td>
+</tr>
+<tr>
+<td>Drops only when VPN active</td>
+<td>Software conflict</td>
+<td>Fix 8</td>
+</tr>
+<tr>
+<td>Random drops, no pattern</td>
+<td>Multiple causes</td>
+<td>Work through all fixes</td>
+</tr>
+</tbody>
+</table>

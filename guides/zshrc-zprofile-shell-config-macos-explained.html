@@ -1,0 +1,200 @@
+DATA:macos:Understanding .zshrc, .zprofile, and Shell Config Files on macOS:macOS
+<h1>Understanding .zshrc, .zprofile, and Shell Config Files on macOS</h1>
+<p>When you see instructions like <code>echo 'export PATH=...' &gt;&gt; ~/.zprofile</code> or <code>source ~/.zshrc</code> and have no idea what that means or what it did — this guide explains everything. What these files are, what they do, when they load, how to create them, how to edit them, and how to see what is already in them.</p>
+<hr />
+<h2>What These Files Are</h2>
+<p>When you open Terminal, macOS runs the <strong>zsh</strong> shell (default since macOS Catalina). Before giving you a prompt, zsh reads a few text files to set up your environment — your PATH, aliases, prompts, and other settings. These are plain text files that live in your home folder.</p>
+<p>The main ones:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>When it loads</th>
+<th>What to put in it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>~/.zprofile</code></td>
+<td>Once, when a new terminal window opens</td>
+<td>PATH, environment variables, version managers (pyenv, fnm, nvm)</td>
+</tr>
+<tr>
+<td><code>~/.zshrc</code></td>
+<td>Every time a new shell starts (including subshells)</td>
+<td>Aliases, functions, prompt customisation, anything interactive</td>
+</tr>
+<tr>
+<td><code>~/.zshenv</code></td>
+<td>Every single time zsh runs (including scripts)</td>
+<td>Rarely needed — only for variables scripts need</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<blockquote>
+<p><strong>Simple rule:</strong> Put <code>export PATH=...</code> and tool setup lines in <code>~/.zprofile</code>. Put <code>alias</code> lines and functions in <code>~/.zshrc</code>.</p>
+<p><strong>On macOS specifically:</strong> Every new terminal window is treated as a login shell, so both <code>.zprofile</code> and <code>.zshrc</code> load every time you open a terminal. In practice, both files work for most things — but following the convention above keeps things clean and avoids subtle bugs.</p>
+</blockquote>
+<hr />
+<h2>The ~ Symbol</h2>
+<p><code>~</code> means your <strong>home folder</strong> — the folder named after your username. So <code>~/.zprofile</code> means <code>/Users/yourname/.zprofile</code>.</p>
+<p>These files start with a <code>.</code> which makes them <strong>hidden</strong> by default. They exist — you just cannot see them in Finder without pressing <strong>Command + Shift + .</strong> to show hidden files.</p>
+<hr />
+<h2>Check What Files Already Exist</h2>
+<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>-la<span class="w"> </span>~<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;\.z&quot;</span>
+</code></pre></div>
+
+<p>You might see <code>.zprofile</code>, <code>.zshrc</code>, <code>.zsh_history</code>, or none of these. That is fine — they are created the first time something writes to them, or you can create them manually.</p>
+<hr />
+<h2>View What Is Already In a File</h2>
+<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>~/.zprofile
+cat<span class="w"> </span>~/.zshrc
+</code></pre></div>
+
+<p>If the file does not exist, you will see <code>No such file or directory</code> — that is normal.</p>
+<hr />
+<h2>Create or Edit These Files</h2>
+<p>Use <code>nano</code> — the simplest terminal text editor:</p>
+<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>~/.zprofile
+</code></pre></div>
+
+<p>If the file does not exist, nano creates it. Type your content, then:
+- <strong>Ctrl + O</strong> → Enter to save
+- <strong>Ctrl + X</strong> to exit</p>
+<hr />
+<h2>Add Something to a File Without Opening It</h2>
+<p>The <code>&gt;&gt;</code> operator appends a line to a file (creates it if it does not exist):</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;export EDITOR=&quot;nano&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
+</code></pre></div>
+
+<p>This is what install scripts do when they say "run this command to add Homebrew to your PATH" — they are appending a line to your config file.</p>
+<blockquote>
+<p><strong><code>&gt;&gt;</code> appends. <code>&gt;</code> overwrites.</strong> Always use <code>&gt;&gt;</code> when adding to a config file.</p>
+</blockquote>
+<hr />
+<h2>Apply Changes Without Restarting Terminal</h2>
+<p>After editing a config file, reload it:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">source</span><span class="w"> </span>~/.zprofile
+<span class="nb">source</span><span class="w"> </span>~/.zshrc
+</code></pre></div>
+
+<p>Or just open a new terminal window — it loads both files fresh.</p>
+<hr />
+<h2>What Happens When Terminal Opens — Step by Step</h2>
+<ol>
+<li>You open Terminal or a new tab</li>
+<li>zsh starts as a <strong>login shell</strong></li>
+<li><code>/etc/zprofile</code> loads first (system-wide, you do not edit this)</li>
+<li><code>~/.zprofile</code> loads — your PATH and environment variables are set</li>
+<li><code>/etc/zshrc</code> loads (system-wide)</li>
+<li><code>~/.zshrc</code> loads — your aliases, functions, and prompt are set</li>
+<li>You see the prompt and can type</li>
+</ol>
+<p>This is why changes to <code>.zprofile</code> take effect in new terminal windows but not in the current one — the current window already ran through steps 1–7. <code>source ~/.zprofile</code> manually reruns step 4.</p>
+<hr />
+<h2>Common Things People Add</h2>
+<h3>Add a folder to PATH (so commands in that folder work)</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># In ~/.zprofile</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;/usr/local/myapp/bin:</span><span class="nv">$PATH</span><span class="s2">&quot;</span>
+</code></pre></div>
+
+<p>The <code>:$PATH</code> at the end is critical — it appends your new folder to the existing PATH rather than replacing it entirely.</p>
+<h3>Set a default text editor</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># In ~/.zprofile</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">EDITOR</span><span class="o">=</span><span class="s2">&quot;nano&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">VISUAL</span><span class="o">=</span><span class="s2">&quot;nano&quot;</span>
+</code></pre></div>
+
+<h3>Add Homebrew (Apple Silicon)</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># In ~/.zprofile</span>
+<span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>/opt/homebrew/bin/brew<span class="w"> </span>shellenv<span class="k">)</span><span class="s2">&quot;</span>
+</code></pre></div>
+
+<h3>Add Homebrew (Intel Mac)</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># In ~/.zprofile</span>
+<span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>/usr/local/bin/brew<span class="w"> </span>shellenv<span class="k">)</span><span class="s2">&quot;</span>
+</code></pre></div>
+
+<h3>Add an alias</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># In ~/.zshrc</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">ll</span><span class="o">=</span><span class="s1">&#39;ls -la&#39;</span>
+<span class="nb">alias</span><span class="w"> </span><span class="nv">gs</span><span class="o">=</span><span class="s1">&#39;git status&#39;</span>
+</code></pre></div>
+
+<h3>Add a function</h3>
+<div class="codehilite"><pre><span></span><code><span class="c1"># In ~/.zshrc</span>
+mkcd<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+<span class="o">}</span>
+</code></pre></div>
+
+<hr />
+<h2>Terminal History</h2>
+<p>zsh saves every command you type to a history file so you can recall them later.</p>
+<p><strong>The history file:</strong> <code>~/.zsh_history</code></p>
+<p><strong>Navigate history in Terminal:</strong>
+- <strong>Up arrow</strong> — go back through previous commands one by one
+- <strong>Down arrow</strong> — go forward
+- <strong>Ctrl + R</strong> — search through history — type part of a command and it finds it
+- <code>history</code> — print all saved history to the screen
+- <code>history | grep brew</code> — search history for commands containing "brew"</p>
+<p><strong>Make history better</strong> — add to <code>~/.zshrc</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Save 10,000 commands instead of the default 500</span>
+<span class="nv">HISTSIZE</span><span class="o">=</span><span class="m">10000</span>
+<span class="nv">SAVEHIST</span><span class="o">=</span><span class="m">10000</span>
+<span class="nv">HISTFILE</span><span class="o">=</span>~/.zsh_history
+
+<span class="c1"># Share history across multiple terminal windows</span>
+setopt<span class="w"> </span>SHARE_HISTORY
+
+<span class="c1"># Do not save duplicate commands</span>
+setopt<span class="w"> </span>HIST_IGNORE_DUPS
+
+<span class="c1"># Do not save commands that start with a space (useful for passwords)</span>
+setopt<span class="w"> </span>HIST_IGNORE_SPACE
+</code></pre></div>
+
+<hr />
+<h2>View and Search History</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Print entire history</span>
+<span class="nb">history</span>
+
+<span class="c1"># Show last 20 commands</span>
+<span class="nb">history</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-20
+
+<span class="c1"># Search for a specific command</span>
+<span class="nb">history</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>python
+
+<span class="c1"># Run a previous command by number</span>
+!42
+
+<span class="c1"># Run the last command that started with &quot;git&quot;</span>
+!git
+
+<span class="c1"># Show the last command without running it</span>
+!git:p
+</code></pre></div>
+
+<hr />
+<h2>Clear History</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Clear history for the current session</span>
+<span class="nb">history</span><span class="w"> </span>-p
+
+<span class="c1"># Delete the history file entirely (permanent)</span>
+rm<span class="w"> </span>~/.zsh_history
+</code></pre></div>
+
+<hr />
+<h2>The Complete Load Order (for Reference)</h2>
+<div class="codehilite"><pre><span></span><code><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">zshenv</span><span class="w">        </span><span class="err">←</span><span class="w"> </span><span class="n">system</span><span class="p">,</span><span class="w"> </span><span class="n">always</span><span class="w"> </span><span class="n">loads</span>
+<span class="o">~/.</span><span class="n">zshenv</span><span class="w">          </span><span class="err">←</span><span class="w"> </span><span class="n">yours</span><span class="p">,</span><span class="w"> </span><span class="n">always</span><span class="w"> </span><span class="n">loads</span><span class="w"> </span><span class="p">(</span><span class="n">rarely</span><span class="w"> </span><span class="n">used</span><span class="p">)</span>
+<span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">zprofile</span><span class="w">      </span><span class="err">←</span><span class="w"> </span><span class="n">system</span><span class="w"> </span><span class="n">login</span><span class="w"> </span><span class="n">config</span>
+<span class="o">~/.</span><span class="n">zprofile</span><span class="w">        </span><span class="err">←</span><span class="w"> </span><span class="n">your</span><span class="w"> </span><span class="n">PATH</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">env</span><span class="w"> </span><span class="n">vars</span><span class="w"> </span><span class="err">←</span><span class="w"> </span><span class="n">EDIT</span><span class="w"> </span><span class="n">THIS</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">PATH</span><span class="o">/</span><span class="n">tools</span>
+<span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">zshrc</span><span class="w">         </span><span class="err">←</span><span class="w"> </span><span class="n">system</span><span class="w"> </span><span class="n">interactive</span><span class="w"> </span><span class="n">config</span>
+<span class="o">~/.</span><span class="n">zshrc</span><span class="w">           </span><span class="err">←</span><span class="w"> </span><span class="n">your</span><span class="w"> </span><span class="n">aliases</span><span class="o">/</span><span class="n">functions</span><span class="w"> </span><span class="err">←</span><span class="w"> </span><span class="n">EDIT</span><span class="w"> </span><span class="n">THIS</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">aliases</span>
+<span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">zlogin</span><span class="w">        </span><span class="err">←</span><span class="w"> </span><span class="n">system</span><span class="p">,</span><span class="w"> </span><span class="n">after</span><span class="w"> </span><span class="n">login</span>
+<span class="o">~/.</span><span class="n">zlogin</span><span class="w">          </span><span class="err">←</span><span class="w"> </span><span class="n">yours</span><span class="p">,</span><span class="w"> </span><span class="n">rarely</span><span class="w"> </span><span class="n">used</span>
+</code></pre></div>
+
+<p>On macOS, every terminal window is a login shell — so this entire chain runs every time you open a new terminal window.</p>

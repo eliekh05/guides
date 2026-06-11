@@ -1,0 +1,204 @@
+DATA:installation:Run Windows on Mac with Parallels Desktop:Installation Guides
+<h1>Run Windows on Mac with Parallels Desktop</h1>
+<p>Parallels Desktop is the most polished and easiest way to run Windows on a Mac — both Intel and Apple Silicon. Unlike VMware Fusion (which requires manual setup) or Boot Camp (Intel only, native dual boot), Parallels handles almost everything automatically including downloading Windows for you.</p>
+<p>The trade-off is cost: Parallels is a paid subscription. This guide covers what you get, how to set it up, and when it is worth it versus the free alternatives.</p>
+<hr />
+<h2>Parallels vs Free Alternatives</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Parallels Desktop</th>
+<th>VMware Fusion</th>
+<th>Boot Camp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cost</td>
+<td>~$100/year (Standard)</td>
+<td>Free</td>
+<td>Free</td>
+</tr>
+<tr>
+<td>Apple Silicon support</td>
+<td>✅</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Intel Mac support</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Ease of setup</td>
+<td>⭐⭐⭐⭐⭐</td>
+<td>⭐⭐⭐</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td>Performance</td>
+<td>Excellent</td>
+<td>Very good</td>
+<td>Native (best)</td>
+</tr>
+<tr>
+<td>DirectX support</td>
+<td>DirectX 12</td>
+<td>DirectX 11</td>
+<td>Native</td>
+</tr>
+<tr>
+<td>Auto-downloads Windows</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>macOS/Windows integration</td>
+<td>Best in class</td>
+<td>Good</td>
+<td>None (separate boots)</td>
+</tr>
+<tr>
+<td>Coherence mode (no VM window)</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Choose Parallels if:</strong> you want the easiest setup, best integration, or need DirectX 12 gaming.
+<strong>Choose VMware Fusion if:</strong> you want free and are comfortable with more manual setup.
+<strong>Choose Boot Camp if:</strong> you are on Intel Mac and need native Windows performance.</p>
+<hr />
+<h2>Requirements</h2>
+<ul>
+<li>A Mac running macOS 13 (Ventura) or later — Parallels Desktop 26 dropped support for macOS 12 Monterey</li>
+<li>At least <strong>8 GB RAM</strong> (16 GB recommended)</li>
+<li>At least <strong>60 GB free disk space</strong></li>
+<li>A Parallels Desktop subscription (see pricing below)</li>
+</ul>
+<hr />
+<h2>Parallels Editions</h2>
+<p>The current version is <strong>Parallels Desktop 26</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Edition</th>
+<th>Annual Subscription</th>
+<th>Perpetual License</th>
+<th>Best for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard</td>
+<td>$99.99/year</td>
+<td>$219.99 one-time</td>
+<td>Home use, basic Windows apps</td>
+</tr>
+<tr>
+<td>Pro</td>
+<td>$119.99/year</td>
+<td>Not available</td>
+<td>Developers, heavy workloads, more RAM/CPU</td>
+</tr>
+<tr>
+<td>Business</td>
+<td>$149.99/year</td>
+<td>Not available</td>
+<td>Teams, centralised management</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Perpetual vs subscription:</strong> The Standard perpetual license lets you use that version forever with no recurring fee, but you pay extra for future major version upgrades. The subscription always includes the latest version.</p>
+</blockquote>
+<p>Student and education discounts are available. Check <a href="https://www.parallels.com/education/">parallels.com/education</a> for pricing.</p>
+<hr />
+<h2>Step 1 — Download and Install Parallels Desktop</h2>
+<ol>
+<li>Go to <a href="https://www.parallels.com">parallels.com</a> and click <strong>Try Free</strong> (14-day trial available) or purchase a subscription.</li>
+<li>Download the installer and open the <code>.dmg</code>.</li>
+<li>Double-click <strong>Install Parallels Desktop</strong> and follow the prompts.</li>
+<li>When asked to sign in, create a Parallels account or sign in — this is required to activate the software.</li>
+</ol>
+<hr />
+<h2>Step 2 — Install Windows (Automatic Method)</h2>
+<p>Parallels can download and install Windows automatically — you do not need to find an ISO.</p>
+<ol>
+<li>Open <strong>Parallels Desktop</strong>.</li>
+<li>Click <strong>+</strong> → <strong>New</strong>.</li>
+<li>Parallels will show <strong>Install Windows 11</strong>. Click <strong>Install Windows</strong>.</li>
+<li>Parallels downloads Windows 11 (ARM on Apple Silicon, x86 on Intel) directly from Microsoft. About 5–7 GB — this takes 10–30 minutes.</li>
+<li>Follow the setup wizard. Windows installs automatically.</li>
+</ol>
+<blockquote>
+<p><strong>On Apple Silicon:</strong> Parallels downloads Windows 11 ARM automatically. Most regular Windows apps work via the built-in ARM emulation layer.
+<strong>On Intel Mac:</strong> Parallels installs the standard x86 Windows 11 — full compatibility.</p>
+</blockquote>
+<hr />
+<h2>Step 3 — Install Windows (Manual ISO Method)</h2>
+<p>If you already have a Windows ISO:</p>
+<ol>
+<li>Open <strong>Parallels Desktop</strong> → <strong>+</strong> → <strong>New</strong>.</li>
+<li>Select <strong>Install Windows or another OS from a DVD or image file</strong>.</li>
+<li>Click <strong>Continue</strong> and select your ISO file.</li>
+<li>Parallels will detect the OS and configure the VM.</li>
+<li>Follow the installation wizard.</li>
+</ol>
+<hr />
+<h2>Step 4 — Parallels Tools (Installs Automatically)</h2>
+<p>Parallels Tools are the equivalent of VMware Tools — they enable display scaling, clipboard sharing, drag and drop, and deep macOS integration. Unlike VMware, <strong>Parallels Tools install automatically</strong> during Windows setup. You do not need to do anything.</p>
+<hr />
+<h2>Key Features</h2>
+<h3>Coherence Mode</h3>
+<p>The most unique Parallels feature — Windows apps appear directly on your macOS desktop without any VM window. Windows apps show in the Dock and run like native Mac apps.</p>
+<ul>
+<li>To enable: go to <strong>View</strong> → <strong>Coherence</strong> (or press Ctrl+Command+C).</li>
+<li>Windows apps appear in your macOS Applications folder under a Windows folder.</li>
+<li>The Windows desktop is hidden — just the apps are visible.</li>
+</ul>
+<h3>Shared Profile</h3>
+<p>Parallels maps your macOS Desktop, Documents, Downloads, and Pictures folders into Windows automatically. Files you save in Windows appear in macOS and vice versa — no manual folder sharing needed.</p>
+<h3>Snapshots</h3>
+<p>Take a snapshot before installing software or making risky changes:
+- Go to <strong>Actions</strong> → <strong>Take Snapshot</strong>.
+- To restore: <strong>Actions</strong> → <strong>Manage Snapshots</strong> → select a snapshot → <strong>Restore</strong>.</p>
+<h3>Adjust Resources</h3>
+<p>To change RAM, CPU, or disk:
+1. Shut down Windows.
+2. Go to <strong>Parallels Desktop</strong> → <strong>Settings</strong> → <strong>Hardware</strong>.
+3. Adjust CPU, Memory, and Graphics as needed.</p>
+<hr />
+<h2>Performance Tips</h2>
+<ul>
+<li><strong>Give Windows at least 4 GB RAM</strong> — 6–8 GB if you have 16 GB or more on your Mac.</li>
+<li><strong>Use SSD storage</strong> — Parallels VMs on spinning hard drives are very slow.</li>
+<li><strong>Enable Adaptive Hypervisor</strong> (Pro edition): Parallels → Preferences → Advanced → Adaptive Hypervisor — dynamically allocates more resources to macOS when Windows is idle and vice versa.</li>
+<li><strong>Pause Windows when not in use</strong> rather than leaving it running — saves battery and RAM.</li>
+<li><strong>Disable Windows visual effects</strong> inside Windows for better performance: right-click <strong>This PC</strong> → <strong>Properties</strong> → <strong>Advanced system settings</strong> → <strong>Performance Settings</strong> → <strong>Adjust for best performance</strong>.</li>
+</ul>
+<hr />
+<h2>Troubleshooting</h2>
+<h3>Windows activation fails</h3>
+<p>On Apple Silicon with Windows 11 ARM, activation uses your Microsoft account rather than a product key. Sign in to a Microsoft account during Windows setup to activate automatically.</p>
+<h3>Windows apps are slow on Apple Silicon</h3>
+<p>This is normal for x86 apps running through the ARM emulation layer — particularly older 32-bit apps. Native ARM Windows apps (which most major apps now have) run at full speed.</p>
+<h3>Cannot allocate more than 8 GB RAM to Windows</h3>
+<p>You are on the Standard edition — it has a RAM cap. Upgrade to Pro for higher limits.</p>
+<h3>Coherence mode — Windows taskbar still visible</h3>
+<p>Go to <strong>View</strong> → <strong>Coherence</strong> again to toggle it off and back on. Or restart Windows and re-enable Coherence.</p>
+<h3>Drag and drop between macOS and Windows not working</h3>
+<p>Go to <strong>Parallels Desktop</strong> → <strong>Settings</strong> → <strong>Options</strong> → <strong>Sharing</strong> → make sure <strong>Share Mac clipboard</strong> and <strong>Share Mac volumes with Windows</strong> are enabled.</p>
+<hr />
+<h2>Cancelling or Migrating Away from Parallels</h2>
+<p>If you decide Parallels is not for you after the trial:</p>
+<ul>
+<li><strong>Cancel subscription:</strong> log in at <a href="https://my.parallels.com">my.parallels.com</a> → Subscriptions → Cancel.</li>
+<li><strong>Keep using Windows without Parallels:</strong> export your VM as a <code>.pvm</code> file (<strong>File</strong> → <strong>Export</strong>) and import it into VMware Fusion later. Note that Parallels <code>.pvm</code> format is not directly compatible with VMware — you may need to reinstall Windows from scratch in VMware.</li>
+<li><strong>Your Windows license is separate from Parallels</strong> — if you purchased a Windows license, you can use it on any other VM software.</li>
+</ul>

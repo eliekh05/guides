@@ -1,0 +1,136 @@
+DATA:installation:Install TrueNAS SCALE on Bare Metal:Installation Guides
+<h1>Install TrueNAS SCALE on Bare Metal</h1>
+<p>TrueNAS SCALE is a free, open-source NAS (Network Attached Storage) operating system built on Linux. It turns any PC into a full-featured file server with a polished web UI, ZFS storage, Docker app support, and SMB/NFS sharing. This guide covers bare metal installation — not in a VM.</p>
+<blockquote>
+<p><strong>TrueNAS SCALE vs CORE:</strong> SCALE is Linux-based (Debian), supports Docker/Kubernetes apps, and is the current recommended version. CORE is FreeBSD-based, older, but still maintained. This guide covers SCALE.</p>
+</blockquote>
+<hr />
+<h2>Hardware Requirements</h2>
+<ul>
+<li><strong>CPU:</strong> Any 64-bit Intel or AMD CPU (2012 or later recommended)</li>
+<li><strong>RAM:</strong> 8 GB minimum, <strong>16 GB strongly recommended</strong> for ZFS</li>
+<li><strong>Boot drive:</strong> A separate USB drive or SSD just for the OS (16 GB minimum, 32 GB recommended) — <strong>not</strong> one of your storage drives</li>
+<li><strong>Storage drives:</strong> At least one drive for data. ZFS works best with drives in pairs for mirroring.</li>
+<li><strong>Network:</strong> Ethernet (TrueNAS is a server — Wi-Fi is not recommended)</li>
+</ul>
+<blockquote>
+<p><strong>ZFS and RAM:</strong> ZFS uses RAM aggressively for caching. The more RAM, the better performance. 8 GB works but 32 GB+ is where it shines.</p>
+</blockquote>
+<hr />
+<h2>Step 1 — Download TrueNAS SCALE</h2>
+<p>Go to <a href="https://www.truenas.com/download-truenas-scale/">truenas.com/download-truenas-scale</a> and download the latest stable ISO.</p>
+<hr />
+<h2>Step 2 — Create a Bootable USB</h2>
+<p>Flash the ISO to a USB drive using <a href="https://etcher.balena.io">balenaEtcher</a>.</p>
+<blockquote>
+<p><strong>This USB is just for installation.</strong> After installing, TrueNAS boots from a separate boot drive, not this USB.</p>
+</blockquote>
+<hr />
+<h2>Step 3 — Boot and Install</h2>
+<ol>
+<li>Insert the USB into your server machine.</li>
+<li>Boot from the USB (press F12, F9, or Del at startup for the boot menu).</li>
+<li>TrueNAS loads a text-based installer.</li>
+<li>Select <strong>Install/Upgrade</strong>.</li>
+<li><strong>Select the boot drive</strong> — choose your dedicated OS drive (NOT your storage drives). TrueNAS will erase it completely.</li>
+<li>Set a <strong>root password</strong> when prompted.</li>
+<li>Select <strong>Boot via UEFI</strong> (recommended for modern hardware).</li>
+<li>Confirm and let installation complete (5–10 minutes).</li>
+<li>Remove the USB when prompted and reboot.</li>
+</ol>
+<hr />
+<h2>Step 4 — Access the Web UI</h2>
+<p>After booting, TrueNAS shows its IP address on the console screen.</p>
+<p>Open a browser on another machine on the same network and go to:</p>
+<div class="codehilite"><pre><span></span><code>http://TRUENAS_IP_ADDRESS
+</code></pre></div>
+
+<p>Log in with:
+- <strong>Username:</strong> <code>admin</code> (TrueNAS SCALE 22.12+) or <code>root</code>
+- <strong>Password:</strong> whatever you set during installation</p>
+<hr />
+<h2>Step 5 — Set Up Storage</h2>
+<h3>Create a Pool (ZFS storage)</h3>
+<ol>
+<li>Go to <strong>Storage</strong> → <strong>Create Pool</strong>.</li>
+<li>Give the pool a name (e.g. <code>tank</code> is traditional).</li>
+<li>Select your storage drives.</li>
+<li>Choose a layout:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Layout</th>
+<th>What it is</th>
+<th>Use when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Stripe</strong></td>
+<td>No redundancy, full capacity</td>
+<td>Never for important data</td>
+</tr>
+<tr>
+<td><strong>Mirror</strong></td>
+<td>2+ drives, full redundancy</td>
+<td>2 drives, home use</td>
+</tr>
+<tr>
+<td><strong>RAIDZ1</strong></td>
+<td>3+ drives, 1 drive failure tolerance</td>
+<td>3–5 drives</td>
+</tr>
+<tr>
+<td><strong>RAIDZ2</strong></td>
+<td>4+ drives, 2 drive failure tolerance</td>
+<td>6+ drives, production</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Click <strong>Create Pool</strong>.</li>
+</ol>
+<hr />
+<h2>Step 6 — Create a Dataset and Share</h2>
+<h3>Create a Dataset (folder)</h3>
+<ol>
+<li><strong>Datasets</strong> → <strong>Add Dataset</strong>.</li>
+<li>Name it (e.g. <code>media</code>, <code>documents</code>, <code>backups</code>).</li>
+<li>Leave defaults unless you need specific settings.</li>
+</ol>
+<h3>Share via SMB (Windows/macOS/Linux file sharing)</h3>
+<ol>
+<li><strong>Shares</strong> → <strong>Windows (SMB) Shares</strong> → <strong>Add</strong>.</li>
+<li>Select the path to your dataset.</li>
+<li>Give it a name.</li>
+<li>Click <strong>Save</strong> → <strong>Enable Service</strong> when prompted.</li>
+</ol>
+<p>Access it from Windows: open File Explorer → type <code>\\TRUENAS_IP\sharename</code> in the address bar.
+Access it from macOS: Finder → <strong>Go</strong> → <strong>Connect to Server</strong> → <code>smb://TRUENAS_IP/sharename</code>.</p>
+<hr />
+<h2>Step 7 — Create Users</h2>
+<p>Do not use root for file access. Create dedicated users:</p>
+<ol>
+<li><strong>Credentials</strong> → <strong>Local Users</strong> → <strong>Add</strong>.</li>
+<li>Set a username and password.</li>
+<li>Go back to your SMB share → <strong>Edit</strong> → set the correct permissions for that user.</li>
+</ol>
+<hr />
+<h2>Apps (Docker via TrueNAS Apps)</h2>
+<p>TrueNAS SCALE has a built-in app catalogue powered by Docker:</p>
+<ol>
+<li>Go to <strong>Apps</strong> → <strong>Discover Apps</strong>.</li>
+<li>Browse or search — Plex, Nextcloud, Jellyfin, Home Assistant, and many more are available with one-click installs.</li>
+<li>Click an app → <strong>Install</strong> → configure the settings → <strong>Install</strong>.</li>
+</ol>
+<hr />
+<h2>Troubleshooting</h2>
+<h3>Cannot reach the web UI</h3>
+<p>Check the IP shown on the TrueNAS console. Make sure you are on the same network. Try <code>http://</code> not <code>https://</code> on first access.</p>
+<h3>Drives not showing during pool creation</h3>
+<p>TrueNAS only shows drives that are not already in a pool. If a drive shows as used, it may have an existing partition — it needs to be wiped first.</p>
+<h3>SMB share not accessible from Windows</h3>
+<p>Make sure the SMB service is running: <strong>System</strong> → <strong>Services</strong> → <strong>SMB</strong> should be running. Also check Windows can reach the IP: open Command Prompt and run <code>ping TRUENAS_IP</code>.</p>
+<h3>After update, cannot log in</h3>
+<p>TrueNAS SCALE 22.12+ changed the default admin account from <code>root</code> to <code>admin</code>. Try both usernames.</p>

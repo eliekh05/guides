@@ -1,0 +1,165 @@
+DATA:linux:Linux Log Files — Where They Are and What They Mean:Linux
+<h1>Linux Log Files — Where They Are and What They Mean</h1>
+<p>When something breaks on Linux, logs tell you why. Knowing where to look saves hours of guessing.</p>
+<hr />
+<h2>Key Log Locations</h2>
+<table>
+<thead>
+<tr>
+<th>Log</th>
+<th>What it contains</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/var/log/syslog</code></td>
+<td>General system messages (Ubuntu/Debian)</td>
+</tr>
+<tr>
+<td><code>/var/log/messages</code></td>
+<td>General system messages (RHEL/Fedora/Arch)</td>
+</tr>
+<tr>
+<td><code>/var/log/auth.log</code></td>
+<td>Authentication, sudo, SSH logins (Debian/Ubuntu)</td>
+</tr>
+<tr>
+<td><code>/var/log/secure</code></td>
+<td>Authentication (RHEL/Fedora)</td>
+</tr>
+<tr>
+<td><code>/var/log/kern.log</code></td>
+<td>Kernel messages</td>
+</tr>
+<tr>
+<td><code>/var/log/dmesg</code></td>
+<td>Boot and hardware messages</td>
+</tr>
+<tr>
+<td><code>/var/log/boot.log</code></td>
+<td>Boot sequence</td>
+</tr>
+<tr>
+<td><code>/var/log/cron</code></td>
+<td>Cron job execution</td>
+</tr>
+<tr>
+<td><code>/var/log/mail.log</code></td>
+<td>Mail server logs</td>
+</tr>
+<tr>
+<td><code>/var/log/nginx/access.log</code></td>
+<td>Nginx requests</td>
+</tr>
+<tr>
+<td><code>/var/log/nginx/error.log</code></td>
+<td>Nginx errors</td>
+</tr>
+<tr>
+<td><code>/var/log/apache2/access.log</code></td>
+<td>Apache requests</td>
+</tr>
+<tr>
+<td><code>/var/log/apache2/error.log</code></td>
+<td>Apache errors</td>
+</tr>
+<tr>
+<td><code>/var/log/mysql/error.log</code></td>
+<td>MySQL errors</td>
+</tr>
+<tr>
+<td><code>/var/log/postgresql/</code></td>
+<td>PostgreSQL logs</td>
+</tr>
+<tr>
+<td><code>/var/log/fail2ban.log</code></td>
+<td>Fail2ban ban activity</td>
+</tr>
+<tr>
+<td><code>/var/log/ufw.log</code></td>
+<td>UFW firewall activity</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Reading Logs</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># View a log file</span>
+cat<span class="w"> </span>/var/log/syslog
+less<span class="w"> </span>/var/log/syslog<span class="w">        </span><span class="c1"># scrollable view, press q to quit</span>
+
+<span class="c1"># Show last 50 lines</span>
+tail<span class="w"> </span>-50<span class="w"> </span>/var/log/syslog
+
+<span class="c1"># Follow a log in real time</span>
+tail<span class="w"> </span>-f<span class="w"> </span>/var/log/nginx/error.log
+
+<span class="c1"># Follow multiple logs at once</span>
+tail<span class="w"> </span>-f<span class="w"> </span>/var/log/nginx/error.log<span class="w"> </span>/var/log/auth.log
+
+<span class="c1"># Search for errors</span>
+grep<span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="w"> </span>/var/log/syslog
+grep<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;failed&quot;</span><span class="w"> </span>/var/log/auth.log
+
+<span class="c1"># Show entries from last hour</span>
+journalctl<span class="w"> </span>--since<span class="w"> </span><span class="s2">&quot;1 hour ago&quot;</span>
+</code></pre></div>
+
+<hr />
+<h2>journalctl — systemd Journal (Modern Systems)</h2>
+<p>Most modern distributions use systemd's journal instead of or alongside traditional log files:</p>
+<div class="codehilite"><pre><span></span><code>journalctl<span class="w">                              </span><span class="c1"># all logs</span>
+journalctl<span class="w"> </span>-f<span class="w">                           </span><span class="c1"># follow in real time</span>
+journalctl<span class="w"> </span>-n<span class="w"> </span><span class="m">100</span><span class="w">                       </span><span class="c1"># last 100 lines</span>
+journalctl<span class="w"> </span>-p<span class="w"> </span>err<span class="w">                       </span><span class="c1"># errors only</span>
+journalctl<span class="w"> </span>-p<span class="w"> </span>err<span class="w"> </span>-b<span class="w">                    </span><span class="c1"># errors from current boot</span>
+journalctl<span class="w"> </span>-u<span class="w"> </span>nginx<span class="w">                     </span><span class="c1"># logs for nginx service only</span>
+journalctl<span class="w"> </span>-u<span class="w"> </span>nginx<span class="w"> </span>-f<span class="w">                  </span><span class="c1"># follow nginx logs</span>
+journalctl<span class="w"> </span>--since<span class="w"> </span><span class="s2">&quot;2026-05-01&quot;</span>
+journalctl<span class="w"> </span>--since<span class="w"> </span>yesterday
+journalctl<span class="w"> </span>--disk-usage<span class="w">                 </span><span class="c1"># how much space logs use</span>
+</code></pre></div>
+
+<hr />
+<h2>Check Recent Failed Logins</h2>
+<div class="codehilite"><pre><span></span><code>lastb<span class="w">                           </span><span class="c1"># failed login attempts</span>
+last<span class="w">                            </span><span class="c1"># successful logins</span>
+last<span class="w"> </span>-a<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20<span class="w">              </span><span class="c1"># recent logins with hostname</span>
+</code></pre></div>
+
+<hr />
+<h2>Clear Old Logs</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Clear journal logs older than 30 days</span>
+sudo<span class="w"> </span>journalctl<span class="w"> </span>--vacuum-time<span class="o">=</span>30d
+
+<span class="c1"># Keep only last 500MB of journal</span>
+sudo<span class="w"> </span>journalctl<span class="w"> </span>--vacuum-size<span class="o">=</span>500M
+
+<span class="c1"># Rotate and compress log files</span>
+sudo<span class="w"> </span>logrotate<span class="w"> </span>-f<span class="w"> </span>/etc/logrotate.conf
+</code></pre></div>
+
+<hr />
+<h2>logrotate — Automatic Log Rotation</h2>
+<p>Configuration files in <code>/etc/logrotate.d/</code>. Example for a custom app:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/logrotate.d/myapp
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="nb">log</span><span class="o">/</span><span class="n">myapp</span><span class="o">/*.</span><span class="n">log</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">daily</span>
+<span class="w">    </span><span class="n">rotate</span><span class="w"> </span><span class="mi">14</span>
+<span class="w">    </span><span class="n">compress</span>
+<span class="w">    </span><span class="n">delaycompress</span>
+<span class="w">    </span><span class="n">missingok</span>
+<span class="w">    </span><span class="n">notifempty</span>
+<span class="w">    </span><span class="n">create</span><span class="w"> </span><span class="mi">644</span><span class="w"> </span><span class="n">myuser</span><span class="w"> </span><span class="n">mygroup</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2>Monitor Logs for Keywords</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Alert when &quot;critical&quot; appears in syslog</span>
+tail<span class="w"> </span>-f<span class="w"> </span>/var/log/syslog<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>--line-buffered<span class="w"> </span><span class="s2">&quot;critical&quot;</span>
+
+<span class="c1"># Log all SSH failures to a separate file</span>
+grep<span class="w"> </span><span class="s2">&quot;Failed password&quot;</span><span class="w"> </span>/var/log/auth.log<span class="w"> </span>&gt;&gt;<span class="w"> </span>/root/ssh-failures.log
+</code></pre></div>

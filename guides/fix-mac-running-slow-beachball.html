@@ -1,0 +1,134 @@
+DATA:system-users:Fix Mac Running Slow or Constant Beachball:System & Users
+<h1>Fix Mac Running Slow or Constant Beachball</h1>
+<p>The spinning beachball (officially the "spinning wait cursor") appears when macOS is waiting for something and has no time left to animate the cursor normally. Here is how to find what is causing it and fix it.</p>
+<hr />
+<h2>Step 1 — Find the Culprit in Activity Monitor</h2>
+<p>Open <strong>Activity Monitor</strong> (Applications → Utilities → Activity Monitor).</p>
+<p><strong>Check CPU tab first:</strong>
+- Sort by <strong>% CPU</strong> descending
+- Any process above 80–100% when things feel slow is likely the issue
+- Note the process name</p>
+<p><strong>Then check Memory tab:</strong>
+- Look at the <strong>Memory Pressure</strong> graph at the bottom
+- <strong>Red pressure</strong> = you are out of RAM and Mac is swapping to disk — this is the #1 cause of beachball
+- Check <strong>Swap Used</strong> — anything above 1–2 GB means you need more RAM or fewer apps open</p>
+<p><strong>Common CPU culprits:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Process</th>
+<th>What it means</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mds_stores</code></td>
+<td>Spotlight indexing</td>
+<td>Wait — it stops on its own after indexing</td>
+</tr>
+<tr>
+<td><code>kernel_task</code></td>
+<td>Thermal throttling</td>
+<td>Mac is overheating — clean vents, improve airflow</td>
+</tr>
+<tr>
+<td><code>backupd</code></td>
+<td>Time Machine backup running</td>
+<td>Normal — wait for it to finish</td>
+</tr>
+<tr>
+<td>A browser tab</td>
+<td>Heavy webpage or video</td>
+<td>Close unused tabs</td>
+</tr>
+<tr>
+<td>Any app at 100%+</td>
+<td>App is stuck</td>
+<td>Force quit it</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Step 2 — Force Quit Stuck Apps</h2>
+<p>If a specific app is causing the beachball:</p>
+<ul>
+<li><strong>Command + Option + Escape</strong> → select the app → <strong>Force Quit</strong></li>
+<li>Or right-click the app in the Dock → <strong>Force Quit</strong></li>
+</ul>
+<hr />
+<h2>Step 3 — Free Up RAM</h2>
+<p>If memory pressure is yellow or red:</p>
+<p><strong>Quit apps you are not using:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># See what is using the most RAM</span>
+top<span class="w"> </span>-o<span class="w"> </span>MEM
+</code></pre></div>
+
+<p><strong>Clear inactive memory (temporary fix):</strong></p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>purge
+</code></pre></div>
+
+<p>This frees cached memory. The effect is temporary but immediate.</p>
+<p><strong>Long-term:</strong> if you are regularly hitting red memory pressure with your normal workload, you need more RAM or a Mac with more memory.</p>
+<hr />
+<h2>Step 4 — Check and Fix Disk Issues</h2>
+<p>A slow or failing SSD causes persistent beachball regardless of RAM and CPU.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check disk health</span>
+diskutil<span class="w"> </span>info<span class="w"> </span>/<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;SMART Status&quot;</span>
+</code></pre></div>
+
+<p>Should say <code>Verified</code>. If it says <code>Failing</code>, back up immediately.</p>
+<p><strong>Run First Aid:</strong>
+1. Open <strong>Disk Utility</strong> → select your drive → <strong>First Aid</strong> → <strong>Run</strong>.
+2. Fix any errors found.</p>
+<p><strong>Check available space:</strong></p>
+<div class="codehilite"><pre><span></span><code>df<span class="w"> </span>-h
+</code></pre></div>
+
+<p>macOS needs at least 10–15 GB free to function smoothly. If your drive is almost full, clear space:
+- Empty Trash
+- Delete unused apps
+- Move large files to external storage
+- Run <code>brew cleanup</code> if you use Homebrew</p>
+<hr />
+<h2>Step 5 — Disable Login Items and Background Apps</h2>
+<p>Apps that launch at startup and run in the background compete for RAM and CPU.</p>
+<ol>
+<li><strong>System Settings</strong> → <strong>General</strong> → <strong>Login Items &amp; Extensions</strong>.</li>
+<li>Under <strong>Open at Login</strong>, remove anything you do not need at startup.</li>
+<li>Also check <strong>Allow in Background</strong> — disable anything unnecessary.</li>
+</ol>
+<hr />
+<h2>Step 6 — Reset SMC (Thermal / Fan Issues)</h2>
+<p>If the Mac feels hot and <code>kernel_task</code> is using high CPU, the SMC is managing thermals. Resetting it can resolve incorrect thermal readings:</p>
+<p>See the <strong>Reset NVRAM and SMC</strong> guide for the exact steps for your Mac model.</p>
+<hr />
+<h2>Step 7 — Check for Malware</h2>
+<p>Legitimate malware is rare on Mac but does exist. If CPU usage is high with no obvious app causing it:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check for unusual processes</span>
+ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-k<span class="w"> </span><span class="m">3</span><span class="w"> </span>-r<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
+</code></pre></div>
+
+<p>Or use <strong>Malwarebytes for Mac</strong> (free scan) — the most reliable free scanner for macOS.</p>
+<hr />
+<h2>Step 8 — Reinstall macOS (Last Resort)</h2>
+<p>If nothing above helps and the Mac was fast before:</p>
+<ol>
+<li>Boot into Recovery Mode (hold <strong>Command + R</strong> on Intel, hold power on Apple Silicon).</li>
+<li>Select <strong>Reinstall macOS</strong>.</li>
+<li>This reinstalls the OS without deleting your files.</li>
+</ol>
+<p>If it is still slow after reinstall, the hardware is at fault (RAM, SSD, or thermal paste worn out on older Intel Macs).</p>
+<hr />
+<h2>Quick Diagnostic</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># One-liner to see top CPU users right now</span>
+ps<span class="w"> </span>aux<span class="w"> </span>--sort<span class="o">=</span>-%cpu<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-10
+
+<span class="c1"># One-liner to see top RAM users right now  </span>
+ps<span class="w"> </span>aux<span class="w"> </span>--sort<span class="o">=</span>-%mem<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-10
+
+<span class="c1"># Check system load average (1m, 5m, 15m)</span>
+uptime
+</code></pre></div>
+
+<p>Load average above the number of CPU cores = system is overloaded.</p>

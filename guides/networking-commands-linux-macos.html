@@ -1,0 +1,142 @@
+DATA:networking:Essential Networking Commands (macOS and Linux):Networking & DNS
+<h1>Essential Networking Commands (macOS and Linux)</h1>
+<hr />
+<h2>Check IP Address</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Linux</span>
+ip<span class="w"> </span>a
+ip<span class="w"> </span>addr<span class="w"> </span>show
+ip<span class="w"> </span>a<span class="w"> </span>show<span class="w"> </span>eth0<span class="w">          </span><span class="c1"># specific interface</span>
+
+<span class="c1"># macOS</span>
+ifconfig
+ifconfig<span class="w"> </span>en0<span class="w">            </span><span class="c1"># specific interface (en0 = ethernet, en1 = wifi usually)</span>
+
+<span class="c1"># Both</span>
+hostname<span class="w"> </span>-I<span class="w">             </span><span class="c1"># Linux only — shows all IPs</span>
+curl<span class="w"> </span>ifconfig.me<span class="w">        </span><span class="c1"># your public IP</span>
+</code></pre></div>
+
+<hr />
+<h2>Check Connectivity</h2>
+<div class="codehilite"><pre><span></span><code>ping<span class="w"> </span>google.com<span class="w">                  </span><span class="c1"># basic connectivity test</span>
+ping<span class="w"> </span>-c<span class="w"> </span><span class="m">4</span><span class="w"> </span>google.com<span class="w">             </span><span class="c1"># send exactly 4 pings then stop</span>
+ping<span class="w"> </span>-c<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">8</span>.8.8.8<span class="w">               </span><span class="c1"># ping by IP (tests DNS separately)</span>
+traceroute<span class="w"> </span>google.com<span class="w">            </span><span class="c1"># trace the route packets take (Linux)</span>
+traceroute<span class="w"> </span>google.com<span class="w">            </span><span class="c1"># macOS also uses traceroute</span>
+mtr<span class="w"> </span>google.com<span class="w">                   </span><span class="c1"># interactive traceroute (install: brew/apt install mtr)</span>
+</code></pre></div>
+
+<hr />
+<h2>Check Open Ports and Connections</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Linux — modern (preferred)</span>
+ss<span class="w"> </span>-tlnp<span class="w">                         </span><span class="c1"># TCP listening ports with process names</span>
+ss<span class="w"> </span>-tunap<span class="w">                        </span><span class="c1"># all TCP/UDP connections</span>
+ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>:22<span class="w">              </span><span class="c1"># check if SSH is listening</span>
+
+<span class="c1"># Linux — older systems</span>
+netstat<span class="w"> </span>-tlnp<span class="w">                    </span><span class="c1"># same as ss -tlnp</span>
+netstat<span class="w"> </span>-an<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>:80<span class="w">           </span><span class="c1"># connections on port 80</span>
+
+<span class="c1"># macOS</span>
+sudo<span class="w"> </span>lsof<span class="w"> </span>-i<span class="w">                     </span><span class="c1"># all network connections</span>
+sudo<span class="w"> </span>lsof<span class="w"> </span>-i<span class="w"> </span>:8080<span class="w">               </span><span class="c1"># what&#39;s using port 8080</span>
+sudo<span class="w"> </span>lsof<span class="w"> </span>-i<span class="w"> </span>TCP<span class="w">                 </span><span class="c1"># TCP connections only</span>
+</code></pre></div>
+
+<hr />
+<h2>DNS Lookup</h2>
+<div class="codehilite"><pre><span></span><code>nslookup<span class="w"> </span>google.com<span class="w">              </span><span class="c1"># basic DNS lookup</span>
+dig<span class="w"> </span>google.com<span class="w">                   </span><span class="c1"># detailed DNS info</span>
+dig<span class="w"> </span>google.com<span class="w"> </span>A<span class="w">                 </span><span class="c1"># A record (IPv4)</span>
+dig<span class="w"> </span>google.com<span class="w"> </span>MX<span class="w">                </span><span class="c1"># mail records</span>
+dig<span class="w"> </span>google.com<span class="w"> </span>+short<span class="w">            </span><span class="c1"># just the answer</span>
+dig<span class="w"> </span>@8.8.8.8<span class="w"> </span>google.com<span class="w">          </span><span class="c1"># query specific DNS server</span>
+
+host<span class="w"> </span>google.com<span class="w">                  </span><span class="c1"># simple lookup</span>
+</code></pre></div>
+
+<hr />
+<h2>Route and Gateway</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Linux</span>
+ip<span class="w"> </span>route
+ip<span class="w"> </span>route<span class="w"> </span>show
+ip<span class="w"> </span>route<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>default<span class="w">          </span><span class="c1"># show default gateway</span>
+
+<span class="c1"># macOS</span>
+route<span class="w"> </span>-n<span class="w"> </span>get<span class="w"> </span>default
+netstat<span class="w"> </span>-rn<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>default
+
+<span class="c1"># Add a route (Linux)</span>
+sudo<span class="w"> </span>ip<span class="w"> </span>route<span class="w"> </span>add<span class="w"> </span><span class="m">10</span>.0.0.0/24<span class="w"> </span>via<span class="w"> </span><span class="m">192</span>.168.1.1
+</code></pre></div>
+
+<hr />
+<h2>Check Network Interface Status</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Linux</span>
+ip<span class="w"> </span>link<span class="w"> </span>show<span class="w">                     </span><span class="c1"># all interfaces</span>
+ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>eth0<span class="w"> </span>up<span class="w">              </span><span class="c1"># bring interface up</span>
+ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>eth0<span class="w"> </span>down<span class="w">            </span><span class="c1"># bring interface down</span>
+
+<span class="c1"># macOS</span>
+ifconfig<span class="w"> </span>en0<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>status
+sudo<span class="w"> </span>ifconfig<span class="w"> </span>en0<span class="w"> </span>up
+sudo<span class="w"> </span>ifconfig<span class="w"> </span>en0<span class="w"> </span>down
+</code></pre></div>
+
+<hr />
+<h2>Bandwidth and Traffic</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Install on Linux</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>nload<span class="w"> </span>iftop<span class="w"> </span>nethogs<span class="w"> </span>-y
+
+nload<span class="w">                            </span><span class="c1"># bandwidth per interface</span>
+iftop<span class="w">                            </span><span class="c1"># traffic per connection</span>
+nethogs<span class="w">                          </span><span class="c1"># bandwidth per process (like top for network)</span>
+</code></pre></div>
+
+<hr />
+<h2>Test a Port</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Test if a port is open on a remote host</span>
+nc<span class="w"> </span>-zv<span class="w"> </span>google.com<span class="w"> </span><span class="m">443</span><span class="w">            </span><span class="c1"># TCP test</span>
+nc<span class="w"> </span>-zv<span class="w"> </span>-u<span class="w"> </span><span class="m">8</span>.8.8.8<span class="w"> </span><span class="m">53</span><span class="w">            </span><span class="c1"># UDP test</span>
+telnet<span class="w"> </span>google.com<span class="w"> </span><span class="m">80</span><span class="w">             </span><span class="c1"># alternative</span>
+
+<span class="c1"># Check if a port is open locally</span>
+ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>:80
+</code></pre></div>
+
+<hr />
+<h2>Network Config Files</h2>
+<table>
+<thead>
+<tr>
+<th>OS</th>
+<th>Network config location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ubuntu (Netplan)</td>
+<td><code>/etc/netplan/*.yaml</code></td>
+</tr>
+<tr>
+<td>Debian 12+ (Netplan)</td>
+<td><code>/etc/netplan/*.yaml</code></td>
+</tr>
+<tr>
+<td>Debian (interfaces)</td>
+<td><code>/etc/network/interfaces</code></td>
+</tr>
+<tr>
+<td>Fedora/RHEL</td>
+<td><code>/etc/NetworkManager/</code></td>
+</tr>
+<tr>
+<td>Arch</td>
+<td><code>/etc/netctl/</code> or NetworkManager</td>
+</tr>
+<tr>
+<td>macOS</td>
+<td>System Settings → Network</td>
+</tr>
+</tbody>
+</table>

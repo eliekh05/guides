@@ -1,0 +1,123 @@
+DATA:linux:locate and plocate — Find Files Fast on Linux:Linux
+<h1>locate and plocate — Find Files Fast on Linux</h1>
+<p><code>locate</code> finds files instantly by searching a pre-built database instead of scanning the filesystem in real time. It is orders of magnitude faster than <code>find</code> for simple filename searches. <code>plocate</code> is the modern replacement for <code>mlocate</code> — it is the default on Ubuntu 22.04+, Debian 12+, Fedora 36+.</p>
+<hr />
+<h2>Install</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>plocate<span class="w"> </span>-y<span class="w">      </span><span class="c1"># Ubuntu 22.04+ / Debian 12+</span>
+sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>plocate<span class="w"> </span>-y<span class="w">      </span><span class="c1"># Fedora 36+</span>
+sudo<span class="w"> </span>pacman<span class="w"> </span>-S<span class="w"> </span>plocate<span class="w">           </span><span class="c1"># Arch</span>
+</code></pre></div>
+
+<p>On older Ubuntu/Debian if you need mlocate:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>mlocate<span class="w"> </span>-y
+</code></pre></div>
+
+<hr />
+<h2>Build / Update the Database</h2>
+<p>The database is built automatically after install and updated daily by a systemd timer. Build it manually for first use or after creating new files:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>updatedb
+</code></pre></div>
+
+<p>Check when it was last updated:</p>
+<div class="codehilite"><pre><span></span><code>ls<span class="w"> </span>-la<span class="w"> </span>/var/lib/plocate/plocate.db
+</code></pre></div>
+
+<hr />
+<h2>Basic Search</h2>
+<div class="codehilite"><pre><span></span><code>locate<span class="w"> </span>filename.txt<span class="w">              </span><span class="c1"># find any file named filename.txt</span>
+locate<span class="w"> </span><span class="s2">&quot;*.conf&quot;</span><span class="w">                  </span><span class="c1"># find all .conf files</span>
+locate<span class="w"> </span>nginx<span class="w">                     </span><span class="c1"># find anything with &quot;nginx&quot; in the path</span>
+locate<span class="w"> </span>/etc/nginx<span class="w">                </span><span class="c1"># narrow to a specific path prefix</span>
+</code></pre></div>
+
+<hr />
+<h2>Useful Options</h2>
+<div class="codehilite"><pre><span></span><code>locate<span class="w"> </span>-i<span class="w"> </span>filename<span class="w">               </span><span class="c1"># case-insensitive search</span>
+locate<span class="w"> </span>-c<span class="w"> </span>filename<span class="w">               </span><span class="c1"># count matches without listing them</span>
+locate<span class="w"> </span>-l<span class="w"> </span><span class="m">10</span><span class="w"> </span>filename<span class="w">            </span><span class="c1"># show only first 10 results</span>
+locate<span class="w"> </span>-b<span class="w"> </span>filename<span class="w">               </span><span class="c1"># match only the basename (not full path)</span>
+locate<span class="w"> </span>-b<span class="w"> </span><span class="s1">&#39;\filename.txt&#39;</span><span class="w">        </span><span class="c1"># exact basename match (backslash = exact)</span>
+locate<span class="w"> </span>-e<span class="w"> </span>filename<span class="w">               </span><span class="c1"># only show files that actually exist right now</span>
+locate<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;\.conf$&#39;</span><span class="w">              </span><span class="c1"># regex: files ending in .conf</span>
+</code></pre></div>
+
+<hr />
+<h2>plocate-Specific: Multiple Patterns (AND logic)</h2>
+<p>plocate matches files that contain ALL patterns — unlike mlocate which matches ANY:</p>
+<div class="codehilite"><pre><span></span><code>plocate<span class="w"> </span>nginx<span class="w"> </span>conf<span class="w">               </span><span class="c1"># files with both &quot;nginx&quot; AND &quot;conf&quot; in path</span>
+plocate<span class="w"> </span>usr<span class="w"> </span>lib<span class="w"> </span>python<span class="w">           </span><span class="c1"># files with all three strings in path</span>
+</code></pre></div>
+
+<p>This is a key difference from mlocate where each pattern is treated separately.</p>
+<hr />
+<h2>Exclude Paths from the Database</h2>
+<p>Edit <code>/etc/updatedb.conf</code> to stop indexing specific paths or filesystem types:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/updatedb.conf
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="n">PRUNE_BIND_MOUNTS</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span>
+<span class="n">PRUNEFS</span><span class="o">=</span><span class="s2">&quot;NFS nfs nfs4 rpc_pipefs afs binfmt_misc proc smbfs autofs iso9660 ncpfs coda devpts ftpfs devfs mfs shfs sysfs cifs lustre tmpfs usbfs udf fuse.glusterfs fuse.sshfs curlftpfs ceph fuse.ceph fuse.rozofs ecryptfs fusesmb&quot;</span>
+<span class="n">PRUNENAMES</span><span class="o">=</span><span class="s2">&quot;.git .hg .svn .bzr&quot;</span>
+<span class="n">PRUNEPATHS</span><span class="o">=</span><span class="s2">&quot;/tmp /var/spool /media /var/lib/os-prober /var/lib/ceph /home/.ecryptfs /var/lib/schroot&quot;</span>
+</code></pre></div>
+
+<p>After editing:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>updatedb
+</code></pre></div>
+
+<hr />
+<h2>locate vs find — When to Use Which</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>locate</th>
+<th>find</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Speed</td>
+<td>Instant (searches database)</td>
+<td>Slower (scans filesystem)</td>
+</tr>
+<tr>
+<td>Files created since last updatedb</td>
+<td>Not found</td>
+<td>Found</td>
+</tr>
+<tr>
+<td>Search by permissions, size, date</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Complex conditions</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Best for</td>
+<td>Quick filename searches</td>
+<td>Detailed or real-time searches</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Troubleshooting</h2>
+<h3>locate returns nothing for a file you just created</h3>
+<p>The database has not been updated since you created it. Run:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>updatedb
+</code></pre></div>
+
+<h3>"command not found: locate"</h3>
+<p>Install plocate: <code>sudo apt install plocate</code></p>
+<h3>locate shows files that no longer exist</h3>
+<p>Use <code>-e</code> to filter to only existing files:</p>
+<div class="codehilite"><pre><span></span><code>locate<span class="w"> </span>-e<span class="w"> </span>filename
+</code></pre></div>
+
+<h3>Enable daily auto-update (if not already running)</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>plocate-updatedb.timer
+sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>plocate-updatedb.timer
+</code></pre></div>

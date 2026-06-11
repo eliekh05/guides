@@ -1,0 +1,202 @@
+DATA:linux:Fix a systemd Service Not Starting on Linux:Linux
+<h1>Fix a systemd Service Not Starting on Linux</h1>
+<p>When a systemd service fails to start, it almost always fails silently — <code>systemctl start myservice</code> returns nothing useful and the service just shows as <code>failed</code>. This guide shows how to find the actual error, fix the most common causes, and verify the service is running correctly.</p>
+<hr />
+<h2>Step 1 — Check the Service Status</h2>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>status<span class="w"> </span>myservice
+</code></pre></div>
+
+<p>Replace <code>myservice</code> with your service name (without the <code>.service</code> extension). This shows:
+- Whether it is <code>active</code>, <code>failed</code>, or <code>inactive</code>
+- The last few log lines
+- The exit code if it failed</p>
+<p>If the status shows the error clearly, you can skip to the relevant fix below. If not, continue to Step 2.</p>
+<hr />
+<h2>Step 2 — Read the Full Logs</h2>
+<div class="codehilite"><pre><span></span><code>journalctl<span class="w"> </span>-u<span class="w"> </span>myservice
+</code></pre></div>
+
+<p>This shows the complete history of the service. To see only the most recent attempt:</p>
+<div class="codehilite"><pre><span></span><code>journalctl<span class="w"> </span>-u<span class="w"> </span>myservice<span class="w"> </span>--since<span class="w"> </span><span class="s2">&quot;5 minutes ago&quot;</span>
+</code></pre></div>
+
+<p>To watch logs in real time as you try to start it:</p>
+<div class="codehilite"><pre><span></span><code>journalctl<span class="w"> </span>-u<span class="w"> </span>myservice<span class="w"> </span>-f
+</code></pre></div>
+
+<p>In another terminal, start the service and watch what happens:</p>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>start<span class="w"> </span>myservice
+</code></pre></div>
+
+<p>The log will show the exact error — read it carefully.</p>
+<hr />
+<h2>Step 3 — Run the ExecStart Command Directly</h2>
+<p>The most useful debugging technique: copy the <code>ExecStart</code> line from the service file and run it manually in the terminal. This shows you the raw error output that systemd swallows.</p>
+<p>Find the ExecStart line:</p>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>cat<span class="w"> </span>myservice<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>ExecStart
+</code></pre></div>
+
+<p>Copy everything after <code>ExecStart=</code> and run it directly as root:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>/path/to/your/command<span class="w"> </span>--with-flags
+</code></pre></div>
+
+<p>The error will print to your terminal immediately — no log parsing needed.</p>
+<hr />
+<h2>Common Errors and Fixes</h2>
+<h3>"No such file or directory"</h3>
+<p>The path in <code>ExecStart</code> is wrong or the binary does not exist.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check the binary exists and is executable</span>
+which<span class="w"> </span>mycommand
+ls<span class="w"> </span>-la<span class="w"> </span>/path/to/binary
+</code></pre></div>
+
+<p>Fix the path in the service file:</p>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>edit<span class="w"> </span>myservice<span class="w"> </span>--full
+</code></pre></div>
+
+<hr />
+<h3>"Permission denied"</h3>
+<p>The service is running as the wrong user, or the binary/file it needs is not accessible to that user.</p>
+<p>Check what user the service runs as:</p>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>cat<span class="w"> </span>myservice<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>User
+</code></pre></div>
+
+<p>If no <code>User=</code> is set, it runs as root. If it runs as a specific user, that user needs read/execute access to the binary and any files it touches.</p>
+<p>Fix by either:
+- Adding <code>User=root</code> to the <code>[Service]</code> section if root access is needed
+- Fixing file permissions: <code>chmod +x /path/to/binary</code>
+- Adding the service user to the right group: <code>usermod -aG groupname serviceuser</code></p>
+<hr />
+<h3>"Exit code 1" or "Exit code 127"</h3>
+<p>Exit code 127 specifically means "command not found". The binary path is wrong or not in PATH.</p>
+<p>systemd services do not inherit your shell's PATH. Always use full paths in service files:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Service]</span>
+<span class="na">ExecStart</span><span class="o">=</span><span class="s">/usr/bin/python3 /home/user/myscript.py</span>
+</code></pre></div>
+
+<p>Never rely on PATH-dependent commands like <code>python3 script.py</code> — always use <code>/usr/bin/python3</code>.</p>
+<hr />
+<h3>"Failed to start: Unit not found"</h3>
+<p>The service file does not exist or has the wrong name.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Find the service file</span>
+find<span class="w"> </span>/etc/systemd<span class="w"> </span>/lib/systemd<span class="w"> </span>/usr/lib/systemd<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;myservice.service&quot;</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null
+
+<span class="c1"># List all services</span>
+systemctl<span class="w"> </span>list-unit-files<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>myservice
+</code></pre></div>
+
+<p>If the file exists but systemd does not see it:</p>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>daemon-reload
+systemctl<span class="w"> </span>start<span class="w"> </span>myservice
+</code></pre></div>
+
+<hr />
+<h3>"Timeout waiting for response"</h3>
+<p>The service started but took too long and systemd killed it.</p>
+<p>Add or increase the timeout in the service file:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Service]</span>
+<span class="na">TimeoutStartSec</span><span class="o">=</span><span class="s">120</span>
+</code></pre></div>
+
+<p>Or disable the timeout entirely (not recommended for production):</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Service]</span>
+<span class="na">TimeoutStartSec</span><span class="o">=</span><span class="s">infinity</span>
+</code></pre></div>
+
+<hr />
+<h3>"Service is masked"</h3>
+<p>A masked service cannot be started at all — it is intentionally blocked.</p>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>unmask<span class="w"> </span>myservice
+systemctl<span class="w"> </span>start<span class="w"> </span>myservice
+</code></pre></div>
+
+<hr />
+<h2>Edit a Service File</h2>
+<p>To edit the service file without overwriting the original:</p>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>edit<span class="w"> </span>myservice
+</code></pre></div>
+
+<p>This creates a drop-in override file at <code>/etc/systemd/system/myservice.service.d/override.conf</code>. Safer than editing the original.</p>
+<p>To edit the full service file directly:</p>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>edit<span class="w"> </span>myservice<span class="w"> </span>--full
+</code></pre></div>
+
+<p>After any edit:</p>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>daemon-reload
+systemctl<span class="w"> </span>restart<span class="w"> </span>myservice
+</code></pre></div>
+
+<hr />
+<h2>Writing a Service File from Scratch</h2>
+<p>If you are creating your own service, here is a complete working template:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Unit]</span>
+<span class="na">Description</span><span class="o">=</span><span class="s">My Service Description</span>
+<span class="na">After</span><span class="o">=</span><span class="s">network.target</span>
+
+<span class="k">[Service]</span>
+<span class="na">Type</span><span class="o">=</span><span class="s">simple</span>
+<span class="na">User</span><span class="o">=</span><span class="s">myuser</span>
+<span class="na">WorkingDirectory</span><span class="o">=</span><span class="s">/home/myuser/myapp</span>
+<span class="na">ExecStart</span><span class="o">=</span><span class="s">/usr/bin/python3 /home/myuser/myapp/main.py</span>
+<span class="na">Restart</span><span class="o">=</span><span class="s">on-failure</span>
+<span class="na">RestartSec</span><span class="o">=</span><span class="s">5</span>
+<span class="na">StandardOutput</span><span class="o">=</span><span class="s">journal</span>
+<span class="na">StandardError</span><span class="o">=</span><span class="s">journal</span>
+
+<span class="k">[Install]</span>
+<span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
+</code></pre></div>
+
+<p>Save it to <code>/etc/systemd/system/myservice.service</code>, then:</p>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>daemon-reload
+systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>myservice
+systemctl<span class="w"> </span>start<span class="w"> </span>myservice
+systemctl<span class="w"> </span>status<span class="w"> </span>myservice
+</code></pre></div>
+
+<hr />
+<h2>Service Types</h2>
+<p>The <code>Type=</code> value in <code>[Service]</code> is a common source of failures:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>When to use it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>simple</code></td>
+<td>The process stays running (most common)</td>
+</tr>
+<tr>
+<td><code>forking</code></td>
+<td>The process forks to background (old-style daemons)</td>
+</tr>
+<tr>
+<td><code>oneshot</code></td>
+<td>Runs once and exits (scripts, tasks)</td>
+</tr>
+<tr>
+<td><code>notify</code></td>
+<td>Service notifies systemd when ready (advanced)</td>
+</tr>
+<tr>
+<td><code>idle</code></td>
+<td>Like simple but waits until all other jobs finish</td>
+</tr>
+</tbody>
+</table>
+<p>Using the wrong type causes systemd to report the service as failed even when it is actually working.</p>
+<hr />
+<h2>Enable a Service to Start on Boot</h2>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>myservice
+</code></pre></div>
+
+<p>Start it now and enable it for boot in one command:</p>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>myservice
+</code></pre></div>
+
+<p>Check that it is enabled:</p>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>is-enabled<span class="w"> </span>myservice
+</code></pre></div>

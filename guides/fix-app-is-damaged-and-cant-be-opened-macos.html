@@ -1,0 +1,83 @@
+DATA:security:Fix App Is Damaged and Can't Be Opened:Security & Apps
+<h1>Fix App Is Damaged and Can't Be Opened</h1>
+<p>This error does <strong>not</strong> mean the app is actually broken. macOS has a security system called <strong>Gatekeeper</strong> that blocks apps downloaded from outside the App Store. When it cannot verify the app's origin, it refuses to open it and shows this message.</p>
+<p><strong>Requirements:</strong> macOS 10.15 (Catalina) or later.</p>
+<hr />
+<h2>Why This Happens</h2>
+<p>When you download a file from the internet, macOS silently attaches an invisible tag called a <strong>quarantine attribute</strong> (<code>com.apple.quarantine</code>) to it. This tag tells Gatekeeper to check the app before allowing it to run. If the app is not notarized by Apple or comes from an unrecognized developer, Gatekeeper blocks it entirely.</p>
+<blockquote>
+<p><strong>Only do this for apps you trust and downloaded from a known, legitimate source.</strong></p>
+</blockquote>
+<hr />
+<h2>Fix 1 — Right-Click to Open (Quickest)</h2>
+<p>This works for most cases and does not require Terminal.</p>
+<ol>
+<li>Do <strong>not</strong> double-click the app. Instead, <strong>right-click</strong> (or Control-click) the app icon.</li>
+<li>Select <strong>Open</strong> from the menu.</li>
+<li>A new dialog will appear with an <strong>Open</strong> button. Click it.</li>
+<li>The app will open and macOS will remember your choice.</li>
+</ol>
+<p>If this does not work, continue to Fix 2.</p>
+<hr />
+<h2>Fix 2 — Remove the Quarantine Attribute via Terminal</h2>
+<ol>
+<li>
+<p>Open <strong>Terminal</strong> (Applications → Utilities → Terminal).</p>
+</li>
+<li>
+<p>Type the following command but <strong>do not press Enter yet</strong>:
+   <code>bash
+   xattr -r -d com.apple.quarantine</code></p>
+</li>
+<li>
+<p>Add a space after the command, then <strong>drag and drop the app</strong> from Finder directly into the Terminal window. This fills in the correct path automatically.</p>
+</li>
+<li>
+<p>The final command will look something like this:
+   <code>bash
+   xattr -r -d com.apple.quarantine /Applications/AppName.app</code></p>
+</li>
+<li>
+<p>Press <strong>Enter</strong>. No confirmation message will appear — that is normal.</p>
+</li>
+<li>
+<p>Try opening the app again.</p>
+</li>
+</ol>
+<hr />
+<h2>Fix 3 — Allow the App in Privacy &amp; Security Settings (macOS Ventura and Later)</h2>
+<p>After a blocked launch attempt, macOS sometimes shows an option to approve the app manually.</p>
+<ol>
+<li>Open <strong>System Settings</strong> → <strong>Privacy &amp; Security</strong>.</li>
+<li>Scroll down to the <strong>Security</strong> section.</li>
+<li>You should see a message like <em>"AppName was blocked from use because it is not from an identified developer."</em></li>
+<li>Click <strong>Open Anyway</strong> and enter your login password.</li>
+</ol>
+<hr />
+<h2>What the Flags Mean</h2>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-r</code></td>
+<td>Applies the command recursively to all files inside the app bundle</td>
+</tr>
+<tr>
+<td><code>-d</code></td>
+<td>Deletes the specified attribute</td>
+</tr>
+<tr>
+<td><code>com.apple.quarantine</code></td>
+<td>The attribute name Gatekeeper uses to track downloaded files</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<blockquote>
+<p><strong>Note:</strong> If the app continues to fail after these steps, the file may genuinely be corrupted. Delete it and re-download it from the official source.</p>
+</blockquote>

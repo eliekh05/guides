@@ -1,0 +1,132 @@
+DATA:package-managers:dnf — Package Manager for Fedora and RHEL:Package Managers (All OSes)
+<h1>dnf — Package Manager for Fedora and RHEL</h1>
+<p><code>dnf</code> (Dandified YUM) is the default package manager on Fedora, Red Hat Enterprise Linux (RHEL), CentOS Stream, AlmaLinux, and Rocky Linux. It replaced the older <code>yum</code> command — if you see guides using <code>yum</code>, the same commands work with <code>dnf</code> on modern systems.</p>
+<hr />
+<h2>Essential Commands</h2>
+<h3>Update package list and upgrade all packages</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>upgrade<span class="w"> </span>--refresh
+</code></pre></div>
+
+<h3>Install a package</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>wget
+</code></pre></div>
+
+<p>Install multiple packages:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>wget<span class="w"> </span>curl<span class="w"> </span>git<span class="w"> </span>vim<span class="w"> </span>-y
+</code></pre></div>
+
+<h3>Remove a package</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>remove<span class="w"> </span>wget
+</code></pre></div>
+
+<p>Remove a package and orphaned dependencies:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>remove<span class="w"> </span>wget<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>dnf<span class="w"> </span>autoremove
+</code></pre></div>
+
+<h3>Search for a package</h3>
+<div class="codehilite"><pre><span></span><code>dnf<span class="w"> </span>search<span class="w"> </span>python
+dnf<span class="w"> </span>search<span class="w"> </span>--all<span class="w"> </span>python<span class="w">  </span><span class="c1"># Search in descriptions too</span>
+</code></pre></div>
+
+<h3>Get info about a package</h3>
+<div class="codehilite"><pre><span></span><code>dnf<span class="w"> </span>info<span class="w"> </span>python3
+</code></pre></div>
+
+<h3>List installed packages</h3>
+<div class="codehilite"><pre><span></span><code>dnf<span class="w"> </span>list<span class="w"> </span>installed
+dnf<span class="w"> </span>list<span class="w"> </span>installed<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>python
+</code></pre></div>
+
+<h3>Check for available upgrades</h3>
+<div class="codehilite"><pre><span></span><code>dnf<span class="w"> </span>check-update
+</code></pre></div>
+
+<hr />
+<h2>Cleaning Up</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Remove cached package data</span>
+sudo<span class="w"> </span>dnf<span class="w"> </span>clean<span class="w"> </span>all
+
+<span class="c1"># Remove packages that were installed as dependencies but are no longer needed</span>
+sudo<span class="w"> </span>dnf<span class="w"> </span>autoremove
+</code></pre></div>
+
+<hr />
+<h2>Adding Extra Repositories</h2>
+<h3>RPM Fusion (most important third-party repo for Fedora)</h3>
+<p>RPM Fusion provides packages that Fedora cannot include for legal reasons — codecs, proprietary drivers, etc.</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-<span class="k">$(</span>rpm<span class="w"> </span>-E<span class="w"> </span>%fedora<span class="k">)</span>.noarch.rpm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-<span class="k">$(</span>rpm<span class="w"> </span>-E<span class="w"> </span>%fedora<span class="k">)</span>.noarch.rpm
+</code></pre></div>
+
+<p>After adding RPM Fusion, install multimedia codecs:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>ffmpeg<span class="w"> </span>vlc<span class="w"> </span>gstreamer1-plugins-<span class="o">{</span>bad-*,good-*,base<span class="o">}</span><span class="w"> </span>gstreamer1-plugin-openh264<span class="w"> </span>-y
+</code></pre></div>
+
+<h3>EPEL (Extra Packages for Enterprise Linux — for RHEL/CentOS/AlmaLinux/Rocky)</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>epel-release
+sudo<span class="w"> </span>dnf<span class="w"> </span>upgrade<span class="w"> </span>--refresh
+</code></pre></div>
+
+<h3>Add a custom repository</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>config-manager<span class="w"> </span>--add-repo<span class="w"> </span>https://repo.example.com/example.repo
+sudo<span class="w"> </span>dnf<span class="w"> </span>update
+</code></pre></div>
+
+<hr />
+<h2>Package Groups</h2>
+<p>dnf can install groups of related packages at once:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># List available groups</span>
+dnf<span class="w"> </span>grouplist
+
+<span class="c1"># Install a group</span>
+sudo<span class="w"> </span>dnf<span class="w"> </span>groupinstall<span class="w"> </span><span class="s2">&quot;Development Tools&quot;</span>
+sudo<span class="w"> </span>dnf<span class="w"> </span>groupinstall<span class="w"> </span><span class="s2">&quot;Fedora Workstation&quot;</span>
+
+<span class="c1"># Remove a group</span>
+sudo<span class="w"> </span>dnf<span class="w"> </span>groupremove<span class="w"> </span><span class="s2">&quot;Development Tools&quot;</span>
+</code></pre></div>
+
+<hr />
+<h2>dnf History — Undo and Redo</h2>
+<p>dnf keeps a full transaction history and can undo any install or upgrade:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># See transaction history</span>
+dnf<span class="w"> </span><span class="nb">history</span>
+
+<span class="c1"># Undo the last transaction</span>
+sudo<span class="w"> </span>dnf<span class="w"> </span><span class="nb">history</span><span class="w"> </span>undo<span class="w"> </span>last
+
+<span class="c1"># Undo a specific transaction (use the number from history list)</span>
+sudo<span class="w"> </span>dnf<span class="w"> </span><span class="nb">history</span><span class="w"> </span>undo<span class="w"> </span><span class="m">15</span>
+</code></pre></div>
+
+<p>This is one of dnf's most useful features — if an upgrade breaks something, you can roll it back entirely.</p>
+<hr />
+<h2>Common Errors and Fixes</h2>
+<h3><code>Error: Failed to download metadata for repo</code></h3>
+<p>Repo server is down or network issue:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>clean<span class="w"> </span>all
+sudo<span class="w"> </span>dnf<span class="w"> </span>upgrade<span class="w"> </span>--refresh
+</code></pre></div>
+
+<h3><code>Nothing to do</code> when you expect updates</h3>
+<p>Your repos are up to date. Force a cache refresh:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>upgrade<span class="w"> </span>--refresh
+</code></pre></div>
+
+<h3>Package conflicts during upgrade</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>upgrade<span class="w"> </span>--allowerasing
+</code></pre></div>
+
+<p>This allows removing conflicting packages to resolve the upgrade. Read the summary carefully before confirming.</p>
+<h3><code>GPG key retrieval failed</code></h3>
+<p>The repo's signing key is not trusted. Import it:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>rpm<span class="w"> </span>--import<span class="w"> </span>https://repo.example.com/RPM-GPG-KEY
+</code></pre></div>
+
+<p>Or disable GPG check for a specific repo (not recommended for production):</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>package<span class="w"> </span>--nogpgcheck
+</code></pre></div>
+
+<h3><code>[Errno 14] HTTPS Error 404</code></h3>
+<p>The repo URL is wrong or the package has been moved. Check that the <code>.repo</code> file in <code>/etc/yum.repos.d/</code> has the correct URL.</p>

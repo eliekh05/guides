@@ -1,0 +1,176 @@
+DATA:scheduling:Fix launchd / plist Scripts Not Running:Task Scheduling
+<h1>Fix launchd / plist Scripts Not Running</h1>
+<p><code>launchd</code> is macOS's built-in task scheduler — the replacement for <code>cron</code>. It is used to run scripts automatically on a schedule or at login. However, it is notoriously difficult to get working because it runs in a completely different environment from your Terminal. Scripts that work perfectly in Terminal often fail silently under <code>launchd</code> for reasons that are hard to diagnose.</p>
+<p>This guide explains why this happens and how to fix it.</p>
+<p><strong>Requirements:</strong> macOS 10.10 (Yosemite) or later.</p>
+<hr />
+<h2>Why launchd Scripts Fail Silently</h2>
+<p>There are three main reasons a script that works in Terminal will fail under <code>launchd</code>:</p>
+<ol>
+<li>
+<p><strong>No PATH</strong> — <code>launchd</code> does not load your shell's PATH. Commands like <code>brew</code>, <code>python3</code>, <code>node</code>, or any tool installed in <code>/usr/local/bin</code> or <code>/opt/homebrew/bin</code> are not found unless you specify their full path.</p>
+</li>
+<li>
+<p><strong>No shell environment</strong> — <code>launchd</code> does not source your <code>.zshrc</code>, <code>.zprofile</code>, or <code>.bash_profile</code>. Environment variables you set there are not available.</p>
+</li>
+<li>
+<p><strong>No disk access</strong> — since macOS Catalina, scripts launched by <code>launchd</code> are blocked from accessing protected folders (Desktop, Documents, Downloads, etc.) unless the terminal or interpreter has been granted Full Disk Access.</p>
+</li>
+</ol>
+<hr />
+<h2>Fix 1 — Use Full Paths for Every Command</h2>
+<p>In your script, replace every command with its full path. Do not rely on PATH being set.</p>
+<p>To find the full path of any command, run in Terminal:</p>
+<div class="codehilite"><pre><span></span><code>which<span class="w"> </span>brew
+which<span class="w"> </span>python3
+which<span class="w"> </span>node
+</code></pre></div>
+
+<p>Then in your script, replace:</p>
+<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>update
+</code></pre></div>
+
+<p>With:</p>
+<div class="codehilite"><pre><span></span><code>/opt/homebrew/bin/brew<span class="w"> </span>update<span class="w">   </span><span class="c1"># Apple Silicon Mac</span>
+<span class="c1"># or</span>
+/usr/local/bin/brew<span class="w"> </span>update<span class="w">      </span><span class="c1"># Intel Mac</span>
+</code></pre></div>
+
+<p><strong>Common full paths:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Apple Silicon</th>
+<th>Intel Mac</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>brew</code></td>
+<td><code>/opt/homebrew/bin/brew</code></td>
+<td><code>/usr/local/bin/brew</code></td>
+</tr>
+<tr>
+<td><code>python3</code></td>
+<td><code>/opt/homebrew/bin/python3</code></td>
+<td><code>/usr/local/bin/python3</code></td>
+</tr>
+<tr>
+<td><code>node</code></td>
+<td><code>/opt/homebrew/bin/node</code></td>
+<td><code>/usr/local/bin/node</code></td>
+</tr>
+<tr>
+<td><code>git</code></td>
+<td><code>/usr/bin/git</code></td>
+<td><code>/usr/bin/git</code></td>
+</tr>
+<tr>
+<td><code>rsync</code></td>
+<td><code>/usr/bin/rsync</code></td>
+<td><code>/usr/bin/rsync</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Fix 2 — Set PATH Inside the plist</h2>
+<p>You can define environment variables directly in your plist file so <code>launchd</code> has them available:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">&lt;key&gt;</span>EnvironmentVariables<span class="nt">&lt;/key&gt;</span>
+<span class="nt">&lt;dict&gt;</span>
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>PATH<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;string&gt;</span>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin<span class="nt">&lt;/string&gt;</span>
+<span class="nt">&lt;/dict&gt;</span>
+</code></pre></div>
+
+<p>Add this block inside the main <code>&lt;dict&gt;</code> of your plist, alongside your <code>Label</code> and <code>ProgramArguments</code>.</p>
+<hr />
+<h2>Fix 3 — Grant Full Disk Access to Terminal (or bash/zsh)</h2>
+<p>If your script accesses protected folders (Desktop, Documents, Downloads, Pictures), you need to give the shell interpreter Full Disk Access.</p>
+<ol>
+<li>Open <strong>System Settings</strong> → <strong>Privacy &amp; Security</strong> → <strong>Full Disk Access</strong>.</li>
+<li>Click the <strong>+</strong> button.</li>
+<li>Navigate to <code>/bin/</code> and add <strong>zsh</strong> (or <strong>bash</strong> if your script uses bash).</li>
+<li>Make sure the toggle next to it is <strong>on</strong>.</li>
+</ol>
+<blockquote>
+<p><strong>Note:</strong> This gives Full Disk Access to ALL scripts run by that shell, not just yours. Only do this if you trust the scripts running on your machine.</p>
+</blockquote>
+<p>Alternatively, wrap your shell script in an <strong>Automator app</strong> and give the Automator app Full Disk Access instead. This limits the access to one specific automation.</p>
+<hr />
+<h2>Fix 4 — Add Logging to Diagnose the Problem</h2>
+<p><code>launchd</code> gives no error output by default. Add log output to your plist to capture what is going wrong:</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">&lt;key&gt;</span>StandardOutPath<span class="nt">&lt;/key&gt;</span>
+<span class="nt">&lt;string&gt;</span>/tmp/my-script.log<span class="nt">&lt;/string&gt;</span>
+<span class="nt">&lt;key&gt;</span>StandardErrorPath<span class="nt">&lt;/key&gt;</span>
+<span class="nt">&lt;string&gt;</span>/tmp/my-script-error.log<span class="nt">&lt;/string&gt;</span>
+</code></pre></div>
+
+<p>After your script runs (or fails to run), check the logs:</p>
+<div class="codehilite"><pre><span></span><code>cat<span class="w"> </span>/tmp/my-script.log
+cat<span class="w"> </span>/tmp/my-script-error.log
+</code></pre></div>
+
+<p>Any errors — including "command not found" — will appear there.</p>
+<hr />
+<h2>Fix 5 — Load and Verify the plist</h2>
+<p>After creating or editing a plist in <code>~/Library/LaunchAgents/</code>, load it with:</p>
+<div class="codehilite"><pre><span></span><code>launchctl<span class="w"> </span>load<span class="w"> </span>~/Library/LaunchAgents/com.yourname.yourscript.plist
+</code></pre></div>
+
+<p>To check if it loaded successfully:</p>
+<div class="codehilite"><pre><span></span><code>launchctl<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>com.yourname.yourscript
+</code></pre></div>
+
+<p>The output shows three columns: PID, exit code, and label. An exit code of <code>0</code> means it ran successfully. Any other number indicates an error — check your log files.</p>
+<p>To unload and reload after making changes:</p>
+<div class="codehilite"><pre><span></span><code>launchctl<span class="w"> </span>unload<span class="w"> </span>~/Library/LaunchAgents/com.yourname.yourscript.plist
+launchctl<span class="w"> </span>load<span class="w"> </span>~/Library/LaunchAgents/com.yourname.yourscript.plist
+</code></pre></div>
+
+<hr />
+<h2>Example plist With All Fixes Applied</h2>
+<div class="codehilite"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="cp">&lt;!DOCTYPE plist PUBLIC &quot;-//Apple//DTD PLIST 1.0//EN&quot;</span>
+<span class="cp">  &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;</span>
+<span class="nt">&lt;plist</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;dict&gt;</span>
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>Label<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;string&gt;</span>com.yourname.yourscript<span class="nt">&lt;/string&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>EnvironmentVariables<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;dict&gt;</span>
+<span class="w">        </span><span class="nt">&lt;key&gt;</span>PATH<span class="nt">&lt;/key&gt;</span>
+<span class="w">        </span><span class="nt">&lt;string&gt;</span>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin<span class="nt">&lt;/string&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/dict&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>ProgramArguments<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;array&gt;</span>
+<span class="w">        </span><span class="nt">&lt;string&gt;</span>/bin/zsh<span class="nt">&lt;/string&gt;</span>
+<span class="w">        </span><span class="nt">&lt;string&gt;</span>/Users/yourname/scripts/yourscript.zsh<span class="nt">&lt;/string&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/array&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>StartCalendarInterval<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;dict&gt;</span>
+<span class="w">        </span><span class="nt">&lt;key&gt;</span>Hour<span class="nt">&lt;/key&gt;</span>
+<span class="w">        </span><span class="nt">&lt;integer&gt;</span>9<span class="nt">&lt;/integer&gt;</span>
+<span class="w">        </span><span class="nt">&lt;key&gt;</span>Minute<span class="nt">&lt;/key&gt;</span>
+<span class="w">        </span><span class="nt">&lt;integer&gt;</span>0<span class="nt">&lt;/integer&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/dict&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>StandardOutPath<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;string&gt;</span>/tmp/yourscript.log<span class="nt">&lt;/string&gt;</span>
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>StandardErrorPath<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;string&gt;</span>/tmp/yourscript-error.log<span class="nt">&lt;/string&gt;</span>
+
+<span class="w">    </span><span class="nt">&lt;key&gt;</span>RunAtLoad<span class="nt">&lt;/key&gt;</span>
+<span class="w">    </span><span class="nt">&lt;false/&gt;</span>
+<span class="nt">&lt;/dict&gt;</span>
+<span class="nt">&lt;/plist&gt;</span>
+</code></pre></div>
+
+<p>Replace <code>yourname</code> and <code>yourscript</code> with your actual username and script name.</p>
+<hr />
+<blockquote>
+<p><strong>Tip:</strong> The free app <strong>Lingon X</strong> provides a GUI for creating and managing launchd plists, which can make initial setup easier before you understand the XML format.</p>
+</blockquote>

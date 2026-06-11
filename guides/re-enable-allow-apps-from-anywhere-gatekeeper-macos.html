@@ -1,0 +1,39 @@
+DATA:security:Re-enable Allow Apps from Anywhere in Gatekeeper (macOS):Security & Apps
+<h1>Re-enable Allow Apps from Anywhere in Gatekeeper (macOS)</h1>
+<p>In macOS Sierra (10.12), Apple removed the <strong>"Allow apps downloaded from: Anywhere"</strong> option from System Preferences. It still exists and still works — it is just hidden. This is different from the "app is damaged" fix — this re-enables the option permanently in the Security settings GUI.</p>
+<blockquote>
+<p><strong>Only do this if you regularly install apps from trusted sources outside the App Store and do not want to use the right-click workaround every time.</strong></p>
+</blockquote>
+<hr />
+<h2>Enable It via Terminal</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>spctl<span class="w"> </span>--master-disable
+</code></pre></div>
+
+<p>Enter your password. That is it.</p>
+<p>Now go to <strong>System Settings</strong> → <strong>Privacy &amp; Security</strong> → scroll to the <strong>Security</strong> section. You will see a third option: <strong>Anywhere</strong> has returned.</p>
+<hr />
+<h2>Re-disable It (Restore Default)</h2>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>spctl<span class="w"> </span>--master-enable
+</code></pre></div>
+
+<p>The Anywhere option disappears again from the UI.</p>
+<hr />
+<h2>Check Current Status</h2>
+<div class="codehilite"><pre><span></span><code>spctl<span class="w"> </span>--status
+</code></pre></div>
+
+<ul>
+<li><code>assessments enabled</code> — Gatekeeper is on (default, Anywhere is hidden)</li>
+<li><code>assessments disabled</code> — Gatekeeper is off (Anywhere option visible)</li>
+</ul>
+<hr />
+<h2>Still Get Blocked After Enabling?</h2>
+<p>Some apps have a quarantine attribute that blocks them even with Gatekeeper off. Remove it:</p>
+<div class="codehilite"><pre><span></span><code>xattr<span class="w"> </span>-r<span class="w"> </span>-d<span class="w"> </span>com.apple.quarantine<span class="w"> </span>/Applications/AppName.app
+</code></pre></div>
+
+<p>Or right-click the app → <strong>Open</strong> → <strong>Open</strong> in the dialog that appears.</p>
+<hr />
+<blockquote>
+<p><strong>Security note:</strong> Disabling Gatekeeper means macOS will run any app without checking its signature. Only keep it disabled if you know what you are installing. Re-enable it after installing the apps you need.</p>
+</blockquote>

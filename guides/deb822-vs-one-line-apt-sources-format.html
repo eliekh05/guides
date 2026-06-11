@@ -1,0 +1,166 @@
+DATA:package-managers:deb822 vs One-Line Format for APT Sources:Package Managers (All OSes)
+<h1>deb822 vs One-Line Format for APT Sources</h1>
+<p>When adding a repository to a Debian-based system (Debian, Ubuntu, Linux Mint, etc.) you will see two different formats used across different guides. This explains what each one is, how they differ, and when to use which.</p>
+<hr />
+<h2>One-Line Format (<code>.list</code> files)</h2>
+<p>The original format. Each source is a single line in a file ending in <code>.list</code>.</p>
+<p><strong>File location:</strong> <code>/etc/apt/sources.list.d/something.list</code></p>
+<p><strong>Format:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="k">deb</span><span class="w"> </span><span class="sx">[signed-by=/usr/share/keyrings/keyname.gpg]</span><span class="w"> </span><span class="kp">https://repo.example.com/debian</span><span class="w"> </span><span class="kp">suite</span><span class="w"> </span><span class="kp">component</span>
+</code></pre></div>
+
+<p><strong>Real example — Proxmox (old way):</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="k">deb</span><span class="w"> </span><span class="sx">[arch=amd64 signed-by=/usr/share/keyrings/proxmox-archive-keyring.gpg]</span><span class="w"> </span><span class="kp">http://download.proxmox.com/debian/pve</span><span class="w"> </span><span class="kp">trixie</span><span class="w"> </span><span class="kp">pve-no-subscription</span>
+</code></pre></div>
+
+<p><strong>Add with a command:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;deb [signed-by=/usr/share/keyrings/keyname.gpg] https://repo.example.com/debian suite component&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/apt/sources.list.d/something.list
+</code></pre></div>
+
+<p><strong>Disable a source</strong> — comment out the line with <code>#</code>:</p>
+<div class="codehilite"><pre><span></span><code># deb [signed-by=...] https://...
+</code></pre></div>
+
+<hr />
+<h2>deb822 Format (<code>.sources</code> files)</h2>
+<p>The modern format introduced in APT 1.1 (available on all current Debian/Ubuntu versions). Each source is a multi-line block in a file ending in <code>.sources</code>.</p>
+<p><strong>File location:</strong> <code>/etc/apt/sources.list.d/something.sources</code></p>
+<p><strong>Format:</strong></p>
+<div class="codehilite"><pre><span></span><code>Types: deb
+URIs: https://repo.example.com/debian
+Suites: suite
+Components: component
+Signed-By: /usr/share/keyrings/keyname.gpg
+</code></pre></div>
+
+<p><strong>Real example — Proxmox (current official way):</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="n">Types</span><span class="p">:</span><span class="w"> </span><span class="n">deb</span>
+<span class="n">URIs</span><span class="p">:</span><span class="w"> </span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">download</span><span class="o">.</span><span class="n">proxmox</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">debian</span><span class="o">/</span><span class="n">pve</span>
+<span class="n">Suites</span><span class="p">:</span><span class="w"> </span><span class="n">trixie</span>
+<span class="n">Components</span><span class="p">:</span><span class="w"> </span><span class="n">pve</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">subscription</span>
+<span class="n">Signed</span><span class="o">-</span><span class="n">By</span><span class="p">:</span><span class="w"> </span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">keyrings</span><span class="o">/</span><span class="n">proxmox</span><span class="o">-</span><span class="n">archive</span><span class="o">-</span><span class="n">keyring</span><span class="o">.</span><span class="n">gpg</span>
+</code></pre></div>
+
+<p><strong>Add with nano:</strong></p>
+<div class="codehilite"><pre><span></span><code>nano<span class="w"> </span>/etc/apt/sources.list.d/something.sources
+</code></pre></div>
+
+<p>Paste the block, save with <strong>Ctrl+X → Y → Enter</strong>.</p>
+<p><strong>Disable a source</strong> — add <code>Enabled: no</code> instead of commenting:</p>
+<div class="codehilite"><pre><span></span><code>Types: deb
+URIs: https://...
+Suites: trixie
+Components: pve-enterprise
+Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
+Enabled: no
+</code></pre></div>
+
+<hr />
+<h2>Side-by-Side Comparison</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>One-Line (<code>.list</code>)</th>
+<th>deb822 (<code>.sources</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File extension</td>
+<td><code>.list</code></td>
+<td><code>.sources</code></td>
+</tr>
+<tr>
+<td>Format</td>
+<td>Single line</td>
+<td>Multi-line block</td>
+</tr>
+<tr>
+<td>Readable</td>
+<td>Hard when options are long</td>
+<td>Much easier to read</td>
+</tr>
+<tr>
+<td>Multiple sources in one file</td>
+<td>One per line</td>
+<td>One block per source, separated by blank line</td>
+</tr>
+<tr>
+<td>Disable without deleting</td>
+<td>Comment out with <code>#</code></td>
+<td>Add <code>Enabled: no</code></td>
+</tr>
+<tr>
+<td>Officially recommended</td>
+<td>Older systems</td>
+<td><strong>Current recommended</strong> by Debian</td>
+</tr>
+<tr>
+<td>Supported since</td>
+<td>Always</td>
+<td>APT 1.1+ (Debian 9+, Ubuntu 16.04+)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Key Differences</h2>
+<p><strong>Signing key reference:</strong></p>
+<p>One-line puts the key in square brackets inline:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">deb</span><span class="w"> </span><span class="sx">[signed-by=/usr/share/keyrings/key.gpg]</span><span class="w"> </span><span class="kp">https://...</span>
+</code></pre></div>
+
+<p>deb822 uses a dedicated field:</p>
+<div class="codehilite"><pre><span></span><code>Signed-By: /usr/share/keyrings/key.gpg
+</code></pre></div>
+
+<p><strong>Multiple URIs</strong> — deb822 supports multiple URIs for failover in one block:</p>
+<div class="codehilite"><pre><span></span><code>Types: deb
+URIs: https://primary.example.com/debian https://mirror.example.com/debian
+Suites: trixie
+Components: main
+Signed-By: /usr/share/keyrings/key.gpg
+</code></pre></div>
+
+<p>One-line cannot do this without duplicating the entire line.</p>
+<p><strong>Architecture restriction:</strong></p>
+<p>One-line: <code>deb [arch=amd64] https://...</code></p>
+<p>deb822:</p>
+<div class="codehilite"><pre><span></span><code>Types: deb
+URIs: https://...
+Architectures: amd64
+</code></pre></div>
+
+<hr />
+<h2>Which One to Use</h2>
+<p><strong>Use deb822</strong> if:
+- You are on Debian 9+ or Ubuntu 16.04+ (i.e. any current system)
+- You are following official documentation — Proxmox, Docker, and most major projects now use deb822
+- You want cleaner, more readable source files</p>
+<p><strong>Use one-line</strong> if:
+- You are following an older guide that uses it
+- You need compatibility with very old systems
+- You want to paste a quick one-liner into the terminal</p>
+<p>Both formats work identically — APT supports both at the same time. A system can have <code>.list</code> files and <code>.sources</code> files in <code>/etc/apt/sources.list.d/</code> with no conflict.</p>
+<hr />
+<h2>Convert One-Line to deb822</h2>
+<p>If you have an existing one-line source and want to convert it:</p>
+<p><strong>One-line:</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="k">deb</span><span class="w"> </span><span class="sx">[arch=amd64 signed-by=/usr/share/keyrings/key.gpg]</span><span class="w"> </span><span class="kp">https://repo.example.com/debian</span><span class="w"> </span><span class="kp">bookworm</span><span class="w"> </span><span class="kp">main</span>
+</code></pre></div>
+
+<p><strong>deb822 equivalent:</strong></p>
+<div class="codehilite"><pre><span></span><code>Types: deb
+URIs: https://repo.example.com/debian
+Suites: bookworm
+Components: main
+Architectures: amd64
+Signed-By: /usr/share/keyrings/key.gpg
+</code></pre></div>
+
+<p>On Debian 13 (Trixie) and Ubuntu 24.04+, you can also run:</p>
+<div class="codehilite"><pre><span></span><code>apt<span class="w"> </span>modernize-sources
+</code></pre></div>
+
+<p>This automatically converts existing <code>.list</code> files to deb822 <code>.sources</code> format.</p>

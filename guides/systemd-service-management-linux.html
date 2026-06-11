@@ -1,0 +1,160 @@
+DATA:server:systemd Service Management on Linux:Server & Self-Hosting
+<h1>systemd Service Management on Linux</h1>
+<p><code>systemctl</code> is the main tool for managing services on all modern Linux distributions.</p>
+<hr />
+<h2>Essential Commands</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Start/stop/restart</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>nginx
+sudo<span class="w"> </span>systemctl<span class="w"> </span>stop<span class="w"> </span>nginx
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>nginx
+sudo<span class="w"> </span>systemctl<span class="w"> </span>reload<span class="w"> </span>nginx<span class="w">          </span><span class="c1"># reload config without restart (if supported)</span>
+
+<span class="c1"># Enable/disable at boot</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>nginx<span class="w">          </span><span class="c1"># start on boot</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>disable<span class="w"> </span>nginx<span class="w">         </span><span class="c1"># don&#39;t start on boot</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>nginx<span class="w">    </span><span class="c1"># enable AND start immediately</span>
+
+<span class="c1"># Check status</span>
+systemctl<span class="w"> </span>status<span class="w"> </span>nginx
+systemctl<span class="w"> </span>is-active<span class="w"> </span>nginx<span class="w">           </span><span class="c1"># returns &quot;active&quot; or &quot;inactive&quot;</span>
+systemctl<span class="w"> </span>is-enabled<span class="w"> </span>nginx<span class="w">          </span><span class="c1"># returns &quot;enabled&quot; or &quot;disabled&quot;</span>
+</code></pre></div>
+
+<hr />
+<h2>List Services</h2>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>list-units<span class="w"> </span>--type<span class="o">=</span>service<span class="w">           </span><span class="c1"># all loaded services</span>
+systemctl<span class="w"> </span>list-units<span class="w"> </span>--type<span class="o">=</span>service<span class="w"> </span>--state<span class="o">=</span>running<span class="w">  </span><span class="c1"># running only</span>
+systemctl<span class="w"> </span>list-units<span class="w"> </span>--type<span class="o">=</span>service<span class="w"> </span>--state<span class="o">=</span>failed<span class="w">   </span><span class="c1"># failed services</span>
+systemctl<span class="w"> </span>list-unit-files<span class="w"> </span>--type<span class="o">=</span>service<span class="w">      </span><span class="c1"># all installed services</span>
+</code></pre></div>
+
+<hr />
+<h2>View Logs for a Service</h2>
+<div class="codehilite"><pre><span></span><code>journalctl<span class="w"> </span>-u<span class="w"> </span>nginx<span class="w">                           </span><span class="c1"># all logs</span>
+journalctl<span class="w"> </span>-u<span class="w"> </span>nginx<span class="w"> </span>-f<span class="w">                        </span><span class="c1"># follow in real time</span>
+journalctl<span class="w"> </span>-u<span class="w"> </span>nginx<span class="w"> </span>--since<span class="w"> </span><span class="s2">&quot;1 hour ago&quot;</span><span class="w">      </span><span class="c1"># recent logs</span>
+journalctl<span class="w"> </span>-u<span class="w"> </span>nginx<span class="w"> </span>-n<span class="w"> </span><span class="m">50</span><span class="w">                     </span><span class="c1"># last 50 lines</span>
+journalctl<span class="w"> </span>-u<span class="w"> </span>nginx<span class="w"> </span>--since<span class="w"> </span>today<span class="w">             </span><span class="c1"># today only</span>
+journalctl<span class="w"> </span>-p<span class="w"> </span>err<span class="w"> </span>-u<span class="w"> </span>nginx<span class="w">                    </span><span class="c1"># errors only</span>
+</code></pre></div>
+
+<hr />
+<h2>Write a Service File</h2>
+<p>Service files live in <code>/etc/systemd/system/</code>. Create <code>/etc/systemd/system/myapp.service</code>:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/systemd/system/myapp.service
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="k">[Unit]</span>
+<span class="na">Description</span><span class="o">=</span><span class="s">My Application</span>
+<span class="na">Documentation</span><span class="o">=</span><span class="s">https://example.com</span>
+<span class="na">After</span><span class="o">=</span><span class="s">network.target</span>
+
+<span class="k">[Service]</span>
+<span class="na">Type</span><span class="o">=</span><span class="s">simple</span>
+<span class="na">User</span><span class="o">=</span><span class="s">myuser</span>
+<span class="na">Group</span><span class="o">=</span><span class="s">mygroup</span>
+<span class="na">WorkingDirectory</span><span class="o">=</span><span class="s">/opt/myapp</span>
+<span class="na">ExecStart</span><span class="o">=</span><span class="s">/usr/bin/python3 /opt/myapp/app.py</span>
+<span class="na">ExecReload</span><span class="o">=</span><span class="s">/bin/kill -HUP $MAINPID</span>
+<span class="na">Restart</span><span class="o">=</span><span class="s">on-failure</span>
+<span class="na">RestartSec</span><span class="o">=</span><span class="s">5</span>
+<span class="na">StandardOutput</span><span class="o">=</span><span class="s">journal</span>
+<span class="na">StandardError</span><span class="o">=</span><span class="s">journal</span>
+<span class="na">Environment</span><span class="o">=</span><span class="s">NODE_ENV=production</span>
+
+<span class="k">[Install]</span>
+<span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
+</code></pre></div>
+
+<p>Enable and start it:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
+sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>myapp
+</code></pre></div>
+
+<hr />
+<h2>Service Types</h2>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>When to use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>simple</code></td>
+<td>Process stays running (most common)</td>
+</tr>
+<tr>
+<td><code>forking</code></td>
+<td>Process forks to background (old daemons)</td>
+</tr>
+<tr>
+<td><code>oneshot</code></td>
+<td>Runs once then exits (scripts, init tasks)</td>
+</tr>
+<tr>
+<td><code>notify</code></td>
+<td>Process notifies systemd when ready</td>
+</tr>
+<tr>
+<td><code>idle</code></td>
+<td>Like simple but waits for jobs to finish</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Timers (systemd alternative to cron)</h2>
+<p>Create <code>/etc/systemd/system/backup.timer</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Unit]</span>
+<span class="na">Description</span><span class="o">=</span><span class="s">Run backup daily</span>
+
+<span class="k">[Timer]</span>
+<span class="na">OnCalendar</span><span class="o">=</span><span class="s">daily</span>
+<span class="na">Persistent</span><span class="o">=</span><span class="s">true</span>
+
+<span class="k">[Install]</span>
+<span class="na">WantedBy</span><span class="o">=</span><span class="s">timers.target</span>
+</code></pre></div>
+
+<p>Create <code>/etc/systemd/system/backup.service</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[Unit]</span>
+<span class="na">Description</span><span class="o">=</span><span class="s">Daily Backup</span>
+
+<span class="k">[Service]</span>
+<span class="na">Type</span><span class="o">=</span><span class="s">oneshot</span>
+<span class="na">ExecStart</span><span class="o">=</span><span class="s">/usr/local/bin/backup.sh</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
+sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>backup.timer
+systemctl<span class="w"> </span>list-timers<span class="w">               </span><span class="c1"># see all timers and next run time</span>
+</code></pre></div>
+
+<hr />
+<h2>Troubleshoot a Failing Service</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 1. Check status for quick info</span>
+systemctl<span class="w"> </span>status<span class="w"> </span>myapp
+
+<span class="c1"># 2. View recent logs</span>
+journalctl<span class="w"> </span>-u<span class="w"> </span>myapp<span class="w"> </span>-n<span class="w"> </span><span class="m">50</span>
+
+<span class="c1"># 3. Run ExecStart manually to see raw error</span>
+systemctl<span class="w"> </span>cat<span class="w"> </span>myapp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>ExecStart
+<span class="c1"># Copy the command and run it directly as the service user</span>
+
+<span class="c1"># 4. Check for permission issues</span>
+sudo<span class="w"> </span>-u<span class="w"> </span>myuser<span class="w"> </span>/path/to/command
+
+<span class="c1"># 5. Validate service file syntax</span>
+systemd-analyze<span class="w"> </span>verify<span class="w"> </span>/etc/systemd/system/myapp.service
+</code></pre></div>
+
+<hr />
+<h2>System State</h2>
+<div class="codehilite"><pre><span></span><code>systemctl<span class="w"> </span>poweroff<span class="w">              </span><span class="c1"># shut down</span>
+systemctl<span class="w"> </span>reboot<span class="w">                </span><span class="c1"># reboot</span>
+systemctl<span class="w"> </span><span class="nb">suspend</span><span class="w">               </span><span class="c1"># suspend</span>
+systemctl<span class="w"> </span>hibernate<span class="w">             </span><span class="c1"># hibernate</span>
+systemctl<span class="w"> </span>rescue<span class="w">                </span><span class="c1"># rescue mode (single user)</span>
+</code></pre></div>

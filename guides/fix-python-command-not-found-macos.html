@@ -1,0 +1,169 @@
+DATA:macos:Fix 'python: command not found' on macOS:macOS
+<h1>Fix 'python: command not found' on macOS</h1>
+<p>Since macOS 12.3 (Monterey), typing <code>python</code> in Terminal gives <code>zsh: command not found: python</code>. Apple removed Python 2 entirely and did not create a <code>python</code> alias for Python 3. Every tutorial that says to type <code>python</code> is assuming an older Mac or Linux. This guide explains what actually happened and the right fix depending on what you are trying to do.</p>
+<hr />
+<h2>Why This Happens</h2>
+<p>Apple shipped Python 2 as part of macOS until macOS 12.3 Monterey (released March 2022), when it was removed permanently. Python 3 is available but only as <code>python3</code>, not <code>python</code>. There is no <code>python</code> command by default.</p>
+<p>Check what you actually have:</p>
+<div class="codehilite"><pre><span></span><code>python3<span class="w"> </span>--version
+which<span class="w"> </span>python3
+</code></pre></div>
+
+<p>If this returns a version number, Python 3 is installed — you just need to use the right command or create an alias.</p>
+<hr />
+<h2>Quick Fix — Use <code>python3</code> Instead of <code>python</code></h2>
+<p>The simplest solution: just type <code>python3</code> instead of <code>python</code> whenever a guide or tutorial says <code>python</code>.</p>
+<div class="codehilite"><pre><span></span><code>python3<span class="w"> </span>myscript.py<span class="w">        </span><span class="c1"># instead of: python myscript.py</span>
+python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>X<span class="w">   </span><span class="c1"># instead of: pip install X</span>
+</code></pre></div>
+
+<p>For <code>pip</code>, use <code>pip3</code>:</p>
+<div class="codehilite"><pre><span></span><code>pip3<span class="w"> </span>install<span class="w"> </span>requests
+</code></pre></div>
+
+<p>This is the correct approach for one-off use.</p>
+<hr />
+<h2>Fix — Create a Permanent <code>python</code> Alias (Quick)</h2>
+<p>If you want <code>python</code> to work the same as <code>python3</code> permanently:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;alias python=python3&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;alias pip=pip3&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
+<span class="nb">source</span><span class="w"> </span>~/.zprofile
+</code></pre></div>
+
+<p>Test:</p>
+<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>--version
+</code></pre></div>
+
+<blockquote>
+<p><strong>Note:</strong> This alias is convenient but not ideal for development projects. If you install multiple Python versions later, the alias always points to <code>python3</code> regardless of which version that resolves to. For serious development, use pyenv (below).</p>
+</blockquote>
+<hr />
+<h2>Fix — Install Python Properly for Development (Recommended)</h2>
+<p>If you are writing code or installing packages, do not use the system Python at <code>/usr/bin/python3</code>. That version is Apple's internal copy and should not be modified. Install your own:</p>
+<h3>Option A — From python.org (Simplest)</h3>
+<ol>
+<li>Go to <a href="https://www.python.org/downloads/macos/">python.org/downloads/macos</a>.</li>
+<li>Download the latest macOS installer.</li>
+<li>Run the <code>.pkg</code> file and follow the installer.</li>
+<li>After installation, <code>python3</code> and <code>pip3</code> will work.</li>
+</ol>
+<p>The installer also creates a <code>python3.12</code> (or current version) command.</p>
+<h3>Option B — Via Homebrew</h3>
+<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>python
+</code></pre></div>
+
+<p>After installation:</p>
+<div class="codehilite"><pre><span></span><code>python3<span class="w"> </span>--version<span class="w">  </span><span class="c1"># shows Homebrew&#39;s Python</span>
+which<span class="w"> </span>python3<span class="w">      </span><span class="c1"># shows /opt/homebrew/bin/python3</span>
+</code></pre></div>
+
+<h3>Option C — Via pyenv (Best for Multiple Versions)</h3>
+<p>pyenv lets you install and switch between any Python version. See the <strong>Manage Multiple Python and Node Versions</strong> guide for full instructions.</p>
+<div class="codehilite"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>pyenv
+pyenv<span class="w"> </span>install<span class="w"> </span><span class="m">3</span>.12.4
+pyenv<span class="w"> </span>global<span class="w"> </span><span class="m">3</span>.12.4
+</code></pre></div>
+
+<p>After setup, <code>python</code> and <code>python3</code> both work.</p>
+<hr />
+<h2>Fix — Reinstall Python After a macOS Update Broke It</h2>
+<p>macOS updates sometimes remove or break the Xcode Command Line Tools Python:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check if CLT Python exists</span>
+ls<span class="w"> </span>/usr/bin/python3
+
+<span class="c1"># Reinstall Xcode CLT (restores /usr/bin/python3)</span>
+xcode-select<span class="w"> </span>--install
+</code></pre></div>
+
+<p>If you had Python installed from python.org or Homebrew and it disappeared:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Check all python3 locations</span>
+which<span class="w"> </span>-a<span class="w"> </span>python3
+
+<span class="c1"># Reinstall via Homebrew</span>
+brew<span class="w"> </span>reinstall<span class="w"> </span>python
+
+<span class="c1"># Or reinstall from python.org</span>
+<span class="c1"># Download and run the installer again — it will replace the broken version</span>
+</code></pre></div>
+
+<hr />
+<h2>Understand the Different Python Installations on macOS</h2>
+<p>This is where most confusion comes from. There can be several Python 3 installations on a Mac at once:</p>
+<table>
+<thead>
+<tr>
+<th>Location</th>
+<th>What it is</th>
+<th>Should you use it?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/usr/bin/python3</code></td>
+<td>Apple's system Python (Xcode CLT)</td>
+<td>No — reserved for macOS tools</td>
+</tr>
+<tr>
+<td><code>/opt/homebrew/bin/python3</code></td>
+<td>Homebrew Python (Apple Silicon)</td>
+<td>Yes — for general use</td>
+</tr>
+<tr>
+<td><code>/usr/local/bin/python3</code></td>
+<td>Homebrew Python (Intel Mac)</td>
+<td>Yes — for general use</td>
+</tr>
+<tr>
+<td><code>/Library/Frameworks/Python.framework/...</code></td>
+<td>python.org installer</td>
+<td>Yes — for general use</td>
+</tr>
+<tr>
+<td><code>~/.pyenv/shims/python3</code></td>
+<td>pyenv-managed Python</td>
+<td>Yes — for development</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>which python3</code> command shows which one is active in your PATH. If you have multiple and things are behaving unexpectedly:</p>
+<div class="codehilite"><pre><span></span><code>which<span class="w"> </span>-a<span class="w"> </span>python3<span class="w">  </span><span class="c1"># shows ALL installed python3 versions in PATH order</span>
+</code></pre></div>
+
+<hr />
+<h2>Fix pip: command not found</h2>
+<p>Same root cause as <code>python</code>. The fix is identical:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Use pip3 instead</span>
+pip3<span class="w"> </span>install<span class="w"> </span>requests
+
+<span class="c1"># Or create an alias</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;alias pip=pip3&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zprofile
+<span class="nb">source</span><span class="w"> </span>~/.zprofile
+</code></pre></div>
+
+<p>If <code>pip3</code> is also missing:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Install pip for the current Python</span>
+python3<span class="w"> </span>-m<span class="w"> </span>ensurepip<span class="w"> </span>--upgrade
+
+<span class="c1"># Or upgrade if already installed</span>
+python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip
+</code></pre></div>
+
+<hr />
+<h2>Use Virtual Environments for Projects</h2>
+<p>Once you have Python working, always use virtual environments for projects. This isolates packages so they do not conflict between projects:</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Create a virtual environment in your project folder</span>
+<span class="nb">cd</span><span class="w"> </span>myproject
+python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+
+<span class="c1"># Activate it</span>
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+
+<span class="c1"># Now &#39;python&#39; and &#39;pip&#39; work without aliases</span>
+python<span class="w"> </span>--version
+pip<span class="w"> </span>install<span class="w"> </span>requests
+
+<span class="c1"># Deactivate when done</span>
+deactivate
+</code></pre></div>
+
+<p>The <code>.venv</code> folder is local to your project. Add it to <code>.gitignore</code> — do not commit it.</p>

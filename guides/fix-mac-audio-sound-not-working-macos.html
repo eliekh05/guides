@@ -1,0 +1,116 @@
+DATA:system-users:Fix Mac Audio Not Working:System & Users
+<h1>Fix Mac Audio Not Working</h1>
+<p>Mac audio stops working more often than it should — usually after a sleep cycle, an app crash, or a macOS update. Most cases are fixed in under a minute without restarting.</p>
+<hr />
+<h2>Fix 1 — Restart the Audio Process (Fixes 90% of Cases)</h2>
+<p>macOS runs audio through a process called <code>coreaudiod</code>. Killing it forces it to restart cleanly:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>killall<span class="w"> </span>coreaudiod
+</code></pre></div>
+
+<p>Enter your password when prompted. Audio will cut out for a second and come back. Test immediately.</p>
+<p>If that does not work, also restart the related process:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>killall<span class="w"> </span>-9<span class="w"> </span>coreaudiod
+sudo<span class="w"> </span>launchctl<span class="w"> </span>stop<span class="w"> </span>com.apple.audio.coreaudiod
+sudo<span class="w"> </span>launchctl<span class="w"> </span>start<span class="w"> </span>com.apple.audio.coreaudiod
+</code></pre></div>
+
+<hr />
+<h2>Fix 2 — Check Output Device Selection</h2>
+<p>macOS sometimes switches to a phantom or wrong output device automatically, especially after connecting Bluetooth headphones or an external monitor with speakers.</p>
+<ol>
+<li>Click the <strong>Control Centre</strong> icon (top right menu bar) → <strong>Sound</strong>.</li>
+<li>Under <strong>Output</strong>, make sure the correct device is selected — internal speakers, your headphones, or your external device.</li>
+<li>If the right device is selected but there is still no sound, click on it anyway to re-select it — this forces macOS to reinitialise the connection.</li>
+</ol>
+<p>You can also go to <strong>System Settings</strong> → <strong>Sound</strong> → <strong>Output</strong> and check the volume slider is not at zero and the Mute checkbox is not checked.</p>
+<hr />
+<h2>Fix 3 — Unplug and Re-plug Audio Devices</h2>
+<p>If you are using external speakers, a DAC, a USB audio interface, or headphones via an adapter:</p>
+<ol>
+<li>Unplug the device completely.</li>
+<li>Wait 5 seconds.</li>
+<li>Plug it back in.</li>
+<li>Go to <strong>System Settings</strong> → <strong>Sound</strong> → <strong>Output</strong> and select the device again.</li>
+</ol>
+<p>macOS sometimes loses track of USB and Bluetooth audio devices after sleep — replugging forces it to re-enumerate the device.</p>
+<hr />
+<h2>Fix 4 — Reset Core Audio via Terminal (Full Reset)</h2>
+<p>If Fix 1 did not work, try a full audio subsystem reset:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span>/System/Library/LaunchDaemons/com.apple.audio.coreaudiod.plist
+sudo<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span>/System/Library/LaunchDaemons/com.apple.audio.coreaudiod.plist
+</code></pre></div>
+
+<hr />
+<h2>Fix 5 — Delete Audio Preference Files (Clears Corrupted Config)</h2>
+<p>Corrupted audio preferences can prevent sound from working even after restarting coreaudiod.</p>
+<ol>
+<li>Open <strong>Finder</strong>.</li>
+<li>Press <strong>Command + Shift + G</strong> and navigate to:
+   <code>~/Library/Preferences/</code></li>
+<li>Look for and delete these files if they exist:</li>
+<li><code>com.apple.audio.DeviceSettings.plist</code></li>
+<li><code>com.apple.audio.InfoHelper.plist</code></li>
+<li><code>com.apple.coreaudio.plist</code></li>
+<li>Restart your Mac. macOS will recreate these files with fresh defaults.</li>
+</ol>
+<hr />
+<h2>Fix 6 — Reset NVRAM</h2>
+<p>NVRAM stores audio-related settings like volume level and output device. Resetting it clears corrupted audio configuration that survives restarts.</p>
+<p>See the <strong>Reset NVRAM and SMC</strong> guide for full instructions. For audio issues, resetting NVRAM alone (without SMC) is usually sufficient.</p>
+<p>After an NVRAM reset, check <strong>System Settings</strong> → <strong>Sound</strong> and reconfigure your preferred output device.</p>
+<hr />
+<h2>Fix 7 — Check for Sample Rate Mismatch</h2>
+<p>If audio plays but sounds distorted, robotic, or at the wrong pitch, there may be a sample rate conflict between your app and the output device.</p>
+<ol>
+<li>Open <strong>Audio MIDI Setup</strong> (search with Spotlight).</li>
+<li>Select your output device in the left panel.</li>
+<li>Check the <strong>Format</strong> setting — the sample rate (e.g. 44100 Hz, 48000 Hz, 96000 Hz).</li>
+<li>If it does not match what your music app or interface expects, change it here.</li>
+</ol>
+<p>Most Mac audio issues with external DACs and interfaces are caused by a sample rate mismatch.</p>
+<hr />
+<h2>Fix 8 — macOS Update Broke Audio</h2>
+<p>After some macOS updates, the audio kext (kernel extension) needs to be reloaded. Restart your Mac completely — a full restart (not just logging out) reloads all kernel extensions.</p>
+<p>If audio was working before an update and is broken after, also check:
+- <strong>System Settings</strong> → <strong>Privacy &amp; Security</strong> → <strong>Microphone</strong> — make sure your audio apps still have permission
+- Check if a third-party audio driver (Focusrite, Universal Audio, etc.) needs to be updated for the new macOS version</p>
+<hr />
+<h2>Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No sound from any app</td>
+<td>Fix 1 — <code>sudo killall coreaudiod</code></td>
+</tr>
+<tr>
+<td>Wrong output device</td>
+<td>Fix 2 — check System Settings → Sound</td>
+</tr>
+<tr>
+<td>USB/Bluetooth audio gone after sleep</td>
+<td>Fix 3 — unplug and replug</td>
+</tr>
+<tr>
+<td>Sound cuts out randomly</td>
+<td>Fix 5 — delete preference files</td>
+</tr>
+<tr>
+<td>Audio worked then stopped after macOS update</td>
+<td>Fix 8 — full restart, update drivers</td>
+</tr>
+<tr>
+<td>Distorted or robotic sound</td>
+<td>Fix 7 — check sample rate in Audio MIDI Setup</td>
+</tr>
+<tr>
+<td>Nothing works</td>
+<td>Fix 6 — reset NVRAM</td>
+</tr>
+</tbody>
+</table>

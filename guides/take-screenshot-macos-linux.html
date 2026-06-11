@@ -1,0 +1,83 @@
+DATA:macos:Take Screenshots on macOS and Linux:macOS
+<h1>Take Screenshots on macOS and Linux</h1>
+<hr />
+<h2>macOS</h2>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>What it captures</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Cmd + Shift + 3</strong></td>
+<td>Entire screen</td>
+</tr>
+<tr>
+<td><strong>Cmd + Shift + 4</strong></td>
+<td>Drag to select an area</td>
+</tr>
+<tr>
+<td><strong>Cmd + Shift + 4, then Space</strong></td>
+<td>Click a window to capture just that window</td>
+</tr>
+<tr>
+<td><strong>Cmd + Shift + 5</strong></td>
+<td>Opens screenshot toolbar with all options + screen recording</td>
+</tr>
+</tbody>
+</table>
+<p>Adding <strong>Ctrl</strong> to any shortcut copies to clipboard instead of saving to Desktop.</p>
+<p>Screenshots save to the Desktop as <code>.png</code> by default.</p>
+<h3>Change the save location</h3>
+<p>Press <strong>Cmd + Shift + 5</strong> → click <strong>Options</strong> → <strong>Other Location</strong> → choose a folder.</p>
+<hr />
+<h2>Linux (GNOME — Ubuntu, Fedora, Pop!_OS)</h2>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>What it captures</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Print Screen</strong></td>
+<td>Entire screen</td>
+</tr>
+<tr>
+<td><strong>Shift + Print Screen</strong></td>
+<td>Drag to select area</td>
+</tr>
+<tr>
+<td><strong>Alt + Print Screen</strong></td>
+<td>Active window only</td>
+</tr>
+</tbody>
+</table>
+<p>Screenshots save to <code>~/Pictures/Screenshots/</code>.</p>
+<h3>Install a more capable tool</h3>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>flameshot<span class="w"> </span>-y<span class="w">   </span><span class="c1"># Ubuntu/Debian</span>
+sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>flameshot<span class="w"> </span>-y<span class="w">   </span><span class="c1"># Fedora</span>
+</code></pre></div>
+
+<p>Run it:</p>
+<div class="codehilite"><pre><span></span><code>flameshot<span class="w"> </span>gui
+</code></pre></div>
+
+<p>Flameshot lets you annotate, draw arrows, blur areas, and copy directly to clipboard — much better than the default tool.</p>
+<hr />
+<h2>Linux (terminal — no GUI)</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># Install scrot</span>
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>scrot<span class="w"> </span>-y
+
+<span class="c1"># Full screen, saved to current folder</span>
+scrot<span class="w"> </span>screenshot.png
+
+<span class="c1"># 5-second delay then capture</span>
+scrot<span class="w"> </span>-d<span class="w"> </span><span class="m">5</span><span class="w"> </span>screenshot.png
+
+<span class="c1"># Select area interactively</span>
+scrot<span class="w"> </span>-s<span class="w"> </span>screenshot.png
+</code></pre></div>

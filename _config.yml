@@ -1,8 +1,8 @@
 remote_theme: just-the-docs/just-the-docs
 title: OS & Installation Guides
 description: Practical guides for problems that are hard to find solutions for online.
-url: "https://eliekh05.github.io"
-baseurl: "/guides"
+url: "https://guides-b36.pages.dev"
+baseurl: ""
 nav_sort: case_insensitive
 search_enabled: true
 search:

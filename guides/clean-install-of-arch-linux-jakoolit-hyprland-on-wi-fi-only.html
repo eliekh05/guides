@@ -7,13 +7,14 @@ For step-by-step prompts, follow the installer menus carefully — options may d
 <p>💡 <strong>Tip:</strong> If you want to follow this guide exactly as written, you can download the same Arch Linux version used here: <strong>archlinux-2025.11.01</strong> download link in requirements part.</p>
 </blockquote>
 <p>This guide walks you through installing <strong>Arch Linux</strong> on bare metal and setting up <strong>Hyprland</strong> with Wi-Fi.
-All instructions use <strong>official Arch Linux tools</strong> and the <strong>Hyprland automated installer</strong> by <a href="https://github.com/JaKooLit/Arch-Hyprland">JaKooLit</a>.</p>
+All instructions use <strong>official Arch Linux tools</strong> and the <strong>Hyprland automated installer</strong> by <a href="https://github.com/JaKooLit/Arch-Hyprland">JaKooLit</a> and <a href="https://github.com/LinuxBeginnings/Arch-Hyprland">LinuxBeginnings</a>.</p>
 <h2>🧰 Requirements</h2>
 <ul>
 <li><strong>Wi-Fi connection</strong> (recommended)</li>
 <li><strong>Arch Linux ISO:</strong> <a href="https://archlinux.org/releng/releases/2025.11.01/torrent/">Torrent Download</a> or
   <code>magnet:?xt=urn:btih:d4487f489d4ee786f99bcdeeb8d3f226694ea27f&amp;dn=archlinux-2025.11.01-x86_64.iso</code></li>
 <li><strong>Torrent client:</strong> <a href="https://freedownloadmanager.org">Free Download Manager</a> or any torrent/magnet client</li>
+<li><strong>Hyprland installer:</strong> <a href="https://github.com/LinuxBeginnings/Arch-Hyprland">https://github.com/LinuxBeginnings/Arch-Hyprland</a></li>
 <li><strong>Hyprland installer:</strong> <a href="https://github.com/JaKooLit/Arch-Hyprland">https://github.com/JaKooLit/Arch-Hyprland</a></li>
 <li><strong>Balena Etcher:</strong> <a href="https://etcher.balena.io/#download-etcher">https://etcher.balena.io/#download-etcher</a></li>
 <li><strong>USB drive:</strong> at least <strong>16 GB</strong></li>
@@ -153,6 +154,10 @@ exit
 <p>After verifying your selections, click <strong>Install</strong> and wait until the process completes.</p>
 <h2>🎨 Set Up Hyprland</h2>
 <p>After rebooting and logging into your new Arch Linux installation, run:</p>
+<pre><code><code>sh &lt;(curl -L https://raw.githubusercontent.com/LinuxBeginnings/Arch-Hyprland/main/auto-install.sh)
+</code></code></pre>
+
+<p>OR</p>
 <pre><code><code>sh &lt;(curl -L https://raw.githubusercontent.com/JaKooLit/Arch-Hyprland/main/auto-install.sh)
 </code></code></pre>
 

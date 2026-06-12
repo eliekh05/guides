@@ -5,7 +5,6 @@ const path = require('path');
 const SECTIONS = [
   { id: 'macos',            title: 'macOS',                 parent: 'macOS' },
   { id: 'linux',            title: 'Linux',                 parent: 'Linux' },
-  { id: 'common',           title: 'Common',                parent: 'Common' },
   { id: 'system-users',     title: 'System & Users',        parent: 'System & Users' },
   { id: 'package-managers', title: 'Package Managers',      parent: 'Package Managers (All OSes)' },
   { id: 'networking',       title: 'Networking & DNS',      parent: 'Networking & DNS' },

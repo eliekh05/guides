@@ -1,4 +1,3 @@
-// ===== NAVIGATION =====
 document.addEventListener('DOMContentLoaded', () => {
   buildSidebar();
   setupSearch();
@@ -27,18 +26,23 @@ function navigate(path) {
   window.scrollTo(0, 0);
 }
 
-// ===== BUILD SIDEBAR =====
+// ===== SIDEBAR =====
 function buildSidebar() {
   const sidebar = document.getElementById('sidebar');
-  sidebar.innerHTML = '';
+  sidebar.innerHTML = `<div class="sidebar-dir-root">~/guides/</div>`;
   SECTIONS.forEach(section => {
     const div = document.createElement('div');
     div.className = 'sidebar-section';
     div.dataset.sectionId = section.id;
     div.innerHTML = `
       <div class="sidebar-section-header" onclick="toggleSection('${section.id}')">
-        <span>${section.title} <span class="sidebar-chevron">›</span></span>
-        <span class="sidebar-section-count">${section.guides.length}</span>
+        <span class="sidebar-section-label">
+          <span class="sidebar-dir-prefix">./</span>${section.title.toLowerCase().replace(/ /g, '-')}
+        </span>
+        <span style="display:flex;align-items:center;gap:6px">
+          <span class="sidebar-section-count">${section.guides.length}</span>
+          <span class="sidebar-chevron">›</span>
+        </span>
       </div>
       <div class="sidebar-guides" id="section-guides-${section.id}">
         ${section.guides.map(g => `
@@ -76,26 +80,67 @@ function setActiveGuide(slug) {
 function showHome() {
   document.title = 'OS & Installation Guides';
   document.querySelectorAll('.sidebar-guide-link').forEach(el => el.classList.remove('active'));
+
+  const totalGuides = ALL_GUIDES.length;
+  const statsRows = SECTIONS.filter(s => s.guides.length > 0).map(s =>
+    `<div class="stat-cell" onclick="navigate('/section/${s.id}')" title="Browse ${s.title}">
+      <div class="stat-label">SECTION</div>
+      <div class="stat-value">${s.guides.length}</div>
+      <div class="stat-name">${s.title}</div>
+    </div>`
+  ).join('');
+
   document.getElementById('main-content').innerHTML = `
-    <div class="home-hero">
-      <h1>OS & Installation Guides</h1>
-      <p>Practical guides for problems that are hard to find solutions for online.</p>
+    <div class="terminal-block">
+      <div class="terminal-titlebar">
+        <div class="terminal-dot red"></div>
+        <div class="terminal-dot yellow"></div>
+        <div class="terminal-dot green-dot"></div>
+        <span class="terminal-title">guides — bash</span>
+      </div>
+      <div class="terminal-body">
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <span><span class="terminal-cmd">guides</span> <span class="terminal-flag">--info</span></span>
+        </div>
+        <div class="terminal-blank"></div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">→</span>
+          <span class="terminal-output">OS &amp; Installation Guides</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">→</span>
+          <span class="terminal-output">Practical guides for problems that are hard to find solutions for online.</span>
+        </div>
+        <div class="terminal-blank"></div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <span><span class="terminal-cmd">guides</span> <span class="terminal-flag">--count</span></span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">→</span>
+          <span class="terminal-output"><span class="terminal-value">${totalGuides}</span> guides across <span class="terminal-value">${SECTIONS.filter(s=>s.guides.length).length}</span> sections</span>
+        </div>
+        <div class="terminal-blank"></div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <span class="terminal-comment"># use the sidebar or search (⌘K) to find a guide</span>
+        </div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">$</span>
+          <span><span class="cursor">█</span></span>
+        </div>
+      </div>
     </div>
+
+    <div class="stats-grid">${statsRows}</div>
+
     <div class="home-notices">
-      <div class="notice">⚠️ Please read everything before typing any command. If you do not understand what a command does, you are not ready to run it. If you choose to skip ahead — good luck spending days on Google, forums, and videos. This site exists so you do not have to.</div>
-      <div class="notice">📋 A note on accuracy: These guides are written from real experience, official documentation, and community knowledge — but no guide is perfect. Most should be accurate, but some steps may differ depending on your hardware, OS version, or configuration. If something does not work, cross-reference with Google or the official docs for that tool.</div>
-      <div class="notice">🕐 A note on outdated guides: Some guides may no longer reflect the current state of the software, repository, or tool they cover. Things change — repos move, commands change, projects get discontinued. If a guide feels off, check the official source first.</div>
+      <div class="notice warn">⚠ Read everything before typing any command. If you do not understand what a command does, you are not ready to run it.</div>
+      <div class="notice info">📋 Guides are written from real experience and official docs — but some steps may differ depending on your hardware, OS version, or configuration. Cross-reference with official docs when something does not work.</div>
+      <div class="notice clock">🕐 Some guides may no longer reflect the current state of the software. If a guide feels off, check the official source first.</div>
     </div>
-    <div class="home-sections">
-      ${SECTIONS.map(s => `
-        <a class="section-card" href="/section/${s.id}"
-           onclick="event.preventDefault(); navigate('/section/${s.id}')">
-          <div class="section-card-title">${s.title}</div>
-          <div class="section-card-count">${s.guides.length} guides</div>
-        </a>
-      `).join('')}
-    </div>`;
-  document.getElementById('page-toc').innerHTML = '';
+  `;
 }
 
 // ===== SECTION =====
@@ -104,28 +149,30 @@ function showSection(sectionId) {
   if (!section) { showHome(); return; }
   document.title = `${section.title} — OS & Installation Guides`;
   openSection(sectionId);
+
+  const rows = section.guides.map(g => `
+    <a href="/guide/${g.slug}" onclick="event.preventDefault(); navigate('/guide/${g.slug}')"
+       style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;
+              border-bottom:1px solid var(--border-muted);text-decoration:none;
+              transition:background .1s;"
+       onmouseover="this.style.background='var(--bg-hover)'"
+       onmouseout="this.style.background=''">
+      <span style="font-size:12px;color:var(--text)">${g.title}</span>
+      <span style="font-size:11px;color:var(--text-dim)">→</span>
+    </a>
+  `).join('');
+
   document.getElementById('main-content').innerHTML = `
     <div class="guide-breadcrumb">
-      <a href="/" onclick="event.preventDefault(); navigate('/')">Home</a>
-      <span>›</span>
-      <span>${section.title}</span>
+      <a href="/" onclick="event.preventDefault(); navigate('/')">~</a>
+      <span>/</span>
+      <span style="color:var(--accent)">${section.title.toLowerCase().replace(/ /g,'-')}/</span>
     </div>
     <div class="guide-content">
-      <h1>${section.title}</h1>
-      <div style="display:flex;flex-direction:column;gap:4px;margin-top:8px;">
-        ${section.guides.map(g => `
-          <a href="/guide/${g.slug}"
-             onclick="event.preventDefault(); navigate('/guide/${g.slug}')"
-             style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border:1px solid var(--border);border-radius:7px;text-decoration:none;color:var(--text);transition:all .15s;"
-             onmouseover="this.style.borderColor='var(--accent)';this.style.background='var(--accent-light)'"
-             onmouseout="this.style.borderColor='var(--border)';this.style.background=''">
-            <span style="font-size:14px">${g.title}</span>
-            <span style="color:var(--text-muted);font-size:12px">→</span>
-          </a>
-        `).join('')}
-      </div>
-    </div>`;
-  document.getElementById('page-toc').innerHTML = '';
+      <h1>${section.title} <span style="font-size:13px;color:var(--text-muted);font-weight:400">(${section.guides.length} guides)</span></h1>
+      <div style="background:var(--bg-card);border:1px solid var(--border);">${rows}</div>
+    </div>
+  `;
 }
 
 // ===== GUIDE =====
@@ -138,72 +185,45 @@ async function showGuide(slug) {
   const activeLink = document.getElementById(`nav-${slug}`);
   if (activeLink) activeLink.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   document.title = `${guide.title} — OS & Installation Guides`;
+
   const content = document.getElementById('main-content');
-  content.innerHTML = '<div style="padding:60px 0;text-align:center;color:var(--text-muted)">Loading…</div>';
+  content.innerHTML = '<div style="padding:48px 0;color:var(--text-dim);font-size:12px">loading...</div>';
+
   try {
     const resp = await fetch(`/guides/${slug}.html`);
     if (!resp.ok) throw new Error();
     const raw = await resp.text();
-    const lines = raw.split('\n');
-    const html = lines.slice(1).join('\n');
+    const html = raw.split('\n').slice(1).join('\n');
+
+    const sectionPath = section
+      ? `<a href="/section/${section.id}" onclick="event.preventDefault(); navigate('/section/${section.id}')">${section.title.toLowerCase().replace(/ /g,'-')}</a>`
+      : `<span>${guide.parent}</span>`;
+
     content.innerHTML = `
       <div class="guide-breadcrumb">
-        <a href="/" onclick="event.preventDefault(); navigate('/')">Home</a>
-        <span>›</span>
-        ${section ? `<a href="/section/${section.id}" onclick="event.preventDefault(); navigate('/section/${section.id}')">${guide.parent}</a>` : `<span>${guide.parent}</span>`}
-        <span>›</span>
-        <span>${guide.title}</span>
+        <a href="/" onclick="event.preventDefault(); navigate('/')">~</a>
+        <span>/</span>
+        ${sectionPath}
+        <span>/</span>
+        <span style="color:var(--text-muted)">${slug}</span>
       </div>
       <div class="guide-content" id="guide-body">${html}</div>
-      <div id="guide-nav-placeholder"></div>`;
+      <div id="guide-nav-placeholder"></div>
+    `;
+
     addCopyButtons();
-    buildTOC();
     buildGuideNav(slug, section);
     window.scrollTo(0, 0);
   } catch(e) {
-    content.innerHTML = `<div style="padding:40px 0"><h1>Guide not found</h1><p style="color:var(--text-muted);margin:12px 0">This guide could not be loaded.</p><a href="/" onclick="event.preventDefault();navigate('/')" style="color:var(--accent)">← Back to home</a></div>`;
+    content.innerHTML = `
+      <div style="padding:40px 0">
+        <div style="font-size:12px;color:var(--red);margin-bottom:8px">error: guide not found — ${slug}</div>
+        <a href="/" onclick="event.preventDefault();navigate('/')" style="font-size:12px;color:var(--accent)">cd ~/</a>
+      </div>`;
   }
 }
 
-// ===== TOC =====
-function buildTOC() {
-  const toc = document.getElementById('page-toc');
-  const body = document.getElementById('guide-body');
-  if (!body) { toc.innerHTML = ''; return; }
-  const headings = body.querySelectorAll('h2, h3');
-  if (headings.length < 2) { toc.innerHTML = ''; return; }
-  headings.forEach((h, i) => {
-    if (!h.id) h.id = 'h-' + h.textContent.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').substring(0, 40) + '-' + i;
-  });
-  toc.innerHTML = `
-    <div class="toc-label">On this page</div>
-    <ul class="toc-list">
-      ${Array.from(headings).map(h => `
-        <li><a href="#${h.id}" class="${h.tagName==='H3'?'toc-h3':''}"
-               onclick="event.preventDefault();scrollToHeading('${h.id}')">${h.textContent}</a></li>
-      `).join('')}
-    </ul>`;
-  setupTOCScroll(headings);
-}
-
-function scrollToHeading(id) {
-  const el = document.getElementById(id);
-  if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 72, behavior: 'smooth' });
-}
-
-function setupTOCScroll(headings) {
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const id = entry.target.id;
-        document.querySelectorAll('.toc-list a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === `#${id}`));
-      }
-    });
-  }, { rootMargin: '-72px 0px -70% 0px' });
-  headings.forEach(h => observer.observe(h));
-}
-
-// ===== PREV/NEXT =====
+// ===== GUIDE NAV =====
 function buildGuideNav(slug, section) {
   if (!section) return;
   const guides = section.guides;
@@ -216,10 +236,10 @@ function buildGuideNav(slug, section) {
   placeholder.innerHTML = `
     <div class="guide-nav">
       ${prev ? `<a class="guide-nav-link prev" href="/guide/${prev.slug}" onclick="event.preventDefault();navigate('/guide/${prev.slug}')">
-        <div class="guide-nav-label">← Previous</div>
+        <div class="guide-nav-label">← PREV</div>
         <div class="guide-nav-title">${prev.title}</div></a>` : '<div></div>'}
       ${next ? `<a class="guide-nav-link next" href="/guide/${next.slug}" onclick="event.preventDefault();navigate('/guide/${next.slug}')">
-        <div class="guide-nav-label">Next →</div>
+        <div class="guide-nav-label">NEXT →</div>
         <div class="guide-nav-title">${next.title}</div></a>` : '<div></div>'}
     </div>`;
 }
@@ -233,11 +253,12 @@ function addCopyButtons() {
     wrapper.appendChild(pre);
     const btn = document.createElement('button');
     btn.className = 'copy-btn';
-    btn.textContent = 'Copy';
+    btn.textContent = 'copy';
     btn.onclick = () => {
       navigator.clipboard.writeText(pre.querySelector('code')?.textContent || pre.textContent).then(() => {
-        btn.textContent = 'Copied!'; btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+        btn.textContent = 'copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1500);
       });
     };
     wrapper.appendChild(btn);
@@ -249,17 +270,25 @@ function setupSearch() {
   const input = document.getElementById('search-input');
   const results = document.getElementById('search-results');
   const overlay = document.getElementById('search-overlay');
+
   input.addEventListener('input', () => {
     const q = input.value.trim().toLowerCase();
     if (q.length < 2) { results.classList.remove('open'); overlay.classList.remove('open'); return; }
-    const matches = ALL_GUIDES.filter(g => g.title.toLowerCase().includes(q) || (g.preview && g.preview.toLowerCase().includes(q))).slice(0, 10);
+    const matches = ALL_GUIDES.filter(g =>
+      g.title.toLowerCase().includes(q) || (g.preview && g.preview.toLowerCase().includes(q))
+    ).slice(0, 10);
     results.innerHTML = matches.length === 0
-      ? `<div class="search-no-results">No results for "${q}"</div>`
-      : matches.map(g => `<a class="search-result-item" href="/guide/${g.slug}" onclick="event.preventDefault();closeSearch();navigate('/guide/${g.slug}')">
-          <div class="search-result-title">${highlight(g.title, q)}</div>
-          <div class="search-result-section">${g.parent}</div></a>`).join('');
-    results.classList.add('open'); overlay.classList.add('open');
+      ? `<div class="search-no-results">no results for "${q}"</div>`
+      : matches.map(g => `
+          <a class="search-result-item" href="/guide/${g.slug}"
+             onclick="event.preventDefault();closeSearch();navigate('/guide/${g.slug}')">
+            <div class="search-result-title">${highlight(g.title, q)}</div>
+            <div class="search-result-section">${g.parent.toLowerCase()}</div>
+          </a>`).join('');
+    results.classList.add('open');
+    overlay.classList.add('open');
   });
+
   input.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); });
   overlay.addEventListener('click', closeSearch);
   document.addEventListener('keydown', e => {
@@ -268,7 +297,8 @@ function setupSearch() {
 }
 
 function highlight(text, q) {
-  return text.replace(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'), '<mark style="background:#fef08a;border-radius:2px;padding:0 1px">$1</mark>');
+  return text.replace(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'),
+    '<mark style="background:rgba(0,255,135,0.2);color:var(--accent);border-radius:2px">$1</mark>');
 }
 
 function closeSearch() {

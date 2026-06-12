@@ -5,72 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OS & Installation Guides</title>
   <meta name="description" content="Practical guides for problems that are hard to find solutions for online.">
-  <link rel="stylesheet" href="css/style.css">
-  <style>
-    /* Inline syntax highlighting for code */
-    .codehilite, .highlight { background: transparent !important; }
-    pre .kn, pre .k { color: #7c3aed; }
-    pre .s, pre .s1, pre .s2 { color: #059669; }
-    pre .c, pre .c1 { color: #9ca3af; font-style: italic; }
-    pre .n { color: #111827; }
-    pre .o { color: #dc2626; }
-  </style>
+  <meta name="theme-color" content="#0a0a0a">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="site-header">
-  <button class="menu-toggle" id="menu-toggle" aria-label="Menu">☰</button>
+  <button class="menu-toggle" id="menu-toggle">☰</button>
 
-  <a class="header-logo" href="/" onclick="event.preventDefault(); navigate('/')"
-    <div class="header-logo-icon">OS</div>
-    <span>OS & Installation Guides</span>
+  <a class="header-logo" href="/" onclick="event.preventDefault(); navigate('/')">
+    <span class="header-logo-prefix">~/</span>guides
   </a>
 
   <div class="header-search">
     <span class="header-search-icon">⌕</span>
-    <input type="search" id="search-input" placeholder="Search guides… (⌘K)" autocomplete="off" spellcheck="false">
+    <input type="search" id="search-input" placeholder="search guides... (⌘K)" autocomplete="off" spellcheck="false">
   </div>
 
-  <a class="header-github" href="https://github.com/eliekh05/guides" target="_blank" rel="noopener">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
-    </svg>
-    <span>GitHub</span>
-  </a>
+  <div class="header-right">
+    <span class="header-prompt">247 guides</span>
+    <a class="header-github" href="https://github.com/eliekh05/guides" target="_blank" rel="noopener">github ↗</a>
+  </div>
 </header>
 
-<!-- SIDEBAR OVERLAY (mobile) -->
 <div id="sidebar-overlay" class="sidebar-overlay"></div>
-
-<!-- SEARCH OVERLAY + RESULTS -->
 <div id="search-overlay" class="search-overlay"></div>
 <div id="search-results" class="search-results"></div>
 
-<!-- LAYOUT -->
 <div class="layout">
-  <!-- SIDEBAR -->
-  <nav class="sidebar" id="sidebar">
-    <!-- Built by JS -->
-  </nav>
-
-  <!-- MAIN -->
+  <nav class="sidebar" id="sidebar"></nav>
   <main class="main">
-    <div class="content-wrapper">
-      <div class="content" id="main-content">
-        <!-- Loaded by JS -->
-      </div>
-      <aside class="page-toc" id="page-toc">
-        <!-- Built by JS -->
-      </aside>
-    </div>
+    <div class="content" id="main-content"></div>
   </main>
 </div>
 
-<!-- DATA -->
-<script src="js/guides-data.js"></script>
-<!-- APP -->
-<script src="js/app.js"></script>
-
+<script src="/js/guides-data.js"></script>
+<script src="/js/app.js"></script>
 </body>
 </html>

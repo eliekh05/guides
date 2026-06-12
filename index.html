@@ -11,18 +11,7 @@
     html, body { height: 100%; overflow: hidden; background: #0a0a0a; }
     body { display: flex; flex-direction: column; }
 
-    .titlebar {
-      display: flex; align-items: center; gap: 8px;
-      padding: 9px 14px;
-      background: #0d0d0d;
-      border-bottom: 1px solid #1a1a1a;
-      flex-shrink: 0;
-    }
-    .dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
-    .titlebar-text { font-size: 11px; color: #2e2e2e; margin-left: 6px; letter-spacing: 0.05em;
-      font-family: 'JetBrains Mono','Fira Code','SF Mono',Consolas,monospace; }
-
-    #terminal-container {
+#terminal-container {
       flex: 1;
       overflow: hidden;
       padding: 6px 4px 4px 4px;
@@ -35,13 +24,6 @@
   </style>
 </head>
 <body>
-
-<div class="titlebar">
-  <div class="dot" style="background:#ff5f57"></div>
-  <div class="dot" style="background:#ffbd2e"></div>
-  <div class="dot" style="background:#28c840"></div>
-  <span class="titlebar-text">guides — bash — ~/guides</span>
-</div>
 
 <div id="terminal-container"></div>
 
@@ -157,15 +139,20 @@ function htmlToAnsi(html) {
       case 'code':
         if (node.closest && node.closest('pre')) return children;
         return g(C.green, children);
-      case 'pre': return '\r\n' + g(C.dim, '┌─────────────────────────────────────\r\n') +
-                         children.split('\n').map(l => g(C.dim,'│') + ' ' + g(C.bCyan, l)).join('\r\n') +
-                         '\r\n' + g(C.dim,'└─────────────────────────────────────') + '\r\n\r\n';
+      case 'pre': return '\r\n' + children.split('\n').map(l => g(C.dim,'  ') + g(C.bCyan, l)).join('\r\n') + '\r\n';
       case 'strong': case 'b': return C.bold + children + C.reset;
       case 'em': case 'i': return children;
       case 'blockquote': return g(C.dim, '  ▌ ' + children.trim()) + '\r\n';
       case 'br': return '\r\n';
       case 'hr': return g(C.dim, '─'.repeat(40)) + '\r\n';
-      case 'a':  return g(C.cyan, children);
+      case 'a': {
+        const href = node.getAttribute && node.getAttribute('href');
+        if (href && href.startsWith('magnet:')) {
+          // Magnet links — render as copyable text with indicator
+          return g(C.yellow, '[magnet] ') + g(C.cyan, href);
+        }
+        return g(C.cyan, children);
+      }
       case 'th': return g(C.dim, children.toUpperCase().padEnd(20));
       case 'td': return children.padEnd(20);
       case 'tr': return children + '\r\n';
@@ -216,28 +203,23 @@ async function catGuide(slug) {
   if (!guide) { writeError(`cat: ${slug}.html: no such file`); return; }
 
   busy = true;
-  term.clear();
-  echoCmd('cat ' + slug + '.html');
-  crlf();
-  write(g(C.dim, 'loading...'));
 
   try {
     const resp = await fetch(`/guides/${slug}.html`);
     if (!resp.ok) throw new Error();
     const raw  = await resp.text();
-    const html = raw.split('\n').slice(1).join('\n');
+    const html = raw.split('\n').slice(2).join('\n');
+    const text = htmlToAnsi(html);
 
-    term.clear();
+    // Clear fully, then write from top
+    term.reset();
     echoCmd('cat ' + slug + '.html');
     crlf();
-
-    const text = htmlToAnsi(html);
-    // Write in chunks to avoid blocking
-    const lines = text.split('\r\n');
-    lines.forEach(line => writeln(line));
-
-    term.scrollToTop();
+    text.split('\r\n').forEach(line => writeln(line));
+    // Force scroll to very top after all content written
+    requestAnimationFrame(() => term.scrollToTop());
   } catch(e) {
+    term.reset();
     writeError(`cat: ${slug}.html: failed to load`);
   } finally {
     busy = false;

@@ -271,7 +271,7 @@ function runCmd(raw) {
       catGuide(arg); return; // catGuide writes its own prompt
 
     case 'clear': case 'cls':
-      term.clear(); break;
+      term.reset(); writePrompt(); inputBuf = ''; return;
 
     case 'help': case '?':
       echoCmd(cmd); cmdHelp(); break;
@@ -285,7 +285,7 @@ function runCmd(raw) {
 
     case 'pwd':
       echoCmd(cmd);
-      writeln(cwd === '/' ? '~/guides' : `~/guides/${cwd.slice(1)}`);
+      writeln(cwd === '/' ? '/' : '/' + cwd.slice(1));
       crlf(); break;
 
     case 'exit': case 'quit':

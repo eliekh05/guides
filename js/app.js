@@ -34,7 +34,6 @@ function buildSidebar() {
     const div = document.createElement('div');
     div.className = 'sidebar-section';
     div.dataset.sectionId = section.id;
-    div.classList.add('open');
     div.innerHTML = `
       <div class="sidebar-section-header active" onclick="toggleSection('${section.id}')">
         <span class="sidebar-section-label">
@@ -53,6 +52,7 @@ function buildSidebar() {
           >${g.title}</a>
         `).join('')}
       </div>`;
+    if (section.guides.length > 0) div.classList.add('open');
     sidebar.appendChild(div);
   });
 }
@@ -206,7 +206,7 @@ async function showGuide(slug) {
         <span>/</span>
         ${sectionPath}
         <span>/</span>
-        <span style="color:var(--text-muted)">${slug}</span>
+        <span style="color:var(--text-muted)">${guide.title}</span>
       </div>
       <div class="guide-content" id="guide-body">${html}</div>
       <div id="guide-nav-placeholder"></div>

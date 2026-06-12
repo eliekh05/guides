@@ -34,8 +34,9 @@ function buildSidebar() {
     const div = document.createElement('div');
     div.className = 'sidebar-section';
     div.dataset.sectionId = section.id;
+    div.classList.add('open');
     div.innerHTML = `
-      <div class="sidebar-section-header" onclick="toggleSection('${section.id}')">
+      <div class="sidebar-section-header active" onclick="toggleSection('${section.id}')">
         <span class="sidebar-section-label">
           <span class="sidebar-dir-prefix">./</span>${section.title.toLowerCase().replace(/ /g, '-')}
         </span>

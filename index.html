@@ -10,7 +10,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; overflow: hidden; background: #0a0a0a; }
     body { display: flex; flex-direction: column; }
-    #terminal-container { flex: 1; overflow: hidden; padding: 6px 4px 4px 4px; }
+    #terminal-container { flex: 1; overflow: hidden; padding: 6px 6px 6px 6px; }
     .xterm { height: 100%; }
     .xterm-viewport { background: #0a0a0a !important; }
   </style>
@@ -50,36 +50,37 @@ term.open(document.getElementById('terminal-container'));
 fitAddon.fit();
 window.addEventListener('resize', () => fitAddon.fit());
 
-// ── ANSI helpers ──────────────────────────────────────────────────────────
+// ── ANSI ─────────────────────────────────────────────────────────────────
 const R = '\x1b[0m';
-const DIM = '\x1b[2m', BOLD = '\x1b[1m';
-const GREEN = '\x1b[32m', CYAN = '\x1b[36m', BCYAN = '\x1b[96m';
-const RED = '\x1b[31m', YELLOW = '\x1b[33m', WHITE = '\x1b[37m';
+const DIM='\x1b[2m', BOLD='\x1b[1m';
+const GREEN='\x1b[32m', CYAN='\x1b[36m', BCYAN='\x1b[96m';
+const RED='\x1b[31m', YELLOW='\x1b[33m', WHITE='\x1b[37m';
 
-const dim   = s => DIM  + s + R;
-const bold  = s => BOLD + s + R;
+const dim   = s => DIM   + s + R;
+const bold  = s => BOLD  + s + R;
 const green = s => GREEN + s + R;
 const cyan  = s => CYAN  + s + R;
 const bcyan = s => BCYAN + s + R;
 const red   = s => RED   + s + R;
 const yellow= s => YELLOW+ s + R;
+const white = s => WHITE + s + R;
 
-const wl  = s => term.writeln(s);
-const w   = s => term.write(s);
-const nl  = ()=> term.writeln('');
+const wl = s => term.writeln(s ?? '');
+const w  = s => term.write(s ?? '');
+const nl = () => term.writeln('');
 
 // ── State ─────────────────────────────────────────────────────────────────
-let cwd     = '/';
+let cwd      = '/';
 let inputBuf = '';
-let cmdHistory = [];
-let histIdx = -1;
-let busy = false;
+let cmdHist  = [];
+let histIdx  = -1;
+let busy     = false;
 
 // ── Prompt ────────────────────────────────────────────────────────────────
 function promptStr() {
   return green(cwd === '/' ? '$' : cwd.slice(1) + ' $') + ' ';
 }
-function writePrompt() { w(promptStr()); }
+function writePrompt()   { w(promptStr()); }
 function writeError(msg) { wl(red(msg)); }
 
 // ── HTML → ANSI ───────────────────────────────────────────────────────────
@@ -91,7 +92,6 @@ function htmlToAnsi(html) {
     if (node.nodeType === 3) return node.textContent;
     const tag = (node.tagName || '').toLowerCase();
     const ch  = Array.from(node.childNodes).map(walk).join('');
-
     switch(tag) {
       case 'h1': return '\r\n' + bold(WHITE + ch + R) + '\r\n' + dim('─'.repeat(Math.min(ch.length, 56))) + '\r\n';
       case 'h2': return '\r\n' + green(ch.toUpperCase()) + '\r\n';
@@ -138,7 +138,6 @@ function cmdLs() {
   } else {
     const sec = currentSection();
     if (!sec) { writeError('ls: no such section'); return; }
-    // Show guide titles, not slugs
     sec.guides.forEach(g => {
       wl(dim(g.slug.padEnd(52)) + ' ' + g.title);
     });
@@ -159,7 +158,6 @@ function cmdCd(arg) {
 }
 
 async function catGuide(slug) {
-  // Accept slug or title match
   let guide = ALL_GUIDES.find(g => g.slug === slug);
   if (!guide) { writeError(`cat: ${slug}: no such guide`); return; }
 
@@ -188,13 +186,13 @@ async function catGuide(slug) {
 function cmdHelp() {
   nl();
   [
-    ['ls',              'list sections or guides'],
-    ['cd <section>',    'enter a section — e.g. cd macos'],
-    ['cd ..',           'back to root'],
-    ['cat <slug>',      'open a guide'],
-    ['github',          'open the GitHub repo'],
-    ['clear',           'clear screen'],
-    ['help',            'show this'],
+    ['ls',             'list sections or guides in current section'],
+    ['cd <section>',   'enter a section — e.g. cd macos'],
+    ['cd ..',          'back to root'],
+    ['cat <slug>',     'open a guide'],
+    ['github',         'open the GitHub repo'],
+    ['clear',          'clear screen'],
+    ['help',           'show this message'],
   ].forEach(([cmd, desc]) => wl(green(cmd.padEnd(20)) + dim(desc)));
   nl();
 }
@@ -202,11 +200,11 @@ function cmdHelp() {
 // ── Dispatch ──────────────────────────────────────────────────────────────
 function runCmd(raw) {
   if (busy) return;
-  const cmd  = raw.trim();
+  const cmd = raw.trim();
   nl();
   if (!cmd) { writePrompt(); inputBuf = ''; return; }
 
-  cmdHistory.unshift(cmd);
+  cmdHist.unshift(cmd);
   histIdx = -1;
 
   const parts = cmd.split(/\s+/);
@@ -290,12 +288,12 @@ term.onData(e => {
   } else if (e === '\t') {
     tabComplete();
   } else if (e === '\x1b[A') {
-    if (histIdx < cmdHistory.length - 1) {
-      histIdx++; w('\b \b'.repeat(inputBuf.length)); w(cmdHistory[histIdx]); inputBuf = cmdHistory[histIdx];
+    if (histIdx < cmdHist.length - 1) {
+      histIdx++; w('\b \b'.repeat(inputBuf.length)); inputBuf = cmdHist[histIdx]; w(inputBuf);
     }
   } else if (e === '\x1b[B') {
     if (histIdx > 0) {
-      histIdx--; w('\b \b'.repeat(inputBuf.length)); w(cmdHistory[histIdx]); inputBuf = cmdHistory[histIdx];
+      histIdx--; w('\b \b'.repeat(inputBuf.length)); inputBuf = cmdHist[histIdx]; w(inputBuf);
     } else {
       w('\b \b'.repeat(inputBuf.length)); histIdx = -1; inputBuf = '';
     }
@@ -308,12 +306,37 @@ term.onData(e => {
   }
 });
 
-// ── Boot ──────────────────────────────────────────────────────────────────
+// ── Boot — .zprofile style ────────────────────────────────────────────────
+function typewriter(lines, i, cb) {
+  if (i >= lines.length) { cb && cb(); return; }
+  wl(lines[i]);
+  setTimeout(() => typewriter(lines, i + 1, cb), 38);
+}
+
 setTimeout(() => {
-  wl(green('$') + ' ' + cyan('guides --start'));
-  wl(dim(ALL_GUIDES.length + ' guides — type ls to browse · help for commands'));
-  nl();
-  writePrompt();
+  const banner = [
+    '',
+    dim('  ┌─────────────────────────────────────────────────────┐'),
+    dim('  │') + '                                                       ' + dim('│'),
+    dim('  │') + '    ' + bold(white('OS & Installation Guides'))                + '                     ' + dim('│'),
+    dim('  │') + '    ' + dim(ALL_GUIDES.length + ' guides across ' + SECTIONS.filter(s=>s.guides.length).length + ' sections')  + '                        ' + dim('│'),
+    dim('  │') + '                                                       ' + dim('│'),
+    dim('  │') + '    ' + dim('practical guides for problems that are')           + '           ' + dim('│'),
+    dim('  │') + '    ' + dim('hard to find solutions for online.')               + '           ' + dim('│'),
+    dim('  │') + '                                                       ' + dim('│'),
+    dim('  └─────────────────────────────────────────────────────┘'),
+    '',
+    '  ' + dim('last login: ' + new Date().toDateString().toLowerCase()),
+    '',
+    '  ' + dim('type ') + green('ls') + dim(' to browse sections') + dim('  ·  ') + green('help') + dim(' for all commands'),
+    '',
+  ];
+
+  typewriter(banner, 0, () => {
+    setTimeout(() => {
+      writePrompt();
+    }, 120);
+  });
 }, 100);
 </script>
 </body>

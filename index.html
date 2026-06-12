@@ -10,164 +10,123 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; overflow: hidden; background: #0a0a0a; }
     body { display: flex; flex-direction: column; }
-
-#terminal-container {
-      flex: 1;
-      overflow: hidden;
-      padding: 6px 4px 4px 4px;
-    }
-
-    /* Override xterm default background */
+    #terminal-container { flex: 1; overflow: hidden; padding: 6px 4px 4px 4px; }
     .xterm { height: 100%; }
     .xterm-viewport { background: #0a0a0a !important; }
-    .xterm-screen canvas { background: #0a0a0a !important; }
   </style>
 </head>
 <body>
-
 <div id="terminal-container"></div>
-
 <script src="/js/xterm/xterm.js"></script>
 <script src="/js/xterm/addon-fit.js"></script>
-  <script src="/js/xterm/addon-web-links.js"></script>
+<script src="/js/xterm/addon-web-links.js"></script>
 <script src="/js/guides-data.js"></script>
 <script>
-// ── Setup xterm ────────────────────────────────────────────────────────────
-
 const term = new Terminal({
-  fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', Consolas, monospace",
+  fontFamily: "'JetBrains Mono','Fira Code','Cascadia Code','SF Mono',Consolas,monospace",
   fontSize: 13,
   lineHeight: 1.5,
   cursorBlink: true,
   cursorStyle: 'block',
-  theme: {
-    background:   '#0a0a0a',
-    foreground:   '#e0e0e0',
-    cursor:       '#00cc66',
-    cursorAccent: '#0a0a0a',
-    black:        '#0a0a0a',
-    brightBlack:  '#333333',
-    white:        '#e0e0e0',
-    brightWhite:  '#f0f0f0',
-    green:        '#00cc66',
-    brightGreen:  '#00ff87',
-    cyan:         '#79d4f0',
-    brightCyan:   '#79d4f0',
-    red:          '#ff6b6b',
-    brightRed:    '#ff6b6b',
-    yellow:       '#ffd060',
-    blue:         '#79d4f0',
-    magenta:      '#c792ea',
-  },
-  allowTransparency: false,
   scrollback: 5000,
   convertEol: true,
+  theme: {
+    background:  '#0a0a0a', foreground:  '#e0e0e0',
+    cursor:      '#00cc66', cursorAccent:'#0a0a0a',
+    black:       '#0a0a0a', brightBlack: '#333',
+    white:       '#e0e0e0', brightWhite: '#f0f0f0',
+    green:       '#00cc66', brightGreen: '#00ff87',
+    cyan:        '#79d4f0', brightCyan:  '#79d4f0',
+    red:         '#ff6b6b', brightRed:   '#ff6b6b',
+    yellow:      '#ffd060', blue:        '#79d4f0',
+    magenta:     '#c792ea',
+  },
 });
 
 const fitAddon = new FitAddon.FitAddon();
-const webLinksAddon = new WebLinksAddon.WebLinksAddon();
 term.loadAddon(fitAddon);
-term.loadAddon(webLinksAddon);
+term.loadAddon(new WebLinksAddon.WebLinksAddon());
 term.open(document.getElementById('terminal-container'));
 fitAddon.fit();
-
 window.addEventListener('resize', () => fitAddon.fit());
 
-// ── Colors ─────────────────────────────────────────────────────────────────
-const C = {
-  reset:  '\x1b[0m',
-  green:  '\x1b[32m',
-  cyan:   '\x1b[36m',
-  bCyan:  '\x1b[96m',
-  red:    '\x1b[31m',
-  dim:    '\x1b[2m',
-  bold:   '\x1b[1m',
-  yellow: '\x1b[33m',
-  white:  '\x1b[37m',
-};
+// ── ANSI helpers ──────────────────────────────────────────────────────────
+const R = '\x1b[0m';
+const DIM = '\x1b[2m', BOLD = '\x1b[1m';
+const GREEN = '\x1b[32m', CYAN = '\x1b[36m', BCYAN = '\x1b[96m';
+const RED = '\x1b[31m', YELLOW = '\x1b[33m', WHITE = '\x1b[37m';
 
-function g(color, text) { return color + text + C.reset; }
+const dim   = s => DIM  + s + R;
+const bold  = s => BOLD + s + R;
+const green = s => GREEN + s + R;
+const cyan  = s => CYAN  + s + R;
+const bcyan = s => BCYAN + s + R;
+const red   = s => RED   + s + R;
+const yellow= s => YELLOW+ s + R;
 
-// ── State ──────────────────────────────────────────────────────────────────
+const wl  = s => term.writeln(s);
+const w   = s => term.write(s);
+const nl  = ()=> term.writeln('');
+
+// ── State ─────────────────────────────────────────────────────────────────
 let cwd     = '/';
 let inputBuf = '';
-let history  = [];
-let histIdx  = -1;
-let busy     = false;   // true while loading a guide
+let cmdHistory = [];
+let histIdx = -1;
+let busy = false;
 
-// ── Terminal write helpers ─────────────────────────────────────────────────
-function write(s)   { term.write(s); }
-function writeln(s) { term.writeln(s); }
-function crlf()     { term.writeln(''); }
-
+// ── Prompt ────────────────────────────────────────────────────────────────
 function promptStr() {
-  const path = cwd === '/' ? '~/guides' : `~/guides/${cwd.slice(1)}`;
-  return g(C.green, path + ' $') + ' ';
+  return green(cwd === '/' ? '$' : cwd.slice(1) + ' $') + ' ';
 }
+function writePrompt() { w(promptStr()); }
+function echoCmd(cmd)  { wl(promptStr() + cyan(cmd)); }
+function writeError(msg) { wl(red(msg)); }
 
-function writePrompt() {
-  write(promptStr());
-}
-
-function echoCmd(cmd) {
-  writeln(promptStr() + g(C.cyan, cmd));
-}
-
-function writeError(msg) {
-  writeln(g(C.red, msg));
-}
-
-// ── Strip HTML to plain text for xterm ────────────────────────────────────
+// ── HTML → ANSI ───────────────────────────────────────────────────────────
 function htmlToAnsi(html) {
-  // Create a DOM element to parse HTML
   const div = document.createElement('div');
   div.innerHTML = html;
 
-  function nodeToText(node) {
-    if (node.nodeType === 3) return node.textContent; // text node
-
-    const tag = node.tagName ? node.tagName.toLowerCase() : '';
-    const children = Array.from(node.childNodes).map(nodeToText).join('');
+  function walk(node) {
+    if (node.nodeType === 3) return node.textContent;
+    const tag = (node.tagName || '').toLowerCase();
+    const ch  = Array.from(node.childNodes).map(walk).join('');
 
     switch(tag) {
-      case 'h1': return '\r\n' + C.bold + C.white + children + C.reset + '\r\n' + '─'.repeat(Math.min(children.length, 60)) + '\r\n';
-      case 'h2': return '\r\n' + C.green + children.toUpperCase() + C.reset + '\r\n';
-      case 'h3': return '\r\n' + C.bold + children + C.reset + '\r\n';
-      case 'p':  return children + '\r\n';
-      case 'li': return '  · ' + children + '\r\n';
-      case 'ul': case 'ol': return children;
+      case 'h1': return '\r\n' + bold(WHITE + ch + R) + '\r\n' + dim('─'.repeat(Math.min(ch.length, 56))) + '\r\n';
+      case 'h2': return '\r\n' + green(ch.toUpperCase()) + '\r\n';
+      case 'h3': return '\r\n' + bold(ch) + '\r\n';
+      case 'p':  return ch + '\r\n';
+      case 'ul': case 'ol': return ch;
+      case 'li': return '  ' + dim('·') + ' ' + ch + '\r\n';
       case 'code':
-        if (node.closest && node.closest('pre')) return children;
-        return g(C.green, children);
-      case 'pre': return '\r\n' + children.split('\n').map(l => g(C.dim,'  ') + g(C.bCyan, l)).join('\r\n') + '\r\n';
-      case 'strong': case 'b': return C.bold + children + C.reset;
-      case 'em': case 'i': return children;
-      case 'blockquote': return g(C.dim, '  ▌ ' + children.trim()) + '\r\n';
-      case 'br': return '\r\n';
-      case 'hr': return g(C.dim, '─'.repeat(40)) + '\r\n';
+        return node.closest && node.closest('pre') ? ch : green(ch);
+      case 'pre':
+        return '\r\n' + ch.split('\n').map(l => '  ' + bcyan(l)).join('\r\n') + '\r\n';
+      case 'strong': case 'b': return bold(ch);
+      case 'em': case 'i':     return ch;
+      case 'blockquote': return dim('  | ' + ch.trim()) + '\r\n';
+      case 'br':  return '\r\n';
+      case 'hr':  return dim('─'.repeat(40)) + '\r\n';
       case 'a': {
         const href = node.getAttribute && node.getAttribute('href');
-        if (href && href.startsWith('magnet:')) {
-          // Magnet links — render as copyable text with indicator
-          return g(C.yellow, '[magnet] ') + g(C.cyan, href);
-        }
-        return g(C.cyan, children);
+        if (href && href.startsWith('magnet:')) return yellow('[magnet] ') + cyan(href);
+        return cyan(ch);
       }
-      case 'th': return g(C.dim, children.toUpperCase().padEnd(20));
-      case 'td': return children.padEnd(20);
-      case 'tr': return children + '\r\n';
-      case 'table': return '\r\n' + children + '\r\n';
-      case 'thead': return g(C.dim, children);
-      case 'tbody': return children;
-      default: return children;
+      case 'th':    return dim(ch.toUpperCase().padEnd(22));
+      case 'td':    return ch.padEnd(22);
+      case 'tr':    return ch + '\r\n';
+      case 'table': return '\r\n' + ch + '\r\n';
+      case 'thead': return dim(ch);
+      case 'tbody': return ch;
+      default: return ch;
     }
   }
-
-  return nodeToText(div);
+  return walk(div);
 }
 
-// ── Commands ───────────────────────────────────────────────────────────────
-
+// ── Commands ──────────────────────────────────────────────────────────────
 function currentSection() {
   return cwd === '/' ? null : SECTIONS.find(s => s.id === cwd.slice(1));
 }
@@ -175,12 +134,15 @@ function currentSection() {
 function cmdLs() {
   if (cwd === '/') {
     SECTIONS.filter(s => s.guides.length).forEach(s => {
-      writeln(g(C.cyan, s.id + '/') + g(C.dim, '  ' + s.guides.length));
+      wl(cyan(s.id + '/') + dim('  ' + s.guides.length));
     });
   } else {
     const sec = currentSection();
     if (!sec) { writeError('ls: no such section'); return; }
-    sec.guides.forEach(g2 => writeln(g2.slug + '.html'));
+    // Show guide titles, not slugs
+    sec.guides.forEach(g => {
+      wl(dim(g.slug.padEnd(52)) + ' ' + g.title);
+    });
   }
 }
 
@@ -193,66 +155,63 @@ function cmdCd(arg) {
   );
   if (!sec) { writeError(`cd: ${arg}: no such section`); return; }
   cwd = '/' + sec.id;
-  crlf();
+  nl();
   echoCmd('ls');
+  nl();
   cmdLs();
 }
 
 async function catGuide(slug) {
-  const guide = ALL_GUIDES.find(g2 => g2.slug === slug);
-  if (!guide) { writeError(`cat: ${slug}.html: no such file`); return; }
+  // Accept slug or title match
+  let guide = ALL_GUIDES.find(g => g.slug === slug);
+  if (!guide) { writeError(`cat: ${slug}: no such guide`); return; }
 
   busy = true;
-
   try {
-    const resp = await fetch(`/guides/${slug}.html`);
+    const resp = await fetch(`/guides/${guide.slug}.html`);
     if (!resp.ok) throw new Error();
     const raw  = await resp.text();
     const html = raw.split('\n').slice(2).join('\n');
     const text = htmlToAnsi(html);
 
-    // Clear fully, then write from top
     term.reset();
-    echoCmd('cat ' + slug + '.html');
-    crlf();
-    text.split('\r\n').forEach(line => writeln(line));
-    // Force scroll to very top after all content written
+    echoCmd('cat ' + guide.slug + '.html');
+    nl();
+    text.split('\r\n').forEach(line => wl(line));
     requestAnimationFrame(() => term.scrollToTop());
   } catch(e) {
     term.reset();
-    writeError(`cat: ${slug}.html: failed to load`);
+    writeError(`cat: failed to load ${guide.slug}.html`);
   } finally {
     busy = false;
-    crlf();
+    nl();
     writePrompt();
     inputBuf = '';
   }
 }
 
 function cmdHelp() {
-  const rows = [
-    ['ls',               'list sections or guides'],
-    ['cd <section>',     'enter a section'],
-    ['cd ..',            'back to root'],
-    ['cat <file>.html',  'open a guide'],
-    ['github',           'open GitHub repo'],
-    ['clear',            'clear screen'],
-    ['help',             'show this'],
-  ];
-  crlf();
-  rows.forEach(([cmd, desc]) => {
-    writeln(g(C.green, cmd.padEnd(22)) + g(C.dim, desc));
-  });
-  crlf();
+  nl();
+  [
+    ['ls',              'list sections or guides'],
+    ['cd <section>',    'enter a section — e.g. cd macos'],
+    ['cd ..',           'back to root'],
+    ['cat <slug>',      'open a guide'],
+    ['github',          'open the GitHub repo'],
+    ['clear',           'clear screen'],
+    ['help',            'show this'],
+  ].forEach(([cmd, desc]) => wl(green(cmd.padEnd(20)) + dim(desc)));
+  nl();
 }
 
+// ── Dispatch ──────────────────────────────────────────────────────────────
 function runCmd(raw) {
   if (busy) return;
   const cmd  = raw.trim();
-  crlf();
+  nl();
   if (!cmd) { writePrompt(); inputBuf = ''; return; }
 
-  history.unshift(cmd);
+  cmdHistory.unshift(cmd);
   histIdx = -1;
 
   const parts = cmd.split(/\s+/);
@@ -261,14 +220,14 @@ function runCmd(raw) {
 
   switch(verb) {
     case 'ls': case 'dir':
-      echoCmd(cmd); crlf(); cmdLs(); crlf(); break;
+      echoCmd(cmd); nl(); cmdLs(); break;
 
     case 'cd':
-      echoCmd(cmd); cmdCd(arg); crlf(); break;
+      echoCmd(cmd); cmdCd(arg); break;
 
     case 'cat': case 'open': case 'read':
-      if (!arg) { echoCmd(cmd); writeError('cat: missing filename'); crlf(); break; }
-      catGuide(arg); return; // catGuide writes its own prompt
+      if (!arg) { echoCmd(cmd); writeError('cat: missing filename'); break; }
+      catGuide(arg); return;
 
     case 'clear': case 'cls':
       term.reset(); writePrompt(); inputBuf = ''; return;
@@ -278,119 +237,94 @@ function runCmd(raw) {
 
     case 'github': case 'gh':
       echoCmd(cmd);
-      writeln(g(C.cyan, 'opening github.com/eliekh05/guides...'));
-      crlf();
+      wl(cyan('opening github.com/eliekh05/guides...'));
       setTimeout(() => window.open('https://github.com/eliekh05/guides', '_blank'), 300);
       break;
 
     case 'pwd':
       echoCmd(cmd);
-      writeln(cwd === '/' ? '/' : '/' + cwd.slice(1));
-      crlf(); break;
+      wl(cwd === '/' ? '/' : '/' + cwd.slice(1));
+      break;
 
     case 'exit': case 'quit':
-      echoCmd(cmd);
-      writeln(g(C.dim, 'there is no exit.'));
-      crlf(); break;
+      echoCmd(cmd); wl(dim('there is no exit.')); break;
 
     default:
       echoCmd(cmd);
       writeError(`${verb}: command not found  (try: ls  cd  cat  help)`);
-      crlf(); break;
+      break;
   }
 
+  nl();
   writePrompt();
   inputBuf = '';
 }
 
-// ── Tab completion ─────────────────────────────────────────────────────────
+// ── Tab completion ────────────────────────────────────────────────────────
 function tabComplete() {
   const parts    = inputBuf.trim().split(/\s+/);
   const verb     = parts[0].toLowerCase();
   const fragment = (parts[parts.length - 1] || '').toLowerCase();
-
-  let completed = null;
+  let completed  = null;
 
   if (verb === 'cd' && parts.length >= 2) {
     const m = SECTIONS.find(s => s.id.startsWith(fragment));
     if (m) completed = 'cd ' + m.id;
   } else if ((verb === 'cat' || verb === 'open') && parts.length >= 2) {
     const pool = currentSection()?.guides || ALL_GUIDES;
-    const m    = pool.find(g2 => g2.slug.startsWith(fragment));
-    if (m) completed = verb + ' ' + m.slug + '.html';
+    const m    = pool.find(g => g.slug.startsWith(fragment));
+    if (m) completed = verb + ' ' + m.slug;
   } else if (parts.length === 1) {
-    const verbs = ['ls','cd','cat','clear','help','pwd','github'];
-    const m = verbs.find(v => v.startsWith(fragment));
+    const m = ['ls','cd','cat','clear','help','pwd','github'].find(v => v.startsWith(fragment));
     if (m) completed = m;
   }
 
   if (completed && completed !== inputBuf) {
-    // Clear current input and write completion
-    write('\b \b'.repeat(inputBuf.length));
-    write(completed);
+    w('\b \b'.repeat(inputBuf.length));
+    w(completed);
     inputBuf = completed;
   }
 }
 
-// ── Input handling via xterm onData ───────────────────────────────────────
+// ── Input ─────────────────────────────────────────────────────────────────
 term.onData(e => {
   if (busy) return;
-
-  if (e === '\r') {                          // Enter
+  if (e === '\r') {
     runCmd(inputBuf);
-  } else if (e === '\x7f') {                 // Backspace
-    if (inputBuf.length > 0) {
-      inputBuf = inputBuf.slice(0, -1);
-      write('\b \b');
-    }
-  } else if (e === '\t') {                   // Tab
+  } else if (e === '\x7f') {
+    if (inputBuf.length > 0) { inputBuf = inputBuf.slice(0,-1); w('\b \b'); }
+  } else if (e === '\t') {
     tabComplete();
-  } else if (e === '\x1b[A') {              // Arrow up
-    if (histIdx < history.length - 1) {
-      histIdx++;
-      write('\b \b'.repeat(inputBuf.length));
-      inputBuf = history[histIdx];
-      write(inputBuf);
+  } else if (e === '\x1b[A') {
+    if (histIdx < cmdHistory.length - 1) {
+      histIdx++; w('\b \b'.repeat(inputBuf.length)); w(cmdHistory[histIdx]); inputBuf = cmdHistory[histIdx];
     }
-  } else if (e === '\x1b[B') {              // Arrow down
+  } else if (e === '\x1b[B') {
     if (histIdx > 0) {
-      histIdx--;
-      write('\b \b'.repeat(inputBuf.length));
-      inputBuf = history[histIdx];
-      write(inputBuf);
+      histIdx--; w('\b \b'.repeat(inputBuf.length)); w(cmdHistory[histIdx]); inputBuf = cmdHistory[histIdx];
     } else {
-      write('\b \b'.repeat(inputBuf.length));
-      histIdx  = -1;
-      inputBuf = '';
+      w('\b \b'.repeat(inputBuf.length)); histIdx = -1; inputBuf = '';
     }
-  } else if (e === '\x01') {                 // Ctrl+A — start of line
-    write('\b \b'.repeat(inputBuf.length));
-    inputBuf = '';
-  } else if (e === '\x0c') {                 // Ctrl+L — clear
-    term.clear();
-    writePrompt();
-    inputBuf = '';
-  } else if (e >= ' ' || e === '\x1b') {    // Printable chars
-    if (e.length === 1 && e >= ' ') {
-      inputBuf += e;
-      write(e);
-    }
+  } else if (e === '\x01') {
+    w('\b \b'.repeat(inputBuf.length)); inputBuf = '';
+  } else if (e === '\x0c') {
+    term.reset(); writePrompt(); inputBuf = '';
+  } else if (e.length === 1 && e >= ' ') {
+    inputBuf += e; w(e);
   }
 });
 
-// ── Boot ───────────────────────────────────────────────────────────────────
-(function boot() {
-  setTimeout(() => {
-    writeln(g(C.green, '$') + ' ' + g(C.cyan, 'guides --start'));
-    writeln(g(C.dim, ALL_GUIDES.length + ' guides  —  type ') + g(C.green, 'ls') + g(C.dim, ' to browse  ·  ') + g(C.green, 'help') + g(C.dim, ' for commands'));
-    crlf();
-    echoCmd('ls');
-    crlf();
-    cmdLs();
-    crlf();
-    writePrompt();
-  }, 100);
-})();
+// ── Boot ──────────────────────────────────────────────────────────────────
+setTimeout(() => {
+  wl(green('$') + ' ' + cyan('guides --start'));
+  wl(dim(ALL_GUIDES.length + ' guides — ls to browse · help for commands'));
+  nl();
+  echoCmd('ls');
+  nl();
+  cmdLs();
+  nl();
+  writePrompt();
+}, 100);
 </script>
 </body>
 </html>

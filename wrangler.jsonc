@@ -3,9 +3,14 @@
   "compatibility_date": "2026-06-12",
   "workers_dev": true,
   "preview_urls": false,
+  "main": "worker.js",
   "assets": {
     "directory": "./",
-    "not_found_handling": "single-page-application"
+    "not_found_handling": "single-page-application",
+    "binding": "ASSETS"
+  },
+  "ai": {
+    "binding": "AI"
   },
   "observability": {
     "enabled": false,

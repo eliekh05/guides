@@ -1,0 +1,6 @@
+.git
+.github
+*.md
+build.js
+convert.sh
+node_modules

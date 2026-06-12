@@ -1,4 +1,4 @@
-DATA:installation:Install Windows 11 on Unsupported PC (No TPM, No Secure Boot):Installation Guides
+<!-- installation:Installation Guides -->
 <h1>Install Windows 11 on Unsupported PC (No TPM, No Secure Boot)</h1>
 <p>Windows 11 requires TPM 2.0, Secure Boot, and a supported CPU. If your PC does not meet these requirements, Microsoft's installer will block you. This guide shows you how to bypass those checks and install Windows 11 anyway — using only free, official tools.</p>
 <blockquote>
@@ -30,14 +30,14 @@ DATA:installation:Install Windows 11 on Unsupported PC (No TPM, No Secure Boot):
 <p>Rufus is a free, open-source tool that creates a bootable USB and removes the TPM, Secure Boot, and RAM checks automatically. Verified working on Windows 11 25H2.</p>
 <h3>Step 1 — Download the Windows 11 ISO</h3>
 <ol>
-<li>Go to <a href="https://www.microsoft.com/software-download/windows11">microsoft.com/software-download/windows11</a>.</li>
+<li>Go to <a href="https://www.microsoft.com/software-download/windows11">https://www.microsoft.com/software-download/windows11</a>.</li>
 <li>Scroll to <strong>Download Windows 11 Disk Image (ISO) for x64 devices</strong>.</li>
 <li>Select <strong>Windows 11 (multi-edition ISO for x64 devices)</strong> and click <strong>Download Now</strong>.</li>
 <li>Choose your language and download the ISO. It is about 5–6 GB.</li>
 </ol>
 <h3>Step 2 — Download Rufus</h3>
 <ol>
-<li>Go to <a href="https://rufus.ie">rufus.ie</a> and download the latest version.</li>
+<li>Go to <a href="https://rufus.ie">https://rufus.ie</a> and download the latest version.</li>
 <li>Rufus is portable — no installation needed. Just run the <code>.exe</code> file.</li>
 </ol>
 <h3>Step 3 — Create the Bypassed USB</h3>
@@ -48,8 +48,8 @@ DATA:installation:Install Windows 11 on Unsupported PC (No TPM, No Secure Boot):
 <li>Under <strong>Boot selection</strong>, click <strong>SELECT</strong> and choose the Windows 11 ISO you downloaded.</li>
 <li>Click <strong>START</strong>.</li>
 <li>Rufus will show a dialog: <strong>"Windows User Experience"</strong>. Check the following boxes:</li>
-<li>✅ <strong>Remove requirement for 4GB+ RAM, Secure Boot and TPM 2.0</strong></li>
-<li>✅ <strong>Remove requirement for an online Microsoft account</strong> <em>(optional but recommended)</em></li>
+<li> <strong>Remove requirement for 4GB+ RAM, Secure Boot and TPM 2.0</strong></li>
+<li> <strong>Remove requirement for an online Microsoft account</strong> <em>(optional but recommended)</em></li>
 <li>Click <strong>OK</strong> and wait for Rufus to finish (5–10 minutes).</li>
 </ol>
 <h3>Step 4 — Boot from the USB and Install</h3>
@@ -65,7 +65,7 @@ DATA:installation:Install Windows 11 on Unsupported PC (No TPM, No Secure Boot):
 <h2>Method 2 — Registry Edit During Install (No Extra Tools)</h2>
 <p>Use this if you cannot run Rufus, or if you already have a standard Windows 11 USB and do not want to recreate it.</p>
 <h3>Step 1 — Create a Standard Windows 11 USB</h3>
-<p>Use Microsoft's Media Creation Tool from <a href="https://www.microsoft.com/software-download/windows11">microsoft.com/software-download/windows11</a> to create a standard bootable USB.</p>
+<p>Use Microsoft's Media Creation Tool from <a href="https://www.microsoft.com/software-download/windows11">https://www.microsoft.com/software-download/windows11</a> to create a standard bootable USB.</p>
 <h3>Step 2 — Boot from the USB</h3>
 <ol>
 <li>Restart and boot from the USB drive.</li>
@@ -131,7 +131,7 @@ DATA:installation:Install Windows 11 on Unsupported PC (No TPM, No Secure Boot):
 <hr />
 <h2>CPU Hard Limit (Cannot Be Bypassed)</h2>
 <p>Starting with Windows 11 24H2, CPUs that do not support <strong>SSE 4.2 instructions</strong> cannot run Windows 11 — even with a bypass. This affects CPUs older than approximately 2008. If your CPU is that old, Windows 11 is not an option.</p>
-<p>To check if your CPU supports SSE 4.2, search your exact CPU model on <a href="https://www.cpu-world.com">cpu-world.com</a> or <a href="https://ark.intel.com">ark.intel.com</a>.</p>
+<p>To check if your CPU supports SSE 4.2, search your exact CPU model on <a href="https://www.cpu-world.com">https://www.cpu-world.com</a> or <a href="https://ark.intel.com">https://ark.intel.com</a>.</p>
 <hr />
 <h2>What You Lose Without TPM and Secure Boot</h2>
 <table>

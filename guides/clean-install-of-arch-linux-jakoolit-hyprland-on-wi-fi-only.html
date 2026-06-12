@@ -1,25 +1,25 @@
-DATA:installation:Clean Install Arch Linux + Hyprland (Wi-Fi Only):Installation Guides
+<!-- installation:Installation Guides -->
 <h1>Clean Install Arch Linux + Hyprland (Wi-Fi Only)</h1>
 <blockquote>
-<p>⚠️ <strong>Note:</strong> Arch Linux 2026 versions the <code>archinstall</code> menus have changed and can be unpredictable.
+<p> <strong>Note:</strong> Arch Linux 2026 versions the <code>archinstall</code> menus have changed and can be unpredictable.
 This guide keeps the original installation instructions for stability and accuracy.
 For step-by-step prompts, follow the installer menus carefully — options may differ slightly from newer releases.</p>
-<p>💡 <strong>Tip:</strong> If you want to follow this guide exactly as written, you can download the same Arch Linux version used here: <strong>archlinux-2025.11.01</strong> download link in requirements part.</p>
+<p> <strong>Tip:</strong> If you want to follow this guide exactly as written, you can download the same Arch Linux version used here: <strong>archlinux-2025.11.01</strong> download link in requirements part.</p>
 </blockquote>
 <p>This guide walks you through installing <strong>Arch Linux</strong> on bare metal and setting up <strong>Hyprland</strong> with Wi-Fi.
-All instructions use <strong>official Arch Linux tools</strong> and the <strong>Hyprland automated installer</strong> by <a href="https://github.com/JaKooLit/Arch-Hyprland">JaKooLit</a> and <a href="https://github.com/LinuxBeginnings/Arch-Hyprland">LinuxBeginnings</a>.</p>
-<h2>🧰 Requirements</h2>
+All instructions use <strong>official Arch Linux tools</strong> and the <strong>Hyprland automated installer</strong> by <a href="https://github.com/JaKooLit/Arch-Hyprland">https://github.com/JaKooLit/Arch-Hyprland</a> and <a href="https://github.com/LinuxBeginnings/Arch-Hyprland">https://github.com/LinuxBeginnings/Arch-Hyprland</a>.</p>
+<h2> Requirements</h2>
 <ul>
 <li><strong>Wi-Fi connection</strong> (recommended)</li>
-<li><strong>Arch Linux ISO:</strong> <a href="https://archlinux.org/releng/releases/2025.11.01/torrent/">Torrent Download</a> or
+<li><strong>Arch Linux ISO:</strong> <a href="https://archlinux.org/releng/releases/2025.11.01/torrent/">https://archlinux.org/releng/releases/2025.11.01/torrent/</a> or
   <code>magnet:?xt=urn:btih:d4487f489d4ee786f99bcdeeb8d3f226694ea27f&amp;dn=archlinux-2025.11.01-x86_64.iso</code></li>
-<li><strong>Torrent client:</strong> <a href="https://freedownloadmanager.org">Free Download Manager</a> or any torrent/magnet client</li>
+<li><strong>Torrent client:</strong> <a href="https://freedownloadmanager.org">https://freedownloadmanager.org</a> or any torrent/magnet client</li>
 <li><strong>Hyprland installer:</strong> <a href="https://github.com/JaKooLit/Arch-Hyprland">https://github.com/JaKooLit/Arch-Hyprland</a></li>
 <li><strong>Alternate Hyprland installer:</strong> <a href="https://github.com/LinuxBeginnings/Arch-Hyprland">https://github.com/LinuxBeginnings/Arch-Hyprland</a></li>
 <li><strong>Balena Etcher:</strong> <a href="https://etcher.balena.io/#download-etcher">https://etcher.balena.io/#download-etcher</a></li>
 <li><strong>USB drive:</strong> at least <strong>16 GB</strong></li>
 </ul>
-<h2>🔧 Prepare the Arch Linux USB</h2>
+<h2> Prepare the Arch Linux USB</h2>
 <p>You can create the bootable USB on <strong>Windows</strong>, <strong>macOS</strong>, or <strong>Linux</strong>:</p>
 <ol>
 <li>Download the Arch Linux ISO using your torrent client.</li>
@@ -34,14 +34,14 @@ All instructions use <strong>official Arch Linux tools</strong> and the <strong>
 <li>On <strong>Linux</strong>, enter your sudo password.</li>
 </ol>
 <p>After flashing, your USB is ready to boot.</p>
-<h2>💻 Boot from USB</h2>
+<h2> Boot from USB</h2>
 <ol>
 <li>Insert the USB drive into your target computer.</li>
 <li>Power it on and enter the <strong>Boot Menu</strong> (key varies by manufacturer — often <code>F12</code>, <code>F9</code>, <code>ESC</code>, or <code>DEL</code>).</li>
 <li>Select your USB drive and press <strong>Enter</strong>.</li>
 <li>At the GRUB menu, choose the first option to boot into the live environment.</li>
 </ol>
-<h2>📶 Connect to Wi-Fi</h2>
+<h2> Connect to Wi-Fi</h2>
 <p>In the live shell, start the interactive Wi-Fi tool:</p>
 <pre><code><code>iwctl
 </code></code></pre>
@@ -63,7 +63,7 @@ exit
 # or use dhcpcd or another DHCP client that is installed
 </code></code></pre>
 
-<h2>⚙️ Install Arch Linux</h2>
+<h2> Install Arch Linux</h2>
 <p>Start the guided installer:</p>
 <pre><code><code>archinstall
 </code></code></pre>
@@ -152,7 +152,7 @@ exit
 </tbody>
 </table>
 <p>After verifying your selections, click <strong>Install</strong> and wait until the process completes.</p>
-<h2>🎨 Set Up Hyprland</h2>
+<h2> Set Up Hyprland</h2>
 <p>After rebooting and logging into your new Arch Linux installation, run:</p>
 <pre><code><code>sh &lt;(curl -L https://raw.githubusercontent.com/JaKooLit/Arch-Hyprland/main/auto-install.sh)
 </code></code></pre>
@@ -231,7 +231,7 @@ When you reach the <strong>package selection screen</strong>, choose the followi
 </tbody>
 </table>
 <blockquote>
-<p>💡 <strong>Tip:</strong> Press <strong>Space</strong> to select a package and <strong>Enter/Return</strong> to confirm when using the JaKooLit installer.
+<p> <strong>Tip:</strong> Press <strong>Space</strong> to select a package and <strong>Enter/Return</strong> to confirm when using the JaKooLit installer.
 The installer will display available packages — match them to the list above.</p>
 </blockquote>
 <p>During the process:</p>
@@ -240,6 +240,6 @@ The installer will display available packages — match them to the list above.<
 <li>For rainbow wallpapers → <strong>Choose “Yes”</strong></li>
 </ul>
 <p>After completion, reboot your system.</p>
-<h2>🎉 Congratulations!</h2>
+<h2> Congratulations!</h2>
 <p>You now have <strong>Hyprland</strong> running on a clean <strong>Arch Linux</strong> installation with <strong>Wi-Fi fully configured</strong>.
-Enjoy your lightweight, modern, and fully customizable Linux experience! 🚀</p>
+Enjoy your lightweight, modern, and fully customizable Linux experience! </p>

@@ -1,4 +1,4 @@
-DATA:installation:Run Windows 11 on Apple Silicon Mac for Free (M1 / M2 / M3 / M4):Installation Guides
+<!-- installation:Installation Guides -->
 <h1>Run Windows 11 on Apple Silicon Mac for Free (M1 / M2 / M3 / M4)</h1>
 <p>Boot Camp is gone on Apple Silicon Macs. You cannot install Windows natively or dual-boot it. The only supported path is <strong>virtualization</strong> — running Windows inside macOS as a virtual machine. This guide covers two completely free options: <strong>VMware Fusion</strong> (easiest, best performance) and <strong>UTM</strong> (free and open-source).</p>
 <blockquote>
@@ -48,7 +48,7 @@ DATA:installation:Run Windows 11 on Apple Silicon Mac for Free (M1 / M2 / M3 / M
 <p>VMware Fusion is now free for personal use after Broadcom acquired VMware. It supports DirectX 11 via Apple's Metal graphics API and delivers very good performance on all M-series Macs.</p>
 <h3>Step 1 — Register and Download VMware Fusion</h3>
 <ol>
-<li>Go to <a href="https://support.broadcom.com">support.broadcom.com</a>.</li>
+<li>Go to <a href="https://support.broadcom.com">https://support.broadcom.com</a>.</li>
 <li>Create a free account (required — there is no way around this).</li>
 <li>After logging in, go to <strong>My Downloads</strong>.</li>
 <li>Search for <strong>VMware Fusion</strong>.</li>
@@ -58,7 +58,7 @@ DATA:installation:Run Windows 11 on Apple Silicon Mac for Free (M1 / M2 / M3 / M
 <h3>Step 2 — Get the Windows 11 ARM ISO</h3>
 <p>Microsoft does not sell Windows 11 ARM directly to individuals, but it is available free through the <strong>Windows Insider Preview</strong> program.</p>
 <ol>
-<li>Go to <a href="https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewARM64">microsoft.com/en-us/software-download/windowsinsiderpreviewARM64</a>.</li>
+<li>Go to <a href="https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewARM64">https://www.microsoft.com/en-us/software-download/windowsinsiderpreviewARM64</a>.</li>
 <li>Sign in with a free Microsoft account.</li>
 <li>Join the <strong>Windows Insider Program</strong> if prompted — choose the <strong>Release Preview</strong> channel (most stable).</li>
 <li>Select <strong>Windows 11 Client ARM64 Insider Preview</strong> and download the ISO. It is about 5–6 GB.</li>
@@ -109,7 +109,7 @@ DATA:installation:Run Windows 11 on Apple Silicon Mac for Free (M1 / M2 / M3 / M
 <p>UTM is a free macOS app that wraps QEMU. It is a good option if you want entirely open-source software or prefer not to register with Broadcom. Performance is slightly lower than VMware Fusion, and there is no 3D/DirectX acceleration.</p>
 <h3>Step 1 — Download UTM</h3>
 <ul>
-<li><strong>Free version:</strong> <a href="https://mac.getutm.app">mac.getutm.app</a> — download and drag to Applications.</li>
+<li><strong>Free version:</strong> <a href="https://mac.getutm.app">https://mac.getutm.app</a> — download and drag to Applications.</li>
 <li><strong>Mac App Store version:</strong> $9.99 — same app, gets automatic updates.</li>
 </ul>
 <h3>Step 2 — Get the Windows 11 ARM ISO</h3>
@@ -175,31 +175,31 @@ DATA:installation:Run Windows 11 on Apple Silicon Mac for Free (M1 / M2 / M3 / M
 <tbody>
 <tr>
 <td>Standard Windows x86 apps</td>
-<td>✅ Most work via ARM emulation</td>
+<td> Most work via ARM emulation</td>
 </tr>
 <tr>
 <td>Office, browsers, productivity apps</td>
-<td>✅ Yes</td>
+<td> Yes</td>
 </tr>
 <tr>
 <td>DirectX 11 games (VMware)</td>
-<td>✅ Many work</td>
+<td> Many work</td>
 </tr>
 <tr>
 <td>DirectX 12 games</td>
-<td>❌ Not supported</td>
+<td> Not supported</td>
 </tr>
 <tr>
 <td>Antivirus software</td>
-<td>⚠️ Varies by vendor</td>
+<td> Varies by vendor</td>
 </tr>
 <tr>
 <td>Windows Hello</td>
-<td>❌ No biometric hardware</td>
+<td> No biometric hardware</td>
 </tr>
 <tr>
 <td>Native dual boot</td>
-<td>❌ Not possible on Apple Silicon</td>
+<td> Not possible on Apple Silicon</td>
 </tr>
 </tbody>
 </table>

@@ -1,4 +1,4 @@
-DATA:package-managers:Nix Package Manager — Complete Beginner Guide:Package Managers (All OSes)
+<!-- package-managers:Package Managers (All OSes) -->
 <h1>Nix Package Manager — Complete Beginner Guide</h1>
 <p>Nix is a package manager that works on Linux, macOS, and Windows (via WSL). It is fundamentally different from every other package manager — it installs packages into isolated, immutable directories in <code>/nix/store</code>, never overwriting system files. Multiple versions of the same package can coexist without conflict, and you can roll back any installation.</p>
 <p>This makes it the go-to tool for developers who need reproducible environments, but it also has a steep learning curve. This guide starts from zero and explains everything clearly.</p>
@@ -86,7 +86,7 @@ echo &quot;experimental-features = nix-command flakes&quot; &gt;&gt; ~/.config/n
 
 <hr />
 <h2>Finding Packages</h2>
-<p>Search at <a href="https://search.nixos.org">search.nixos.org</a> — select the channel you are using (usually <code>nixpkgs</code> or <code>unstable</code>).</p>
+<p>Search at <a href="https://search.nixos.org">https://search.nixos.org</a> — select the channel you are using (usually <code>nixpkgs</code> or <code>unstable</code>).</p>
 <p>Or search from the command line:</p>
 <pre><code><code>nix search nixpkgs firefox
 </code></code></pre>

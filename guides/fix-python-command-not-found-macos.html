@@ -1,4 +1,4 @@
-DATA:macos:Fix 'python: command not found' on macOS:macOS
+<!-- macos:macOS -->
 <h1>Fix 'python: command not found' on macOS</h1>
 <p>Since macOS 12.3 (Monterey), typing <code>python</code> in Terminal gives <code>zsh: command not found: python</code>. Apple removed Python 2 entirely and did not create a <code>python</code> alias for Python 3. Every tutorial that says to type <code>python</code> is assuming an older Mac or Linux. This guide explains what actually happened and the right fix depending on what you are trying to do.</p>
 <hr />
@@ -42,7 +42,7 @@ source ~/.zprofile
 <p>If you are writing code or installing packages, do not use the system Python at <code>/usr/bin/python3</code>. That version is Apple's internal copy and should not be modified. Install your own:</p>
 <h3>Option A — From python.org (Simplest)</h3>
 <ol>
-<li>Go to <a href="https://www.python.org/downloads/macos/">python.org/downloads/macos</a>.</li>
+<li>Go to <a href="https://www.python.org/downloads/macos/">https://www.python.org/downloads/macos/</a>.</li>
 <li>Download the latest macOS installer.</li>
 <li>Run the <code>.pkg</code> file and follow the installer.</li>
 <li>After installation, <code>python3</code> and <code>pip3</code> will work.</li>

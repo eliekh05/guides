@@ -1,4 +1,4 @@
-DATA:macos:Enable or Disable SIP (System Integrity Protection):macOS
+<!-- macos:macOS -->
 <h1>Enable or Disable SIP (System Integrity Protection)</h1>
 <p>SIP (System Integrity Protection) is a macOS security feature that prevents any software — including root — from modifying protected system files and folders. It is on by default and should stay on in normal use.</p>
 <p>Some tools require it to be temporarily disabled: OCLP (OpenCore Legacy Patcher), yabai (window manager), certain kernel extensions, and some developer tools. This guide covers how to do it correctly on both Intel and Apple Silicon Macs.</p>
@@ -19,7 +19,7 @@ DATA:macos:Enable or Disable SIP (System Integrity Protection):macOS
 <h2>Disable SIP — Intel Mac</h2>
 <ol>
 <li><strong>Shut down</strong> your Mac completely.</li>
-<li>Press the power button and immediately hold <strong>Command (⌘) + R</strong>.</li>
+<li>Press the power button and immediately hold <strong>Command () + R</strong>.</li>
 <li>Keep holding until you see the Apple logo or a spinning globe — you are in Recovery Mode.</li>
 <li>When the macOS Utilities window appears, go to <strong>Utilities</strong> → <strong>Terminal</strong> in the menu bar.</li>
 <li>In Terminal, type:

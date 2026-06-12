@@ -1,4 +1,4 @@
-DATA:installation:Dual Boot Ubuntu on an Intel Mac (with rEFInd):Installation Guides
+<!-- installation:Installation Guides -->
 <h1>Dual Boot Ubuntu on an Intel Mac (with rEFInd)</h1>
 <p>Most guides for this skip the rEFInd step entirely, which is exactly why people end up with GRUB hijacking their boot and losing access to macOS. This guide covers the complete process — partition, install rEFInd first, install Ubuntu, fix Wi-Fi if needed — for Intel Macs running macOS Ventura or earlier.</p>
 <blockquote>
@@ -22,10 +22,10 @@ DATA:installation:Dual Boot Ubuntu on an Intel Mac (with rEFInd):Installation Gu
 <p>Go to <strong>System Settings</strong> → <strong>Privacy &amp; Security</strong> → <strong>FileVault</strong> → <strong>Turn Off FileVault</strong>. Decryption may take a while. Do not proceed until it completes.</p>
 <hr />
 <h2>Download Ubuntu</h2>
-<p>Go to <a href="https://ubuntu.com/download/desktop">ubuntu.com/download/desktop</a> and download the latest LTS release (the 64-bit <code>.iso</code> file). Ubuntu 24.04 LTS as of 2026.</p>
+<p>Go to <a href="https://ubuntu.com/download/desktop">https://ubuntu.com/download/desktop</a> and download the latest LTS release (the 64-bit <code>.iso</code> file). Ubuntu 24.04 LTS as of 2026.</p>
 <hr />
 <h2>Create a Bootable Ubuntu USB</h2>
-<p>Download <a href="https://etcher.balena.io">balenaEtcher</a> on your Mac. Open it, select the Ubuntu ISO, select your USB drive, and click <strong>Flash</strong>.</p>
+<p>Download <a href="https://etcher.balena.io">https://etcher.balena.io</a> on your Mac. Open it, select the Ubuntu ISO, select your USB drive, and click <strong>Flash</strong>.</p>
 <hr />
 <h2>Create a Partition for Ubuntu</h2>
 <ol>
@@ -43,7 +43,7 @@ DATA:installation:Dual Boot Ubuntu on an Intel Mac (with rEFInd):Installation Gu
 <p>rEFInd must be installed before Ubuntu. Installing Ubuntu first almost always results in GRUB overwriting the EFI partition and breaking macOS boot.</p>
 <h3>Disable SIP</h3>
 <ol>
-<li>Restart your Mac and hold <strong>Command (⌘) + R</strong> to boot into Recovery Mode.</li>
+<li>Restart your Mac and hold <strong>Command () + R</strong> to boot into Recovery Mode.</li>
 <li>Go to <strong>Utilities</strong> → <strong>Terminal</strong>.</li>
 <li>Run:
    <code>bash
@@ -52,7 +52,7 @@ DATA:installation:Dual Boot Ubuntu on an Intel Mac (with rEFInd):Installation Gu
 </ol>
 <h3>Install rEFInd</h3>
 <ol>
-<li>Go to <a href="https://www.rodsbooks.com/refind/getting.html">rodsbooks.com/refind/getting.html</a> and download the <strong>Binary zip file</strong>.</li>
+<li>Go to <a href="https://www.rodsbooks.com/refind/getting.html">https://www.rodsbooks.com/refind/getting.html</a> and download the <strong>Binary zip file</strong>.</li>
 <li>Extract the zip on your Mac Desktop.</li>
 <li>Open <strong>Terminal</strong> (Applications → Utilities → Terminal).</li>
 <li>Drag the <code>refind-install</code> file from the extracted folder into the Terminal window (this fills in the path automatically).</li>
@@ -97,7 +97,7 @@ DATA:installation:Dual Boot Ubuntu on an Intel Mac (with rEFInd):Installation Gu
 <li><strong>Boot macOS:</strong> select the Apple logo</li>
 <li><strong>Boot Ubuntu:</strong> select the Ubuntu entry</li>
 </ul>
-<p>If rEFInd does not appear and the Mac boots straight into macOS, hold <strong>Option (⌥)</strong> at startup to access the boot picker manually and select rEFInd from there.</p>
+<p>If rEFInd does not appear and the Mac boots straight into macOS, hold <strong>Option ()</strong> at startup to access the boot picker manually and select rEFInd from there.</p>
 <hr />
 <h2>Fix Wi-Fi on Mac in Ubuntu (If Not Working)</h2>
 <p>Wi-Fi is the most common issue when running Linux on a Mac. Most Macs use <strong>Broadcom</strong> Wi-Fi chips which require a proprietary driver.</p>
@@ -128,7 +128,7 @@ sudo reboot
 <h2>Fix GRUB Hijacking macOS Boot (If It Happens)</h2>
 <p>If Ubuntu's GRUB overwrites rEFInd and you can no longer reach macOS:</p>
 <ol>
-<li>Boot into macOS by holding <strong>Option (⌥)</strong> at startup and selecting <strong>Macintosh HD</strong>.</li>
+<li>Boot into macOS by holding <strong>Option ()</strong> at startup and selecting <strong>Macintosh HD</strong>.</li>
 <li>Once in macOS, open Terminal and reinstall rEFInd (repeat Step 4 above).</li>
 </ol>
 <p>rEFInd will restore itself as the primary boot manager and both OSes will be accessible again.</p>
@@ -146,7 +146,7 @@ sudo reboot
 <hr />
 <h2>Troubleshooting</h2>
 <h3>rEFInd menu does not appear at startup</h3>
-<p>Hold <strong>Option (⌥)</strong> at boot and select the rEFInd entry manually. Then open Terminal in macOS and re-run the rEFInd installer to make it the default.</p>
+<p>Hold <strong>Option ()</strong> at boot and select the rEFInd entry manually. Then open Terminal in macOS and re-run the rEFInd installer to make it the default.</p>
 <h3>macOS disappeared from rEFInd after installing Ubuntu</h3>
 <p>GRUB hijacked the EFI boot order. Boot into macOS via Option key and reinstall rEFInd.</p>
 <h3>Ubuntu installer shows no partitions or wrong disk</h3>

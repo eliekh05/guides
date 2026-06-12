@@ -1,4 +1,4 @@
-DATA:installation:Proxmox GPU Passthrough to a Windows VM:Installation Guides
+<!-- installation:Installation Guides -->
 <h1>Proxmox GPU Passthrough to a Windows VM</h1>
 <p>GPU passthrough lets a Proxmox VM claim a physical GPU directly — giving near-native gaming and GPU compute performance inside the VM. This is one of the most searched homelab topics and also one of the most misguided by outdated guides. This guide is accurate for <strong>Proxmox VE 8 and 9</strong>.</p>
 <blockquote>
@@ -202,8 +202,8 @@ Set RAM to a fixed amount — no ballooning. Example: 8192 MB.</p>
 <li>Start the VM — it will display through the passed-through GPU. Connect a monitor to the GPU.</li>
 <li>Install Windows as normal (see the Windows VM in Proxmox guide for the VirtIO driver steps).</li>
 <li>After Windows is installed and you are at the desktop, install your GPU drivers:</li>
-<li><strong>NVIDIA:</strong> download and install from <a href="https://www.nvidia.com/drivers">nvidia.com/drivers</a></li>
-<li><strong>AMD:</strong> download and install from <a href="https://www.amd.com/support">amd.com/support</a></li>
+<li><strong>NVIDIA:</strong> download and install from <a href="https://www.nvidia.com/drivers">https://www.nvidia.com/drivers</a></li>
+<li><strong>AMD:</strong> download and install from <a href="https://www.amd.com/support">https://www.amd.com/support</a></li>
 <li>Restart the VM. DirectX and GPU acceleration should now be available.</li>
 </ol>
 <hr />

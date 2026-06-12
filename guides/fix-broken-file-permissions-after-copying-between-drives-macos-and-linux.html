@@ -1,4 +1,4 @@
-DATA:linux:Fix Broken File Permissions After Copying Between Drives:Linux
+<!-- linux:Linux -->
 <h1>Fix Broken File Permissions After Copying Between Drives</h1>
 <p>When you copy files between drives — especially from NTFS or exFAT to APFS or HFS+ — files can end up with wrong permissions, missing execute bits, or corrupted extended attributes. This makes files read-only, scripts non-executable, or apps that refuse to launch.</p>
 <hr />
@@ -15,18 +15,18 @@ DATA:linux:Fix Broken File Permissions After Copying Between Drives:Linux
 <tbody>
 <tr>
 <td>APFS / HFS+ (Mac)</td>
-<td>✅ Full Unix permissions</td>
-<td>✅ Supported</td>
+<td> Full Unix permissions</td>
+<td> Supported</td>
 </tr>
 <tr>
 <td>ext4 (Linux)</td>
-<td>✅ Full Unix permissions</td>
-<td>✅ Supported</td>
+<td> Full Unix permissions</td>
+<td> Supported</td>
 </tr>
 <tr>
 <td>exFAT</td>
-<td>❌ No Unix permissions</td>
-<td>❌ Not supported</td>
+<td> No Unix permissions</td>
+<td> Not supported</td>
 </tr>
 <tr>
 <td>NTFS (Windows)</td>
@@ -35,8 +35,8 @@ DATA:linux:Fix Broken File Permissions After Copying Between Drives:Linux
 </tr>
 <tr>
 <td>FAT32</td>
-<td>❌ No Unix permissions</td>
-<td>❌ Not supported</td>
+<td> No Unix permissions</td>
+<td> Not supported</td>
 </tr>
 </tbody>
 </table>

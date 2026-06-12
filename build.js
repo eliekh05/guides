@@ -5,6 +5,7 @@ const path = require('path');
 const SECTIONS = [
   { id: 'macos',            title: 'macOS',                 parent: 'macOS' },
   { id: 'linux',            title: 'Linux',                 parent: 'Linux' },
+  { id: 'common',           title: 'Common',                parent: 'Common' },
   { id: 'system-users',     title: 'System & Users',        parent: 'System & Users' },
   { id: 'package-managers', title: 'Package Managers',      parent: 'Package Managers (All OSes)' },
   { id: 'networking',       title: 'Networking & DNS',      parent: 'Networking & DNS' },
@@ -17,7 +18,6 @@ const SECTIONS = [
 
 const guidesDir  = path.join(__dirname, 'guides');
 const outputFile = path.join(__dirname, 'js', 'guides-data.js');
-const knownParents = SECTIONS.map(s => s.parent);
 
 const sections = SECTIONS.map(s => ({ ...s, guides: [] }));
 const allGuides = [];
@@ -27,36 +27,25 @@ fs.readdirSync(guidesDir)
   .sort()
   .forEach(fname => {
     const content = fs.readFileSync(path.join(guidesDir, fname), 'utf8');
-    const firstLine = content.split('\n')[0].trim();
-    if (!firstLine.startsWith('DATA:')) return;
+    const lines   = content.split('\n');
 
-    const withoutPrefix = firstLine.slice(5);
-    const firstColon = withoutPrefix.indexOf(':');
-    if (firstColon === -1) return;
+    // Line 1: <!-- sectionid:parent -->
+    const metaMatch = lines[0].match(/^<!--\s*([^:]+):(.+?)\s*-->$/);
+    if (!metaMatch) return;
 
-    const sectionId = withoutPrefix.slice(0, firstColon);
-    const rest = withoutPrefix.slice(firstColon + 1);
+    const sectionId = metaMatch[1].trim();
+    const parent    = metaMatch[2].trim();
 
-    let title = '', parent = '';
-    for (const p of knownParents) {
-      if (rest.endsWith(':' + p)) {
-        title = rest.slice(0, rest.length - p.length - 1);
-        parent = p;
-        break;
-      }
-    }
-    if (!title && !parent) {
-      const lastColon = rest.lastIndexOf(':');
-      title = rest.slice(0, lastColon);
-      parent = rest.slice(lastColon + 1);
-    }
-    if (!title || !parent) return;
+    // Line 2: <h1>Title</h1>
+    const titleMatch = lines[1].match(/^<h1>(.*?)<\/h1>$/);
+    if (!titleMatch) return;
 
+    const title = titleMatch[1].trim();
+    const slug  = fname.replace('.html', '');
     const preview = content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 200);
-    const slug = fname.replace('.html', '');
-    const guide = { title, slug, parent, nav: 999, preview };
 
-    const sec = sections.find(s => s.id === sectionId);
+    const guide = { title, slug, parent, nav: 999, preview };
+    const sec   = sections.find(s => s.id === sectionId);
     if (sec) sec.guides.push(guide);
     allGuides.push(guide);
   });

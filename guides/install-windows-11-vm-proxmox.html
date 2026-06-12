@@ -1,4 +1,4 @@
-DATA:installation:Install Windows 11 as a VM in Proxmox:Installation Guides
+<!-- installation:Installation Guides -->
 <h1>Install Windows 11 as a VM in Proxmox</h1>
 <p>Installing Windows 11 in Proxmox is more involved than Linux VMs because Windows 11 requires TPM 2.0, Secure Boot, and UEFI — and Windows does not ship with the VirtIO drivers that Proxmox uses for storage and networking. Without loading those drivers during setup, Windows cannot see your virtual disk and the installer shows no drives at all.</p>
 <p>This guide covers the complete setup including VirtIO drivers, the TPM requirement, bypassing the Microsoft account requirement, and installing the QEMU Guest Agent for full integration.</p>
@@ -6,8 +6,8 @@ DATA:installation:Install Windows 11 as a VM in Proxmox:Installation Guides
 <h2>What You Need</h2>
 <ul>
 <li>A working Proxmox installation</li>
-<li>A <strong>Windows 11 ISO</strong> — download from <a href="https://www.microsoft.com/software-download/windows11">microsoft.com/software-download/windows11</a></li>
-<li>The <strong>VirtIO drivers ISO</strong> — download the latest stable from <a href="https://pve.proxmox.com/wiki/Windows_VirtIO_Drivers">pve.proxmox.com/wiki/Windows_VirtIO_Drivers</a> (direct link to latest: <code>https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso</code>)</li>
+<li>A <strong>Windows 11 ISO</strong> — download from <a href="https://www.microsoft.com/software-download/windows11">https://www.microsoft.com/software-download/windows11</a></li>
+<li>The <strong>VirtIO drivers ISO</strong> — download the latest stable from <a href="https://pve.proxmox.com/wiki/Windows_VirtIO_Drivers">https://pve.proxmox.com/wiki/Windows_VirtIO_Drivers</a> (direct link to latest: <code>https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso</code>)</li>
 <li>At least <strong>4 GB RAM</strong> allocated to the VM (8 GB recommended)</li>
 <li>At least <strong>64 GB storage</strong> for the VM disk</li>
 </ul>
@@ -31,16 +31,16 @@ DATA:installation:Install Windows 11 as a VM in Proxmox:Installation Guides
 <li><strong>ISO image:</strong> select your Windows 11 ISO</li>
 <li><strong>Guest OS Type:</strong> Microsoft Windows</li>
 <li><strong>Version:</strong> 11/2022/2025</li>
-<li>✅ <strong>Add additional drive for VirtIO drivers</strong> — check this box. It will appear as an option here.</li>
+<li> <strong>Add additional drive for VirtIO drivers</strong> — check this box. It will appear as an option here.</li>
 <li>Select the <strong>virtio-win ISO</strong> for the additional drive</li>
 </ul>
 <h3>System Tab</h3>
 <ul>
 <li><strong>Machine:</strong> q35</li>
 <li><strong>BIOS:</strong> OVMF (UEFI) — <strong>not</strong> SeaBIOS</li>
-<li>✅ <strong>Add EFI Disk</strong> — check this and select your storage</li>
-<li>✅ <strong>Add TPM</strong> — check this, select your storage, version <strong>v2.0</strong></li>
-<li>✅ <strong>Qemu Agent</strong> — enable this</li>
+<li> <strong>Add EFI Disk</strong> — check this and select your storage</li>
+<li> <strong>Add TPM</strong> — check this, select your storage, version <strong>v2.0</strong></li>
+<li> <strong>Qemu Agent</strong> — enable this</li>
 </ul>
 <h3>Disks Tab</h3>
 <ul>
@@ -48,8 +48,8 @@ DATA:installation:Install Windows 11 as a VM in Proxmox:Installation Guides
 <li><strong>Storage:</strong> select your storage</li>
 <li><strong>Disk size:</strong> 64 GB minimum, 100 GB recommended</li>
 <li><strong>Cache:</strong> Write back (better performance) or No cache (safer)</li>
-<li>✅ <strong>Discard</strong> — enable for thin provisioning/TRIM support</li>
-<li>✅ <strong>IO Thread</strong> — enable for better performance</li>
+<li> <strong>Discard</strong> — enable for thin provisioning/TRIM support</li>
+<li> <strong>IO Thread</strong> — enable for better performance</li>
 </ul>
 <h3>CPU Tab</h3>
 <ul>

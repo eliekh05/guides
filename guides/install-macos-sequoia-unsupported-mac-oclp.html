@@ -1,4 +1,4 @@
-DATA:installation:Install macOS Sequoia on an Unsupported Mac (OpenCore Legacy Patcher):Installation Guides
+<!-- installation:Installation Guides -->
 <h1>Install macOS Sequoia on an Unsupported Mac (OpenCore Legacy Patcher)</h1>
 <p>Apple drops support for older Macs with every major macOS release. This guide uses <strong>OpenCore Legacy Patcher (OCLP)</strong> — the only reliable, actively maintained tool for running modern macOS on unsupported hardware. It supports Macs as old as 2007 and works all the way up to macOS Sequoia 15.</p>
 <blockquote>
@@ -21,7 +21,7 @@ DATA:installation:Install macOS Sequoia on an Unsupported Mac (OpenCore Legacy P
 - Mac mini 2009–2012
 - Mac Pro 2008–2012
 - MacBook Air 2010–2014</p>
-<p>For the full list, check: <a href="https://dortania.github.io/OpenCore-Legacy-Patcher/MODELS.html">dortania.github.io/OpenCore-Legacy-Patcher/MODELS.html</a></p>
+<p>For the full list, check: <a href="https://dortania.github.io/OpenCore-Legacy-Patcher/MODELS.html">https://dortania.github.io/OpenCore-Legacy-Patcher/MODELS.html</a></p>
 <h3>Hard Limits — These Cannot Be Worked Around</h3>
 <table>
 <thead>
@@ -59,7 +59,7 @@ DATA:installation:Install macOS Sequoia on an Unsupported Mac (OpenCore Legacy P
 <hr />
 <h2>Step 1 — Download OpenCore Legacy Patcher</h2>
 <p>Go to the official OCLP releases page:
-<a href="https://github.com/dortania/OpenCore-Legacy-Patcher/releases">github.com/dortania/OpenCore-Legacy-Patcher/releases</a></p>
+<a href="https://github.com/dortania/OpenCore-Legacy-Patcher/releases">https://github.com/dortania/OpenCore-Legacy-Patcher/releases</a></p>
 <p>Download the latest release — it will be a file called something like <code>OpenCore-Patcher.pkg</code>. Always use the latest version. Do not use older versions you may have downloaded previously.</p>
 <p>Open the <code>.pkg</code> and install once <strong>OpenCore-Patcher.pkg</strong> installed to your Applications folder.</p>
 <hr />
@@ -91,7 +91,7 @@ DATA:installation:Install macOS Sequoia on an Unsupported Mac (OpenCore Legacy P
 <h2>Step 4 — Boot from the USB Drive</h2>
 <ol>
 <li><strong>Restart</strong> your Mac.</li>
-<li>Hold the <strong>Option (⌥)</strong> key immediately after you press the power button and keep holding it.</li>
+<li>Hold the <strong>Option ()</strong> key immediately after you press the power button and keep holding it.</li>
 <li>The startup disk picker will appear. You will see an option called <strong>EFI Boot</strong> — this is OpenCore. Select it and press Enter.</li>
 </ol>
 <blockquote>
@@ -110,7 +110,7 @@ DATA:installation:Install macOS Sequoia on an Unsupported Mac (OpenCore Legacy P
 <li>Accept the license agreement.</li>
 <li>Select your internal drive and click Continue.</li>
 </ol>
-<p>The installer will reboot your Mac <strong>two or three times</strong> during installation. Each time it reboots, you need to hold <strong>Option (⌥)</strong> and select <strong>EFI Boot</strong> again so OpenCore stays in the boot chain.</p>
+<p>The installer will reboot your Mac <strong>two or three times</strong> during installation. Each time it reboots, you need to hold <strong>Option ()</strong> and select <strong>EFI Boot</strong> again so OpenCore stays in the boot chain.</p>
 <blockquote>
 <p><strong>This is the most common mistake.</strong> If you do not hold Option and select EFI Boot on each reboot, the Mac will try to boot normally, fail, and get stuck. Stay at the keyboard during the entire installation.</p>
 </blockquote>
@@ -189,47 +189,47 @@ DATA:installation:Install macOS Sequoia on an Unsupported Mac (OpenCore Legacy P
 <tbody>
 <tr>
 <td>General macOS use, apps, Safari</td>
-<td>✅ Full support</td>
+<td> Full support</td>
 </tr>
 <tr>
 <td>GPU acceleration (Metal Macs 2012+)</td>
-<td>✅ After root patching</td>
+<td> After root patching</td>
 </tr>
 <tr>
 <td>GPU acceleration (non-Metal, pre-2012)</td>
-<td>⚠️ Partial — some apps may not render correctly</td>
+<td> Partial — some apps may not render correctly</td>
 </tr>
 <tr>
 <td>Wi-Fi (most 2012–2017 Macs)</td>
-<td>✅ After root patching</td>
+<td> After root patching</td>
 </tr>
 <tr>
 <td>Wi-Fi (2018–2019 MacBook Air T2)</td>
-<td>❌ Not supported yet</td>
+<td> Not supported yet</td>
 </tr>
 <tr>
 <td>Bluetooth</td>
-<td>✅ Most models</td>
+<td> Most models</td>
 </tr>
 <tr>
 <td>AirDrop</td>
-<td>✅ Most models</td>
+<td> Most models</td>
 </tr>
 <tr>
 <td>iPhone Mirroring</td>
-<td>❌ Requires T2 chip</td>
+<td> Requires T2 chip</td>
 </tr>
 <tr>
 <td>Apple Intelligence</td>
-<td>❌ Requires Apple Silicon NPU</td>
+<td> Requires Apple Silicon NPU</td>
 </tr>
 <tr>
 <td>macOS updates (Sequoia point updates)</td>
-<td>✅ Works — re-apply root patches after each one</td>
+<td> Works — re-apply root patches after each one</td>
 </tr>
 <tr>
 <td>Upgrading to macOS Tahoe</td>
-<td>❌ Not supported by OCLP yet</td>
+<td> Not supported by OCLP yet</td>
 </tr>
 </tbody>
 </table>

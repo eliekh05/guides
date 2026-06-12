@@ -1,4 +1,4 @@
-DATA:macos:Fix "Operation Not Permitted" in Terminal:macOS
+<!-- macos:macOS -->
 <h1>Fix "Operation Not Permitted" in Terminal</h1>
 <p>Since macOS Catalina, Terminal commands that access certain files or folders produce this error even when run with <code>sudo</code>. The error looks like this:</p>
 <pre><code><code>operation not permitted
@@ -37,7 +37,7 @@ ls: .: Operation not permitted
 <ol>
 <li>Open <strong>System Settings</strong> → <strong>Privacy &amp; Security</strong> → <strong>Full Disk Access</strong>.</li>
 <li>Click <strong>+</strong>.</li>
-<li>Press <strong>Command (⌘) + Shift + G</strong> to open the Go to Folder dialog.</li>
+<li>Press <strong>Command () + Shift + G</strong> to open the Go to Folder dialog.</li>
 <li>Type <code>/bin/</code> and press <strong>Enter</strong>.</li>
 <li>Select <strong>zsh</strong> (or <strong>bash</strong> if you use bash) and click <strong>Open</strong>.</li>
 <li>Enable the toggle next to it.</li>

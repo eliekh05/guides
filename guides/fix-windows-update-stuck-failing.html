@@ -1,4 +1,4 @@
-DATA:windows:Fix Windows Update Stuck or Failing:Windows
+<!-- windows:Windows -->
 <h1>Fix Windows Update Stuck or Failing</h1>
 <p>Windows Update failing is one of the most searched Windows problems. The fixes vary depending on the exact symptom — stuck downloading, stuck installing, rolling back, or showing an error code. Work through these in order from simplest to most involved.</p>
 <hr />
@@ -54,7 +54,7 @@ DISM /Online /Cleanup-Image /RestoreHealth
 <p>If a specific update keeps failing, install it manually:</p>
 <ol>
 <li>Note the KB number of the failing update (e.g. <code>KB5031354</code>) — visible in <strong>Settings → Windows Update → View update history</strong>.</li>
-<li>Go to <a href="https://catalog.update.microsoft.com">catalog.update.microsoft.com</a>.</li>
+<li>Go to <a href="https://catalog.update.microsoft.com">https://catalog.update.microsoft.com</a>.</li>
 <li>Search for the KB number.</li>
 <li>Download the <code>.msu</code> file matching your Windows version and architecture (x64 for most PCs).</li>
 <li>Run the downloaded file to install it.</li>
@@ -104,7 +104,7 @@ usoclient StartInstall
 <h2>In-Place Upgrade Repair (Last Resort Before Reinstall)</h2>
 <p>If DISM and SFC cannot repair the system, an in-place upgrade reinstalls Windows over itself — keeping all your files, apps, and settings — while replacing all system files with fresh copies.</p>
 <ol>
-<li>Download the <strong>Windows 11 Media Creation Tool</strong> from <a href="https://microsoft.com/software-download/windows11">microsoft.com/software-download/windows11</a> (or Windows 10 equivalent).</li>
+<li>Download the <strong>Windows 11 Media Creation Tool</strong> from <a href="https://microsoft.com/software-download/windows11">https://microsoft.com/software-download/windows11</a> (or Windows 10 equivalent).</li>
 <li>Run it and select <strong>Upgrade this PC now</strong>.</li>
 <li>Choose <strong>Keep personal files and apps</strong>.</li>
 <li>Let it run — this takes 30–60 minutes and reboots several times.</li>

@@ -1,4 +1,4 @@
-DATA:installation:Install Windows as a VM on Linux (KVM/QEMU with virt-manager):Installation Guides
+<!-- installation:Installation Guides -->
 <h1>Install Windows as a VM on Linux (KVM/QEMU with virt-manager)</h1>
 <p>KVM (Kernel-based Virtual Machine) is Linux's built-in hypervisor — faster and more efficient than VirtualBox or VMware on Linux. Combined with virt-manager for a GUI, it is the best way to run Windows VMs on Linux. The only catch is VirtIO drivers — Windows does not ship with them and without them you will see no disk and no network during installation.</p>
 <hr />
@@ -41,7 +41,7 @@ sudo systemctl enable --now libvirtd
 <hr />
 <h2>Download the Windows ISO and VirtIO Drivers</h2>
 <p><strong>Windows 11 ISO:</strong>
-Go to <a href="https://www.microsoft.com/software-download/windows11">microsoft.com/software-download/windows11</a> and download the 64-bit ISO.</p>
+Go to <a href="https://www.microsoft.com/software-download/windows11">https://www.microsoft.com/software-download/windows11</a> and download the 64-bit ISO.</p>
 <p><strong>VirtIO Drivers ISO:</strong>
 Download the latest stable ISO from:</p>
 <pre><code><code>https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso
@@ -71,7 +71,7 @@ sudo mv ~/Downloads/virtio-win.iso /var/lib/libvirt/images/
 <li><strong>Step 4:</strong> Create a new disk — set size to 64 GB minimum → <strong>Forward</strong></li>
 <li><strong>Step 5 (final):</strong></li>
 <li>Give the VM a name</li>
-<li>✅ Check <strong>Customize configuration before install</strong></li>
+<li> Check <strong>Customize configuration before install</strong></li>
 <li>Click <strong>Finish</strong></li>
 </ol>
 <hr />

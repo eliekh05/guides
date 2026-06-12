@@ -1,4 +1,4 @@
-DATA:installation:Install Proxmox on a Laptop (WiFi Only) via Debian 13:Installation Guides
+<!-- installation:Installation Guides -->
 <h1>Install Proxmox on a Laptop (WiFi Only) via Debian 13</h1>
 <p>The official Proxmox ISO installer assumes you have an Ethernet connection and will fail or leave you with a broken network setup on a WiFi-only laptop. This guide skips the Proxmox ISO entirely and installs Proxmox on top of <strong>Debian 13 (Trixie)</strong> — the current stable release — using <code>apt</code>. You get the same full Proxmox VE with no subscription required, and WiFi working from the start.</p>
 <blockquote>
@@ -16,12 +16,12 @@ DATA:installation:Install Proxmox on a Laptop (WiFi Only) via Debian 13:Installa
 <hr />
 <h2>Part 1 — Install Debian 13 (Trixie)</h2>
 <h3>Step 1 — Download Debian 13</h3>
-<p>Go to <a href="https://www.debian.org/distrib/netinst">debian.org/distrib/netinst</a> and download the <strong>amd64 netinst ISO</strong> (the small installer, about 650 MB). Make sure you are downloading Debian 13 — the page will show the current stable version.</p>
+<p>Go to <a href="https://www.debian.org/distrib/netinst">https://www.debian.org/distrib/netinst</a> and download the <strong>amd64 netinst ISO</strong> (the small installer, about 650 MB). Make sure you are downloading Debian 13 — the page will show the current stable version.</p>
 <blockquote>
-<p><strong>Always check <a href="https://www.debian.org/releases">debian.org/releases</a> to confirm the current stable version before downloading.</strong> At the time of writing this guide, the current stable release is <strong>Debian 13 (Trixie) 13.4</strong>.</p>
+<p><strong>Always check <a href="https://www.debian.org/releases">https://www.debian.org/releases</a> to confirm the current stable version before downloading.</strong> At the time of writing this guide, the current stable release is <strong>Debian 13 (Trixie) 13.4</strong>.</p>
 </blockquote>
 <h3>Step 2 — Flash the USB Drive</h3>
-<p>Download <a href="https://etcher.balena.io">balenaEtcher</a> on your current machine, open it, select the Debian ISO and your USB drive, and click Flash.</p>
+<p>Download <a href="https://etcher.balena.io">https://etcher.balena.io</a> on your current machine, open it, select the Debian ISO and your USB drive, and click Flash.</p>
 <h3>Step 3 — Boot from USB</h3>
 <p>Restart your laptop and boot from the USB drive. The key to open the boot menu varies by manufacturer — usually <strong>F12</strong>, <strong>F10</strong>, <strong>Esc</strong>, or <strong>Del</strong>. It is shown briefly on screen at startup.</p>
 <h3>Step 4 — Install Debian</h3>

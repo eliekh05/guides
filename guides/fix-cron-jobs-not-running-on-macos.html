@@ -1,4 +1,4 @@
-DATA:scheduling:Fix cron Jobs Not Running:Task Scheduling
+<!-- scheduling:Task Scheduling -->
 <h1>Fix cron Jobs Not Running</h1>
 <p><code>cron</code> is a classic Unix tool for scheduling tasks. It still exists on macOS but has several limitations that cause jobs to silently fail. This guide explains why, and gives you working solutions.</p>
 <hr />
@@ -33,7 +33,7 @@ which node
 <ol>
 <li>Open <strong>System Settings</strong> → <strong>Privacy &amp; Security</strong> → <strong>Full Disk Access</strong>.</li>
 <li>Click the <strong>+</strong> button.</li>
-<li>Press <strong>Command (⌘) + Shift + G</strong> to open the Go to Folder dialog.</li>
+<li>Press <strong>Command () + Shift + G</strong> to open the Go to Folder dialog.</li>
 <li>Type <code>/usr/sbin/</code> and press Enter.</li>
 <li>Select <strong>cron</strong> and click <strong>Open</strong>.</li>
 <li>Make sure the toggle next to <code>cron</code> is <strong>on</strong>.</li>
@@ -124,13 +124,13 @@ PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 <tbody>
 <tr>
 <td>Runs missed jobs after sleep</td>
-<td>❌ No</td>
-<td>✅ Yes</td>
+<td> No</td>
+<td> Yes</td>
 </tr>
 <tr>
 <td>Loads PATH automatically</td>
-<td>❌ No</td>
-<td>❌ No (must set manually)</td>
+<td> No</td>
+<td> No (must set manually)</td>
 </tr>
 <tr>
 <td>GUI tools available</td>
@@ -139,13 +139,13 @@ PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 </tr>
 <tr>
 <td>Apple recommended</td>
-<td>❌ Deprecated</td>
-<td>✅ Yes</td>
+<td> Deprecated</td>
+<td> Yes</td>
 </tr>
 <tr>
 <td>Easy to set up quickly</td>
-<td>✅ Yes</td>
-<td>❌ More verbose</td>
+<td> Yes</td>
+<td> More verbose</td>
 </tr>
 </tbody>
 </table>

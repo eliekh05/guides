@@ -1,4 +1,4 @@
-DATA:linux:Set Up a Printer with CUPS:Linux
+<!-- linux:Linux -->
 <h1>Set Up a Printer with CUPS</h1>
 <p>CUPS (Common Unix Printing System) is how Linux handles all printing. It works for USB printers, network printers, and wireless printers. Most modern printers work without manual driver installation — but when they do not, this guide covers that too.</p>
 <hr />
@@ -74,7 +74,7 @@ sudo dnf install hplip -y              # Fedora
 <h3>Brother Printers</h3>
 <p>Brother provides Linux drivers on their website:</p>
 <ol>
-<li>Go to <a href="https://support.brother.com">support.brother.com</a>, find your model, and download the Linux driver (<code>.deb</code> for Ubuntu/Debian, <code>.rpm</code> for Fedora).</li>
+<li>Go to <a href="https://support.brother.com">https://support.brother.com</a>, find your model, and download the Linux driver (<code>.deb</code> for Ubuntu/Debian, <code>.rpm</code> for Fedora).</li>
 <li>Install it:
    <code>bash
    sudo dpkg -i brother-*.deb     # Ubuntu/Debian
@@ -148,4 +148,4 @@ sudo systemctl restart cups
 </code></code></pre>
 
 <h3>Printer needs a PPD file</h3>
-<p>Some older printers require a PPD (PostScript Printer Description) file. Search <a href="https://openprinting.org/printers">openprinting.org/printers</a> for your model and download the PPD. When adding the printer in CUPS, choose <strong>Or Provide a PPD File</strong> and upload it.</p>
+<p>Some older printers require a PPD (PostScript Printer Description) file. Search <a href="https://openprinting.org/printers">https://openprinting.org/printers</a> for your model and download the PPD. When adding the printer in CUPS, choose <strong>Or Provide a PPD File</strong> and upload it.</p>

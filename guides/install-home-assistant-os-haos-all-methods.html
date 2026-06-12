@@ -1,8 +1,8 @@
-DATA:installation:Install Home Assistant OS (HAOS) — All Methods, All Systems:Installation Guides
+<!-- installation:Installation Guides -->
 <h1>Install Home Assistant OS (HAOS) — All Methods, All Systems</h1>
 <p>Every HAOS guide online covers one method for one device and gets half the steps wrong. This guide covers every supported installation method in one place — Raspberry Pi, generic x86 PC, Proxmox VM, and Docker — with the real errors people run into and exactly how to fix them.</p>
 <blockquote>
-<p><strong>Current version:</strong> HAOS 17.2 (May 2026). Always check <a href="https://github.com/home-assistant/operating-system/releases">github.com/home-assistant/operating-system/releases</a> for the latest version number before downloading — replace any version number in this guide with the latest.</p>
+<p><strong>Current version:</strong> HAOS 17.2 (May 2026). Always check <a href="https://github.com/home-assistant/operating-system/releases">https://github.com/home-assistant/operating-system/releases</a> for the latest version number before downloading — replace any version number in this guide with the latest.</p>
 </blockquote>
 <hr />
 <h2>Important: What Is Supported in 2026</h2>
@@ -20,26 +20,26 @@ DATA:installation:Install Home Assistant OS (HAOS) — All Methods, All Systems:
 <tr>
 <td><strong>Home Assistant OS (HAOS)</strong></td>
 <td>Purpose-built OS, manages everything</td>
-<td>✅ Yes</td>
-<td>✅ Yes — for everyone</td>
+<td> Yes</td>
+<td> Yes — for everyone</td>
 </tr>
 <tr>
 <td><strong>Home Assistant Container</strong></td>
 <td>Docker container, HA Core only</td>
-<td>❌ No</td>
+<td> No</td>
 <td>For advanced Docker users</td>
 </tr>
 <tr>
 <td>~~Home Assistant Core~~</td>
 <td>Python environment</td>
-<td>❌</td>
-<td>❌ Deprecated 2025.12</td>
+<td></td>
+<td> Deprecated 2025.12</td>
 </tr>
 <tr>
 <td>~~Home Assistant Supervised~~</td>
 <td>Your OS + Supervisor</td>
-<td>❌</td>
-<td>❌ Deprecated 2025.12</td>
+<td></td>
+<td> Deprecated 2025.12</td>
 </tr>
 </tbody>
 </table>
@@ -78,7 +78,7 @@ DATA:installation:Install Home Assistant OS (HAOS) — All Methods, All Systems:
 </tbody>
 </table>
 <blockquote>
-<p>⚠️ <strong>Do not use SD cards for production.</strong> SD cards wear out from constant database writes — most HAOS failures are caused by a dead SD card. Use an SSD or NVMe drive. On Raspberry Pi, boot from USB SSD.</p>
+<p> <strong>Do not use SD cards for production.</strong> SD cards wear out from constant database writes — most HAOS failures are caused by a dead SD card. Use an SSD or NVMe drive. On Raspberry Pi, boot from USB SSD.</p>
 <p><strong>32-bit systems are no longer supported.</strong> Since HAOS 17.0 (May 2025), armv7 (Raspberry Pi 2/3/4 32-bit), ODROID-XU4, and ASUS Tinker Board are not supported. If you are on these devices, you have received no updates since 17.0 — migrate to a 64-bit device.</p>
 </blockquote>
 <hr />
@@ -87,7 +87,7 @@ DATA:installation:Install Home Assistant OS (HAOS) — All Methods, All Systems:
 <ul>
 <li>Raspberry Pi 4 (2 GB RAM minimum, 4 GB+ recommended) or Raspberry Pi 5</li>
 <li>USB SSD (strongly recommended) or a fast SD card (A2 rated minimum) as a temporary start</li>
-<li>Raspberry Pi Imager from <a href="https://www.raspberrypi.com/software/">raspberrypi.com/software</a></li>
+<li>Raspberry Pi Imager from <a href="https://www.raspberrypi.com/software/">https://www.raspberrypi.com/software/</a></li>
 </ul>
 <h3>Step 1 — Update EEPROM First (Critical — Most People Skip This)</h3>
 <p>A stale EEPROM bootloader causes most Raspberry Pi HAOS boot failures — especially on Pi 4 Rev 1.4 and Pi 5. Do this before flashing HAOS.</p>
@@ -152,12 +152,12 @@ reboot
 </ul>
 <h3>Step 1 — Download the HAOS x86-64 Image</h3>
 <p>Go to the Home Assistant OS releases page:
-<a href="https://github.com/home-assistant/operating-system/releases">github.com/home-assistant/operating-system/releases</a></p>
+<a href="https://github.com/home-assistant/operating-system/releases">https://github.com/home-assistant/operating-system/releases</a></p>
 <p>Find the latest release and download: <code>haos_generic-x86-64-XX.X.img.xz</code></p>
 <h3>Step 2 — Flash HAOS to the Internal Drive (Ubuntu Method — Recommended)</h3>
 <p>HAOS has no installer — you write the image directly to the internal drive. The cleanest way is booting Ubuntu live and using the Disks app.</p>
 <ol>
-<li>Flash <strong>Ubuntu Desktop</strong> to a USB drive using <a href="https://etcher.balena.io">balenaEtcher</a>.</li>
+<li>Flash <strong>Ubuntu Desktop</strong> to a USB drive using <a href="https://etcher.balena.io">https://etcher.balena.io</a>.</li>
 <li>Boot your PC from the Ubuntu USB.</li>
 <li>At the GRUB menu, select <strong>Try Ubuntu</strong> — do NOT click Install Ubuntu.</li>
 <li>Open the <strong>Files</strong> app and navigate to where you downloaded the HAOS <code>.img.xz</code> file (or download it now in Firefox).</li>
@@ -171,7 +171,7 @@ reboot
 <h3>Step 2 Alternative — Flash Using balenaEtcher</h3>
 <p>If you prefer balenaEtcher:
 1. Boot Ubuntu live (same as above).
-2. Download and run balenaEtcher: <code>flatpak install flathub io.balena.etcher</code> or download the AppImage from <a href="https://etcher.balena.io">etcher.balena.io</a>.
+2. Download and run balenaEtcher: <code>flatpak install flathub io.balena.etcher</code> or download the AppImage from <a href="https://etcher.balena.io">https://etcher.balena.io</a>.
 3. Select the HAOS <code>.img.xz</code> file as source.
 4. Select your internal drive as target.
 5. Click Flash.</p>
@@ -230,8 +230,8 @@ unxz -v haos_ova-17.2.qcow2.xz
 <p><strong>System tab — this is where most people fail:</strong>
 - Machine: <strong>q35</strong>
 - BIOS: <strong>OVMF (UEFI)</strong>
-- Add EFI Disk: ✅ <strong>checked</strong>
-- Pre-Enroll Keys: ❌ <strong>unchecked</strong> — this disables Secure Boot. Leaving this checked is the #1 cause of "UEFI Access Denied" boot failures
+- Add EFI Disk: <strong>checked</strong>
+- Pre-Enroll Keys: <strong>unchecked</strong> — this disables Secure Boot. Leaving this checked is the #1 cause of "UEFI Access Denied" boot failures
 - SCSI Controller: <strong>VirtIO SCSI single</strong></p>
 <p><strong>Disks tab:</strong>
 - Delete the default disk that the wizard adds — you will import the HAOS disk manually</p>
@@ -293,7 +293,7 @@ unxz -v haos_ova-17.2.qcow2.xz
 <hr />
 <h2>Method 4 — Docker (Home Assistant Container)</h2>
 <blockquote>
-<p>⚠️ <strong>Container does not include add-ons.</strong> If you want Mosquitto, Node-RED, Zigbee2MQTT, or any other add-on, use HAOS (Methods 1–3). Container is only for advanced users who want to manage everything themselves in Docker.</p>
+<p> <strong>Container does not include add-ons.</strong> If you want Mosquitto, Node-RED, Zigbee2MQTT, or any other add-on, use HAOS (Methods 1–3). Container is only for advanced users who want to manage everything themselves in Docker.</p>
 </blockquote>
 <h3>Linux (Recommended for Container)</h3>
 <pre><code><code>docker run -d \
@@ -307,7 +307,7 @@ unxz -v haos_ova-17.2.qcow2.xz
 </code></code></pre>
 
 <p>Replace:
-- <code>YOUR_TIMEZONE</code> with your timezone from the <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">TZ database</a> (e.g. <code>Europe/London</code>, <code>America/New_York</code>)
+- <code>YOUR_TIMEZONE</code> with your timezone from the <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">https://en.wikipedia.org/wiki/List_of_tz_database_time_zones</a> (e.g. <code>Europe/London</code>, <code>America/New_York</code>)
 - <code>/PATH_TO_YOUR_CONFIG</code> with a folder path on your system (e.g. <code>/home/yourname/homeassistant</code>)</p>
 <p>Example:</p>
 <pre><code><code>mkdir -p ~/homeassistant

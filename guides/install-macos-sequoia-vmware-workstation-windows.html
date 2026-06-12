@@ -1,4 +1,4 @@
-DATA:installation:Install macOS Sequoia on VMware Workstation Pro (Windows):Installation Guides
+<!-- installation:Installation Guides -->
 <h1>Install macOS Sequoia on VMware Workstation Pro (Windows)</h1>
 <p>Every guide online for this is either outdated, uses sketchy pre-built VMDK files from random sites, skips critical VMX edits, or does not mention that VMware Workstation Pro is now completely free. This guide is accurate for <strong>VMware Workstation Pro 25H2u1</strong> (the latest version as of 2026) and macOS Sequoia 15.</p>
 <blockquote>
@@ -18,7 +18,7 @@ DATA:installation:Install macOS Sequoia on VMware Workstation Pro (Windows):Inst
 <h2>Step 1 — Download VMware Workstation Pro (Free)</h2>
 <p>VMware Workstation Pro has been completely free for personal and commercial use since November 2024. No license key needed.</p>
 <ol>
-<li>Go to <a href="https://support.broadcom.com">support.broadcom.com</a> and create a free account if you do not have one.<blockquote>
+<li>Go to <a href="https://support.broadcom.com">https://support.broadcom.com</a> and create a free account if you do not have one.<blockquote>
 <p><strong>Note:</strong> Broadcom's profile approval process can take a few minutes to a few days. If you are stuck waiting, try logging out and back in — many accounts are approved instantly.</p>
 </blockquote>
 </li>
@@ -48,7 +48,7 @@ mv ~/Desktop/Sequoia.cdr ~/Desktop/Sequoia.iso
 <p>Copy the <code>Sequoia.iso</code> from your Mac's Desktop to your Windows PC.</p>
 <h3>Option B — Using gibMacOS on Windows (No Mac Needed)</h3>
 <ol>
-<li>Download <strong>gibMacOS</strong> from <a href="https://github.com/corpnewt/gibMacOS">github.com/corpnewt/gibMacOS</a>.</li>
+<li>Download <strong>gibMacOS</strong> from <a href="https://github.com/corpnewt/gibMacOS">https://github.com/corpnewt/gibMacOS</a>.</li>
 <li>Run <code>gibMacOS.bat</code> on Windows.</li>
 <li>Select macOS Sequoia from the list and download it.</li>
 <li>Once downloaded, run <code>BuildmacOSInstallApp.command</code> if on a Mac, or use the <code>MakeInstall.bat</code> on Windows to create a bootable ISO from the downloaded files.</li>
@@ -61,7 +61,7 @@ mv ~/Desktop/Sequoia.cdr ~/Desktop/Sequoia.iso
 <p>VMware blocks macOS as a guest OS on non-Apple hardware by default. The <strong>Unlocker</strong> patches VMware to enable it.</p>
 <ol>
 <li><strong>Close VMware Workstation completely</strong> — the unlocker cannot run while VMware is open.</li>
-<li>Go to <a href="https://github.com/DrDonk/unlocker/releases">github.com/DrDonk/unlocker/releases</a>.</li>
+<li>Go to <a href="https://github.com/DrDonk/unlocker/releases">https://github.com/DrDonk/unlocker/releases</a>.</li>
 <li>Download the latest release zip (currently <strong>4.2.7</strong>) — it will be named something like <code>unlocker427.zip</code>.</li>
 <li>Extract the zip to a folder on your Desktop.</li>
 <li>Open the <code>windows</code> folder inside the extracted files.</li>

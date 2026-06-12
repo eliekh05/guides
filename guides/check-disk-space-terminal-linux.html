@@ -1,0 +1,33 @@
+DATA:linux:Check Disk Space from the Terminal:Linux
+<h1>Check Disk Space from the Terminal</h1>
+<pre><code><code># Disk usage for all mounted filesystems
+df -h
+
+# Size of a specific folder
+du -sh /var/log
+
+# Find the largest directories from root
+sudo du -sh /* 2&gt;/dev/null | sort -rh | head -20
+
+# Find files over 1 GB
+sudo find / -type f -size +1G 2&gt;/dev/null
+
+# Interactive disk usage browser (install first)
+sudo apt install ncdu -y    # Ubuntu/Debian
+sudo dnf install ncdu -y    # Fedora
+
+ncdu /    # Browse disk usage interactively
+</code></code></pre>
+
+<p><code>ncdu</code> is the most useful tool here — it lets you navigate into folders, see what is using space, and delete things directly from the interface.</p>
+<h3>Free up space on Ubuntu/Debian</h3>
+<pre><code><code># Remove old packages
+sudo apt autoremove -y
+sudo apt clean
+
+# Remove old kernels (keeps current + one previous)
+sudo apt autoremove --purge -y
+
+# Clean journal logs older than 7 days
+sudo journalctl --vacuum-time=7d
+</code></code></pre>

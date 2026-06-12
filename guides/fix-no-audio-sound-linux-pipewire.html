@@ -2,7 +2,7 @@ DATA:linux:Fix No Audio on Linux (PipeWire):Linux
 <h1>Fix No Audio on Linux (PipeWire)</h1>
 <p>PipeWire is the default audio server on Ubuntu 22.10+, Debian 13, Fedora 34+, and most modern Linux distros. Most audio troubleshooting guides online still reference PulseAudio which is outdated and does not apply to current systems. This guide is for PipeWire.</p>
 <hr />
-<h2>Step 1 — Check What Audio System You Are Running</h2>
+<h2>Check What Audio System You Are Running</h2>
 <pre><code><code>pactl info | grep &quot;Server Name&quot;
 </code></code></pre>
 
@@ -11,7 +11,7 @@ DATA:linux:Fix No Audio on Linux (PipeWire):Linux
 - <code>Server Name: pulseaudio</code> — you are on pure PulseAudio (older install)</p>
 <p>If you are on PipeWire, continue with this guide. If on PulseAudio, the fixes are the same but substitute <code>systemctl --user restart pulseaudio</code> where this guide says restart PipeWire.</p>
 <hr />
-<h2>Step 2 — Check If PipeWire Services Are Running</h2>
+<h2>Check If PipeWire Services Are Running</h2>
 <pre><code><code>systemctl --user status pipewire pipewire-pulse wireplumber
 </code></code></pre>
 
@@ -24,7 +24,7 @@ DATA:linux:Fix No Audio on Linux (PipeWire):Linux
 </code></code></pre>
 
 <hr />
-<h2>Step 3 — Check If a Device Is Being Detected</h2>
+<h2>Check If a Device Is Being Detected</h2>
 <pre><code><code>wpctl status
 </code></code></pre>
 
@@ -35,7 +35,7 @@ DATA:linux:Fix No Audio on Linux (PipeWire):Linux
 
 <p>This lists all ALSA-detected sound cards. If nothing appears here, the issue is at the hardware/driver level, not PipeWire.</p>
 <hr />
-<h2>Step 4 — Check Volume and Mute Status</h2>
+<h2>Check Volume and Mute Status</h2>
 <pre><code><code>wpctl get-volume @DEFAULT_AUDIO_SINK@
 </code></code></pre>
 
@@ -54,7 +54,7 @@ pavucontrol
 
 <p>In pavucontrol, check the <strong>Output Devices</strong> tab — make sure nothing is muted and the correct device is set as default.</p>
 <hr />
-<h2>Step 5 — Set the Correct Default Output Device</h2>
+<h2>Set the Correct Default Output Device</h2>
 <p>If you have multiple audio devices (HDMI, headphones, USB DAC), PipeWire may be outputting to the wrong one.</p>
 <p>List available sinks:</p>
 <pre><code><code>pactl list short sinks

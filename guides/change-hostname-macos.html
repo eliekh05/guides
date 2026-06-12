@@ -1,0 +1,48 @@
+DATA:macos:Change Hostname on macOS:macOS
+<h1>Change Hostname on macOS</h1>
+<h3>Check current hostname</h3>
+<pre><code><code>hostname
+scutil --get HostName
+scutil --get LocalHostName
+scutil --get ComputerName
+</code></code></pre>
+
+<p>macOS has three separate "names":
+- <strong>HostName</strong> — used by the command line
+- <strong>LocalHostName</strong> — used for Bonjour/mDNS (what you see on the network as <code>name.local</code>)
+- <strong>ComputerName</strong> — display name shown in System Settings</p>
+<h3>Change via System Settings (Easiest)</h3>
+<p><strong>System Settings → General → About → Name</strong> — change the name here.</p>
+<p>This updates the ComputerName. The LocalHostName updates automatically based on it.</p>
+<h3>Change via Terminal</h3>
+<pre><code><code># Change all three
+sudo scutil --set HostName newhostname
+sudo scutil --set LocalHostName newhostname
+sudo scutil --set ComputerName &quot;New Computer Name&quot;
+
+# Flush DNS to apply
+dscacheutil -flushcache
+</code></code></pre>
+
+<h3>Verify</h3>
+<pre><code><code>scutil --get HostName
+scutil --get LocalHostName
+scutil --get ComputerName
+</code></code></pre>
+
+<hr />
+<h2>Proxmox / Server Hostname Change</h2>
+<p>For Proxmox or any server where the hostname must match DNS and <code>/etc/hosts</code>:</p>
+<pre><code><code># 1. Change hostname
+sudo hostnamectl set-hostname proxmox.local
+
+# 2. Update /etc/hosts — critical for Proxmox
+sudo nano /etc/hosts
+# Change the line that maps your IP to the old hostname:
+# FROM: 192.168.1.100  oldname.local oldname
+# TO:   192.168.1.100  proxmox.local proxmox
+
+# 3. Verify resolution
+hostname --fqdn
+hostname --ip-address      # must return actual IP, not 127.x.x.x
+</code></code></pre>

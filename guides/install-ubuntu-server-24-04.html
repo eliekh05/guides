@@ -1,69 +1,99 @@
-DATA:installation:Install Ubuntu Server 24.04 LTS — Complete Guide:Installation Guides
-<h1>Install Ubuntu Server 24.04 LTS — Complete Guide</h1>
-<p>Ubuntu Server 24.04 LTS is supported until 2029 (standard) and 2034
-(extended). It is the most common choice for self-hosted services.</p>
-<h2 id="download">Download</h2>
-<p>Go to <a
-href="https://ubuntu.com/download/server">ubuntu.com/download/server</a>
-and download Ubuntu Server 24.04.x LTS.</p>
-<p>Flash to USB with balenaEtcher.</p>
-<h2 id="boot-and-install">Boot and Install</h2>
-<p>Boot from USB. The installer is text-based.</p>
-<p><strong>Language:</strong> English (recommended even if you do not
-use English — better compatibility with guides)</p>
-<p><strong>Keyboard layout:</strong> choose yours</p>
-<p><strong>Installation type:</strong> Ubuntu Server (not minimised)</p>
-<p><strong>Network:</strong> Configure your network interface. For a
-server, set a <strong>static IP</strong>:</p>
+DATA:installation:Install Ubuntu Server (24.04 LTS and 26.04 LTS):Installation Guides
+<h1>Install Ubuntu Server (24.04 LTS and 26.04 LTS)</h1>
+
+<p>Two current Ubuntu Server LTS releases are available:</p>
+
 <ul>
-<li>Subnet: <code>192.168.1.0/24</code></li>
-<li>Address: <code>192.168.1.100</code> (a free IP on your network)</li>
-<li>Gateway: your router IP (usually <code>192.168.1.1</code>)</li>
-<li>Name servers: <code>1.1.1.1,8.8.8.8</code></li>
+<li><strong>Ubuntu 24.04 LTS (Noble Numbat)</strong> — supported until June 2029. Current point release: 24.04.4 with Linux kernel 6.17.</li>
+<li><strong>Ubuntu 26.04 LTS (Resolute Raccoon)</strong> — released April 23, 2026. Supported until 2031. GNOME 50 on desktop, sudo-rs as default sudo provider.</li>
 </ul>
-<p><strong>Storage:</strong> Use entire disk unless you have specific
-needs. If using LVM (recommended), select "Use entire disk with
-LVM".</p>
-<p><strong>User:</strong> Create a non-root user with a strong password.
-This is your primary login.</p>
-<p><strong>SSH:</strong> Check "Install OpenSSH server". This is how you
-will access the server after installation.</p>
-<p><strong>Snaps:</strong> Skip all snap packages during install —
-install them manually later if needed.</p>
+
+<p>For a new server deployment in 2026, <strong>26.04 LTS</strong> is the better choice unless you need 24.04 for compatibility with existing infrastructure.</p>
+
+<h2>Download</h2>
+
+<ul>
+<li>Ubuntu 26.04: <a href="https://ubuntu.com/download/server">ubuntu.com/download/server</a></li>
+<li>Ubuntu 24.04: <a href="https://releases.ubuntu.com/24.04/">releases.ubuntu.com/24.04</a></li>
+</ul>
+
+<p>Flash to USB with balenaEtcher or use <code>dd</code> on Linux/macOS:</p>
+
+<pre><code># Replace /dev/sdX with your USB device
+sudo dd if=ubuntu-server-amd64.iso of=/dev/sdX bs=4M status=progress oflag=sync</code></pre>
+
+<h2>Boot and Install</h2>
+
+<p>Boot from USB. The installer is text-based (Subiquity).</p>
+
+<p><strong>Language:</strong> English — better compatibility with documentation and error messages.</p>
+
+<p><strong>Keyboard:</strong> Select yours.</p>
+
+<p><strong>Network:</strong> Configure here for a static IP (recommended for servers):</p>
+
+<pre><code>Subnet:  192.168.1.0/24
+Address: 192.168.1.100    # a free IP on your network
+Gateway: 192.168.1.1      # your router
+DNS:     1.1.1.1,8.8.8.8</code></pre>
+
+<p><strong>Storage:</strong> Use the full disk with LVM unless you have specific needs. LVM lets you resize volumes later without repartitioning.</p>
+
+<p><strong>Profile:</strong> Create a username and password. This is your primary login — not root.</p>
+
+<p><strong>OpenSSH server:</strong> Check this — it is how you access the server after install.</p>
+
+<p><strong>Snaps:</strong> Skip all snap packages here. Install them manually later if needed.</p>
+
 <p>Confirm and install. Reboot when complete.</p>
-<h2 id="first-login">First Login</h2>
+
+<h2>First Login</h2>
+
 <p>SSH in from another machine:</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> yourusername@192.168.1.100</span></code></pre></div>
-<h2 id="first-steps-after-install">First Steps After Install</h2>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt update <span class="kw">&amp;&amp;</span> <span class="fu">sudo</span> apt full-upgrade <span class="at">-y</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install <span class="at">-y</span> curl wget git htop nano ufw fail2ban</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ufw allow ssh</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ufw enable</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ex">lsblk</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">df</span> <span class="at">-h</span></span></code></pre></div>
-<h2 id="optional--extend-lvm-to-use-full-disk">Optional — Extend LVM to
-Use Full Disk</h2>
+
+<pre><code>ssh yourusername@192.168.1.100</code></pre>
+
+<h2>First Steps After Install</h2>
+
+<pre><code># Update
+sudo apt update && sudo apt full-upgrade -y
+
+# Install essential tools
+sudo apt install -y curl wget git htop nano ufw fail2ban
+
+# Enable firewall
+sudo ufw allow ssh
+sudo ufw enable
+sudo ufw status</code></pre>
+
+<h2>Extend LVM to Use Full Disk</h2>
+
 <p>Ubuntu server sometimes does not use the full disk by default:</p>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> vgs</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> lvextend <span class="at">-l</span> +100%FREE <span class="at">--resizefs</span> /dev/ubuntu-vg/ubuntu-lv</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">df</span> <span class="at">-h</span></span></code></pre></div>
-<h2 id="set-time-zone">Set Time Zone</h2>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> timedatectl set-timezone Your/Timezone</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">timedatectl</span>                    <span class="co"># verify</span></span></code></pre></div>
-<h2 id="disable-root-login-via-ssh">Disable Root Login via SSH</h2>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> nano /etc/ssh/sshd_config</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl restart sshd</span></code></pre></div>
-<h2 id="static-ip-verification">Static IP Verification</h2>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> a                           <span class="co"># confirm your static IP</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> /etc/netplan/<span class="pp">*</span>.yaml        <span class="co"># view Netplan config</span></span></code></pre></div>
+
+<pre><code># Check if there is free space in the volume group
+sudo vgs
+
+# Extend and resize in one command
+sudo lvextend -l +100%FREE --resizefs /dev/ubuntu-vg/ubuntu-lv
+
+# Verify
+df -h</code></pre>
+
+<h2>Set Time Zone</h2>
+
+<pre><code>sudo timedatectl set-timezone Your/Timezone
+timedatectl</code></pre>
+
+<h2>Disable Root SSH Login</h2>
+
+<pre><code>sudo nano /etc/ssh/sshd_config
+# Set: PermitRootLogin no
+sudo systemctl restart sshd</code></pre>
+
+<h2>Upgrading from 24.04 to 26.04</h2>
+
+<pre><code>sudo apt update && sudo apt full-upgrade -y
+sudo apt install update-manager-core
+sudo do-release-upgrade</code></pre>
+
+<p>For server upgrades, test on a non-production machine first. Ubuntu LTS-to-LTS upgrades are generally reliable but packages occasionally need attention.</p>

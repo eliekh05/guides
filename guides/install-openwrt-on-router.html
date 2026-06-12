@@ -15,7 +15,7 @@ DATA:installation:Install OpenWrt on a Router:Installation Guides
 <li>Keeps older hardware useful and secure</li>
 </ul>
 <hr />
-<h2>Step 1 — Check Your Router is Supported (Non-Negotiable)</h2>
+<h2>Check Your Router is Supported (Non-Negotiable)</h2>
 <p>Go to the OpenWrt Table of Hardware and find your router's device page. The URL is: <strong>openwrt.org/toh</strong></p>
 <p>Search for your <strong>exact model</strong> and — critically — your <strong>hardware version</strong>. The version number is on a sticker on the bottom of the router (e.g. "Ver 2.0" or "v4").</p>
 <blockquote>
@@ -54,7 +54,7 @@ DATA:installation:Install OpenWrt on a Router:Installation Guides
 </tbody>
 </table>
 <hr />
-<h2>Step 2 — Download the Correct Firmware</h2>
+<h2>Download the Correct Firmware</h2>
 <p>On your router's OpenWrt device page, find the firmware section. Download the file labelled:</p>
 <ul>
 <li><strong>"Firmware OpenWrt Install"</strong> or <strong>"factory"</strong> — use this for your <strong>first install</strong> from stock firmware</li>
@@ -63,14 +63,14 @@ DATA:installation:Install OpenWrt on a Router:Installation Guides
 <p>Do not rename the file. Do not download the sysupgrade image for a first install.</p>
 <p>Save the file to your Desktop.</p>
 <hr />
-<h2>Step 3 — Prepare for the Flash</h2>
+<h2>Prepare for the Flash</h2>
 <ol>
 <li><strong>Connect your computer to a LAN port on the router</strong> with an Ethernet cable — not via Wi-Fi, and not the WAN/Internet port.</li>
 <li><strong>Disconnect your computer from Wi-Fi</strong> — you want the only connection to be the Ethernet cable to the router.</li>
 <li>The router should be connected to the internet via its WAN port (your modem/ISP connection) as normal.</li>
 </ol>
 <hr />
-<h2>Step 4 — Flash via the Router's Web Interface (Standard Method)</h2>
+<h2>Flash via the Router's Web Interface (Standard Method)</h2>
 <p>This works for most routers and is the safest approach.</p>
 <ol>
 <li>Open a browser and go to your router's admin page — usually <code>192.168.0.1</code> or <code>192.168.1.1</code>. Check the sticker on the router if unsure.</li>
@@ -85,7 +85,7 @@ DATA:installation:Install OpenWrt on a Router:Installation Guides
 <li>The router will reboot into OpenWrt.</li>
 </ol>
 <hr />
-<h2>Step 5 — First Login to OpenWrt</h2>
+<h2>First Login to OpenWrt</h2>
 <p>After the flash, your router's IP will change. OpenWrt uses <code>192.168.1.1</code> by default.</p>
 <p>Open a browser and go to: <strong>http://192.168.1.1</strong></p>
 <p>The OpenWrt LuCI web interface will load.</p>
@@ -96,7 +96,7 @@ DATA:installation:Install OpenWrt on a Router:Installation Guides
 <p><strong>Set a root password immediately:</strong>
 Go to <strong>System</strong> → <strong>Administration</strong> → <strong>Router Password</strong> → set a strong password → <strong>Save</strong>.</p>
 <hr />
-<h2>Step 6 — Configure Basic Settings</h2>
+<h2>Configure Basic Settings</h2>
 <h3>Set your timezone</h3>
 <p><strong>System</strong> → <strong>System</strong> → <strong>General Settings</strong> → <strong>Timezone</strong> → set yours → <strong>Save &amp; Apply</strong>.</p>
 <h3>Configure your WAN connection</h3>
@@ -110,14 +110,14 @@ ping -c 3 1.1.1.1
 </code></code></pre>
 
 <hr />
-<h2>Step 7 — Update Package Lists and Upgrade</h2>
+<h2>Update Package Lists and Upgrade</h2>
 <pre><code><code>ssh root@192.168.1.1
 opkg update
 opkg list-upgradable | cut -f 1 -d &#39; &#39; | xargs opkg upgrade
 </code></code></pre>
 
 <hr />
-<h2>Step 8 — Install Useful Packages</h2>
+<h2>Install Useful Packages</h2>
 <pre><code><code># AdGuard Home — network-wide ad blocking
 opkg install adguardhome
 

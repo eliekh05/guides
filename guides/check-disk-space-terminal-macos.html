@@ -1,0 +1,30 @@
+DATA:macos:Check Disk Space from the Terminal:macOS
+<h1>Check Disk Space from the Terminal</h1>
+<h3>In Finder</h3>
+<p>Click the <strong>Apple menu ()</strong> → <strong>About This Mac</strong> → <strong>More Info</strong> → <strong>Storage</strong>.</p>
+<p>Or in Finder: hold <strong>Option (⌥)</strong> and click the <strong>Go</strong> menu → <strong>Computer</strong> → right-click your drive → <strong>Get Info</strong>.</p>
+<h3>In Terminal</h3>
+<pre><code><code># Disk usage summary for all mounted volumes
+df -h
+
+# How much space a specific folder uses
+du -sh ~/Downloads
+du -sh ~/Desktop
+
+# Top 10 largest folders in your home directory
+du -sh ~/* | sort -rh | head -10
+
+# Find the largest files on the whole system
+sudo du -sh /* 2&gt;/dev/null | sort -rh | head -20
+</code></code></pre>
+
+<h3>Free up space quickly</h3>
+<pre><code><code># Clear Homebrew cache
+brew cleanup -s
+
+# Clear system and user caches
+sudo rm -rf ~/Library/Caches/*
+sudo rm -rf /Library/Caches/*
+</code></code></pre>
+
+<hr />

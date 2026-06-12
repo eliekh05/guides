@@ -12,14 +12,14 @@ DATA:installation:Install Windows 11 as a VM in Proxmox:Installation Guides
 <li>At least <strong>64 GB storage</strong> for the VM disk</li>
 </ul>
 <hr />
-<h2>Step 1 — Upload Both ISOs to Proxmox</h2>
+<h2>Upload Both ISOs to Proxmox</h2>
 <ol>
 <li>In the Proxmox web UI, go to your storage (usually <strong>local</strong>) → <strong>ISO Images</strong> → <strong>Upload</strong>.</li>
 <li>Upload both the <strong>Windows 11 ISO</strong> and the <strong>virtio-win ISO</strong>.</li>
 <li>Wait for both uploads to complete.</li>
 </ol>
 <hr />
-<h2>Step 2 — Create the VM</h2>
+<h2>Create the VM</h2>
 <p>In the Proxmox web UI, click <strong>Create VM</strong> in the top right.</p>
 <h3>General Tab</h3>
 <ul>
@@ -70,7 +70,7 @@ DATA:installation:Install Windows 11 as a VM in Proxmox:Installation Guides
 <li>Click <strong>Finish</strong></li>
 </ul>
 <hr />
-<h2>Step 3 — Verify Boot Order</h2>
+<h2>Verify Boot Order</h2>
 <p>Before starting:</p>
 <ol>
 <li>Select your new VM → <strong>Hardware</strong> → confirm both CD drives are there:</li>
@@ -83,7 +83,7 @@ DATA:installation:Install Windows 11 as a VM in Proxmox:Installation Guides
 </li>
 </ol>
 <hr />
-<h2>Step 4 — Start the VM and Install Windows</h2>
+<h2>Start the VM and Install Windows</h2>
 <ol>
 <li>Select your VM and click <strong>Start</strong>, then click <strong>Console</strong> to open the display.</li>
 <li>Press any key when prompted to boot from CD — do this quickly.</li>
@@ -107,7 +107,7 @@ DATA:installation:Install Windows 11 as a VM in Proxmox:Installation Guides
 <p>Your virtual disk will now appear. Select it and click <strong>Next</strong>.</p>
 <p>Windows will install and reboot several times. The VM will reboot automatically — leave it running.</p>
 <hr />
-<h2>Step 5 — Complete Windows Setup</h2>
+<h2>Complete Windows Setup</h2>
 <p>After installation, Windows will start the OOBE (Out of Box Experience) setup.</p>
 <h3>Skip the Microsoft Account Requirement</h3>
 <p>Windows 11 forces a Microsoft account during setup. To use a local account instead:</p>
@@ -123,7 +123,7 @@ start ms-cxh:localonly</code></p>
 </blockquote>
 <p>Complete the rest of setup normally.</p>
 <hr />
-<h2>Step 6 — Install VirtIO Guest Tools (Essential)</h2>
+<h2>Install VirtIO Guest Tools (Essential)</h2>
 <p>After reaching the Windows desktop:</p>
 <ol>
 <li>Open <strong>File Explorer</strong> → find the VirtIO CD drive (D: or E:).</li>
@@ -136,7 +136,7 @@ start ms-cxh:localonly</code></p>
 - Shutdown/restart from Proxmox will work cleanly
 - Memory ballooning will be active</p>
 <hr />
-<h2>Step 7 — Switch to RDP for Daily Use</h2>
+<h2>Switch to RDP for Daily Use</h2>
 <p>The Proxmox noVNC console is fine for setup but slow for daily use. RDP is significantly faster, supports clipboard, and gives proper resolution.</p>
 <ol>
 <li>In Windows, search for <strong>Remote Desktop settings</strong> → enable <strong>Remote Desktop</strong>.</li>
@@ -144,7 +144,7 @@ start ms-cxh:localonly</code></p>
 <li>From another machine, open Remote Desktop Connection (Windows) or Microsoft Remote Desktop (macOS/iOS) and connect to the VM's IP.</li>
 </ol>
 <hr />
-<h2>Step 8 — Take a Snapshot</h2>
+<h2>Take a Snapshot</h2>
 <p>Before installing any software, take a clean snapshot:</p>
 <p>In Proxmox, select your VM → <strong>Snapshots</strong> → <strong>Take Snapshot</strong> → name it <code>clean-install</code> → <strong>Take Snapshot</strong>.</p>
 <p>If anything breaks later, you can restore to this state in seconds.</p>

@@ -2,7 +2,7 @@ DATA:package-managers:Fix Homebrew After a macOS Upgrade:Package Managers (All O
 <h1>Fix Homebrew After a macOS Upgrade</h1>
 <p>After upgrading macOS, Homebrew often breaks — packages stop working, <code>brew</code> command disappears, or you get <code>dyld: Library not loaded</code> errors. This is one of the most searched Homebrew problems and happens on almost every major macOS upgrade.</p>
 <hr />
-<h2>Step 1 — Reinstall Xcode Command Line Tools</h2>
+<h2>Reinstall Xcode Command Line Tools</h2>
 <p>Following a macOS upgrade it may be necessary to reinstall the Xcode Command Line Tools. This is the first thing to do after any major macOS update:</p>
 <pre><code><code>xcode-select --install
 </code></code></pre>
@@ -13,7 +13,7 @@ DATA:package-managers:Fix Homebrew After a macOS Upgrade:Package Managers (All O
 
 <p>If this fixes everything, you are done. If not, continue below.</p>
 <hr />
-<h2>Step 2 — Fix broken packages with dyld errors</h2>
+<h2>Fix broken packages with dyld errors</h2>
 <p>After a macOS upgrade you may see errors like:</p>
 <pre><code><code>dyld: Library not loaded: /opt/homebrew/opt/icu4c/lib/libicui18n.76.dylib
 </code></code></pre>
@@ -28,7 +28,7 @@ brew link --overwrite $(brew list)
 </code></code></pre>
 
 <hr />
-<h2>Step 3 — Fix brew Command Not Found After Upgrade</h2>
+<h2>Fix brew Command Not Found After Upgrade</h2>
 <p>If <code>brew</code> itself is gone from your PATH after a macOS upgrade:</p>
 <p><strong>Apple Silicon:</strong></p>
 <pre><code><code>echo &#39;eval &quot;$(/opt/homebrew/bin/brew shellenv)&quot;&#39; &gt;&gt; ~/.zprofile
@@ -45,13 +45,13 @@ source ~/.zprofile
 </code></code></pre>
 
 <hr />
-<h2>Step 4 — Run brew doctor</h2>
+<h2>Run brew doctor</h2>
 <pre><code><code>brew doctor
 </code></code></pre>
 
 <p>This checks your Homebrew installation for problems and tells you exactly what to fix. Read each warning and follow the suggested fix. Run it again after each fix until it says <code>Your system is ready to brew</code>.</p>
 <hr />
-<h2>Step 5 — Fix Two Homebrew Installations (Migration Assistant Issue)</h2>
+<h2>Fix Two Homebrew Installations (Migration Assistant Issue)</h2>
 <p>When using tools such as Apple's Migration Assistant, it's possible to have two Homebrew installations unintentionally. This causes conflicts where some packages work and others do not.</p>
 <p>Check for duplicate installations:</p>
 <pre><code><code>ls /opt/homebrew/bin/brew 2&gt;/dev/null &amp;&amp; echo &quot;Apple Silicon Homebrew found&quot;
@@ -72,7 +72,7 @@ sudo rm -rf /usr/local/Cellar
 </code></code></pre>
 
 <hr />
-<h2>Step 6 — Full Reinstall (Last Resort)</h2>
+<h2>Full Reinstall (Last Resort)</h2>
 <p>If nothing else works, a clean reinstall is the most reliable fix:</p>
 <pre><code><code># First export your current package list
 brew list --formula &gt; ~/brew-formulas.txt

@@ -1,244 +1,183 @@
 DATA:installation:Clean Install Arch Linux + Hyprland (Wi-Fi Only):Installation Guides
 <h1>Clean Install Arch Linux + Hyprland (Wi-Fi Only)</h1>
+
+<p>This guide installs Arch Linux using the official <code>archinstall</code> script, then sets up Hyprland using the JaKooLit automated installer. Aimed at Wi-Fi only machines.</p>
+
 <blockquote>
-<p>⚠️ <strong>Note:</strong> Arch Linux 2026 versions the <code>archinstall</code> menus have changed and can be unpredictable.
-This guide keeps the original installation instructions for stability and accuracy.
-For step-by-step prompts, follow the installer menus carefully — options may differ slightly from newer releases.</p>
-<p>💡 <strong>Tip:</strong> If you want to follow this guide exactly as written, you can download the same Arch Linux version used here: <strong>archlinux-2025.11.01</strong> download link in requirements part.</p>
+<p>Always download the latest Arch Linux ISO from <a href="https://archlinux.org/download/">archlinux.org/download</a>. Do not use pinned old ISO versions — Arch is a rolling release and the installer downloads packages live from the internet anyway.</p>
 </blockquote>
-<p>This guide walks you through installing <strong>Arch Linux</strong> on bare metal and setting up <strong>Hyprland</strong> with Wi-Fi.
-All instructions use <strong>official Arch Linux tools</strong> and the <strong>Hyprland automated installer</strong> by <a href="https://github.com/JaKooLit/Arch-Hyprland">JaKooLit</a> and <a href="https://github.com/LinuxBeginnings/Arch-Hyprland">LinuxBeginnings</a>.</p>
-<h2>🧰 Requirements</h2>
+
+<h2>Requirements</h2>
+
 <ul>
-<li><strong>Wi-Fi connection</strong> (recommended)</li>
-<li><strong>Arch Linux ISO:</strong> <a href="https://archlinux.org/releng/releases/2025.11.01/torrent/">Torrent Download</a> or
-  <code>magnet:?xt=urn:btih:d4487f489d4ee786f99bcdeeb8d3f226694ea27f&amp;dn=archlinux-2025.11.01-x86_64.iso</code></li>
-<li><strong>Torrent client:</strong> <a href="https://freedownloadmanager.org">Free Download Manager</a> or any torrent/magnet client</li>
-<li><strong>Hyprland installer:</strong> <a href="https://github.com/LinuxBeginnings/Arch-Hyprland">https://github.com/LinuxBeginnings/Arch-Hyprland</a></li>
-<li><strong>Hyprland installer:</strong> <a href="https://github.com/JaKooLit/Arch-Hyprland">https://github.com/JaKooLit/Arch-Hyprland</a></li>
-<li><strong>Balena Etcher:</strong> <a href="https://etcher.balena.io/#download-etcher">https://etcher.balena.io/#download-etcher</a></li>
-<li><strong>USB drive:</strong> at least <strong>16 GB</strong></li>
+<li>A USB drive — 2 GB minimum</li>
+<li>A machine with UEFI (most hardware from 2012 onwards)</li>
+<li>At least 20 GB free disk space, 4 GB RAM recommended</li>
+<li>Wi-Fi network you know the password to</li>
 </ul>
-<h2>🔧 Prepare the Arch Linux USB</h2>
-<p>You can create the bootable USB on <strong>Windows</strong>, <strong>macOS</strong>, or <strong>Linux</strong>:</p>
+
+<h2>Create the Bootable USB</h2>
+
+<p>Download the latest ISO from <a href="https://archlinux.org/download/">archlinux.org/download</a>.</p>
+
+<p>Flash it using <strong>Ventoy</strong> (recommended — lets you boot multiple ISOs from one USB) or <strong>Rufus</strong> on Windows or <strong>balenaEtcher</strong> on any platform.</p>
+
+<h2>Boot from USB</h2>
+
 <ol>
-<li>Download the Arch Linux ISO using your torrent client.</li>
-<li>Open <strong>Balena Etcher</strong> → click <strong>Flash from File</strong>, then select your ISO.</li>
-<li>
-<p>Click <strong>Select Target</strong>, choose your USB drive, and press <strong>Flash</strong>.</p>
-</li>
-<li>
-<p>On <strong>macOS</strong>, enter your admin password.</p>
-</li>
-<li>On <strong>Windows</strong>, approve the UAC prompt.</li>
-<li>On <strong>Linux</strong>, enter your sudo password.</li>
+<li>Insert USB and restart.</li>
+<li>Enter your boot menu — usually <strong>F12</strong>, <strong>F9</strong>, <strong>F2</strong>, or <strong>DEL</strong> depending on manufacturer.</li>
+<li>Select the USB drive.</li>
+<li>At the GRUB menu choose the first option.</li>
 </ol>
-<p>After flashing, your USB is ready to boot.</p>
-<h2>💻 Boot from USB</h2>
-<ol>
-<li>Insert the USB drive into your target computer.</li>
-<li>Power it on and enter the <strong>Boot Menu</strong> (key varies by manufacturer — often <code>F12</code>, <code>F9</code>, <code>ESC</code>, or <code>DEL</code>).</li>
-<li>Select your USB drive and press <strong>Enter</strong>.</li>
-<li>At the GRUB menu, choose the first option to boot into the live environment.</li>
-</ol>
-<h2>📶 Connect to Wi-Fi</h2>
-<p>In the live shell, start the interactive Wi-Fi tool:</p>
-<pre><code><code>iwctl
-</code></code></pre>
 
-<p>Inside <code>iwctl</code>, run:</p>
-<pre><code><code>station &lt;your_interface&gt; get-networks
-station &lt;your_interface&gt; connect &lt;SSID&gt;
-# For hidden networks:
-# station &lt;your_interface&gt; connect-hidden &lt;SSID&gt;
-exit
-</code></code></pre>
+<p>You land at a root shell. The live environment is minimal by design.</p>
 
-<p>Back in the normal shell, verify your interface:</p>
-<pre><code><code>ip a
-</code></code></pre>
+<h2>Connect to Wi-Fi</h2>
 
-<p>Then request an IP address:</p>
-<pre><code><code>dhclient &lt;INTERFACE_NAME&gt;
-# or use dhcpcd or another DHCP client that is installed
-</code></code></pre>
+<p>Use <code>iwctl</code> — the interactive Wi-Fi tool included in the live ISO:</p>
 
-<h2>⚙️ Install Arch Linux</h2>
-<p>Start the guided installer:</p>
-<pre><code><code>archinstall
-</code></code></pre>
+<pre><code>iwctl</code></pre>
 
-<p>Follow the prompts to configure your system:</p>
+<p>Inside <code>iwctl</code>:</p>
+
+<pre><code># Find your wireless interface name (usually wlan0)
+device list
+
+# Scan for networks
+station wlan0 scan
+
+# Show available networks
+station wlan0 get-networks
+
+# Connect (replace SSID with your network name)
+station wlan0 connect "Your Network Name"
+
+# For hidden networks
+station wlan0 connect-hidden "Your Network Name"
+
+exit</code></pre>
+
+<p>Verify you have an IP and internet:</p>
+
+<pre><code>ip a
+ping -c 3 archlinux.org</code></pre>
+
+<p>If <code>ping</code> works, you are ready.</p>
+
+<h2>Run archinstall</h2>
+
+<pre><code>archinstall</code></pre>
+
+<p>Navigate with arrow keys, Enter to select, Escape to go back. Work through each section:</p>
+
+<h3>Mirrors</h3>
+
+<p>A list of countries appears. Press <strong>Space</strong> to select each country — select all of them. When the list is done, confirm. Reflector runs automatically, tests all the mirrors from your selected countries by speed, and picks the fastest ones. You do not need to choose any specific mirror yourself.</p>
+
+<h3>Disk Configuration</h3>
+
+<p>Choose <strong>Use a best-effort default partition layout</strong> unless you know what you are doing. Select your target disk. Choose <strong>ext4</strong> as the filesystem unless you want btrfs (which supports snapshots — useful but adds complexity).</p>
+
+<p>If you want disk encryption, enable it here. You will need to enter a passphrase every boot.</p>
+
+<h3>Profile</h3>
+
+<p>Select <strong>None</strong> — do not install a desktop environment here. JaKooLit's script installs Hyprland and everything it needs. Installing a DE here creates conflicts.</p>
+
+<h3>Audio</h3>
+
+<p>Select <strong>Pipewire</strong>. PulseAudio is legacy — everything in 2026 expects Pipewire.</p>
+
+<h3>Network Configuration</h3>
+
+<p>Select <strong>NetworkManager</strong>. This gives you GUI Wi-Fi management after install and works with most tools.</p>
+
+<h3>Other Settings</h3>
+
+<ul>
+<li><strong>Hostname:</strong> anything you want</li>
+<li><strong>Root password:</strong> set one</li>
+<li><strong>User account:</strong> create one, check the sudo box</li>
+<li><strong>Timezone:</strong> your timezone</li>
+<li><strong>NTP:</strong> Yes (keep automatic time sync on)</li>
+<li><strong>Additional packages:</strong> add <code>git</code> — you need it for the Hyprland installer</li>
+</ul>
+
+<h3>Install</h3>
+
+<p>Select <strong>Install</strong> at the bottom. Confirm and wait — 5 to 20 minutes depending on your internet and mirror selection.</p>
+
+<p>When asked to chroot after install, type <strong>no</strong> and reboot. Remove the USB when the machine restarts.</p>
+
+<h2>First Boot — Log In as Your User</h2>
+
+<p>You land at a terminal login. Log in with the user you created. You should have internet automatically via NetworkManager if you are on Ethernet. For Wi-Fi:</p>
+
+<pre><code>nmcli device wifi connect "Your Network Name" password "yourpassword"</code></pre>
+
+<h2>Install Hyprland with JaKooLit</h2>
+
+<p>The recommended method is cloning the repo directly — more reliable than piping curl to sh:</p>
+
+<pre><code>git clone --depth=1 https://github.com/JaKooLit/Arch-Hyprland.git ~/Arch-Hyprland
+cd ~/Arch-Hyprland
+chmod +x install.sh
+./install.sh</code></pre>
+
+<p>The script asks a series of yes/no questions. Here is what each option does so you can make your own choice:</p>
+
 <table>
 <thead>
-<tr>
-<th>Setting</th>
-<th>Recommended Option</th>
-</tr>
+<tr><th>Option</th><th>What it does</th><th>Recommend</th></tr>
 </thead>
 <tbody>
-<tr>
-<td>Language</td>
-<td>English</td>
-</tr>
-<tr>
-<td>Keyboard layout</td>
-<td>us</td>
-</tr>
-<tr>
-<td>Mirror selection</td>
-<td>Your region or automatic</td>
-</tr>
-<tr>
-<td>Locale</td>
-<td>en_US.UTF-8</td>
-</tr>
-<tr>
-<td>Disk</td>
-<td>Internal SSD/HDD</td>
-</tr>
-<tr>
-<td>Bootloader</td>
-<td>GRUB</td>
-</tr>
-<tr>
-<td>Swap</td>
-<td>Yes</td>
-</tr>
-<tr>
-<td>Hostname</td>
-<td>Your choice</td>
-</tr>
-<tr>
-<td>Root password</td>
-<td>Your choice</td>
-</tr>
-<tr>
-<td>User account</td>
-<td>Your choice</td>
-</tr>
-<tr>
-<td>Profile</td>
-<td>None</td>
-</tr>
-<tr>
-<td>Audio</td>
-<td>PulseAudio</td>
-</tr>
-<tr>
-<td>Kernel</td>
-<td>Linux</td>
-</tr>
-<tr>
-<td>Extra packages</td>
-<td>None</td>
-</tr>
-<tr>
-<td>Network config</td>
-<td>As desired</td>
-</tr>
-<tr>
-<td>Timezone</td>
-<td>Your timezone</td>
-</tr>
-<tr>
-<td>Automatic timesync (NTP)</td>
-<td>Yes</td>
-</tr>
-<tr>
-<td>Optional repositories</td>
-<td>None</td>
-</tr>
+<tr><td>gtk_themes</td><td>GTK dark/light theme support</td><td>Yes</td></tr>
+<tr><td>bluetooth</td><td>Bluetooth stack + blueman GUI</td><td>Yes if you use Bluetooth</td></tr>
+<tr><td>thunar</td><td>File manager with plugins</td><td>Yes</td></tr>
+<tr><td>quickshell</td><td>Desktop overview widget</td><td>Yes</td></tr>
+<tr><td>sddm</td><td>Display manager (login screen)</td><td>Yes</td></tr>
+<tr><td>sddm_theme</td><td>JaKooLit's SDDM theme</td><td>Your choice</td></tr>
+<tr><td>xdph</td><td>Screen sharing for Flatpak, OBS, Discord</td><td>Yes — skip this and screen sharing breaks</td></tr>
+<tr><td>zsh</td><td>Zsh + Oh My Zsh as default shell</td><td>Yes — dotfiles expect it</td></tr>
+<tr><td>pokemon</td><td>Pokémon color display in terminal</td><td>Your choice (cosmetic only)</td></tr>
+<tr><td>rog</td><td>ASUS ROG utilities</td><td>Only if you have an ASUS ROG laptop</td></tr>
+<tr><td>dots</td><td>JaKooLit's preconfigured dotfiles</td><td>Yes — this is the whole point</td></tr>
+<tr><td>input_group</td><td>Adds your user to the input group</td><td>Yes</td></tr>
+<tr><td>nvidia</td><td>Nvidia Hyprland patches and env vars</td><td>Only if you have an Nvidia GPU</td></tr>
+<tr><td>nouveau</td><td>Open source Nvidia driver</td><td>No — conflicts with nvidia option above</td></tr>
 </tbody>
 </table>
-<p>After verifying your selections, click <strong>Install</strong> and wait until the process completes.</p>
-<h2>🎨 Set Up Hyprland</h2>
-<p>After rebooting and logging into your new Arch Linux installation, run:</p>
-<pre><code><code>sh &lt;(curl -L https://raw.githubusercontent.com/LinuxBeginnings/Arch-Hyprland/main/auto-install.sh)
-</code></code></pre>
 
-<p>OR</p>
-<pre><code><code>sh &lt;(curl -L https://raw.githubusercontent.com/JaKooLit/Arch-Hyprland/main/auto-install.sh)
-</code></code></pre>
-
-<p>Follow the on-screen instructions.
-When you reach the <strong>package selection screen</strong>, choose the following options for a complete Hyprland setup:</p>
-<table>
-<thead>
-<tr>
-<th>Option</th>
-<th>Setting</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>gtk_themes</td>
-<td>ON</td>
-</tr>
-<tr>
-<td>bluetooth</td>
-<td>ON</td>
-</tr>
-<tr>
-<td>thunar</td>
-<td>ON</td>
-</tr>
-<tr>
-<td>quickshell</td>
-<td>ON</td>
-</tr>
-<tr>
-<td>sddm</td>
-<td>ON</td>
-</tr>
-<tr>
-<td>sddm_theme</td>
-<td>ON</td>
-</tr>
-<tr>
-<td>xdph</td>
-<td>ON</td>
-</tr>
-<tr>
-<td>zsh</td>
-<td>ON</td>
-</tr>
-<tr>
-<td>pokemon</td>
-<td>ON</td>
-</tr>
-<tr>
-<td>rog</td>
-<td>OFF</td>
-</tr>
-<tr>
-<td>dots</td>
-<td>ON</td>
-</tr>
-<tr>
-<td>input_group</td>
-<td>ON</td>
-</tr>
-<tr>
-<td>nvidia</td>
-<td>ON</td>
-</tr>
-<tr>
-<td>nouveau</td>
-<td>ON</td>
-</tr>
-</tbody>
-</table>
 <blockquote>
-<p>💡 <strong>Tip:</strong> Press <strong>Space</strong> to select a package and <strong>Enter/Return</strong> to confirm when using the JaKooLit installer.
-The installer will display available packages — match them to the list above.</p>
+<p>Do not enable both <code>nvidia</code> and <code>nouveau</code>. They conflict. If you have Nvidia hardware, enable <code>nvidia</code> and leave <code>nouveau</code> off. If you have AMD or Intel, leave both off.</p>
 </blockquote>
-<p>During the process:</p>
+
+<p>When asked about the 1 GB wallpaper pack — choose based on your storage. The rainbow wallpaper set is smaller and fine to say yes to.</p>
+
+<p>The installation takes 10–30 minutes. When complete, reboot.</p>
+
+<h2>After Reboot</h2>
+
+<p>SDDM presents a login screen. Log in. Hyprland starts.</p>
+
+<p>Default keybindings (Super = Windows/Command key):</p>
+
 <ul>
-<li>When asked about downloading the 1 GB wallpaper bank → <strong>Choose “No”</strong></li>
-<li>For rainbow wallpapers → <strong>Choose “Yes”</strong></li>
+<li><strong>Super + Return</strong> — open terminal</li>
+<li><strong>Super + E</strong> — file manager</li>
+<li><strong>Super + R</strong> or <strong>Super + Space</strong> — app launcher</li>
+<li><strong>Super + Q</strong> — close window</li>
+<li><strong>Super + 1–9</strong> — switch workspace</li>
+<li><strong>Super + Shift + 1–9</strong> — move window to workspace</li>
 </ul>
-<p>After completion, reboot your system.</p>
-<h2>🎉 Congratulations!</h2>
-<p>You now have <strong>Hyprland</strong> running on a clean <strong>Arch Linux</strong> installation with <strong>Wi-Fi fully configured</strong>.
-Enjoy your lightweight, modern, and fully customizable Linux experience! 🚀</p>
+
+<h2>Common Issues</h2>
+
+<p><strong>Black screen after login:</strong> Usually a GPU driver issue. TTY in with Ctrl+Alt+F2 and check <code>journalctl -xe | grep hyprland</code>.</p>
+
+<p><strong>No sound:</strong> Run <code>wpctl status</code> to check Pipewire. Try <code>systemctl --user restart pipewire</code>.</p>
+
+<p><strong>Screen sharing not working in Discord/OBS:</strong> You skipped <code>xdph</code> during install. Re-run the installer or manually install <code>xdg-desktop-portal-hyprland</code>.</p>
+
+<p><strong>Wi-Fi dropped after reboot:</strong> <code>nmcli device wifi connect "Name" password "pass"</code> to reconnect. Should auto-connect on subsequent boots.</p>

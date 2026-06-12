@@ -11,13 +11,13 @@ DATA:installation:Install Windows as a VM on Linux (KVM/QEMU with virt-manager):
 <li>The <strong>VirtIO drivers ISO</strong> (free, from the Fedora project)</li>
 </ul>
 <hr />
-<h2>Step 1 — Check Virtualisation Support</h2>
+<h2>Check Virtualisation Support</h2>
 <pre><code><code>kvm-ok
 </code></code></pre>
 
 <p>If it says <code>KVM acceleration can be used</code>, you are ready. If not, enable VT-x or AMD-V in your BIOS settings.</p>
 <hr />
-<h2>Step 2 — Install KVM and virt-manager</h2>
+<h2>Install KVM and virt-manager</h2>
 <p><strong>Ubuntu / Debian:</strong></p>
 <pre><code><code>sudo apt update
 sudo apt install -y qemu-kvm libvirt-daemon-system libvirt-clients \
@@ -39,7 +39,7 @@ sudo systemctl enable --now libvirtd
 
 <p><strong>Log out and back in</strong> for group changes to take effect.</p>
 <hr />
-<h2>Step 3 — Download the Windows ISO and VirtIO Drivers</h2>
+<h2>Download the Windows ISO and VirtIO Drivers</h2>
 <p><strong>Windows 11 ISO:</strong>
 Go to <a href="https://www.microsoft.com/software-download/windows11">microsoft.com/software-download/windows11</a> and download the 64-bit ISO.</p>
 <p><strong>VirtIO Drivers ISO:</strong>
@@ -53,7 +53,7 @@ sudo mv ~/Downloads/virtio-win.iso /var/lib/libvirt/images/
 </code></code></pre>
 
 <hr />
-<h2>Step 4 — Enable XML Editing in virt-manager</h2>
+<h2>Enable XML Editing in virt-manager</h2>
 <p>Before creating the VM:</p>
 <ol>
 <li>Open <strong>virt-manager</strong>.</li>
@@ -62,7 +62,7 @@ sudo mv ~/Downloads/virtio-win.iso /var/lib/libvirt/images/
 </ol>
 <p>This lets you make the Hyper-V optimisations later.</p>
 <hr />
-<h2>Step 5 — Create the Windows VM</h2>
+<h2>Create the Windows VM</h2>
 <p>In virt-manager, click the <strong>Create a new virtual machine</strong> button (computer icon):</p>
 <ol>
 <li><strong>Step 1:</strong> Select <strong>Local install media (ISO image or CDROM)</strong> → <strong>Forward</strong></li>
@@ -75,7 +75,7 @@ sudo mv ~/Downloads/virtio-win.iso /var/lib/libvirt/images/
 <li>Click <strong>Finish</strong></li>
 </ol>
 <hr />
-<h2>Step 6 — Configure VM Hardware</h2>
+<h2>Configure VM Hardware</h2>
 <p>The customisation window opens. Make these changes:</p>
 <h3>Overview</h3>
 <ul>
@@ -135,7 +135,7 @@ sudo mv ~/Downloads/virtio-win.iso /var/lib/libvirt/images/
 
 <p>Click <strong>Apply</strong>.</p>
 <hr />
-<h2>Step 7 — Install Windows</h2>
+<h2>Install Windows</h2>
 <p>Click <strong>Begin Installation</strong>. The VM will start and boot from the Windows ISO.</p>
 <ol>
 <li>Select language, time, keyboard → <strong>Next</strong> → <strong>Install now</strong></li>
@@ -163,7 +163,7 @@ sudo mv ~/Downloads/virtio-win.iso /var/lib/libvirt/images/
 start ms-cxh:localonly</code></p>
 </blockquote>
 <hr />
-<h2>Step 8 — Install VirtIO Guest Tools</h2>
+<h2>Install VirtIO Guest Tools</h2>
 <p>After reaching the Windows desktop:</p>
 <ol>
 <li>Open <strong>File Explorer</strong> → find the VirtIO CD drive.</li>
@@ -172,7 +172,7 @@ start ms-cxh:localonly</code></p>
 </ol>
 <p>After restarting, all drivers (network, display, balloon memory) will be working.</p>
 <hr />
-<h2>Step 9 — Performance Tuning</h2>
+<h2>Performance Tuning</h2>
 <h3>Disable Windows platform clock (reduces CPU overhead):</h3>
 <p>Open PowerShell as Administrator in the Windows VM:</p>
 <pre><code><code>bcdedit /set useplatformclock No

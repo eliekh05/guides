@@ -2,7 +2,7 @@ DATA:linux:Set Up a Printer with CUPS:Linux
 <h1>Set Up a Printer with CUPS</h1>
 <p>CUPS (Common Unix Printing System) is how Linux handles all printing. It works for USB printers, network printers, and wireless printers. Most modern printers work without manual driver installation — but when they do not, this guide covers that too.</p>
 <hr />
-<h2>Step 1 — Install CUPS</h2>
+<h2>Install CUPS</h2>
 <p><strong>Ubuntu / Debian / Linux Mint:</strong></p>
 <pre><code><code>sudo apt update
 sudo apt install cups cups-client -y
@@ -21,14 +21,14 @@ sudo apt install cups cups-client -y
 </code></code></pre>
 
 <hr />
-<h2>Step 2 — Add Your User to the lpadmin Group</h2>
+<h2>Add Your User to the lpadmin Group</h2>
 <p>Without this, you cannot manage printers without root:</p>
 <pre><code><code>sudo usermod -aG lpadmin $(whoami)
 </code></code></pre>
 
 <p>Log out and back in for the group change to take effect.</p>
 <hr />
-<h2>Step 3 — Open the CUPS Web Interface</h2>
+<h2>Open the CUPS Web Interface</h2>
 <p>Open your browser and go to:</p>
 <pre><code><code>http://localhost:631
 </code></code></pre>
@@ -36,7 +36,7 @@ sudo apt install cups cups-client -y
 <p>Click <strong>Administration</strong> → <strong>Add Printer</strong>.</p>
 <p>When it asks for a username and password, use your <strong>Linux login credentials</strong> (the same ones you use to log in to your computer).</p>
 <hr />
-<h2>Step 4 — Add a USB Printer</h2>
+<h2>Add a USB Printer</h2>
 <ol>
 <li>Connect the printer via USB and power it on.</li>
 <li>Go to <code>http://localhost:631</code> → <strong>Administration</strong> → <strong>Add Printer</strong>.</li>
@@ -47,7 +47,7 @@ sudo apt install cups cups-client -y
 </ol>
 <p>Print a test page: go to <strong>Printers</strong> → select your printer → <strong>Print Test Page</strong>.</p>
 <hr />
-<h2>Step 5 — Add a Network / Wireless Printer</h2>
+<h2>Add a Network / Wireless Printer</h2>
 <p>Make sure the printer is on the same network as your Linux machine.</p>
 <ol>
 <li>Go to <code>http://localhost:631</code> → <strong>Administration</strong> → <strong>Add Printer</strong>.</li>

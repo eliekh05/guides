@@ -1,62 +1,98 @@
 DATA:installation:Install Fedora Linux Workstation:Installation Guides
 <h1>Install Fedora Linux Workstation</h1>
-<p>Fedora is a desktop Linux distribution with the latest software. It
-gets major releases every 6 months and supports each release for 13
-months.</p>
-<h2 id="download">Download</h2>
-<p>Go to <a href="https://fedoraproject.org">fedoraproject.org</a> →
-<strong>Download Fedora Workstation</strong></p>
-<p>Download the ISO and flash with balenaEtcher.</p>
-<h2 id="install">Install</h2>
-<p>Boot from USB. Fedora uses the Anaconda graphical installer.</p>
-<p><strong>Language and keyboard:</strong> Select yours</p>
-<p><strong>Installation Destination:</strong></p>
-<ul>
-<li>Click your disk</li>
-<li>Choose <strong>Automatic</strong> for simple setup or
-<strong>Custom</strong> to configure partitions</li>
-<li>For UEFI systems, Fedora creates an EFI partition, a
-<code>/boot</code> partition, and a root BTRFS filesystem
-automatically</li>
-</ul>
-<p><strong>Software Selection:</strong> Fedora Workstation with GNOME
-(default)</p>
-<p><strong>Network:</strong> Fedora can configure network during install
-if needed</p>
-<p><strong>Root and User:</strong></p>
-<ul>
-<li>Enable root account if you want (optional on Fedora)</li>
-<li>Create a user and check <strong>Make this user
-administrator</strong></li>
-</ul>
-<p>Click <strong>Begin Installation</strong> and wait.</p>
-<h2 id="first-steps-after-install">First Steps After Install</h2>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dnf update <span class="at">-y</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-<span class="va">$(</span><span class="ex">rpm</span> <span class="at">-E</span> %fedora<span class="va">)</span>.noarch.rpm</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dnf install https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-<span class="va">$(</span><span class="ex">rpm</span> <span class="at">-E</span> %fedora<span class="va">)</span>.noarch.rpm</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dnf groupupdate multimedia <span class="at">--setopt</span><span class="op">=</span><span class="st">&quot;install_weak_deps=False&quot;</span> <span class="at">--exclude</span><span class="op">=</span>PackageKit-gstreamer-plugin</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dnf groupupdate sound-and-video</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ex">flatpak</span> remote-add <span class="at">--if-not-exists</span> flathub https://dl.flathub.org/repo/flathub.flatpakrepo</span></code></pre></div>
-<h2 id="install-common-apps">Install Common Apps</h2>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dnf install vim git curl wget htop gnome-tweaks</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">flatpak</span> install flathub com.spotify.Client</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">flatpak</span> install flathub com.discordapp.Discord</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">flatpak</span> install flathub org.videolan.VLC</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ex">flatpak</span> install flathub com.visualstudio.code</span></code></pre></div>
-<h2 id="nvidia-drivers-if-you-have-nvidia-gpu">Nvidia Drivers (If You
-Have Nvidia GPU)</h2>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dnf install akmod-nvidia xorg-x11-drv-nvidia-cuda</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> reboot</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">nvidia-smi</span>   <span class="co"># verify driver loaded</span></span></code></pre></div>
-<h2 id="gnome-tweaks-and-extensions">GNOME Tweaks and Extensions</h2>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> dnf install gnome-tweaks gnome-extensions-app</span></code></pre></div>
-<p>Popular extensions: Dash to Dock, AppIndicator, Blur my Shell, Pop
-Shell (tiling)</p>
+
+<p>Fedora ships cutting-edge software faster than any other major distro. The current release is <strong>Fedora 44</strong> (released April 2026) with GNOME 50. Each release is supported for about 13 months.</p>
+
+<blockquote>
+<p>Fedora 42 reached end of life in April/May 2026. If you are running 42 or 43, upgrade now: <code>sudo dnf system-upgrade download --releasever=44 && sudo dnf system-upgrade reboot</code></p>
+</blockquote>
+
+<h2>Download</h2>
+
+<p>Go to <a href="https://fedoraproject.org/workstation/">fedoraproject.org/workstation</a> and download the ISO. Flash with Ventoy or balenaEtcher.</p>
+
+<p>Fedora also offers official spins — if you prefer KDE Plasma (now a full Edition since Fedora 42), download from <a href="https://fedoraproject.org/spins/kde/">fedoraproject.org/spins/kde</a>.</p>
+
+<h2>Install</h2>
+
+<p>Boot from USB. Fedora 42+ uses a new web-based installer by default on Workstation.</p>
+
+<p><strong>Language and keyboard:</strong> Select yours.</p>
+
+<p><strong>Installation destination:</strong> Click your disk. Choose <strong>Automatic</strong> for simple setup. For dual boot, choose <strong>Custom</strong> and create a free space partition. The new guided partitioning in Fedora 42+ makes this significantly easier than before — select your goal (install alongside existing OS, use entire disk, etc.) and it handles the rest.</p>
+
+<p><strong>User creation:</strong> Create a user and check <strong>Make this user administrator</strong>.</p>
+
+<p>Click <strong>Begin Installation</strong> and wait 10–20 minutes.</p>
+
+<h2>First Steps After Install</h2>
+
+<h3>Update everything first</h3>
+
+<pre><code>sudo dnf upgrade -y</code></pre>
+
+<p>Or: Software → Updates → Install All</p>
+
+<h3>Enable RPM Fusion</h3>
+
+<p>Fedora excludes proprietary and patent-encumbered software by default. RPM Fusion adds Nvidia drivers, media codecs, and more:</p>
+
+<pre><code>sudo dnf install \
+  https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+  https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm</code></pre>
+
+<h3>Install media codecs</h3>
+
+<pre><code>sudo dnf groupupdate multimedia --setopt="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin
+sudo dnf groupupdate sound-and-video</code></pre>
+
+<p>Fedora ships <code>ffmpeg-free</code> by default which has known bugs. Switch to the RPM Fusion version for better reliability:</p>
+
+<pre><code>sudo dnf swap ffmpeg-free ffmpeg --allowerasing</code></pre>
+
+<h3>Enable Flathub</h3>
+
+<pre><code>flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo</code></pre>
+
+<h3>Install common apps</h3>
+
+<pre><code># Via dnf
+sudo dnf install vim git curl wget htop gnome-tweaks
+
+# Via Flatpak (more up-to-date)
+flatpak install flathub com.spotify.Client
+flatpak install flathub com.discordapp.Discord
+flatpak install flathub org.videolan.VLC
+flatpak install flathub com.visualstudio.code</code></pre>
+
+<h3>Nvidia drivers (if you have Nvidia GPU)</h3>
+
+<p>Install after enabling RPM Fusion:</p>
+
+<pre><code>sudo dnf install akmod-nvidia xorg-x11-drv-nvidia-cuda
+sudo reboot</code></pre>
+
+<p>After reboot, verify:</p>
+
+<pre><code>nvidia-smi</code></pre>
+
+<h3>Firmware updates</h3>
+
+<p>Fedora integrates with LVFS for BIOS and hardware firmware updates:</p>
+
+<pre><code>sudo fwupdmgr refresh
+sudo fwupdmgr get-updates
+sudo fwupdmgr update</code></pre>
+
+<h3>Enable SSD TRIM</h3>
+
+<pre><code>sudo systemctl enable fstrim.timer</code></pre>
+
+<h2>Upgrading to a New Fedora Version</h2>
+
+<pre><code>sudo dnf upgrade --refresh
+sudo dnf install dnf-plugin-system-upgrade
+sudo dnf system-upgrade download --releasever=44
+sudo dnf system-upgrade reboot</code></pre>
+
+<p>Back up before upgrading. The upgrade reboots into a special offline mode and takes 20–40 minutes.</p>

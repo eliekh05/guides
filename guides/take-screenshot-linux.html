@@ -1,0 +1,132 @@
+DATA:linux:Take Screenshots on Linux:Linux
+<h1>Take Screenshots on Linux</h1>
+
+<p>How you take screenshots on Linux depends on two things: your desktop environment and whether you are running X11 or Wayland. Check which you are on:</p>
+
+<pre><code>echo $XDG_SESSION_TYPE
+# Returns: x11 or wayland</code></pre>
+
+<h2>GNOME (Ubuntu, Fedora, Pop!_OS)</h2>
+
+<p>GNOME has a built-in screenshot tool that works on both X11 and Wayland.</p>
+
+<table>
+<thead>
+<tr><th>Shortcut</th><th>What it captures</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Print Screen</strong></td><td>Opens screenshot UI — choose full screen, window, or selection</td></tr>
+<tr><td><strong>Alt + Print Screen</strong></td><td>Active window only (GNOME 42+)</td></tr>
+<tr><td><strong>Shift + Print Screen</strong></td><td>Select a region</td></tr>
+<tr><td><strong>Ctrl + any of the above</strong></td><td>Copy to clipboard instead of saving</td></tr>
+</tbody>
+</table>
+
+<p>Screenshots save to <code>~/Pictures/Screenshots/</code>.</p>
+
+<h2>KDE Plasma — Spectacle</h2>
+
+<p>KDE ships with Spectacle — a full-featured screenshot tool that works on both X11 and Wayland.</p>
+
+<table>
+<thead>
+<tr><th>Shortcut</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Print Screen</strong></td><td>Full screen capture</td></tr>
+<tr><td><strong>Meta + Print Screen</strong></td><td>Active window</td></tr>
+<tr><td><strong>Shift + Print Screen</strong></td><td>Rectangular region selection</td></tr>
+</tbody>
+</table>
+
+<p>Spectacle supports annotation, delay, and copy to clipboard. Screenshots save to <code>~/Pictures/</code> by default — change in Spectacle settings.</p>
+
+<h2>Hyprland — grim + slurp</h2>
+
+<p>Hyprland is a Wayland compositor so X11 tools like scrot do not work. Use grim (capture) and slurp (region selection):</p>
+
+<pre><code># Install
+sudo pacman -S grim slurp wl-clipboard   # Arch
+sudo apt install grim slurp wl-clipboard  # Ubuntu/Debian
+
+# Full screen
+grim screenshot.png
+
+# Select a region interactively
+grim -g "$(slurp)" screenshot.png
+
+# Copy selection directly to clipboard
+grim -g "$(slurp)" - | wl-copy</code></pre>
+
+<p>For Hyprland specifically, <strong>grimblast</strong> (the official Hyprland screenshot utility) wraps grim and slurp with extra features:</p>
+
+<pre><code># Install via AUR
+yay -S grimblast-git
+
+# Capture active window
+grimblast copy active
+
+# Select region and copy to clipboard
+grimblast copy area
+
+# Save to file
+grimblast save area screenshot.png</code></pre>
+
+<p>Add keybindings to your Hyprland config (<code>~/.config/hypr/hyprland.conf</code>):</p>
+
+<pre><code>bind = , Print, exec, grimblast copy area
+bind = SHIFT, Print, exec, grimblast copy active
+bind = SUPER, Print, exec, grimblast copy output</code></pre>
+
+<h2>Flameshot — Annotation and Markup</h2>
+
+<p>Flameshot adds annotation tools — arrows, text, blur, highlight. Best for sharing screenshots with markups.</p>
+
+<pre><code># Install
+sudo apt install flameshot -y       # Ubuntu/Debian
+sudo dnf install flameshot -y       # Fedora
+sudo pacman -S flameshot            # Arch
+
+# Launch interactive UI
+flameshot gui</code></pre>
+
+<p>On GNOME Wayland, if flameshot shows a blank screen:</p>
+<pre><code>env XDG_CURRENT_DESKTOP=sway flameshot gui</code></pre>
+
+<p>On Hyprland, flameshot needs xdg-desktop-portal-hyprland installed and running. If it does not work, use grimblast instead.</p>
+
+<h2>Command Line — X11 (scrot)</h2>
+
+<p>scrot works on X11 sessions only. If you are on Wayland, use grim instead.</p>
+
+<pre><code># Install
+sudo apt install scrot -y
+
+# Full screen saved to current folder
+scrot screenshot.png
+
+# Select a region interactively
+scrot -s screenshot.png
+
+# 5-second delay then capture
+scrot -d 5 screenshot.png
+
+# Active window only
+scrot -u screenshot.png
+
+# Capture and open in viewer
+scrot screenshot.png && eog screenshot.png</code></pre>
+
+<h2>Command Line — Wayland (grim)</h2>
+
+<pre><code># Full screen
+grim screenshot.png
+
+# Specific monitor (get monitor names with: wayland-info | grep name)
+grim -o eDP-1 screenshot.png
+
+# Region selection
+grim -g "$(slurp)" screenshot.png
+
+# Copy to clipboard
+grim - | wl-copy</code></pre>

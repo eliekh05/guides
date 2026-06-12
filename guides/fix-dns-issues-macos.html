@@ -1,0 +1,141 @@
+DATA:macos:Fix DNS Issues on macOS:macOS
+<h1>Fix DNS Issues on macOS</h1>
+<p>DNS problems cause websites to fail even when your internet connection is working. Here is how to diagnose and fix them.</p>
+<hr />
+<h2>Check If DNS is the Problem</h2>
+<pre><code><code># If this works but google.com does not resolve:
+ping 1.1.1.1          # works = internet is fine
+ping google.com       # fails = DNS is broken
+</code></code></pre>
+
+<hr />
+<h2>macOS — Flush DNS Cache</h2>
+<pre><code><code>sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder
+</code></code></pre>
+
+<p>This resolves most DNS issues on macOS after network changes or updates.</p>
+<hr />
+<h2>macOS — Change DNS Server</h2>
+<ol>
+<li><strong>System Settings</strong> → <strong>Network</strong> → select connection → <strong>Details</strong> → <strong>DNS</strong> tab</li>
+<li>Click <strong>+</strong> and add:</li>
+<li><code>1.1.1.1</code> (Cloudflare)</li>
+<li><code>8.8.8.8</code> (Google)</li>
+<li>Click <strong>OK</strong> → <strong>Apply</strong></li>
+</ol>
+<p>Or via Terminal:</p>
+<pre><code><code># Set DNS for Wi-Fi interface
+sudo networksetup -setdnsservers Wi-Fi 1.1.1.1 8.8.8.8
+
+# Set for Ethernet
+sudo networksetup -setdnsservers Ethernet 1.1.1.1 8.8.8.8
+
+# Reset to automatic (DHCP-provided DNS)
+sudo networksetup -setdnsservers Wi-Fi empty
+</code></code></pre>
+
+<hr />
+<h2>Linux — Check Current DNS</h2>
+<pre><code><code>cat /etc/resolv.conf
+resolvectl status                  # systemd-resolved (Ubuntu 18.04+)
+</code></code></pre>
+
+<hr />
+<h2>Linux — Flush DNS Cache</h2>
+<p><strong>systemd-resolved (Ubuntu, Debian 12+, Fedora):</strong></p>
+<pre><code><code>sudo systemd-resolve --flush-caches
+resolvectl flush-caches
+</code></code></pre>
+
+<p><strong>nscd:</strong></p>
+<pre><code><code>sudo systemctl restart nscd
+</code></code></pre>
+
+<p><strong>dnsmasq:</strong></p>
+<pre><code><code>sudo systemctl restart dnsmasq
+</code></code></pre>
+
+<hr />
+<h2>Linux — Change DNS Server</h2>
+<p><strong>systemd-resolved (Ubuntu 18.04+):</strong></p>
+<pre><code><code>sudo nano /etc/systemd/resolved.conf
+</code></code></pre>
+
+<p>Set:</p>
+<pre><code><code>[Resolve]
+DNS=1.1.1.1 8.8.8.8
+FallbackDNS=1.0.0.1 8.8.4.4
+</code></code></pre>
+
+<pre><code><code>sudo systemctl restart systemd-resolved
+</code></code></pre>
+
+<p><strong>Netplan (static network config):</strong></p>
+<p>Add to your <code>.sources</code> or <code>.yaml</code> file in <code>/etc/netplan/</code>:</p>
+<pre><code><code>nameservers:
+  addresses:
+    - 1.1.1.1
+    - 8.8.8.8
+</code></code></pre>
+
+<pre><code><code>sudo netplan apply
+</code></code></pre>
+
+<hr />
+<h2>Test a Specific DNS Server</h2>
+<pre><code><code>dig @1.1.1.1 google.com              # test Cloudflare
+dig @8.8.8.8 google.com              # test Google
+nslookup google.com 1.1.1.1          # alternative
+</code></code></pre>
+
+<p>If these work but your normal DNS does not, the problem is with your current DNS server (usually your router or ISP DNS).</p>
+<hr />
+<h2>Common DNS Problem Causes</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All sites fail, ping by IP works</td>
+<td>DNS broken</td>
+<td>Flush cache or change DNS server</td>
+</tr>
+<tr>
+<td>Specific sites fail</td>
+<td>DNS filtering or ISP blocking</td>
+<td>Use 1.1.1.1 or 8.8.8.8</td>
+</tr>
+<tr>
+<td>Sites fail after VPN disconnects</td>
+<td>VPN changed DNS and did not revert</td>
+<td>Restart network or flush cache</td>
+</tr>
+<tr>
+<td>Slow to load sites</td>
+<td>DNS server is slow</td>
+<td>Switch to Cloudflare (1.1.1.1)</td>
+</tr>
+<tr>
+<td>Internal hostnames fail</td>
+<td>DNS server does not know them</td>
+<td>Use split DNS or add entries to /etc/hosts</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>/etc/hosts — Override DNS for Specific Domains</h2>
+<p>Add entries to resolve names locally without DNS:</p>
+<pre><code><code>sudo nano /etc/hosts   # Linux
+sudo nano /private/etc/hosts  # macOS
+</code></code></pre>
+
+<pre><code><code>192.168.1.100   myserver.local
+192.168.1.200   nas.local
+</code></code></pre>
+
+<p>Flush DNS after editing: <code>sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder</code></p>

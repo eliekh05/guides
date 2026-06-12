@@ -17,16 +17,16 @@ DATA:installation:Install TrueNAS SCALE on Bare Metal:Installation Guides
 <p><strong>ZFS and RAM:</strong> ZFS uses RAM aggressively for caching. The more RAM, the better performance. 8 GB works but 32 GB+ is where it shines.</p>
 </blockquote>
 <hr />
-<h2>Step 1 — Download TrueNAS SCALE</h2>
+<h2>Download TrueNAS SCALE</h2>
 <p>Go to <a href="https://www.truenas.com/download-truenas-scale/">truenas.com/download-truenas-scale</a> and download the latest stable ISO.</p>
 <hr />
-<h2>Step 2 — Create a Bootable USB</h2>
+<h2>Create a Bootable USB</h2>
 <p>Flash the ISO to a USB drive using <a href="https://etcher.balena.io">balenaEtcher</a>.</p>
 <blockquote>
 <p><strong>This USB is just for installation.</strong> After installing, TrueNAS boots from a separate boot drive, not this USB.</p>
 </blockquote>
 <hr />
-<h2>Step 3 — Boot and Install</h2>
+<h2>Boot and Install</h2>
 <ol>
 <li>Insert the USB into your server machine.</li>
 <li>Boot from the USB (press F12, F9, or Del at startup for the boot menu).</li>
@@ -39,7 +39,7 @@ DATA:installation:Install TrueNAS SCALE on Bare Metal:Installation Guides
 <li>Remove the USB when prompted and reboot.</li>
 </ol>
 <hr />
-<h2>Step 4 — Access the Web UI</h2>
+<h2>Access the Web UI</h2>
 <p>After booting, TrueNAS shows its IP address on the console screen.</p>
 <p>Open a browser on another machine on the same network and go to:</p>
 <pre><code><code>http://TRUENAS_IP_ADDRESS
@@ -49,7 +49,7 @@ DATA:installation:Install TrueNAS SCALE on Bare Metal:Installation Guides
 - <strong>Username:</strong> <code>admin</code> (TrueNAS SCALE 22.12+) or <code>root</code>
 - <strong>Password:</strong> whatever you set during installation</p>
 <hr />
-<h2>Step 5 — Set Up Storage</h2>
+<h2>Set Up Storage</h2>
 <h3>Create a Pool (ZFS storage)</h3>
 <ol>
 <li>Go to <strong>Storage</strong> → <strong>Create Pool</strong>.</li>
@@ -92,7 +92,7 @@ DATA:installation:Install TrueNAS SCALE on Bare Metal:Installation Guides
 <li>Click <strong>Create Pool</strong>.</li>
 </ol>
 <hr />
-<h2>Step 6 — Create a Dataset and Share</h2>
+<h2>Create a Dataset and Share</h2>
 <h3>Create a Dataset (folder)</h3>
 <ol>
 <li><strong>Datasets</strong> → <strong>Add Dataset</strong>.</li>
@@ -109,7 +109,7 @@ DATA:installation:Install TrueNAS SCALE on Bare Metal:Installation Guides
 <p>Access it from Windows: open File Explorer → type <code>\\TRUENAS_IP\sharename</code> in the address bar.
 Access it from macOS: Finder → <strong>Go</strong> → <strong>Connect to Server</strong> → <code>smb://TRUENAS_IP/sharename</code>.</p>
 <hr />
-<h2>Step 7 — Create Users</h2>
+<h2>Create Users</h2>
 <p>Do not use root for file access. Create dedicated users:</p>
 <ol>
 <li><strong>Credentials</strong> → <strong>Local Users</strong> → <strong>Add</strong>.</li>

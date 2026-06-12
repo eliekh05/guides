@@ -1,0 +1,61 @@
+DATA:macos:Take Screenshots on macOS:macOS
+<h1>Take Screenshots on macOS</h1>
+
+<p>macOS has built-in screenshot shortcuts that work everywhere — no extra apps needed.</p>
+
+<h2>Keyboard Shortcuts</h2>
+
+<table>
+<thead>
+<tr><th>Shortcut</th><th>What it captures</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Cmd + Shift + 3</strong></td><td>Entire screen</td></tr>
+<tr><td><strong>Cmd + Shift + 4</strong></td><td>Drag to select an area</td></tr>
+<tr><td><strong>Cmd + Shift + 4, then Space</strong></td><td>Click any window to capture just that window</td></tr>
+<tr><td><strong>Cmd + Shift + 5</strong></td><td>Opens screenshot toolbar — all options plus screen recording</td></tr>
+<tr><td><strong>Cmd + Shift + 6</strong></td><td>Touch Bar only (older MacBook Pro)</td></tr>
+</tbody>
+</table>
+
+<p>Add <strong>Ctrl</strong> to any shortcut to copy to clipboard instead of saving as a file. For example: <strong>Cmd + Ctrl + Shift + 4</strong> copies a selection to clipboard.</p>
+
+<h2>Where Screenshots Are Saved</h2>
+
+<p>By default screenshots save to your Desktop as <code>.png</code> files named <code>Screenshot YYYY-MM-DD at HH.MM.SS.png</code>.</p>
+
+<h3>Change the save location</h3>
+
+<p>Press <strong>Cmd + Shift + 5</strong> → click <strong>Options</strong> → choose a folder under <strong>Save to</strong>. You can pick Desktop, Documents, Clipboard, or any other folder.</p>
+
+<h2>Screenshot Toolbar (Cmd + Shift + 5)</h2>
+
+<p>The toolbar at the bottom of the screen lets you:</p>
+
+<ul>
+<li>Capture entire screen, a window, or a selection</li>
+<li>Record the entire screen or a selection as a video</li>
+<li>Set a timer (5 or 10 seconds) before capture</li>
+<li>Show or hide the cursor in screenshots</li>
+</ul>
+
+<h2>Annotate After Taking a Screenshot</h2>
+
+<p>When you take a screenshot, a thumbnail appears in the bottom-right corner. Click it before it disappears to open Markup — draw, add text, crop, and sign directly on the screenshot before saving.</p>
+
+<h2>Screenshot via Terminal</h2>
+
+<pre><code># Capture full screen to a file
+screencapture screenshot.png
+
+# Interactive selection mode
+screencapture -i screenshot.png
+
+# Copy to clipboard instead of saving
+screencapture -c
+
+# 5-second delay
+screencapture -T 5 screenshot.png
+
+# Capture a specific window by window ID
+screencapture -l WINDOW_ID screenshot.png</code></pre>

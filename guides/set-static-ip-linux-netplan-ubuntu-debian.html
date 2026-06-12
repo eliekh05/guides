@@ -27,7 +27,7 @@ cat /etc/resolv.conf
 - Gateway (the <code>default via</code> line, e.g. <code>192.168.1.1</code>)
 - DNS servers from <code>/etc/resolv.conf</code></p>
 <hr />
-<h2>Step 1 — Find the Netplan Config File</h2>
+<h2>Find the Netplan Config File</h2>
 <p>Netplan config files live in <code>/etc/netplan/</code>. List them:</p>
 <pre><code><code>ls /etc/netplan/
 </code></code></pre>
@@ -41,13 +41,13 @@ cat /etc/resolv.conf
 </code></code></pre>
 
 <hr />
-<h2>Step 2 — Back Up the Current Config</h2>
+<h2>Back Up the Current Config</h2>
 <p>Always back up before editing:</p>
 <pre><code><code>sudo cp /etc/netplan/00-installer-config.yaml /etc/netplan/00-installer-config.yaml.bak
 </code></code></pre>
 
 <hr />
-<h2>Step 3 — Edit the Config File</h2>
+<h2>Edit the Config File</h2>
 <p>Open the file with nano:</p>
 <pre><code><code>sudo nano /etc/netplan/00-installer-config.yaml
 </code></code></pre>
@@ -117,7 +117,7 @@ cat /etc/resolv.conf
 </ul>
 <p>A single wrong space = config not applied, often with no useful error message.</p>
 <hr />
-<h2>Step 4 — Validate the Config Before Applying</h2>
+<h2>Validate the Config Before Applying</h2>
 <p>Always validate first — this catches syntax errors before they disconnect you:</p>
 <pre><code><code>sudo netplan try
 </code></code></pre>
@@ -131,7 +131,7 @@ cat /etc/resolv.conf
 </code></code></pre>
 
 <hr />
-<h2>Step 5 — Verify It Worked</h2>
+<h2>Verify It Worked</h2>
 <p>Check the new IP:</p>
 <pre><code><code>ip a show enp3s0
 </code></code></pre>

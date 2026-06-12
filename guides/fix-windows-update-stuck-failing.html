@@ -2,11 +2,11 @@ DATA:windows:Fix Windows Update Stuck or Failing:Windows
 <h1>Fix Windows Update Stuck or Failing</h1>
 <p>Windows Update failing is one of the most searched Windows problems. The fixes vary depending on the exact symptom — stuck downloading, stuck installing, rolling back, or showing an error code. Work through these in order from simplest to most involved.</p>
 <hr />
-<h2>Step 0 — Check Disk Space First</h2>
+<h2>Check Disk Space First</h2>
 <p>Windows Update silently fails if your C: drive has less than 10 GB free. Feature updates (like 22H2, 23H2, 24H2) need 20–30 GB of working space.</p>
 <p>Check free space in File Explorer. If low, open <strong>Disk Cleanup</strong> (search in Start menu), run it, and also click <strong>Clean up system files</strong> for more space.</p>
 <hr />
-<h2>Step 1 — Run the Windows Update Troubleshooter</h2>
+<h2>Run the Windows Update Troubleshooter</h2>
 <p>Windows has a built-in troubleshooter that fixes the most common causes automatically:</p>
 <p><strong>Windows 11:</strong>
 Settings → System → Troubleshoot → Other troubleshooters → Windows Update → <strong>Run</strong></p>
@@ -14,7 +14,7 @@ Settings → System → Troubleshoot → Other troubleshooters → Windows Updat
 Settings → Update &amp; Security → Troubleshoot → Additional troubleshooters → Windows Update → <strong>Run the troubleshooter</strong></p>
 <p>Let it run and apply all fixes it finds. Restart and try Windows Update again.</p>
 <hr />
-<h2>Step 2 — Reset the Windows Update Cache</h2>
+<h2>Reset the Windows Update Cache</h2>
 <p>Corrupted download cache is one of the most common causes of stuck or failed updates. This clears it completely and forces a fresh download.</p>
 <p>Open <strong>Command Prompt as Administrator</strong> (right-click Start → Terminal/Command Prompt → Run as administrator):</p>
 <pre><code><code>net stop wuauserv
@@ -33,7 +33,7 @@ net start msiserver
 
 <p>Restart your PC and run Windows Update again.</p>
 <hr />
-<h2>Step 3 — Run DISM and SFC (Fix Corrupted System Files)</h2>
+<h2>Run DISM and SFC (Fix Corrupted System Files)</h2>
 <blockquote>
 <p><strong>Always run DISM before SFC.</strong> DISM repairs the Windows image that SFC uses as a reference. Running SFC first when the image is corrupted will not fix anything.</p>
 </blockquote>
@@ -50,7 +50,7 @@ DISM /Online /Cleanup-Image /RestoreHealth
 
 <p>Restart after both complete. Try Windows Update again.</p>
 <hr />
-<h2>Step 4 — Manually Install the Update</h2>
+<h2>Manually Install the Update</h2>
 <p>If a specific update keeps failing, install it manually:</p>
 <ol>
 <li>Note the KB number of the failing update (e.g. <code>KB5031354</code>) — visible in <strong>Settings → Windows Update → View update history</strong>.</li>
@@ -60,7 +60,7 @@ DISM /Online /Cleanup-Image /RestoreHealth
 <li>Run the downloaded file to install it.</li>
 </ol>
 <hr />
-<h2>Step 5 — Fix Network and Proxy Issues</h2>
+<h2>Fix Network and Proxy Issues</h2>
 <p>VPNs and manual proxy settings silently break Windows Update — it cannot reach Microsoft's servers.</p>
 <ol>
 <li>Disconnect from any VPN.</li>
@@ -74,7 +74,7 @@ ipconfig /flushdns
 
 <p>Restart and try again.</p>
 <hr />
-<h2>Step 6 — Fix Update Services</h2>
+<h2>Fix Update Services</h2>
 <p>If Windows Update services are stopped or set to disabled:</p>
 <p>Open <strong>Command Prompt as Administrator</strong>:</p>
 <pre><code><code>sc config wuauserv start= auto
@@ -88,7 +88,7 @@ net start cryptsvc
 </code></code></pre>
 
 <hr />
-<h2>Step 7 — Use the Modern Update Command (usoclient)</h2>
+<h2>Use the Modern Update Command (usoclient)</h2>
 <p><code>wuauclt</code> is deprecated on Windows 10 and 11. Use <code>usoclient</code> to force Windows to scan and install updates:</p>
 <p>Open <strong>Command Prompt as Administrator</strong>:</p>
 <pre><code><code>usoclient StartScan
@@ -101,7 +101,7 @@ usoclient StartInstall
 </code></code></pre>
 
 <hr />
-<h2>Step 8 — In-Place Upgrade Repair (Last Resort Before Reinstall)</h2>
+<h2>In-Place Upgrade Repair (Last Resort Before Reinstall)</h2>
 <p>If DISM and SFC cannot repair the system, an in-place upgrade reinstalls Windows over itself — keeping all your files, apps, and settings — while replacing all system files with fresh copies.</p>
 <ol>
 <li>Download the <strong>Windows 11 Media Creation Tool</strong> from <a href="https://microsoft.com/software-download/windows11">microsoft.com/software-download/windows11</a> (or Windows 10 equivalent).</li>

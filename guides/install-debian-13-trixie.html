@@ -1,0 +1,91 @@
+DATA:installation:Install Debian 13 (Trixie):Installation Guides
+<h1>Install Debian 13 (Trixie)</h1>
+
+<p>Debian 13 "Trixie" is the current stable release, released August 9, 2025. Current point release is 13.5 (May 16, 2026). Supported until August 2030 (including LTS).</p>
+
+<blockquote>
+<p>Debian 12 (Bookworm) reached end of its full support period in June 2026 and is in LTS until 2028. For new installations, use Debian 13.</p>
+</blockquote>
+
+<p>Debian 13 ships with Linux kernel 6.12 LTS, GNOME 48, KDE Plasma 6.3, OpenSSL 3.5, and OpenJDK 21.</p>
+
+<h2>Download</h2>
+
+<p>Go to <a href="https://www.debian.org/distrib/netinst">debian.org/distrib/netinst</a> and download:</p>
+
+<ul>
+<li><strong>amd64 netinst</strong> — small, downloads packages during install (needs internet)</li>
+<li><strong>DVD image</strong> — larger, installs without internet</li>
+</ul>
+
+<p>If your Wi-Fi card needs proprietary firmware — most modern laptops do — download the <strong>unofficial non-free firmware</strong> image from <a href="https://cdimage.debian.org/cdimage/unofficial/non-free/cd-including-firmware/">cdimage.debian.org</a>. This is the version most people should use.</p>
+
+<h2>Installer Type</h2>
+
+<p><strong>Graphical install:</strong> Easier, same result. Use for desktop systems.</p>
+<p><strong>Expert install:</strong> More control — useful for servers, custom partitioning, and specific locale setups.</p>
+
+<h2>Installation</h2>
+
+<p><strong>Hostname:</strong> Set something meaningful — e.g. <code>debian-server</code> or <code>homelab</code>.</p>
+
+<p><strong>Root password:</strong> You have two options:</p>
+<ul>
+<li>Set a root password — root is enabled, your user needs explicit sudo setup</li>
+<li>Leave blank — root is disabled, your user automatically gets sudo (Ubuntu-style)</li>
+</ul>
+
+<p><strong>Partitioning:</strong> For most setups, <strong>Guided — use entire disk with LVM</strong> is the right choice.</p>
+
+<p><strong>Software selection (tasksel):</strong></p>
+<ul>
+<li>Desktop: check your preferred desktop environment (GNOME, KDE, XFCE, etc.) + standard system utilities</li>
+<li>Server: check SSH server + standard system utilities only (no desktop)</li>
+</ul>
+
+<p>Confirm and install. Reboot when done.</p>
+
+<h2>After Install — Enable sudo (If You Set a Root Password)</h2>
+
+<p>If you set a root password during install, your user was not automatically added to sudo:</p>
+
+<pre><code>su -
+apt install sudo -y
+usermod -aG sudo yourusername
+exit</code></pre>
+
+<p>Log out and back in. Test: <code>sudo apt update</code></p>
+
+<h2>Enable Non-Free Repositories</h2>
+
+<pre><code>sudo nano /etc/apt/sources.list</code></pre>
+
+<p>Add <code>contrib non-free non-free-firmware</code> to each line:</p>
+
+<pre><code>deb http://deb.debian.org/debian/ trixie main contrib non-free non-free-firmware
+deb http://security.debian.org/debian-security trixie-security main contrib non-free non-free-firmware
+deb http://deb.debian.org/debian/ trixie-updates main contrib non-free non-free-firmware</code></pre>
+
+<pre><code>sudo apt update</code></pre>
+
+<h2>Install Common Desktop Apps</h2>
+
+<pre><code># Flatpak (gives access to more up-to-date apps than Debian packages)
+sudo apt install flatpak -y
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
+# Install apps via Flatpak
+flatpak install flathub com.visualstudio.code
+flatpak install flathub org.videolan.VLC
+flatpak install flathub com.spotify.Client</code></pre>
+
+<h2>Upgrading from Debian 12 to Debian 13</h2>
+
+<pre><code>sudo apt update && sudo apt full-upgrade -y
+sudo nano /etc/apt/sources.list
+# Change all instances of "bookworm" to "trixie"
+sudo apt update
+sudo apt full-upgrade -y
+sudo reboot</code></pre>
+
+<p>Review the official <a href="https://www.debian.org/releases/trixie/releasenotes">Debian 13 release notes</a> for upgrade-specific warnings before proceeding. In particular: there is no direct upgrade path from Debian 11 — you must go through 12 first.</p>

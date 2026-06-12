@@ -1,0 +1,36 @@
+DATA:linux:Change Hostname on Linux:Linux
+<h1>Change Hostname on Linux</h1>
+<h3>Check current hostname</h3>
+<pre><code><code>hostname
+hostnamectl
+cat /etc/hostname
+</code></code></pre>
+
+<h3>Change hostname permanently</h3>
+<p><strong>Method 1 — hostnamectl (modern, recommended):</strong></p>
+<pre><code><code>sudo hostnamectl set-hostname newhostname
+</code></code></pre>
+
+<p><strong>Method 2 — edit files directly:</strong></p>
+<pre><code><code># Edit hostname file
+sudo nano /etc/hostname
+# Replace the current hostname with the new one. Save and exit.
+
+# Edit hosts file
+sudo nano /etc/hosts
+# Find the line with your old hostname (usually 127.0.1.1 oldhostname)
+# Change it to 127.0.1.1 newhostname
+</code></code></pre>
+
+<h3>Apply without rebooting</h3>
+<pre><code><code>sudo hostname newhostname
+# Or restart the hostname service
+sudo systemctl restart systemd-hostnamed
+</code></code></pre>
+
+<h3>Verify</h3>
+<pre><code><code>hostname
+hostnamectl status
+</code></code></pre>
+
+<hr />

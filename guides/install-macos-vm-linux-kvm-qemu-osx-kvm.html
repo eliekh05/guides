@@ -17,7 +17,7 @@ DATA:installation:Install macOS as a VM on Linux (KVM/QEMU with OSX-KVM):Install
 <p><strong>AMD CPUs work but need extra configuration.</strong> See the AMD section at the end.</p>
 </blockquote>
 <hr />
-<h2>Step 1 — Install Dependencies</h2>
+<h2>Install Dependencies</h2>
 <p><strong>Ubuntu / Debian:</strong></p>
 <pre><code><code>sudo apt update
 sudo apt install -y qemu-kvm qemu-utils libvirt-daemon-system \
@@ -41,7 +41,7 @@ sudo usermod -aG kvm,libvirt $(whoami)
 
 <p><strong>Log out and back in</strong> for the group changes to take effect.</p>
 <hr />
-<h2>Step 2 — Enable MSR (Required for macOS)</h2>
+<h2>Enable MSR (Required for macOS)</h2>
 <p>macOS requires access to CPU Model Specific Registers. Enable this:</p>
 <pre><code><code># Load the KVM module with MSR access enabled
 sudo modprobe kvm
@@ -52,13 +52,13 @@ echo &quot;options kvm ignore_msrs=1&quot; | sudo tee /etc/modprobe.d/kvm.conf
 </code></code></pre>
 
 <hr />
-<h2>Step 3 — Clone OSX-KVM</h2>
+<h2>Clone OSX-KVM</h2>
 <pre><code><code>git clone --depth 1 --recursive https://github.com/kholia/OSX-KVM.git
 cd OSX-KVM
 </code></code></pre>
 
 <hr />
-<h2>Step 4 — Download the macOS Installer</h2>
+<h2>Download the macOS Installer</h2>
 <pre><code><code>./fetch-macOS-v2.py
 </code></code></pre>
 
@@ -68,14 +68,14 @@ cd OSX-KVM
 </code></code></pre>
 
 <hr />
-<h2>Step 5 — Create the VM Disk</h2>
+<h2>Create the VM Disk</h2>
 <p>Create a virtual disk where macOS will be installed:</p>
 <pre><code><code>qemu-img create -f qcow2 mac_hdd_ng.img 128G
 </code></code></pre>
 
 <p>128 GB is a comfortable size. You can increase or decrease this — macOS itself needs about 20 GB minimum but 50+ GB is recommended for actual use.</p>
 <hr />
-<h2>Step 6 — Boot the macOS Installer</h2>
+<h2>Boot the macOS Installer</h2>
 <p>Run the boot script:</p>
 <pre><code><code>./OpenCore-Boot.sh
 </code></code></pre>
@@ -83,7 +83,7 @@ cd OSX-KVM
 <p>A QEMU window will open and show the OpenCore boot picker. Select <strong>macOS Base System</strong> and press Enter.</p>
 <p>The macOS installer will load — this takes several minutes on first boot.</p>
 <hr />
-<h2>Step 7 — Install macOS</h2>
+<h2>Install macOS</h2>
 <ol>
 <li>When the macOS Utilities screen appears, open <strong>Disk Utility</strong>.</li>
 <li>Select <strong>QEMU HARDDISK</strong> (your virtual disk) from the left panel.</li>
@@ -97,10 +97,10 @@ cd OSX-KVM
 </ol>
 <p>Installation takes 30–60 minutes.</p>
 <hr />
-<h2>Step 8 — Complete macOS Setup</h2>
+<h2>Complete macOS Setup</h2>
 <p>After installation, macOS Setup Assistant will run. Complete it normally. You can skip the Apple ID sign-in if you just want a local account.</p>
 <hr />
-<h2>Step 9 — Use virt-manager for Easier Management (Optional)</h2>
+<h2>Use virt-manager for Easier Management (Optional)</h2>
 <p>The default QEMU window works but virt-manager gives you a proper GUI. Set up file permissions first:</p>
 <pre><code><code>sudo setfacl -m u:libvirt-qemu:rx /home/$USER
 sudo setfacl -R -m u:libvirt-qemu:rx /home/$USER/OSX-KVM

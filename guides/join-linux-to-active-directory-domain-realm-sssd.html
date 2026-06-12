@@ -13,7 +13,7 @@ DATA:networking:Join Linux to a Windows Active Directory Domain (realm + SSSD):N
 <li>Time synchronized between Linux and AD (Kerberos fails if clocks differ by more than 5 minutes)</li>
 </ul>
 <hr />
-<h2>Step 1 — Set DNS to Point to the Domain Controller</h2>
+<h2>Set DNS to Point to the Domain Controller</h2>
 <pre><code><code># Check current DNS
 resolvectl status | grep &quot;DNS Servers&quot;
 cat /etc/resolv.conf
@@ -27,14 +27,14 @@ nslookup corp.example.com
 
 <p>For a permanent DNS change, edit your Netplan config — see the <strong>Set a Static IP on Linux Using Netplan</strong> guide.</p>
 <hr />
-<h2>Step 2 — Sync Time</h2>
+<h2>Sync Time</h2>
 <pre><code><code>sudo timedatectl set-ntp true
 sudo systemctl restart systemd-timesyncd
 timedatectl status
 </code></code></pre>
 
 <hr />
-<h2>Step 3 — Install Required Packages</h2>
+<h2>Install Required Packages</h2>
 <p><strong>Ubuntu / Debian:</strong></p>
 <pre><code><code>sudo apt update
 sudo apt install -y realmd sssd sssd-tools libnss-sss libpam-sss \
@@ -47,7 +47,7 @@ sudo apt install -y realmd sssd sssd-tools libnss-sss libpam-sss \
 </code></code></pre>
 
 <hr />
-<h2>Step 4 — Discover the Domain</h2>
+<h2>Discover the Domain</h2>
 <pre><code><code>sudo realm discover corp.example.com
 </code></code></pre>
 
@@ -66,7 +66,7 @@ sudo apt install -y realmd sssd sssd-tools libnss-sss libpam-sss \
 
 <p>If this fails, the problem is DNS — fix Step 1 first.</p>
 <hr />
-<h2>Step 5 — Join the Domain</h2>
+<h2>Join the Domain</h2>
 <pre><code><code>sudo realm join --user=Administrator corp.example.com
 </code></code></pre>
 
@@ -83,7 +83,7 @@ sudo apt install -y realmd sssd sssd-tools libnss-sss libpam-sss \
 
 <p>Output should show <code>configured: kerberos-member</code>.</p>
 <hr />
-<h2>Step 6 — Enable Home Directory Auto-Creation</h2>
+<h2>Enable Home Directory Auto-Creation</h2>
 <p>Without this, AD users who log in will get an error because their home directory doesn't exist:</p>
 <pre><code><code>sudo pam-auth-update --enable mkhomedir
 </code></code></pre>
@@ -93,7 +93,7 @@ sudo apt install -y realmd sssd sssd-tools libnss-sss libpam-sss \
 </code></code></pre>
 
 <hr />
-<h2>Step 7 — Test AD User Login</h2>
+<h2>Test AD User Login</h2>
 <pre><code><code># Check if AD user is recognized (use full domain format)
 id john@corp.example.com
 
@@ -106,7 +106,7 @@ klist
 </code></code></pre>
 
 <hr />
-<h2>Step 8 — Allow AD Users to sudo (Optional)</h2>
+<h2>Allow AD Users to sudo (Optional)</h2>
 <pre><code><code>sudo visudo
 </code></code></pre>
 

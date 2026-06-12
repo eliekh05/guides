@@ -2,7 +2,7 @@ DATA:networking:Network Troubleshooting — Step by Step:Networking & DNS
 <h1>Network Troubleshooting — Step by Step</h1>
 <p>A systematic approach to diagnosing network problems — from no internet to DNS failures to unreachable servers.</p>
 <hr />
-<h2>Step 1 — Is the Interface Up?</h2>
+<h2>Is the Interface Up?</h2>
 <pre><code><code># Linux
 ip a
 ip link show
@@ -14,7 +14,7 @@ networksetup -listallhardwareports
 
 <p>Look for your interface (eth0, en0, wlan0, etc.). Check it shows an IP address and <code>state UP</code>.</p>
 <hr />
-<h2>Step 2 — Can You Reach the Gateway?</h2>
+<h2>Can You Reach the Gateway?</h2>
 <p>Find your gateway:</p>
 <pre><code><code># Linux
 ip route | grep default        # e.g. &quot;default via 192.168.1.1&quot;
@@ -30,7 +30,7 @@ route -n get default
 
 <p>If this fails: the problem is between you and your router — cable, WiFi, or local network config.</p>
 <hr />
-<h2>Step 3 — Can You Reach the Internet by IP?</h2>
+<h2>Can You Reach the Internet by IP?</h2>
 <pre><code><code>ping -c 4 1.1.1.1
 ping -c 4 8.8.8.8
 </code></code></pre>
@@ -38,7 +38,7 @@ ping -c 4 8.8.8.8
 <p>If this works but Step 4 fails: DNS is broken.
 If this fails: routing or firewall issue.</p>
 <hr />
-<h2>Step 4 — Does DNS Work?</h2>
+<h2>Does DNS Work?</h2>
 <pre><code><code>nslookup google.com
 dig google.com
 host google.com
@@ -55,7 +55,7 @@ dig @1.1.1.1 google.com          # test against Cloudflare DNS
 </code></code></pre>
 
 <hr />
-<h2>Step 5 — Check Firewall</h2>
+<h2>Check Firewall</h2>
 <pre><code><code># Linux
 sudo ufw status
 sudo iptables -L -n
@@ -66,7 +66,7 @@ sudo /usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
 </code></code></pre>
 
 <hr />
-<h2>Step 6 — Check If a Port is Open</h2>
+<h2>Check If a Port is Open</h2>
 <pre><code><code># Test TCP port
 nc -zv hostname 443
 nc -zv 192.168.1.100 22
@@ -80,7 +80,7 @@ sudo lsof -iTCP -sTCP:LISTEN    # macOS
 </code></code></pre>
 
 <hr />
-<h2>Step 7 — Trace the Route</h2>
+<h2>Trace the Route</h2>
 <pre><code><code>traceroute google.com            # macOS and Linux
 traceroute -T google.com         # TCP-based (better through firewalls)
 mtr google.com                   # live continuous traceroute

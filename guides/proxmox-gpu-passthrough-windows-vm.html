@@ -16,7 +16,7 @@ DATA:installation:Proxmox GPU Passthrough to a Windows VM:Installation Guides
 <p><strong>Single GPU passthrough</strong> (where the host has no other display output) is possible but significantly more complex. This guide assumes you have a dedicated GPU for passthrough and separate graphics for the host.</p>
 </blockquote>
 <hr />
-<h2>Step 1 — Enable IOMMU in BIOS</h2>
+<h2>Enable IOMMU in BIOS</h2>
 <p>Restart your server and enter BIOS setup. Find and enable:</p>
 <p><strong>Intel systems:</strong>
 - <strong>VT-d</strong> — must be explicitly <strong>Enabled</strong> (not Auto)
@@ -31,7 +31,7 @@ DATA:installation:Proxmox GPU Passthrough to a Windows VM:Installation Guides
 <p><strong>Disable CSM/Legacy Boot</strong> — legacy boot interferes with GPU passthrough on many systems.</p>
 </blockquote>
 <hr />
-<h2>Step 2 — Enable IOMMU in the Proxmox Bootloader</h2>
+<h2>Enable IOMMU in the Proxmox Bootloader</h2>
 <h3>Check which bootloader Proxmox is using</h3>
 <pre><code><code>ls /etc/kernel/proxmox-boot-uuids 2&gt;/dev/null &amp;&amp; echo &quot;systemd-boot&quot; || echo &quot;GRUB&quot;
 </code></code></pre>
@@ -75,14 +75,14 @@ reboot
 </code></code></pre>
 
 <hr />
-<h2>Step 3 — Verify IOMMU Is Active</h2>
+<h2>Verify IOMMU Is Active</h2>
 <p>After rebooting:</p>
 <pre><code><code>dmesg | grep -e DMAR -e IOMMU | head -5
 </code></code></pre>
 
 <p>You should see lines containing <code>IOMMU enabled</code> or <code>DMAR: IOMMU enabled</code>. If nothing appears, IOMMU is not active — check your BIOS settings.</p>
 <hr />
-<h2>Step 4 — Load VFIO Modules</h2>
+<h2>Load VFIO Modules</h2>
 <p>VFIO is the kernel framework that lets VMs claim PCI devices.</p>
 <pre><code><code>nano /etc/modules
 </code></code></pre>
@@ -102,7 +102,7 @@ reboot
 </code></code></pre>
 
 <hr />
-<h2>Step 5 — Check IOMMU Groups</h2>
+<h2>Check IOMMU Groups</h2>
 <p>After rebooting, verify your GPU is in its own IOMMU group (or shares only with its own audio/USB functions):</p>
 <pre><code><code>for d in /sys/kernel/iommu_groups/*/devices/*; do
   n=${d#*/iommu_groups/*}; n=${n%%/*}
@@ -119,7 +119,7 @@ IOMMU Group 14 01:00.1 Audio device [0403]: NVIDIA Corporation GA104 High Defini
 <p>The GPU (VGA) and its HDMI audio (Audio) being in the same group is fine and expected. Other devices in the same group are a problem — see the ACS override troubleshooting section at the end.</p>
 <p>Note the <strong>PCI IDs</strong> (the numbers in brackets like <code>10de:2484</code> and <code>10de:228b</code>) — you need them in the next step.</p>
 <hr />
-<h2>Step 6 — Bind the GPU to VFIO</h2>
+<h2>Bind the GPU to VFIO</h2>
 <p>Tell the kernel to give the GPU to VFIO instead of the host driver.</p>
 <h3>Method A — via vfio.conf (Recommended)</h3>
 <pre><code><code>nano /etc/modprobe.d/vfio.conf
@@ -165,7 +165,7 @@ reboot
 
 <p>If it still shows <code>nvidia</code>, <code>amdgpu</code>, or <code>nouveau</code>, the blacklist or vfio.conf is not being applied. Check your files and rerun <code>update-initramfs -u -k all</code>.</p>
 <hr />
-<h2>Step 7 — Configure the VM for GPU Passthrough</h2>
+<h2>Configure the VM for GPU Passthrough</h2>
 <p>Create or edit a Windows VM. In the Proxmox web UI, go to the VM's <strong>Hardware</strong> tab.</p>
 <p><strong>Required VM settings:</strong>
 - <strong>Machine:</strong> q35
@@ -182,7 +182,7 @@ reboot
 <p><strong>Add RAM:</strong>
 Set RAM to a fixed amount — no ballooning. Example: 8192 MB.</p>
 <hr />
-<h2>Step 8 — Hide the Hypervisor from NVIDIA (If Using NVIDIA GPU)</h2>
+<h2>Hide the Hypervisor from NVIDIA (If Using NVIDIA GPU)</h2>
 <p>NVIDIA drivers detect they are in a VM and refuse to install. Hide this:</p>
 <p>Edit the VM config file on the Proxmox shell:</p>
 <pre><code><code>nano /etc/pve/qemu-server/VMID.conf
@@ -197,7 +197,7 @@ Set RAM to a fixed amount — no ballooning. Example: 8192 MB.</p>
 <p><strong>AMD GPUs generally do not need this.</strong> Only NVIDIA consumer cards (GeForce) require it.</p>
 </blockquote>
 <hr />
-<h2>Step 9 — Install Windows and NVIDIA/AMD Drivers in the VM</h2>
+<h2>Install Windows and NVIDIA/AMD Drivers in the VM</h2>
 <ol>
 <li>Start the VM — it will display through the passed-through GPU. Connect a monitor to the GPU.</li>
 <li>Install Windows as normal (see the Windows VM in Proxmox guide for the VirtIO driver steps).</li>

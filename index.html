@@ -47,6 +47,7 @@
 
 <script src="/js/xterm/xterm.js"></script>
 <script src="/js/xterm/addon-fit.js"></script>
+  <script src="/js/xterm/addon-web-links.js"></script>
 <script src="/js/guides-data.js"></script>
 <script>
 // ── Setup xterm ────────────────────────────────────────────────────────────
@@ -82,7 +83,9 @@ const term = new Terminal({
 });
 
 const fitAddon = new FitAddon.FitAddon();
+const webLinksAddon = new WebLinksAddon.WebLinksAddon();
 term.loadAddon(fitAddon);
+term.loadAddon(webLinksAddon);
 term.open(document.getElementById('terminal-container'));
 fitAddon.fit();
 

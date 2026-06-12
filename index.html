@@ -80,7 +80,6 @@ function promptStr() {
   return green(cwd === '/' ? '$' : cwd.slice(1) + ' $') + ' ';
 }
 function writePrompt() { w(promptStr()); }
-function echoCmd(cmd)  { wl(promptStr() + cyan(cmd)); }
 function writeError(msg) { wl(red(msg)); }
 
 // ── HTML → ANSI ───────────────────────────────────────────────────────────
@@ -156,8 +155,6 @@ function cmdCd(arg) {
   if (!sec) { writeError(`cd: ${arg}: no such section`); return; }
   cwd = '/' + sec.id;
   nl();
-  echoCmd('ls');
-  nl();
   cmdLs();
 }
 
@@ -175,12 +172,10 @@ async function catGuide(slug) {
     const text = htmlToAnsi(html);
 
     term.reset();
-    echoCmd('cat ' + guide.slug + '.html');
     nl();
     text.split('\r\n').forEach(line => wl(line));
     requestAnimationFrame(() => term.scrollToTop());
   } catch(e) {
-    term.reset();
     writeError(`cat: failed to load ${guide.slug}.html`);
   } finally {
     busy = false;
@@ -220,37 +215,36 @@ function runCmd(raw) {
 
   switch(verb) {
     case 'ls': case 'dir':
-      echoCmd(cmd); nl(); cmdLs(); break;
+      nl(); cmdLs(); break;
 
     case 'cd':
-      echoCmd(cmd); cmdCd(arg); break;
+      cmdCd(arg); break;
 
     case 'cat': case 'open': case 'read':
-      if (!arg) { echoCmd(cmd); writeError('cat: missing filename'); break; }
+      if (!arg) { writeError('cat: missing filename'); break; }
       catGuide(arg); return;
 
     case 'clear': case 'cls':
       term.reset(); writePrompt(); inputBuf = ''; return;
 
     case 'help': case '?':
-      echoCmd(cmd); cmdHelp(); break;
+      cmdHelp(); break;
 
     case 'github': case 'gh':
-      echoCmd(cmd);
+      nl();
       wl(cyan('opening github.com/eliekh05/guides...'));
       setTimeout(() => window.open('https://github.com/eliekh05/guides', '_blank'), 300);
       break;
 
     case 'pwd':
-      echoCmd(cmd);
+      nl();
       wl(cwd === '/' ? '/' : '/' + cwd.slice(1));
       break;
 
     case 'exit': case 'quit':
-      echoCmd(cmd); wl(dim('there is no exit.')); break;
+      nl(); wl(dim('there is no exit.')); break;
 
     default:
-      echoCmd(cmd);
       writeError(`${verb}: command not found  (try: ls  cd  cat  help)`);
       break;
   }
@@ -317,11 +311,7 @@ term.onData(e => {
 // ── Boot ──────────────────────────────────────────────────────────────────
 setTimeout(() => {
   wl(green('$') + ' ' + cyan('guides --start'));
-  wl(dim(ALL_GUIDES.length + ' guides — ls to browse · help for commands'));
-  nl();
-  echoCmd('ls');
-  nl();
-  cmdLs();
+  wl(dim(ALL_GUIDES.length + ' guides — type ls to browse · help for commands'));
   nl();
   writePrompt();
 }, 100);

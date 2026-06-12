@@ -30,6 +30,8 @@ const term = new Terminal({
   cursorStyle: 'block',
   scrollback: 5000,
   convertEol: true,
+  macOptionIsMeta: true,
+  copyOnSelect: true,
   theme: {
     background:  '#0a0a0a', foreground:  '#e0e0e0',
     cursor:      '#00cc66', cursorAccent:'#0a0a0a',
@@ -49,6 +51,29 @@ term.loadAddon(new WebLinksAddon.WebLinksAddon());
 term.open(document.getElementById('terminal-container'));
 fitAddon.fit();
 window.addEventListener('resize', () => fitAddon.fit());
+
+// ── Copy: Ctrl+Shift+C / Cmd+C ───────────────────────────────────────────
+term.attachCustomKeyEventHandler(e => {
+  // Cmd+C or Ctrl+Shift+C — copy selection
+  if ((e.metaKey || (e.ctrlKey && e.shiftKey)) && e.key === 'c' && e.type === 'keydown') {
+    const sel = term.getSelection();
+    if (sel) { navigator.clipboard.writeText(sel); return false; }
+  }
+  // Cmd+V or Ctrl+Shift+V — paste
+  if ((e.metaKey || (e.ctrlKey && e.shiftKey)) && e.key === 'v' && e.type === 'keydown') {
+    navigator.clipboard.readText().then(text => {
+      if (text) {
+        text.split('').forEach(ch => {
+          if (ch === '\n' || ch === '\r') { runCmd(inputBuf); }
+          else { inputBuf += ch; w(ch); }
+        });
+      }
+    }).catch(() => {});
+    return false;
+  }
+  return true;
+});
+
 
 // ── ANSI ─────────────────────────────────────────────────────────────────
 const R = '\x1b[0m';
@@ -252,6 +277,27 @@ function runCmd(raw) {
   inputBuf = '';
 }
 
+// ── Auto-suggest (fires after 3+ chars typed) ───────────────────────────
+let lastSuggestion = '';
+function autoComplete() {
+  const parts    = inputBuf.trim().split(/\s+/);
+  const verb     = parts[0].toLowerCase();
+  const fragment = (parts[parts.length - 1] || '').toLowerCase();
+  if (fragment.length < 3) return;
+
+  let match = null;
+  if (verb === 'cd' && parts.length >= 2) {
+    match = SECTIONS.find(s => s.id.startsWith(fragment) && s.id !== fragment);
+    if (match) match = match.id;
+  } else if ((verb === 'cat' || verb === 'open') && parts.length >= 2) {
+    const pool = currentSection()?.guides || ALL_GUIDES;
+    const m = pool.find(g => g.slug.startsWith(fragment) && g.slug !== fragment);
+    if (m) match = m.slug;
+  }
+  // Apply completion on exact prefix match
+  if (match) tabComplete();
+}
+
 // ── Tab completion ────────────────────────────────────────────────────────
 function tabComplete() {
   const parts    = inputBuf.trim().split(/\s+/);
@@ -303,6 +349,8 @@ term.onData(e => {
     term.reset(); writePrompt(); inputBuf = '';
   } else if (e.length === 1 && e >= ' ') {
     inputBuf += e; w(e);
+    // Auto-complete after 3 chars
+    if (inputBuf.length >= 3) autoComplete();
   }
 });
 

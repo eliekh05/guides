@@ -50,6 +50,7 @@ term.loadAddon(fitAddon);
 term.loadAddon(new WebLinksAddon.WebLinksAddon());
 term.open(document.getElementById('terminal-container'));
 fitAddon.fit();
+term.clear()
 window.addEventListener('resize', () => fitAddon.fit());
 
 // ── Copy: Ctrl+Shift+C / Cmd+C ───────────────────────────────────────────
@@ -361,24 +362,39 @@ function typewriter(lines, i, cb) {
   setTimeout(() => typewriter(lines, i + 1, cb), 38);
 }
 
+const INNER = Math.max(60, term.cols - 4);
+
+function box(text = '') {
+  return (
+    dim('  │') +
+    text +
+    ' '.repeat(Math.max(0, INNER - text.replace(/\x1b\[[0-9;]*m/g, '').length)) +
+    dim('│')
+  );
+}
+
+const top = dim('  ┌' + '─'.repeat(INNER) + '┐');
+const bottom = dim('  └' + '─'.repeat(INNER) + '┘');
+
 setTimeout(() => {
   const banner = [
     '',
-    dim('  ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐'),
-    dim('  │') + '                                                                                                                                          ' + dim('│'),
-    dim('  │') + '    ' + bold(white('OS & Installation Guides'))                + '                                                                        ' + dim('│'),
-    dim('  │') + '    ' + dim(ALL_GUIDES.length + ' guides across ' + SECTIONS.filter(s=>s.guides.length).length + ' sections')  + '                        ' + dim('│'),
-    dim('  │') + '                                                                                                                                          ' + dim('│'),
-    dim('  │') + '    ' + dim('practical guides for problems that are')           + '                                                                       ' + dim('│'),
-    dim('  │') + '    ' + dim('hard to find solutions for online.')               + '                                                                       ' + dim('│'),
-    dim('  │') + '                                                                                                                                          ' + dim('│'),
-    dim('  └─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘'),
+    top,
+    box(),
+    box('    ' + bold(white('OS & Installation Guides'))),
+    box('    ' + dim(`${ALL_GUIDES.length} guides across ${SECTIONS.filter(s => s.guides.length).length} sections`)),
+    box(),
+    box('    ' + dim('practical guides for problems that are')),
+    box('    ' + dim('hard to find solutions for online.')),
+    box(),
+    bottom,
     '',
-    '  ' + dim('last login: ' + new Date().toDateString().toLowerCase()),
+    '  ' + dim('last login: ' + new Date().toDateString()),
     '',
-    '  ' + dim('type ') + green('ls') + dim(' to browse sections') + dim('  ·  ') + green('help') + dim(' for all commands'),
+    '  ' + dim('type ') + green('ls') + dim(' to browse sections') +
+    dim('  ·  ') + green('help') + dim(' for all commands'),
     '',
-  ];
+];
 
   typewriter(banner, 0, () => {
     setTimeout(() => {

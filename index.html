@@ -277,13 +277,13 @@ function runCmd(raw) {
   inputBuf = '';
 }
 
-// ── Auto-suggest (fires after 3+ chars typed) ───────────────────────────
+// ── Auto-suggest (fires after 10+ chars typed) ───────────────────────────
 let lastSuggestion = '';
 function autoComplete() {
   const parts    = inputBuf.trim().split(/\s+/);
   const verb     = parts[0].toLowerCase();
   const fragment = (parts[parts.length - 1] || '').toLowerCase();
-  if (fragment.length < 3) return;
+  if (fragment.length < 10) return;
 
   let match = null;
   if (verb === 'cd' && parts.length >= 2) {

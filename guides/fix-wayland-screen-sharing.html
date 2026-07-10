@@ -1,0 +1,81 @@
+<!-- linux:Linux -->
+<h1>Fix Screen Sharing on Wayland (Discord, Zoom, OBS)</h1>
+
+<p>Screen sharing on Wayland requires <code>xdg-desktop-portal</code> — a permission layer that apps use to request screen capture. Without the right portal implementation installed, screen sharing shows a black screen or fails entirely.</p>
+
+<h2>Check What Portal Is Installed</h2>
+
+<pre><code>systemctl --user status xdg-desktop-portal
+systemctl --user status xdg-desktop-portal-gnome    # if on GNOME
+systemctl --user status xdg-desktop-portal-wlr      # if on wlroots (Sway, Hyprland)
+systemctl --user status xdg-desktop-portal-hyprland # if on Hyprland</code></pre>
+
+<h2>Install the Right Portal for Your Desktop</h2>
+
+<pre><code># GNOME
+sudo apt install xdg-desktop-portal-gnome   # Ubuntu/Debian
+sudo dnf install xdg-desktop-portal-gnome   # Fedora
+sudo pacman -S xdg-desktop-portal-gnome     # Arch
+
+# KDE Plasma
+sudo apt install xdg-desktop-portal-kde
+sudo pacman -S xdg-desktop-portal-kde
+
+# Hyprland / wlroots (Sway, River, etc.)
+sudo pacman -S xdg-desktop-portal-hyprland    # Arch
+# or
+sudo pacman -S xdg-desktop-portal-wlr         # Arch (older, for non-Hyprland wlroots)</code></pre>
+
+<h2>Restart the Portal</h2>
+
+<pre><code>systemctl --user restart xdg-desktop-portal
+systemctl --user restart xdg-desktop-portal-gnome   # or your desktop's variant</code></pre>
+
+<p>Then restart the app you are trying to share from (Discord, Zoom, OBS).</p>
+
+<h2>Check for Conflicting Portals</h2>
+
+<p>Having multiple portal implementations installed can cause conflicts. Check:</p>
+
+<pre><code>systemctl --user list-units 'xdg-desktop-portal*'</code></pre>
+
+<p>You should have exactly one desktop-specific portal running alongside the base <code>xdg-desktop-portal</code>. If you have both <code>xdg-desktop-portal-gnome</code> and <code>xdg-desktop-portal-wlr</code> running, disable the one that does not match your desktop.</p>
+
+<h2>Discord Specifically</h2>
+
+<p>Discord on Wayland requires launching with a specific flag:</p>
+
+<pre><code># Add to Discord launch options or create a wrapper:
+discord --enable-features=UseOzonePlatform --ozone-platform=wayland</code></pre>
+
+<p>Or set the environment variable:</p>
+
+<pre><code>NIXOS_OZONE_WL=1 discord    # or
+ELECTRON_OZONE_PLATFORM_HINT=auto discord</code></pre>
+
+<p>In Hyprland, add to your config:</p>
+
+<pre><code>env = ELECTRON_OZONE_PLATFORM_HINT,auto</code></pre>
+
+<h2>OBS on Wayland</h2>
+
+<p>OBS requires PipeWire and the portal. Install:</p>
+
+<pre><code>sudo pacman -S obs-studio pipewire wireplumber
+sudo apt install obs-studio pipewire wireplumber</code></pre>
+
+<p>In OBS: Sources → + → Screen Capture (PipeWire). A system dialog appears asking which window or screen to share — this is the portal working correctly.</p>
+
+<h2>Zoom on Wayland</h2>
+
+<pre><code># Launch Zoom with Wayland support
+QT_QPA_PLATFORM=wayland zoom</code></pre>
+
+<h2>Check PipeWire Is Running</h2>
+
+<pre><code>systemctl --user status pipewire
+systemctl --user status wireplumber    # or pipewire-media-session on older setups</code></pre>
+
+<p>If either is not running:</p>
+
+<pre><code>systemctl --user enable --now pipewire wireplumber</code></pre>

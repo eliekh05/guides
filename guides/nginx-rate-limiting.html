@@ -1,0 +1,115 @@
+<!-- server:Server & Self-Hosting -->
+<h1>Nginx Rate Limiting</h1>
+
+<p>Nginx rate limiting prevents abuse, brute force attacks, and DDoS by restricting how many requests a client can make in a given time window.</p>
+
+<h2>Basic Rate Limiting</h2>
+
+<p>Define a rate limiting zone in <code>nginx.conf</code> inside the <code>http</code> block:</p>
+
+<pre><code>http {
+    # Zone named "api" — 10MB memory, 10 requests/second per IP
+    limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
+
+    # Zone for login — 1 request per second per IP
+    limit_req_zone $binary_remote_addr zone=login:10m rate=1r/s;
+}</code></pre>
+
+<p>Apply in a server block:</p>
+
+<pre><code>server {
+    location /api/ {
+        limit_req zone=api burst=20 nodelay;
+    }
+
+    location /login {
+        limit_req zone=login burst=5;
+    }
+}</code></pre>
+
+<h2>Understanding burst and nodelay</h2>
+
+<p><strong>burst=20</strong> — allows up to 20 requests above the rate limit to queue. Requests beyond the burst are rejected with 503.</p>
+
+<p><strong>nodelay</strong> — processes burst requests immediately instead of queuing them with a delay. Without nodelay, burst requests are spread out over time. With nodelay, they are handled instantly but the rate counter still increments — so the client still cannot exceed the rate sustained.</p>
+
+<h2>Return 429 Instead of 503</h2>
+
+<pre><code>http {
+    limit_req_status 429;
+    limit_conn_status 429;
+}</code></pre>
+
+<p>429 (Too Many Requests) is the correct HTTP status for rate limiting. 503 (Service Unavailable) implies a server problem.</p>
+
+<h2>Rate Limit Connections (Not Just Requests)</h2>
+
+<pre><code>http {
+    # Limit concurrent connections per IP
+    limit_conn_zone $binary_remote_addr zone=conn:10m;
+}
+
+server {
+    location / {
+        limit_conn conn 10;    # max 10 concurrent connections per IP
+    }
+}</code></pre>
+
+<h2>Whitelist Trusted IPs</h2>
+
+<pre><code>http {
+    geo $limit {
+        default         1;
+        127.0.0.1       0;    # localhost — no limit
+        192.168.1.0/24  0;    # internal network — no limit
+    }
+
+    map $limit $limit_key {
+        0 "";
+        1 $binary_remote_addr;
+    }
+
+    limit_req_zone $limit_key zone=api:10m rate=10r/s;
+}</code></pre>
+
+<p>When <code>$limit_key</code> is empty, the rate limit zone is not applied.</p>
+
+<h2>Log Rate Limited Requests</h2>
+
+<pre><code>http {
+    limit_req_log_level warn;    # log at warn level (default is error)
+}</code></pre>
+
+<p>Check logs:</p>
+
+<pre><code>grep "limiting requests" /var/log/nginx/error.log | tail -20</code></pre>
+
+<h2>Rate Limit by URL Pattern</h2>
+
+<pre><code>server {
+    # Strict limit on login and register endpoints
+    location ~ ^/(login|register|forgot-password) {
+        limit_req zone=login burst=3 nodelay;
+    }
+
+    # Looser limit on API
+    location /api/ {
+        limit_req zone=api burst=50 nodelay;
+    }
+
+    # No limit on static assets
+    location ~* \.(js|css|png|jpg|svg|ico|woff)$ {
+        # no limit_req here
+    }
+}</code></pre>
+
+<h2>Test Your Rate Limiting</h2>
+
+<pre><code># Send 20 requests quickly and check which ones get rejected
+for i in $(seq 1 20); do
+    curl -s -o /dev/null -w "%{http_code}\n" https://yoursite.com/api/endpoint
+done</code></pre>
+
+<p>You should see 200s until the limit is hit, then 429s.</p>
+
+<pre><code>sudo nginx -t && sudo nginx -s reload</code></pre>

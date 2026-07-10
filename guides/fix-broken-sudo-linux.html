@@ -1,0 +1,110 @@
+<!-- linux:Linux -->
+<h1>Fix Broken sudo on Linux</h1>
+
+<p>Accidentally removing your user from the sudo group, editing sudoers incorrectly, or corrupting the sudo binary leaves you locked out of administrative commands. Here is how to recover.</p>
+
+<h2>Diagnose the Problem</h2>
+
+<pre><code># Check if your user is in the sudo group
+groups $(whoami)
+
+# Check sudoers file syntax
+sudo visudo --check
+
+# Test sudo
+sudo -l</code></pre>
+
+<h2>Fix 1 — Switch to Root (If Root Login Is Available)</h2>
+
+<pre><code>su -
+# Enter root password
+# Add your user back to sudo
+usermod -aG sudo yourusername    # Debian/Ubuntu
+usermod -aG wheel yourusername   # Fedora/RHEL/Arch
+exit</code></pre>
+
+<p>Log out and back in for the group change to take effect.</p>
+
+<h2>Fix 2 — Use Another sudo User</h2>
+
+<p>If another user on the system has sudo access, log in as them and add your user:</p>
+
+<pre><code>sudo usermod -aG sudo yourusername</code></pre>
+
+<h2>Fix 3 — Single User Mode (Recovery Mode)</h2>
+
+<p>If no root password and no other sudo user, boot into recovery mode:</p>
+
+<p><strong>Ubuntu/Debian:</strong></p>
+<ol>
+<li>Restart → hold Shift to show GRUB menu</li>
+<li>Select <strong>Advanced options</strong> → <strong>Recovery mode</strong></li>
+<li>Select <strong>root — Drop to root shell prompt</strong></li>
+<li>Remount filesystem as writable: <code>mount -o remount,rw /</code></li>
+<li><code>usermod -aG sudo yourusername</code></li>
+<li><code>reboot</code></li>
+</ol>
+
+<p><strong>Fedora/RHEL:</strong></p>
+<ol>
+<li>Restart → press E at GRUB to edit the boot entry</li>
+<li>Find the line starting with <code>linux</code> and append <code>rd.break enforcing=0</code></li>
+<li>Press Ctrl+X to boot</li>
+<li><code>mount -o remount,rw /sysroot</code></li>
+<li><code>chroot /sysroot</code></li>
+<li><code>usermod -aG wheel yourusername</code></li>
+<li><code>exit && reboot</code></li>
+</ol>
+
+<h2>Fix 4 — Corrupted sudoers File</h2>
+
+<p>If you broke sudoers with a bad edit (bypassing visudo), fix it in recovery mode:</p>
+
+<pre><code># In recovery shell with filesystem mounted rw:
+cp /etc/sudoers /etc/sudoers.broken
+cp /etc/sudoers.d/README /tmp/    # just to verify the directory exists
+
+# Restore from package
+dpkg --verify sudo                 # Ubuntu/Debian
+rpm -V sudo                        # Fedora/RHEL
+
+# Or restore default sudoers manually
+cat > /etc/sudoers << 'SUDOEOF'
+Defaults env_reset
+Defaults mail_badpass
+Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+root ALL=(ALL:ALL) ALL
+%sudo ALL=(ALL:ALL) ALL    # Ubuntu/Debian
+%wheel ALL=(ALL) ALL       # Fedora/RHEL/Arch
+
+@includedir /etc/sudoers.d
+SUDOEOF
+
+chmod 440 /etc/sudoers
+chown root:root /etc/sudoers</code></pre>
+
+<h2>Fix 5 — Live USB</h2>
+
+<p>Boot from a Linux live USB, mount your system partition, and chroot into it:</p>
+
+<pre><code>sudo mount /dev/sda2 /mnt          # replace with your root partition
+sudo mount --bind /dev /mnt/dev
+sudo mount --bind /proc /mnt/proc
+sudo mount --bind /sys /mnt/sys
+sudo chroot /mnt
+
+# Now inside your broken system:
+usermod -aG sudo yourusername
+exit
+
+sudo umount -R /mnt
+reboot</code></pre>
+
+<h2>Prevent This From Happening Again</h2>
+
+<ul>
+<li>Always use <code>visudo</code> to edit the sudoers file — it validates syntax before saving</li>
+<li>Keep the root password set on servers</li>
+<li>Have at least two admin users on any important system</li>
+</ul>

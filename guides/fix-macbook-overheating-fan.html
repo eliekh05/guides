@@ -1,0 +1,62 @@
+<!-- macos:macOS -->
+<h1>Fix MacBook Overheating and Fan Always Running</h1>
+
+<p>MacBooks regulate temperature by throttling the CPU and spinning the fan. If your Mac is constantly hot or the fan never stops, something is generating excessive heat.</p>
+
+<h2>Identify What Is Generating Heat</h2>
+
+<p>Open Activity Monitor → CPU tab. Sort by % CPU descending. Anything consistently above 50% CPU while you are not actively doing something is a problem.</p>
+
+<p>Common causes:</p>
+<ul>
+<li><code>kernel_task</code> — macOS deliberately limiting CPU to cool the system (symptom, not cause)</li>
+<li><code>mds_stores</code> / <code>mdworker</code> — Spotlight indexing (temporary, finishes in a few hours)</li>
+<li><code>Google Chrome Helper (Renderer)</code> — Chrome tabs and extensions</li>
+<li>Electron apps (Slack, VS Code, Discord) running multiple background processes</li>
+<li>Antivirus software scanning in real time</li>
+<li>Video calls (Zoom, Teams) with virtual backgrounds</li>
+</ul>
+
+<h2>Check CPU Temperature</h2>
+
+<pre><code># Intel Macs
+sudo powermetrics -n 1 --samplers smc | grep -i "CPU die temperature"
+
+# Apple Silicon — check thermal pressure
+sudo powermetrics -n 1 --samplers thermal | grep -i pressure</code></pre>
+
+<p>Above 90°C on Intel is concerning. Apple Silicon runs hotter by design — up to 95°C under load is normal.</p>
+
+<h2>Reset SMC (Intel Macs)</h2>
+
+<p>The SMC controls fan speed and thermal management. A corrupted SMC can cause fans to spin at full speed or not at all.</p>
+
+<p><strong>MacBook with T2 chip:</strong> Shut down → hold Shift+Control+Option (left side) + Power for 7 seconds → release all → power on.</p>
+
+<p><strong>Older Intel MacBook (removable battery):</strong> Remove battery → hold Power for 5 seconds → reinsert battery → power on.</p>
+
+<p><strong>Apple Silicon:</strong> No SMC. Shut down and leave off for 30 seconds.</p>
+
+<h2>Reset NVRAM</h2>
+
+<pre><code># Intel Mac: restart and hold Cmd+Option+P+R until second startup chime
+# Apple Silicon: NVRAM resets automatically, no action needed</code></pre>
+
+<h2>Check for Thermal Paste Degradation (Intel Macs)</h2>
+
+<p>On Intel MacBooks older than 4–5 years, the thermal paste between the CPU and heat sink dries out. This is a hardware issue — the Mac will run hot under any load. A repair shop can reterminate it for $50–$100 and the improvement is usually dramatic (10–20°C reduction).</p>
+
+<h2>Prevent Overheating Day-to-Day</h2>
+
+<ul>
+<li>Do not use on fabric surfaces (bed, sofa) — blocks the vents on the bottom</li>
+<li>Use Safari instead of Chrome for everyday browsing</li>
+<li>Quit Slack when not actively using it — use the web version or check periodically</li>
+<li>Disable virtual backgrounds in video calls</li>
+<li>Keep macOS updated — thermal management improvements ship with updates</li>
+<li>Use Low Power Mode in System Settings → Battery when doing light work</li>
+</ul>
+
+<h2>Manual Fan Control (Intel Only)</h2>
+
+<p>Apps like Macs Fan Control allow manual fan speed adjustment. Useful for getting the Mac cool quickly before a CPU-intensive task. Not recommended for permanent use — macOS's thermal management is conservative for good reason. Apple Silicon Macs do not expose fan control APIs to third-party apps.</p>

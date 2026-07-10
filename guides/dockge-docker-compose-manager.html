@@ -1,0 +1,81 @@
+<!-- server:Server & Self-Hosting -->
+<h1>Dockge — Docker Compose Stack Manager</h1>
+
+<p>Dockge is a self-hosted Docker Compose manager with a clean web UI. It lets you create, edit, start, stop, and monitor Docker Compose stacks from a browser. Simpler than Portainer for people who only need Compose management.</p>
+
+<h2>Install</h2>
+
+<pre><code>mkdir -p /opt/stacks /opt/dockge
+cd /opt/dockge
+curl https://dockge.kuma.pet/compose.yaml --output compose.yaml
+docker compose up -d</code></pre>
+
+<p>Open <code>http://YOUR_SERVER_IP:5001</code> and create your admin account.</p>
+
+<h2>What It Does</h2>
+
+<ul>
+<li>Manage all your Docker Compose stacks from one interface</li>
+<li>Built-in editor for <code>docker-compose.yml</code> with syntax highlighting</li>
+<li>Start, stop, restart, pull, and delete stacks with one click</li>
+<li>Live log viewer per container</li>
+<li>Terminal into any running container</li>
+<li>Interactive Compose file editor — add services, environment variables, volumes through a form</li>
+</ul>
+
+<h2>Add an Existing Stack</h2>
+
+<p>Place your existing <code>docker-compose.yml</code> files in <code>/opt/stacks/</code> — each stack goes in its own subfolder:</p>
+
+<pre><code>mkdir -p /opt/stacks/nextcloud
+# Copy your compose file:
+cp ~/nextcloud/docker-compose.yml /opt/stacks/nextcloud/</code></pre>
+
+<p>Dockge auto-detects stacks in <code>/opt/stacks</code> and shows them in the UI.</p>
+
+<h2>Create a New Stack from UI</h2>
+
+<ol>
+<li>Click <strong>+</strong> → Compose</li>
+<li>Enter stack name</li>
+<li>Paste or write your <code>docker-compose.yml</code></li>
+<li>Add environment variables in the <strong>ENV</strong> tab (saves to <code>.env</code> file)</li>
+<li>Click <strong>Deploy</strong></li>
+</ol>
+
+<h2>Docker Compose Setup</h2>
+
+<pre><code>services:
+  dockge:
+    image: louislam/dockge:1
+    restart: unless-stopped
+    ports:
+      - 5001:5001
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/dockge/data:/app/data
+      - /opt/stacks:/opt/stacks</code></pre>
+
+<h2>Dockge vs Portainer</h2>
+
+<table>
+<thead>
+<tr><th>Feature</th><th>Dockge</th><th>Portainer</th></tr>
+</thead>
+<tbody>
+<tr><td>Compose focus</td><td>Yes — built for it</td><td>Partial</td></tr>
+<tr><td>Individual container management</td><td>No</td><td>Yes</td></tr>
+<tr><td>UI complexity</td><td>Simple</td><td>Complex</td></tr>
+<tr><td>Multi-server</td><td>No</td><td>Yes (agent)</td></tr>
+<tr><td>Image management</td><td>No</td><td>Yes</td></tr>
+<tr><td>Resource usage</td><td>Very light</td><td>Heavier</td></tr>
+</tbody>
+</table>
+
+<p>Use Dockge if you only run Compose stacks and want a simple interface. Use Portainer if you need full Docker management, image inspection, or multi-server support.</p>
+
+<h2>Update Dockge</h2>
+
+<pre><code>cd /opt/dockge
+docker compose pull
+docker compose up -d</code></pre>

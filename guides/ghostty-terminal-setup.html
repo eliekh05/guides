@@ -1,0 +1,107 @@
+<!-- macos:macOS -->
+<h1>Ghostty Terminal Setup</h1>
+
+<p>Ghostty is a fast, native terminal emulator built in Zig. It has GPU rendering, splits, tabs, and a built-in config system. It became the most talked-about terminal in 2025 after its public release in December 2024 and is now among the most popular terminals on macOS and Linux.</p>
+
+<h2>Install</h2>
+
+<pre><code>brew install --cask ghostty    # macOS
+</code></pre>
+
+<p>On Linux, build from source or use the official package:</p>
+
+<pre><code># Arch Linux (AUR)
+yay -S ghostty-bin
+
+# Flatpak
+flatpak install flathub com.mitchellh.ghostty</code></pre>
+
+<h2>Config File Location</h2>
+
+<pre><code># macOS
+~/.config/ghostty/config
+
+# Linux
+~/.config/ghostty/config</code></pre>
+
+<p>Create it if it does not exist:</p>
+
+<pre><code>mkdir -p ~/.config/ghostty
+nano ~/.config/ghostty/config</code></pre>
+
+<h2>Essential Config Settings</h2>
+
+<pre><code># Font
+font-family = JetBrains Mono
+font-size = 13
+
+# Theme (built-in themes: ghostty -e --list-themes)
+theme = dark:Catppuccin Mocha,light:Catppuccin Latte
+
+# Appearance
+background-opacity = 0.95
+window-decoration = true
+
+# Performance
+cursor-style = block
+cursor-style-blink = true
+
+# Shell integration (auto-detects your shell)
+shell-integration = true
+
+# macOS specific
+macos-option-as-alt = true   # make Option work as Meta for readline shortcuts
+window-padding-x = 8
+window-padding-y = 8</code></pre>
+
+<h2>Keyboard Shortcuts</h2>
+
+<table>
+<thead>
+<tr><th>Shortcut</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>Cmd+T</td><td>New tab</td></tr>
+<tr><td>Cmd+D</td><td>New split (vertical)</td></tr>
+<tr><td>Cmd+Shift+D</td><td>New split (horizontal)</td></tr>
+<tr><td>Cmd+Option+Arrow</td><td>Navigate between splits</td></tr>
+<tr><td>Cmd+W</td><td>Close tab or split</td></tr>
+<tr><td>Cmd+[1-9]</td><td>Switch to tab by number</td></tr>
+<tr><td>Cmd+Shift+Enter</td><td>Zoom split to full window</td></tr>
+<tr><td>Cmd+,</td><td>Open config in editor</td></tr>
+</tbody>
+</table>
+
+<h2>List All Built-in Themes</h2>
+
+<pre><code>ghostty +list-themes</code></pre>
+
+<h2>Shell Integration</h2>
+
+<p>Ghostty's shell integration adds:</p>
+<ul>
+<li>Click to jump between command outputs</li>
+<li>Semantic prompt tracking</li>
+<li>Working directory tracking across splits</li>
+<li>Marks on prompt lines in the scrollback</li>
+</ul>
+
+<p>It activates automatically when <code>shell-integration = true</code> and you are using bash, zsh, fish, or elvish.</p>
+
+<h2>Ghostty vs iTerm2 vs Warp</h2>
+
+<table>
+<thead>
+<tr><th>Feature</th><th>Ghostty</th><th>iTerm2</th><th>Warp</th></tr>
+</thead>
+<tbody>
+<tr><td>Performance</td><td>Excellent (GPU)</td><td>Good</td><td>Good (Rust)</td></tr>
+<tr><td>Config</td><td>Text file</td><td>GUI</td><td>GUI + AI</td></tr>
+<tr><td>Linux support</td><td>Yes</td><td>No</td><td>Yes</td></tr>
+<tr><td>AI features</td><td>No</td><td>No</td><td>Yes (paid)</td></tr>
+<tr><td>Open source</td><td>Yes (BSL)</td><td>Yes</td><td>No</td></tr>
+<tr><td>Privacy</td><td>Local only</td><td>Local only</td><td>Cloud telemetry</td></tr>
+</tbody>
+</table>
+
+<p>Ghostty is the best choice if you want a fast, config-file-driven terminal with no telemetry that works on both macOS and Linux.</p>

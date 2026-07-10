@@ -1,0 +1,86 @@
+<!-- windows:Windows -->
+<h1>Fix OneDrive Issues on Windows</h1>
+
+<p>OneDrive causes several common problems — taking over the Desktop and Documents folders, filling up disk space, syncing endlessly, or showing errors on files.</p>
+
+<h2>Stop OneDrive From Moving Your Desktop and Documents</h2>
+
+<p>When OneDrive's folder backup is enabled, it moves Desktop, Documents, and Pictures into the OneDrive folder. Files appear in two places and sync takes up space.</p>
+
+<p>To stop this and move folders back:</p>
+
+<ol>
+<li>Right-click the OneDrive icon in the system tray → Settings</li>
+<li>Sync and backup tab → Manage backup</li>
+<li>Turn off each folder (Desktop, Documents, Pictures)</li>
+<li>Click Stop backup when prompted</li>
+<li>Move the files back manually if they were relocated</li>
+</ol>
+
+<h2>Stop OneDrive From Starting with Windows</h2>
+
+<pre><code># PowerShell
+Get-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" | Select OneDrive
+
+# Remove autostart
+Remove-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run" -Name "OneDrive" -ErrorAction SilentlyContinue</code></pre>
+
+<p>Or: Task Manager → Startup apps → Microsoft OneDrive → Disable</p>
+
+<h2>Fix Sync Errors</h2>
+
+<p>Right-click the OneDrive icon → View sync problems. Common errors:</p>
+
+<ul>
+<li><strong>File name too long</strong> — Windows has a 260-character path limit. Shorten folder names or enable long paths: <code>reg add "HKLM\SYSTEM\CurrentControlSet\Control\FileSystem" /v LongPathsEnabled /t REG_DWORD /d 1 /f</code></li>
+<li><strong>Invalid characters</strong> — OneDrive does not support <code>: * ? " &lt; &gt; | #</code> in filenames. Rename the file.</li>
+<li><strong>File in use</strong> — close the application using the file and wait for sync</li>
+<li><strong>Quota exceeded</strong> — you have run out of OneDrive storage</li>
+</ul>
+
+<h2>Reset OneDrive</h2>
+
+<pre><code># Stop OneDrive
+taskkill /f /im OneDrive.exe
+
+# Reset (clears sync state, does not delete files)
+%localappdata%\Microsoft\OneDrive\onedrive.exe /reset
+
+# If the above path does not work:
+C:\Program Files\Microsoft OneDrive\onedrive.exe /reset
+
+# Wait 2 minutes, then relaunch
+%localappdata%\Microsoft\OneDrive\onedrive.exe</code></pre>
+
+<h2>Free Up Local Disk Space (Files On-Demand)</h2>
+
+<p>OneDrive's Files On-Demand feature stores files in the cloud and downloads them when opened. Enable it to save local disk space:</p>
+
+<ol>
+<li>Right-click OneDrive tray icon → Settings</li>
+<li>Advanced settings → Files On-Demand → Save space and download files as you use them</li>
+</ol>
+
+<p>Or via PowerShell to free up all cloud-backed files:</p>
+
+<pre><code>attrib +U -P /S "C:\Users\YourName\OneDrive\*"</code></pre>
+
+<h2>Uninstall OneDrive Completely</h2>
+
+<pre><code># Stop and uninstall
+taskkill /f /im OneDrive.exe
+winget uninstall Microsoft.OneDrive
+
+# Remove leftover files
+Remove-Item "$env:USERPROFILE\OneDrive" -Recurse -ErrorAction SilentlyContinue
+Remove-Item "$env:LOCALAPPDATA\Microsoft\OneDrive" -Recurse -ErrorAction SilentlyContinue
+Remove-Item "$env:PROGRAMDATA\Microsoft OneDrive" -Recurse -ErrorAction SilentlyContinue
+
+# Remove from registry
+reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v OneDrive /f</code></pre>
+
+<h2>Prevent OneDrive From Reinstalling</h2>
+
+<pre><code>reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\OneDrive" /v DisableFileSyncNGSC /t REG_DWORD /d 1 /f</code></pre>
+
+<p>Windows updates occasionally reinstall OneDrive. This registry key prevents it.</p>

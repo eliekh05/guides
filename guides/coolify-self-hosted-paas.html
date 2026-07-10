@@ -1,0 +1,90 @@
+<!-- server:Server & Self-Hosting -->
+<h1>Coolify — Self-Hosted Heroku Alternative</h1>
+
+<p>Coolify is an open-source, self-hosted platform that deploys apps, databases, and services from Git repositories or Docker images. It replaces Heroku, Railway, and Render — push code and Coolify builds and deploys it automatically, on your own server.</p>
+
+<h2>Requirements</h2>
+
+<ul>
+<li>A Linux server (Ubuntu 22.04+ or Debian 12+)</li>
+<li>Minimum 2 CPU cores, 2 GB RAM (4 GB recommended)</li>
+<li>A domain name (optional but recommended for HTTPS)</li>
+</ul>
+
+<h2>Install Coolify</h2>
+
+<pre><code>curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash</code></pre>
+
+<p>The script installs Docker, Coolify, and all dependencies. Takes 2–5 minutes. Access the dashboard at <code>http://YOUR_SERVER_IP:8000</code>.</p>
+
+<h2>Initial Setup</h2>
+
+<ol>
+<li>Create your admin account</li>
+<li>Set your server URL (use your domain if you have one)</li>
+<li>Coolify auto-detects the local Docker daemon — click <strong>Validate &amp; Start Proxy</strong></li>
+</ol>
+
+<h2>Deploy a Git Repository</h2>
+
+<ol>
+<li>Projects → New Project → New Resource</li>
+<li>Select <strong>Public Repository</strong> or connect GitHub/GitLab/Gitea</li>
+<li>Enter the repository URL</li>
+<li>Coolify detects the language/framework and sets up a build pack automatically (Node.js, Python, PHP, Ruby, Go, Static, Docker, etc.)</li>
+<li>Set environment variables if needed</li>
+<li>Click <strong>Deploy</strong></li>
+</ol>
+
+<h2>Deploy a Docker Image</h2>
+
+<ol>
+<li>New Resource → Docker Image</li>
+<li>Enter image name (e.g. <code>nginx:latest</code>)</li>
+<li>Set ports, volumes, environment variables</li>
+<li>Deploy</li>
+</ol>
+
+<h2>Databases</h2>
+
+<p>Coolify provisions managed database instances with one click:</p>
+
+<ul>
+<li>PostgreSQL, MySQL, MariaDB, MongoDB, Redis, Dragonfly, KeyDB, Clickhouse</li>
+</ul>
+
+<p>New Resource → Database → select type → Deploy. Coolify handles backups, connection strings, and restores.</p>
+
+<h2>Automatic HTTPS</h2>
+
+<p>Coolify manages Let's Encrypt certificates automatically via Traefik. Set a domain on any service → Coolify issues and renews the certificate, configures routing.</p>
+
+<h2>Git Push to Deploy</h2>
+
+<p>Connect your GitHub or GitLab account. On any resource: Settings → Source → enable <strong>Automatic Deployment</strong>. Coolify registers a webhook — every push to your main branch triggers a new build and deployment.</p>
+
+<h2>Multiple Servers</h2>
+
+<p>Coolify can manage remote servers — add a server via SSH key and deploy to it from the same dashboard. Useful for separating production from staging.</p>
+
+<h2>Update Coolify</h2>
+
+<pre><code>curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash</code></pre>
+
+<p>Re-running the install script updates Coolify in place.</p>
+
+<h2>Coolify vs Alternatives</h2>
+
+<table>
+<thead>
+<tr><th>Feature</th><th>Coolify</th><th>Heroku</th><th>Railway</th></tr>
+</thead>
+<tbody>
+<tr><td>Self-hosted</td><td>Yes</td><td>No</td><td>No</td></tr>
+<tr><td>Cost</td><td>Server cost only</td><td>$5+/month</td><td>$5+/month</td></tr>
+<tr><td>Open source</td><td>Yes (Apache 2)</td><td>No</td><td>No</td></tr>
+<tr><td>Git push deploy</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Managed DBs</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Auto HTTPS</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+</tbody>
+</table>

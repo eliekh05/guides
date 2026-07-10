@@ -1,0 +1,109 @@
+<!-- server:Server & Self-Hosting -->
+<h1>Fix Docker Out of Disk Space</h1>
+
+<p>Docker accumulates unused images, stopped containers, dangling volumes, and build cache over time. A server that seemed to have plenty of space fills up silently.</p>
+
+<h2>Check What Docker Is Using</h2>
+
+<pre><code>docker system df</code></pre>
+
+<p>This shows a breakdown:</p>
+<ul>
+<li><strong>Images</strong> — all pulled and built images</li>
+<li><strong>Containers</strong> — including stopped containers</li>
+<li><strong>Volumes</strong> — named volumes</li>
+<li><strong>Build cache</strong> — cached build layers from docker build</li>
+</ul>
+
+<h2>Safe Cleanup — Remove Only Unused Resources</h2>
+
+<pre><code># Remove stopped containers, unused networks, dangling images, build cache
+# Does NOT remove volumes by default
+docker system prune
+
+# Same but also remove all unused images (not just dangling ones)
+docker system prune -a
+
+# Check what would be removed first (dry run)
+docker system prune -a --filter "until=24h"</code></pre>
+
+<h2>Remove Specific Resource Types</h2>
+
+<pre><code># Remove all stopped containers
+docker container prune
+
+# Remove all unused images
+docker image prune -a
+
+# Remove unused volumes (careful — data inside is deleted permanently)
+docker volume prune
+
+# Remove unused networks
+docker network prune
+
+# Remove build cache
+docker buildx prune -a</code></pre>
+
+<h2>Remove Everything (Nuclear Option)</h2>
+
+<pre><code># Stop all running containers first
+docker stop $(docker ps -q)
+
+# Remove ALL containers, images, volumes, networks
+docker system prune -a --volumes</code></pre>
+
+<blockquote>
+<p>This deletes all data in volumes including databases. Only run this on a development machine or if you are sure nothing important is stored in Docker volumes.</p>
+</blockquote>
+
+<h2>Find Which Images Are Largest</h2>
+
+<pre><code>docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}" | sort -k3 -h -r | head -20</code></pre>
+
+<h2>Find Large Volumes</h2>
+
+<pre><code>docker system df -v | grep -A 100 "VOLUME NAME"</code></pre>
+
+<h2>Automate Cleanup with a Cron Job</h2>
+
+<pre><code>crontab -e
+# Add — runs cleanup every Sunday at 3am
+0 3 * * 0 docker system prune -af --filter "until=168h" >> /var/log/docker-cleanup.log 2>&1</code></pre>
+
+<p>The <code>--filter "until=168h"</code> only removes resources unused for more than 7 days — safer than removing everything.</p>
+
+<h2>Change Docker Data Directory</h2>
+
+<p>If Docker's data directory (default <code>/var/lib/docker</code>) is on a small partition, move it to a larger disk:</p>
+
+<pre><code>sudo systemctl stop docker
+
+sudo nano /etc/docker/daemon.json</code></pre>
+
+<pre><code>{
+  "data-root": "/mnt/large-disk/docker"
+}</code></pre>
+
+<pre><code># Copy existing data
+sudo rsync -aP /var/lib/docker/ /mnt/large-disk/docker/
+
+sudo systemctl start docker
+docker info | grep "Docker Root Dir"</code></pre>
+
+<h2>Log Files Eating Space</h2>
+
+<p>Container logs grow indefinitely by default. Set a log limit:</p>
+
+<pre><code>sudo nano /etc/docker/daemon.json</code></pre>
+
+<pre><code>{
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  }
+}</code></pre>
+
+<pre><code>sudo systemctl restart docker</code></pre>
+
+<p>This applies to new containers. For existing containers, recreate them with the new log config.</p>

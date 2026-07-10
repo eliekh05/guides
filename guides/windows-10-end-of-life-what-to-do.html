@@ -1,0 +1,48 @@
+<!-- windows:Windows -->
+<h1>Windows 10 End of Life — What to Do</h1>
+
+<p>Windows 10 reached end of life on October 14, 2025. Microsoft no longer provides security updates, bug fixes, or technical support. Continuing to use it is a security risk — vulnerabilities found after that date will never be patched.</p>
+
+<h2>Your Options</h2>
+
+<h3>Option 1 — Upgrade to Windows 11 (Supported Hardware)</h3>
+
+<p>If your PC meets Windows 11 requirements (TPM 2.0, Secure Boot, 64-bit CPU from 2017 or later), upgrade is free:</p>
+
+<pre><code>Settings → Windows Update → Check for updates</code></pre>
+
+<p>If Windows Update does not offer it, download the Installation Assistant from microsoft.com/en-us/software-download/windows11.</p>
+
+<h3>Option 2 — Install Windows 11 on Unsupported Hardware</h3>
+
+<p>See the <strong>Install Windows 11 on Unsupported PC</strong> guide. The registry bypass works reliably and gives you full Windows 11 — Microsoft has not blocked it as of 2026.</p>
+
+<h3>Option 3 — Extended Security Updates (ESU) — Paid</h3>
+
+<p>Microsoft offers paid Extended Security Updates for Windows 10 for individuals and businesses. As of 2026, Year 1 ESU costs $30 per device for consumers. This buys you security patches until October 2026. Enroll at microsoft.com/en-us/windows/windows-10-eol-faq.</p>
+
+<h3>Option 4 — Switch to Linux</h3>
+
+<p>If your hardware is too old for Windows 11 and you do not want to pay for ESU, Linux is a genuine alternative. See the <strong>Which Linux Distribution Should You Use</strong> guide. Linux Mint runs well on hardware from 2010 onwards.</p>
+
+<h2>Check If Your PC Supports Windows 11</h2>
+
+<pre><code># Run in PowerShell or press Win+R → WhyNotWin11
+# Or use Microsoft's official tool:
+# Download PC Health Check from microsoft.com
+</code></pre>
+
+<p>The main blockers:</p>
+<ul>
+<li><strong>No TPM 2.0</strong> — most PCs from 2017+ have it, may need enabling in BIOS</li>
+<li><strong>Secure Boot disabled</strong> — enable in BIOS/UEFI settings</li>
+<li><strong>CPU too old</strong> — Intel 7th gen or earlier, AMD Ryzen 1000 series</li>
+</ul>
+
+<h2>Enable TPM 2.0 in BIOS</h2>
+
+<p>Restart → enter BIOS (usually F2, F10, DEL, or F12 during boot) → look for TPM, PTT (Intel Platform Trust Technology), or fTPM (AMD) under Security or Advanced settings → Enable → Save.</p>
+
+<h2>Back Up Before Doing Anything</h2>
+
+<p>Whatever path you choose, back up your important files first. Upgrading Windows should preserve your files, but hardware failures, power cuts during upgrade, and unexpected incompatibilities can cause data loss.</p>

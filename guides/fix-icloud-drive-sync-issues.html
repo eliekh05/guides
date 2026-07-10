@@ -1,0 +1,71 @@
+<!-- macos:macOS -->
+<h1>Fix iCloud Drive Sync Issues</h1>
+
+<p>iCloud Drive sync problems fall into a few categories — files stuck downloading, uploads stalling, or the sync never completing. Here is how to diagnose and fix each one.</p>
+
+<h2>Check iCloud Server Status First</h2>
+
+<p>Go to <a href="https://www.apple.com/support/systemstatus/">https://www.apple.com/support/systemstatus/</a> and confirm iCloud Drive shows green. If it is yellow or red, wait for Apple to resolve it — nothing you do locally will fix a server-side outage.</p>
+
+<h2>Check Available iCloud Storage</h2>
+
+<p>System Settings → Apple ID → iCloud → Manage Account Storage. If you are at or near the limit, sync stops until you free space or upgrade. Files will show the cloud icon indefinitely.</p>
+
+<h2>Restart the iCloud Sync Daemon</h2>
+
+<pre><code>killall bird</code></pre>
+
+<p>iCloud restarts automatically within seconds. Wait 1–2 minutes and check if sync resumes. This fixes the majority of stuck sync issues.</p>
+
+<h2>Force Download Stuck Files</h2>
+
+<pre><code># Force download everything in iCloud Drive
+brctl download ~/Library/Mobile\ Documents/com~apple~CloudDocs/
+
+# Download a specific file
+brctl download /path/to/file</code></pre>
+
+<p>Or in Finder: right-click a file showing the cloud icon → Download Now.</p>
+
+<h2>Check Sync Status in Detail</h2>
+
+<pre><code># Watch iCloud sync activity in real time
+brctl log --wait --shorten
+
+# Check what is currently syncing
+brctl status</code></pre>
+
+<h2>Reset iCloud Drive Cache</h2>
+
+<pre><code>killall bird
+rm -rf ~/Library/Application\ Support/CloudDocs/session/
+</code></pre>
+
+<p>iCloud rebuilds the session cache. Allow several minutes for sync to resume.</p>
+
+<h2>Files on Mac But Not on iPhone</h2>
+
+<ol>
+<li>Confirm iCloud Drive is enabled on iPhone: Settings → [your name] → iCloud → iCloud Drive → On</li>
+<li>Open the Files app → iCloud Drive and pull down to refresh</li>
+<li>Check the file is not in a folder that is excluded from iCloud sync</li>
+</ol>
+
+<h2>Desktop and Documents Not Syncing</h2>
+
+<p>System Settings → Apple ID → iCloud → iCloud Drive → Options → confirm Desktop and Documents Folders is checked. If you just enabled this, allow 10–30 minutes for the initial upload of existing files.</p>
+
+<h2>Disable and Re-enable iCloud Drive</h2>
+
+<p>Last resort — only do this if nothing else works:</p>
+
+<ol>
+<li>System Settings → Apple ID → iCloud → iCloud Drive → Off</li>
+<li>Choose <strong>Keep a Copy</strong> when prompted (not Remove from Mac)</li>
+<li>Restart your Mac</li>
+<li>Re-enable iCloud Drive</li>
+</ol>
+
+<h2>Monitor iCloud Daemon Logs</h2>
+
+<pre><code>log stream --predicate 'subsystem == "com.apple.bird"' --level debug 2>&1 | head -50</code></pre>

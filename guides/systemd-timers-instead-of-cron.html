@@ -1,0 +1,116 @@
+<!-- scheduling:Task Scheduling -->
+<h1>systemd Timers — The Modern Alternative to cron</h1>
+
+<p>systemd timers are the recommended way to schedule tasks on modern Linux systems. Unlike cron, timers integrate with the systemd journal, track missed runs when the machine was off, and can depend on other services.</p>
+
+<h2>How It Works</h2>
+
+<p>Every timer needs two files: a <strong>.timer unit</strong> (defines when to run) and a <strong>.service unit</strong> (defines what to run). They share the same base name.</p>
+
+<h2>Create a Timer (System-Wide)</h2>
+
+<p>Create the service file:</p>
+
+<pre><code>sudo nano /etc/systemd/system/mybackup.service</code></pre>
+
+<pre><code>[Unit]
+Description=My Backup Script
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/backup.sh
+User=youruser</code></pre>
+
+<p>Create the timer file:</p>
+
+<pre><code>sudo nano /etc/systemd/system/mybackup.timer</code></pre>
+
+<pre><code>[Unit]
+Description=Run My Backup Daily
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+AccuracySec=1h
+
+[Install]
+WantedBy=timers.target</code></pre>
+
+<p>Enable and start:</p>
+
+<pre><code>sudo systemctl daemon-reload
+sudo systemctl enable --now mybackup.timer</code></pre>
+
+<h2>OnCalendar Syntax</h2>
+
+<pre><code>OnCalendar=daily              # every day at midnight
+OnCalendar=weekly             # every Monday at midnight
+OnCalendar=monthly            # first of every month at midnight
+OnCalendar=hourly             # every hour
+OnCalendar=*:0/15             # every 15 minutes
+OnCalendar=Mon..Fri 09:00:00  # weekdays at 9am
+OnCalendar=Sat,Sun 12:00:00   # weekends at noon
+OnCalendar=*-*-* 02:30:00     # every day at 02:30
+OnCalendar=2026-06-01 00:00:00 # specific date</code></pre>
+
+<p>Validate any calendar expression:</p>
+
+<pre><code>systemd-analyze calendar "Mon..Fri 09:00:00"</code></pre>
+
+<h2>OnBootSec and OnUnitActiveSec</h2>
+
+<pre><code>[Timer]
+# Run 5 minutes after boot
+OnBootSec=5min
+
+# Then run every hour after that
+OnUnitActiveSec=1h</code></pre>
+
+<h2>Persistent — Catch Up Missed Runs</h2>
+
+<p><code>Persistent=true</code> tells systemd to run the timer immediately if it missed its scheduled time (e.g. the machine was off). This is the most important difference from cron — a cron job simply does not run if the machine was off at the scheduled time.</p>
+
+<h2>User Timers (No sudo)</h2>
+
+<pre><code># Place in ~/.config/systemd/user/
+mkdir -p ~/.config/systemd/user
+
+# Create mybackup.service and mybackup.timer there
+# Then:
+systemctl --user daemon-reload
+systemctl --user enable --now mybackup.timer
+
+# Run at boot even without login
+loginctl enable-linger $(whoami)</code></pre>
+
+<h2>Manage and Monitor Timers</h2>
+
+<pre><code>systemctl list-timers                    # list all timers and next trigger
+systemctl list-timers --all              # include inactive timers
+systemctl status mybackup.timer          # timer status
+systemctl status mybackup.service        # last run result
+journalctl -u mybackup.service           # logs from all runs
+journalctl -u mybackup.service -n 50     # last 50 lines
+systemctl stop mybackup.timer            # pause
+systemctl start mybackup.timer           # resume
+systemctl disable mybackup.timer         # disable permanently</code></pre>
+
+<h2>Run a Timer Immediately (For Testing)</h2>
+
+<pre><code>systemctl start mybackup.service    # runs the service now, not the timer</code></pre>
+
+<h2>cron vs systemd Timers</h2>
+
+<table>
+<thead>
+<tr><th>Feature</th><th>cron</th><th>systemd timer</th></tr>
+</thead>
+<tbody>
+<tr><td>Missed runs when off</td><td>Skipped</td><td>Runs on next boot (Persistent=true)</td></tr>
+<tr><td>Logging</td><td>Mail/file</td><td>journald (automatic)</td></tr>
+<tr><td>Service dependencies</td><td>No</td><td>Yes</td></tr>
+<tr><td>Resource limits</td><td>No</td><td>Yes (cgroups)</td></tr>
+<tr><td>Syntax</td><td>Compact</td><td>More verbose</td></tr>
+<tr><td>GUI tools</td><td>Limited</td><td>systemctl</td></tr>
+</tbody>
+</table>

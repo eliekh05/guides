@@ -1,0 +1,90 @@
+<!-- server:Server & Self-Hosting -->
+<h1>Beszel — Lightweight Server Monitoring</h1>
+
+<p>Beszel is a self-hosted server monitoring dashboard. It is lighter than Prometheus+Grafana and simpler to set up — a single binary hub collects metrics from agents running on your servers and displays them in a clean web UI.</p>
+
+<h2>Architecture</h2>
+
+<ul>
+<li><strong>Hub</strong> — the web UI and data collection server. Run this once.</li>
+<li><strong>Agent</strong> — lightweight process running on each server you want to monitor. Connects back to the hub.</li>
+</ul>
+
+<h2>Install the Hub</h2>
+
+<pre><code>mkdir -p ~/beszel && cd ~/beszel
+
+cat > docker-compose.yml << 'YAML'
+services:
+  beszel:
+    image: henrygd/beszel:latest
+    container_name: beszel
+    restart: unless-stopped
+    ports:
+      - 8090:8090
+    volumes:
+      - ./beszel_data:/beszel_data
+YAML
+
+docker compose up -d</code></pre>
+
+<p>Open <code>http://YOUR_SERVER_IP:8090</code> and create your admin account.</p>
+
+<h2>Install the Agent on Each Server</h2>
+
+<p>In the Beszel web UI: Systems → Add System → copy the agent install command. It looks like:</p>
+
+<pre><code>curl -sL https://raw.githubusercontent.com/henrygd/beszel/main/supplemental/scripts/install-agent.sh \
+  -o install-agent.sh && bash install-agent.sh -p 45876 -k "YOUR_PUBLIC_KEY"</code></pre>
+
+<p>Run this on each server you want to monitor. The agent installs as a systemd service and starts automatically.</p>
+
+<h2>What It Monitors</h2>
+
+<ul>
+<li>CPU usage (overall and per core)</li>
+<li>Memory and swap usage</li>
+<li>Disk usage per filesystem</li>
+<li>Network bandwidth in/out per interface</li>
+<li>Disk I/O read/write</li>
+<li>Docker container status and resource usage</li>
+<li>System temperature (where available)</li>
+</ul>
+
+<h2>Alerts</h2>
+
+<p>Beszel supports alerts for CPU, memory, disk, network, and temperature thresholds. Configure per system in the web UI.</p>
+
+<p>Notification channels: email, Slack, Discord, Telegram, Pushover, ntfy, and any webhook.</p>
+
+<h2>Historical Data</h2>
+
+<p>Data is stored in SQLite. By default it retains:</p>
+<ul>
+<li>1-minute granularity for the last hour</li>
+<li>10-minute granularity for the last 24 hours</li>
+<li>1-hour granularity for the last 30 days</li>
+<li>Daily summaries indefinitely</li>
+</ul>
+
+<h2>Beszel vs Uptime Kuma vs Prometheus+Grafana</h2>
+
+<table>
+<thead>
+<tr><th>Feature</th><th>Beszel</th><th>Uptime Kuma</th><th>Prometheus+Grafana</th></tr>
+</thead>
+<tbody>
+<tr><td>Setup complexity</td><td>Low</td><td>Low</td><td>High</td></tr>
+<tr><td>System metrics</td><td>Yes</td><td>No (uptime only)</td><td>Yes (with exporters)</td></tr>
+<tr><td>Docker monitoring</td><td>Yes</td><td>Limited</td><td>Yes (with cAdvisor)</td></tr>
+<tr><td>Alerting</td><td>Yes</td><td>Yes</td><td>Yes (Alertmanager)</td></tr>
+<tr><td>Resource usage</td><td>Very light</td><td>Light</td><td>Heavy</td></tr>
+<tr><td>Customization</td><td>Limited</td><td>Limited</td><td>Unlimited</td></tr>
+</tbody>
+</table>
+
+<h2>Update Beszel</h2>
+
+<pre><code>cd ~/beszel
+docker compose pull
+docker compose up -d</code></pre>

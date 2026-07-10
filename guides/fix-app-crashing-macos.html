@@ -1,0 +1,75 @@
+<!-- macos:macOS -->
+<h1>Fix App Crashing on macOS</h1>
+
+<p>When an app crashes on macOS the system generates a crash report with the exact cause. Reading it is the fastest way to understand what is wrong.</p>
+
+<h2>Find the Crash Report</h2>
+
+<pre><code>open ~/Library/Logs/DiagnosticReports/</code></pre>
+
+<p>Or: Console app → Crash Reports in the sidebar. Look for a file named after the app with a recent timestamp.</p>
+
+<p>The crash report shows the exception type, the thread that crashed, and a full stack trace. The most useful lines are near the top:</p>
+
+<pre><code>Exception Type:  EXC_CRASH (SIGABRT)
+Exception Codes: 0x0000000000000000
+Termination Reason: Namespace SIGNAL, Code 6 Abort trap: 6</code></pre>
+
+<h2>Common Crash Types and Fixes</h2>
+
+<p><strong>EXC_CRASH / SIGABRT</strong> — the app called abort() deliberately, usually because of a failed assertion. Often caused by a corrupted preference file or incompatible plugin.</p>
+
+<p><strong>EXC_BAD_ACCESS / SIGSEGV</strong> — memory access violation. Usually a bug in the app. Update the app — if the crash persists, report it to the developer with the crash log.</p>
+
+<p><strong>EXC_BAD_INSTRUCTION</strong> — illegal CPU instruction. Often seen after a partial update or corrupted app bundle. Reinstall the app.</p>
+
+<h2>Delete App Preferences</h2>
+
+<p>Corrupted preferences are the most common fixable cause of crashes.</p>
+
+<pre><code># Replace AppName with the app's bundle identifier
+# Find it:
+defaults find AppName | grep "Domain" | head -5
+
+# Delete preferences
+defaults delete com.developer.appname
+
+# Or delete the plist file directly
+rm ~/Library/Preferences/com.developer.appname.plist</code></pre>
+
+<h2>Delete App Support Files</h2>
+
+<pre><code>rm -rf ~/Library/Application\ Support/AppName/</code></pre>
+
+<p>The app will recreate these on next launch with defaults.</p>
+
+<h2>Delete App Cache</h2>
+
+<pre><code>rm -rf ~/Library/Caches/com.developer.appname/</code></pre>
+
+<h2>Reinstall the App Cleanly</h2>
+
+<p>Dragging an app to Trash does not remove its preferences, caches, or support files. Use AppCleaner (free) to find and remove all associated files before reinstalling.</p>
+
+<h2>Check for Incompatible Extensions or Plugins</h2>
+
+<p>Some apps (browsers, creative tools, IDEs) load third-party plugins at startup. If the app crashes immediately on launch, try starting it without plugins.</p>
+
+<ul>
+<li>Safari: hold Shift while launching to disable extensions</li>
+<li>VS Code: <code>code --disable-extensions</code></li>
+<li>Chrome: <code>/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --disable-extensions</code></li>
+</ul>
+
+<h2>Check Disk Health</h2>
+
+<p>If multiple apps are crashing, the issue may be disk errors rather than the apps themselves.</p>
+
+<pre><code>diskutil verifyVolume /
+</code></pre>
+
+<p>If errors are found, boot into Recovery Mode (hold Cmd+R on Intel or power button on Apple Silicon) → Disk Utility → First Aid.</p>
+
+<h2>Report the Crash to the Developer</h2>
+
+<p>If nothing fixes it, the crash is a bug in the app. Find the crash report file in <code>~/Library/Logs/DiagnosticReports/</code>, attach it to a bug report to the developer. A crash log is far more useful to them than a description.</p>

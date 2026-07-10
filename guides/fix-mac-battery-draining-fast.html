@@ -1,0 +1,73 @@
+<!-- macos:macOS -->
+<h1>Fix Mac Battery Draining Fast</h1>
+
+<p>Battery drain issues on macOS usually come from a handful of identifiable causes. This guide covers how to diagnose exactly what is draining your battery and fix it.</p>
+
+<h2>Check What Is Using the Most Energy</h2>
+
+<p>Open Activity Monitor (Spotlight → Activity Monitor) and click the <strong>Energy</strong> tab. Sort by Energy Impact. Any process consistently above 20–30 energy impact while idle is a problem.</p>
+
+<p>Common culprits:</p>
+<ul>
+<li>Browsers with many tabs — Chrome is notoriously worse than Safari for battery</li>
+<li>Electron apps — Slack, VS Code, Discord, Notion</li>
+<li>Cloud sync — Dropbox, Google Drive, OneDrive syncing large files</li>
+<li>Spotlight re-indexing after an update</li>
+<li>A runaway process stuck in a loop</li>
+</ul>
+
+<h2>Check Battery Health</h2>
+
+<p>Hold Option and click the Battery icon in the menu bar. If it says <strong>Service Recommended</strong> or <strong>Replace Soon</strong>, the battery itself is degraded and no software fix will help.</p>
+
+<p>Check cycle count and health in Terminal:</p>
+
+<pre><code>system_profiler SPPowerDataType | grep -E "Cycle Count|Condition|Maximum Capacity"</code></pre>
+
+<p>A healthy battery shows <strong>Normal</strong> condition. Maximum capacity below 80% means the battery needs replacement.</p>
+
+<h2>Fix Spotlight Re-indexing</h2>
+
+<p>After major macOS updates Spotlight re-indexes the entire drive which hammers the CPU and battery for hours. Check if <code>mds_stores</code> or <code>mdworker</code> appears in Activity Monitor with high energy usage.</p>
+
+<p>Wait it out — it finishes in 1–4 hours depending on drive size. If it has been more than 24 hours:</p>
+
+<pre><code># Reset Spotlight index
+sudo mdutil -E /
+sudo mdutil -i on /</code></pre>
+
+<h2>Disable Power-Hungry Features</h2>
+
+<pre><code># Check what is preventing sleep
+pmset -g assertions
+
+# See sleep/wake log
+pmset -g log | grep -E "Sleep|Wake|Assertions" | tail -30</code></pre>
+
+<p>In System Settings → Battery:</p>
+<ul>
+<li>Enable <strong>Low Power Mode</strong> when on battery</li>
+<li>Enable <strong>Optimized Battery Charging</strong></li>
+<li>Disable <strong>Enable Power Nap</strong> — prevents Mac from waking to check email</li>
+<li>Disable <strong>Wake for network access</strong></li>
+</ul>
+
+<h2>Check Kernel Task CPU Usage</h2>
+
+<p><code>kernel_task</code> appearing with high CPU in Activity Monitor is macOS deliberately throttling the CPU because the system is too hot — it is a symptom, not a cause. The actual cause is usually a thermal issue or a process generating excessive heat. Find and quit whatever is generating heat first.</p>
+
+<h2>Safari vs Chrome vs Firefox Battery Comparison</h2>
+
+<p>On macOS, Safari uses Apple's native rendering engine and integrates with hardware video decoding. Switching from Chrome to Safari for everyday browsing typically adds 1–2 hours of battery life on Apple Silicon Macs. Firefox is in between.</p>
+
+<h2>Reset SMC (Intel Macs Only)</h2>
+
+<p>If battery readings are inaccurate or the Mac runs hot constantly, reset the SMC:</p>
+
+<p>MacBook with T2 chip: shutdown → hold Shift+Control+Option+Power for 7 seconds → power on.</p>
+
+<p>Apple Silicon Macs do not have an SMC — shutting down for 30 seconds achieves the same effect.</p>
+
+<h2>When to Replace the Battery</h2>
+
+<p>Apple covers battery replacement under AppleCare if capacity is below 80%. Out of warranty, Apple charges a flat fee (around $129–$199 depending on model). Third-party repair shops are cheaper but use non-Apple cells which may show "non-genuine battery" warnings in macOS Ventura and later.</p>

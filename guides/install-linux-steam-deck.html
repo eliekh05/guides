@@ -1,0 +1,88 @@
+<!-- installation:Installation Guides -->
+<h1>Install Linux on Steam Deck</h1>
+
+<p>Steam Deck runs SteamOS 3 (based on Arch Linux) by default. You can also install a different Linux distribution alongside SteamOS using a second storage device or by replacing SteamOS entirely. This guide covers both approaches.</p>
+
+<h2>Option 1 — Use the Desktop Mode (No Install Needed)</h2>
+
+<p>SteamOS already has a full KDE Plasma desktop. Switch to it:</p>
+
+<p>Hold Power button → Switch to Desktop</p>
+
+<p>From Desktop Mode you have access to a full Linux terminal, Flatpak apps, Discover software center, and most Linux tools. For most users this is sufficient.</p>
+
+<h2>Option 2 — Install Flatpaks and Apps on SteamOS</h2>
+
+<p>SteamOS's root filesystem is read-only, but you can install apps via Flatpak (persists across updates) and some packages via the unofficial package manager:</p>
+
+<pre><code># In Desktop Mode, open Konsole (terminal)
+
+# Install Flatpak apps
+flatpak install flathub org.videolan.VLC
+flatpak install flathub com.visualstudio.code
+flatpak install flathub org.gimp.GIMP
+
+# Make root writable (temporary, resets on update)
+sudo steamos-readonly disable
+
+# Install packages (resets on SteamOS update)
+sudo pacman -Sy package-name
+
+# Re-enable read-only
+sudo steamos-readonly enable</code></pre>
+
+<h2>Option 3 — Install a Different Distro on a MicroSD Card</h2>
+
+<p>Install a Linux distro to a microSD card and dual boot alongside SteamOS.</p>
+
+<ol>
+<li>Download Bazzite (recommended — Steam Deck support built in) or any Linux ISO</li>
+<li>Flash to a microSD card with balenaEtcher</li>
+<li>Insert the microSD into the Steam Deck</li>
+<li>Hold Volume Down + Power to enter boot menu</li>
+<li>Select the microSD</li>
+<li>Install to the microSD card — do not touch the internal NVMe</li>
+</ol>
+
+<p>To switch between SteamOS and your Linux install: hold Volume Down + Power at boot → select boot device.</p>
+
+<h2>Option 4 — Replace SteamOS with Another Distro</h2>
+
+<blockquote>
+<p>This replaces SteamOS. You will lose Gaming Mode and Valve's automatic updates. Bazzite with the deck image is the best replacement — it replicates Gaming Mode on non-SteamOS installs.</p>
+</blockquote>
+
+<ol>
+<li>Download Bazzite deck image from <a href="https://bazzite.gg">https://bazzite.gg</a></li>
+<li>Flash to a USB-C flash drive</li>
+<li>Connect USB-C hub with the flash drive</li>
+<li>Hold Volume Down + Power → select USB device</li>
+<li>Install to the internal NVMe — this erases SteamOS</li>
+</ol>
+
+<h2>Re-install SteamOS (If Needed)</h2>
+
+<p>Valve provides an official SteamOS recovery image:</p>
+
+<ol>
+<li>Download from <a href="https://store.steampowered.com/steamos/download/?ver=steamdeck">https://store.steampowered.com/steamos/download/?ver=steamdeck</a></li>
+<li>Flash to a USB-C drive with balenaEtcher</li>
+<li>Boot from it and select "Reimage Steam Deck"</li>
+</ol>
+
+<h2>Useful Steam Deck Terminal Commands</h2>
+
+<pre><code># Set a password for the deck user (required for sudo)
+passwd
+
+# Check SteamOS version
+cat /etc/os-release
+
+# List installed Flatpaks
+flatpak list
+
+# Update Flatpaks
+flatpak update
+
+# Update SteamOS (from Desktop Mode)
+sudo steamos-update</code></pre>

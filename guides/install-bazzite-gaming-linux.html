@@ -1,0 +1,88 @@
+<!-- installation:Installation Guides -->
+<h1>Install Bazzite — Gaming Linux</h1>
+
+<p>Bazzite is an immutable Linux distribution built for gaming. It ships with Steam, Lutris, Heroic Games Launcher, and all gaming drivers pre-configured. Based on Fedora Atomic, it uses OCI image updates — the base OS updates atomically and rolls back automatically if something breaks.</p>
+
+<h2>Which Bazzite Image to Download</h2>
+
+<ul>
+<li><strong>bazzite</strong> — GNOME desktop, AMD/Intel GPU, standard PC</li>
+<li><strong>bazzite-nvidia</strong> — GNOME desktop, Nvidia GPU</li>
+<li><strong>bazzite-deck</strong> — Steam Deck-like gaming mode (Gamescope session), AMD/Intel</li>
+<li><strong>bazzite-deck-nvidia</strong> — Gaming mode, Nvidia GPU</li>
+<li><strong>bazzite-kde</strong> — KDE Plasma desktop instead of GNOME</li>
+</ul>
+
+<p>Download from <a href="https://bazzite.gg">https://bazzite.gg</a>. For a desktop gaming PC with AMD GPU, use <strong>bazzite</strong>. For Nvidia, use <strong>bazzite-nvidia</strong>.</p>
+
+<h2>Flash and Install</h2>
+
+<p>Flash the ISO to USB with Ventoy or balenaEtcher. Boot from USB. Bazzite uses the Anaconda installer — same as Fedora.</p>
+
+<p><strong>Partitioning:</strong> Use automatic unless dual booting. Bazzite uses Btrfs by default with automatic snapshot support.</p>
+
+<p><strong>User:</strong> Create your account and make it an administrator.</p>
+
+<p>Install takes 5–15 minutes.</p>
+
+<h2>First Boot</h2>
+
+<p>Bazzite's first-boot wizard (ujust setup-bazzite) walks you through:</p>
+<ul>
+<li>Installing additional drivers</li>
+<li>Setting up gaming platforms (Steam, Lutris, Heroic)</li>
+<li>Installing additional software</li>
+<li>Configuring game controller support</li>
+</ul>
+
+<h2>Installing Software</h2>
+
+<p>The base system is immutable — you do not install packages the traditional way. Instead:</p>
+
+<pre><code># Flatpak — primary way to install apps
+flatpak install flathub com.discordapp.Discord
+flatpak install flathub org.videolan.VLC
+
+# Layered packages (installed on top of base image, survives updates)
+rpm-ostree install htop neovim
+
+# Distrobox — run any distro in a container with full access
+distrobox create --name ubuntu --image ubuntu:24.04
+distrobox enter ubuntu</code></pre>
+
+<h2>Gaming Mode (Gamescope Session)</h2>
+
+<p>On bazzite-deck images, you can switch between Desktop Mode and Gaming Mode from the login screen. Gaming Mode launches Gamescope + Steam in a console-like full-screen interface — identical to Steam Deck.</p>
+
+<h2>Proton and Wine</h2>
+
+<p>Steam with Proton is pre-installed. Enable Proton for a Windows game:</p>
+
+<ol>
+<li>Steam → right-click game → Properties → Compatibility</li>
+<li>Check "Force the use of a specific Steam Play compatibility tool"</li>
+<li>Select Proton version (latest stable or Proton-GE recommended)</li>
+</ol>
+
+<p>Install Proton-GE (community Proton with extra patches):</p>
+
+<pre><code>ujust install-proton-ge</code></pre>
+
+<h2>Update Bazzite</h2>
+
+<pre><code># Check for updates
+rpm-ostree upgrade
+
+# Or use the system updater in GNOME Software / Discover</code></pre>
+
+<p>Updates are atomic — if an update breaks something, roll back with:</p>
+
+<pre><code>rpm-ostree rollback</code></pre>
+
+<h2>Useful Bazzite Commands</h2>
+
+<pre><code>ujust          # list all available Bazzite-specific commands
+ujust update   # update everything (OS + Flatpaks)
+ujust fix-reset-steam   # reset Steam if it breaks
+ujust install-resolve   # install Davinci Resolve
+rpm-ostree status      # show current and previous OS image</code></pre>

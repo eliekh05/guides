@@ -1,0 +1,92 @@
+<!-- windows:Windows -->
+<h1>Migrate from Windows 10 to Windows 11</h1>
+
+<p>Windows 10 reached end of life on October 14, 2025. This guide covers upgrading to Windows 11 cleanly, including on hardware that does not officially meet the requirements.</p>
+
+<h2>Check Compatibility First</h2>
+
+<pre><code># Open PowerShell and run:
+Get-TPMVersion</code></pre>
+
+<p>Or download the <strong>PC Health Check</strong> app from microsoft.com to get a detailed compatibility report.</p>
+
+<p>Windows 11 requires:</p>
+<ul>
+<li>TPM 2.0 (most PCs from 2017+ have this)</li>
+<li>Secure Boot capable (check BIOS settings)</li>
+<li>64-bit CPU from the supported list (Intel 8th gen+, AMD Ryzen 2000+, Qualcomm Snapdragon 850+)</li>
+<li>4 GB RAM minimum, 8 GB recommended</li>
+<li>64 GB storage minimum</li>
+</ul>
+
+<h2>Enable TPM 2.0 in BIOS (If Needed)</h2>
+
+<p>Restart → enter BIOS (F2, F10, DEL, or F12 depending on manufacturer).</p>
+
+<p>Look for:</p>
+<ul>
+<li><strong>Intel:</strong> Security → Intel Platform Trust Technology (PTT) → Enable</li>
+<li><strong>AMD:</strong> Security → AMD fTPM → Enable</li>
+<li><strong>Discrete TPM chip:</strong> Security → TPM Device → Enable</li>
+</ul>
+
+<p>Enable Secure Boot while you are in BIOS (usually under Boot or Security tab).</p>
+
+<h2>Upgrade via Windows Update (Supported Hardware)</h2>
+
+<pre><code>Settings → Windows Update → Check for updates</code></pre>
+
+<p>If Windows 11 is available for your device, it appears as a feature update. Click Download and Install. The process takes 30–90 minutes and reboots several times.</p>
+
+<h2>Upgrade via Installation Assistant (Supported Hardware)</h2>
+
+<p>If Windows Update does not offer the upgrade:</p>
+<ol>
+<li>Download <strong>Windows 11 Installation Assistant</strong> from <a href="https://microsoft.com/en-us/software-download/windows11">https://microsoft.com/en-us/software-download/windows11</a></li>
+<li>Run it as Administrator</li>
+<li>Accept the terms and click Refresh</li>
+<li>The tool downloads Windows 11 and upgrades in place</li>
+</ol>
+
+<h2>Bypass Requirements for Unsupported Hardware</h2>
+
+<p>If your CPU is not on the supported list but you have TPM 2.0, use the registry bypass during setup:</p>
+
+<ol>
+<li>Download the Windows 11 ISO from microsoft.com</li>
+<li>Mount the ISO (double-click in Windows 10)</li>
+<li>Press Shift+F10 to open Command Prompt during setup</li>
+<li>Run:</li>
+</ol>
+
+<pre><code>reg add "HKLM\SYSTEM\Setup\MoSetup" /v AllowUpgradesWithUnsupportedTPMOrCPU /t REG_DWORD /d 1 /f</code></pre>
+
+<ol start="5">
+<li>Close Command Prompt and continue setup normally</li>
+</ol>
+
+<h2>What Gets Kept During Upgrade</h2>
+
+<ul>
+<li>All personal files (Documents, Downloads, Desktop, Pictures)</li>
+<li>Installed applications</li>
+<li>Settings and preferences</li>
+</ul>
+
+<h2>What Changes</h2>
+
+<ul>
+<li>Start menu moves to the center (you can move it back: Settings → Personalisation → Taskbar → Taskbar behaviours → Left)</li>
+<li>Right-click context menu is condensed (click "Show more options" to get the full menu back)</li>
+<li>Snap layouts appear when hovering over the maximize button</li>
+<li>System tray icons are hidden by default</li>
+<li>Android app support removed as of 2025</li>
+</ul>
+
+<h2>Roll Back to Windows 10 (Within 10 Days)</h2>
+
+<p>If something breaks, you can roll back within 10 days of the upgrade:</p>
+
+<pre><code>Settings → System → Recovery → Go back</code></pre>
+
+<p>After 10 days this option disappears.</p>

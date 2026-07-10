@@ -1,0 +1,103 @@
+<!-- windows:Windows -->
+<h1>Fix Windows Update Stuck or Failing</h1>
+
+<p>Windows Update gets stuck for several reasons — corrupted update cache, a failed previous update, service not running, or disk space issues. Work through these steps in order.</p>
+
+<h2>Basic Checks First</h2>
+
+<ul>
+<li>You need at least 10–20 GB free space for updates to download and install</li>
+<li>The Windows Update service must be running</li>
+<li>Date and time must be correct — a wrong system clock breaks update downloads</li>
+</ul>
+
+<pre><code># Check date and time
+date
+# If wrong: Settings → Time & Language → Set time automatically → On
+
+# Check available disk space
+Get-PSDrive C | Select Used, Free</code></pre>
+
+<h2>Run the Windows Update Troubleshooter</h2>
+
+<pre><code>Settings → System → Troubleshoot → Other troubleshooters → Windows Update → Run</code></pre>
+
+<p>This fixes the most common issues automatically.</p>
+
+<h2>Restart Windows Update Services</h2>
+
+<pre><code># Run PowerShell as Administrator
+net stop wuauserv
+net stop cryptSvc
+net stop bits
+net stop msiserver
+
+# Clear the update cache
+Remove-Item -Path "C:\Windows\SoftwareDistribution" -Recurse -Force
+Remove-Item -Path "C:\Windows\System32\catroot2" -Recurse -Force
+
+# Restart services
+net start wuauserv
+net start cryptSvc
+net start bits
+net start msiserver</code></pre>
+
+<p>Try Windows Update again after this.</p>
+
+<h2>Fix Corrupted System Files</h2>
+
+<pre><code># Scan and repair system files
+sfc /scannow
+
+# Fix Windows component store corruption
+DISM /Online /Cleanup-Image /CheckHealth
+DISM /Online /Cleanup-Image /ScanHealth
+DISM /Online /Cleanup-Image /RestoreHealth
+
+# Restart after DISM completes, then run sfc again
+sfc /scannow</code></pre>
+
+<h2>Manually Download and Install a Stuck Update</h2>
+
+<p>Find the update KB number from Windows Update (shown in the error or update history). Go to <a href="https://catalog.update.microsoft.com">https://catalog.update.microsoft.com</a>, search for the KB number, download and install manually.</p>
+
+<h2>Reset Windows Update Components Completely</h2>
+
+<pre><code># Run all of these in PowerShell as Administrator
+Stop-Service wuauserv, cryptSvc, bits, msiserver -Force
+
+Rename-Item "$env:SystemRoot\SoftwareDistribution" "SoftwareDistribution.bak" -ErrorAction SilentlyContinue
+Rename-Item "$env:SystemRoot\System32\catroot2" "catroot2.bak" -ErrorAction SilentlyContinue
+
+netsh winsock reset
+netsh winsock reset proxy
+
+Start-Service wuauserv, cryptSvc, bits, msiserver</code></pre>
+
+<h2>Update Stuck at 0% Downloading</h2>
+
+<p>This is usually a BITS (Background Intelligent Transfer Service) issue:</p>
+
+<pre><code>sc.exe sdset bits D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)
+</code></pre>
+
+<h2>Update Stuck Installing at a Percentage</h2>
+
+<p>If the update shows e.g. "30% complete" and does not move for more than 2 hours:</p>
+
+<ol>
+<li>Hard reboot (hold power button)</li>
+<li>Windows will attempt to roll back the failed update on next boot</li>
+<li>Once back in Windows, run the DISM and sfc commands above</li>
+<li>Try the update again</li>
+</ol>
+
+<h2>Check Windows Update Log</h2>
+
+<pre><code># Generate readable log
+Get-WindowsUpdateLog
+
+# Open it
+notepad $env:USERPROFILE\Desktop\WindowsUpdate.log</code></pre>
+
+<p>Search for "FAILED" or "Error" to find the specific failure point.</p>

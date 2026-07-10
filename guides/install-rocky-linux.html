@@ -1,0 +1,99 @@
+<!-- installation:Installation Guides -->
+<h1>Install Rocky Linux</h1>
+
+<p>Rocky Linux is a community enterprise Linux distribution — a free, binary-compatible replacement for Red Hat Enterprise Linux (RHEL). It is the successor to CentOS and is used in enterprise environments, scientific computing, and anywhere that requires long-term stability with 10-year support cycles.</p>
+
+<h2>Current Version</h2>
+
+<p>Rocky Linux 9.x (based on RHEL 9) is the current release, supported until May 2032. Rocky Linux 8.x is also supported until May 2029.</p>
+
+<h2>Download</h2>
+
+<p>Go to <a href="https://rockylinux.org/download">https://rockylinux.org/download</a> and choose:</p>
+<ul>
+<li><strong>DVD ISO</strong> — full offline installer, includes all packages</li>
+<li><strong>Boot ISO</strong> — minimal, downloads packages during install (needs internet)</li>
+<li><strong>Minimal ISO</strong> — command line only, no GUI</li>
+</ul>
+
+<h2>Install</h2>
+
+<p>Flash to USB with balenaEtcher and boot. Rocky uses the Anaconda installer.</p>
+
+<p><strong>Installation Destination:</strong> Select your disk. Automatic partitioning is fine for most use cases. For servers, consider separating <code>/home</code>, <code>/var</code>, and <code>/tmp</code>.</p>
+
+<p><strong>Software Selection:</strong></p>
+<ul>
+<li>Server with GUI — GNOME desktop</li>
+<li>Server — command line only (recommended for servers)</li>
+<li>Minimal Install — absolute minimum</li>
+<li>Workstation — desktop workstation with productivity apps</li>
+</ul>
+
+<p><strong>Root Password:</strong> Set a strong root password or create an admin user during install.</p>
+
+<h2>First Steps After Install</h2>
+
+<pre><code># Update all packages
+sudo dnf update -y
+
+# Install EPEL (Extra Packages for Enterprise Linux)
+sudo dnf install epel-release -y
+sudo dnf update -y
+
+# Install common tools
+sudo dnf install vim curl wget git htop tmux -y
+
+# Enable and start firewall
+sudo systemctl enable --now firewalld
+sudo firewall-cmd --list-all</code></pre>
+
+<h2>Enable PowerTools / CRB Repository</h2>
+
+<p>Some packages require the CodeReady Builder (CRB) repository, previously called PowerTools:</p>
+
+<pre><code>sudo dnf config-manager --set-enabled crb</code></pre>
+
+<h2>Install Nginx or Apache</h2>
+
+<pre><code># Nginx
+sudo dnf install nginx -y
+sudo systemctl enable --now nginx
+sudo firewall-cmd --permanent --add-service=http
+sudo firewall-cmd --permanent --add-service=https
+sudo firewall-cmd --reload
+
+# Apache
+sudo dnf install httpd -y
+sudo systemctl enable --now httpd</code></pre>
+
+<h2>SELinux</h2>
+
+<p>Rocky Linux ships with SELinux enforcing by default. This is a security feature — do not disable it unless you know why.</p>
+
+<pre><code># Check SELinux status
+getenforce
+
+# See SELinux denials
+sudo ausearch -m avc -ts recent | audit2why
+
+# Allow a specific port for a service
+sudo semanage port -a -t http_port_t -p tcp 8080
+
+# Restore default file contexts
+sudo restorecon -Rv /var/www/html/</code></pre>
+
+<h2>Difference Between Rocky Linux and Fedora</h2>
+
+<table>
+<thead>
+<tr><th>Feature</th><th>Rocky Linux</th><th>Fedora</th></tr>
+</thead>
+<tbody>
+<tr><td>Based on</td><td>RHEL (enterprise)</td><td>Upstream of RHEL</td></tr>
+<tr><td>Support cycle</td><td>10 years</td><td>13 months</td></tr>
+<tr><td>Software age</td><td>Older, stable</td><td>Latest</td></tr>
+<tr><td>Use case</td><td>Servers, enterprise</td><td>Desktops, developers</td></tr>
+<tr><td>SELinux</td><td>Enforcing default</td><td>Enforcing default</td></tr>
+</tbody>
+</table>

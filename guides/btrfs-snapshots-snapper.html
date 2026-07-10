@@ -1,0 +1,91 @@
+<!-- linux:Linux -->
+<h1>Btrfs Snapshots with Snapper</h1>
+
+<p>Btrfs snapshots capture the state of your filesystem at a point in time. Snapper automates snapshot creation and lets you roll back changes — like Time Machine for Linux.</p>
+
+<h2>Check If You Are on Btrfs</h2>
+
+<pre><code>df -T / | grep btrfs</code></pre>
+
+<p>Fedora, openSUSE, and some Ubuntu installs use Btrfs by default. Arch Linux lets you choose during install.</p>
+
+<h2>Install Snapper</h2>
+
+<pre><code>sudo apt install snapper -y          # Ubuntu/Debian
+sudo dnf install snapper -y          # Fedora/RHEL
+sudo pacman -S snapper               # Arch</code></pre>
+
+<h2>Create a Snapper Config for Root</h2>
+
+<pre><code>sudo snapper -c root create-config /</code></pre>
+
+<p>This creates a config at <code>/etc/snapper/configs/root</code> and a <code>.snapshots</code> subvolume at <code>/.snapshots</code>.</p>
+
+<h2>Manual Snapshots</h2>
+
+<pre><code># Create a snapshot before making changes
+sudo snapper -c root create --description "before package update"
+
+# List all snapshots
+sudo snapper -c root list
+
+# Show what changed between two snapshots
+sudo snapper -c root diff 1 2
+
+# Show which files changed
+sudo snapper -c root status 1 2</code></pre>
+
+<h2>Automatic Snapshots</h2>
+
+<p>Enable snapper's systemd timers for automatic hourly, daily, weekly, and monthly snapshots:</p>
+
+<pre><code>sudo systemctl enable --now snapper-timeline.timer
+sudo systemctl enable --now snapper-cleanup.timer</code></pre>
+
+<p>Configure retention in <code>/etc/snapper/configs/root</code>:</p>
+
+<pre><code>TIMELINE_LIMIT_HOURLY="5"
+TIMELINE_LIMIT_DAILY="7"
+TIMELINE_LIMIT_WEEKLY="4"
+TIMELINE_LIMIT_MONTHLY="6"
+TIMELINE_LIMIT_YEARLY="2"</code></pre>
+
+<h2>Snapshot on Every Package Install (Arch)</h2>
+
+<p>Install <code>snap-pac</code> to automatically create pre/post snapshots around every pacman transaction:</p>
+
+<pre><code>sudo pacman -S snap-pac</code></pre>
+
+<p>Now every <code>sudo pacman -S package</code> creates a before and after snapshot automatically.</p>
+
+<h2>Roll Back to a Snapshot</h2>
+
+<pre><code># Find the snapshot you want to roll back to
+sudo snapper -c root list
+
+# Roll back (this sets the snapshot as the new default subvolume)
+sudo snapper -c root undochange 1..0
+
+# Or use snapper rollback (openSUSE/Arch with grub-btrfs)
+sudo snapper rollback SNAPSHOT_NUMBER
+sudo reboot</code></pre>
+
+<h2>Browse a Snapshot Without Rolling Back</h2>
+
+<pre><code>sudo mount -o subvol=/.snapshots/5/snapshot /dev/sda2 /mnt
+ls /mnt/etc    # browse files
+sudo umount /mnt</code></pre>
+
+<h2>Delete Snapshots</h2>
+
+<pre><code># Delete a single snapshot
+sudo snapper -c root delete 3
+
+# Delete a range
+sudo snapper -c root delete 3-7</code></pre>
+
+<h2>Check Snapshot Disk Usage</h2>
+
+<pre><code>sudo btrfs filesystem du -s /.snapshots/*/snapshot | sort -rh | head -10</code></pre>
+
+<p>Snapshots use copy-on-write — they only store the difference from the current state, not a full copy. A snapshot of a 20GB root filesystem might only use 50MB if little has changed.</p>

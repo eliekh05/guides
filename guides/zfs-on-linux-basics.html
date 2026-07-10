@@ -1,0 +1,125 @@
+<!-- linux:Linux -->
+<h1>ZFS on Linux — Basics</h1>
+
+<p>ZFS is a combined filesystem and volume manager with built-in RAID, snapshots, compression, and data integrity checking. OpenZFS is the actively maintained open-source implementation used on Linux, FreeBSD, and macOS.</p>
+
+<h2>Install ZFS</h2>
+
+<pre><code># Ubuntu (included in linux-image-generic from 20.04)
+sudo apt install zfsutils-linux -y
+
+# Fedora
+sudo dnf install zfs -y    # requires DKMS kernel module
+
+# Arch
+yay -S zfs-dkms zfs-utils</code></pre>
+
+<h2>Core Concepts</h2>
+
+<ul>
+<li><strong>Pool (zpool)</strong> — one or more physical disks grouped together</li>
+<li><strong>Dataset</strong> — a filesystem within a pool (like a partition, but more flexible)</li>
+<li><strong>VDEV</strong> — a group of disks with a redundancy configuration (stripe, mirror, RAIDZ)</li>
+<li><strong>Snapshot</strong> — read-only point-in-time copy of a dataset</li>
+</ul>
+
+<h2>Create a Pool</h2>
+
+<pre><code># List available disks
+lsblk
+
+# Single disk pool (no redundancy)
+sudo zpool create mypool /dev/sdb
+
+# Mirror (RAID 1 — survives one disk failure)
+sudo zpool create mypool mirror /dev/sdb /dev/sdc
+
+# RAIDZ (RAID 5-like — survives one disk failure, more storage efficient than mirror)
+sudo zpool create mypool raidz /dev/sdb /dev/sdc /dev/sdd
+
+# RAIDZ2 (survives two disk failures)
+sudo zpool create mypool raidz2 /dev/sdb /dev/sdc /dev/sdd /dev/sde</code></pre>
+
+<h2>Pool Status and Health</h2>
+
+<pre><code>zpool status           # health of all pools
+zpool status mypool    # specific pool
+zpool list             # pool sizes and usage</code></pre>
+
+<p>Status shows ONLINE, DEGRADED, FAULTED, or OFFLINE for each device.</p>
+
+<h2>Create Datasets</h2>
+
+<pre><code># Datasets mount automatically at /mypool/name
+zfs create mypool/data
+zfs create mypool/backups
+zfs create mypool/media
+
+# List datasets
+zfs list</code></pre>
+
+<h2>Compression</h2>
+
+<pre><code># Enable LZ4 compression (fast, good ratio — recommended)
+zfs set compression=lz4 mypool
+
+# Enable on a specific dataset
+zfs set compression=lz4 mypool/data
+
+# Check compression ratio
+zfs get compressratio mypool</code></pre>
+
+<h2>Snapshots</h2>
+
+<pre><code># Create a snapshot
+zfs snapshot mypool/data@2026-06-20
+
+# List snapshots
+zfs list -t snapshot
+
+# Roll back to a snapshot (destroys changes since snapshot)
+zfs rollback mypool/data@2026-06-20
+
+# Delete a snapshot
+zfs destroy mypool/data@2026-06-20</code></pre>
+
+<h2>Automatic Snapshots</h2>
+
+<pre><code># Install zfs-auto-snapshot
+sudo apt install zfs-auto-snapshot -y
+
+# It creates cron jobs for frequent, hourly, daily, weekly, monthly snapshots
+crontab -l | grep zfs</code></pre>
+
+<h2>Send and Receive (Replication)</h2>
+
+<pre><code># Send a snapshot to another pool (local backup)
+zfs send mypool/data@2026-06-20 | zfs receive backuppool/data
+
+# Send to a remote server
+zfs send mypool/data@2026-06-20 | ssh user@backupserver zfs receive backuppool/data
+
+# Incremental send (only changes since last snapshot)
+zfs send -i mypool/data@snap1 mypool/data@snap2 | zfs receive backuppool/data</code></pre>
+
+<h2>Scrub (Data Integrity Check)</h2>
+
+<pre><code># Start a scrub (checks all data against checksums)
+sudo zpool scrub mypool
+
+# Check scrub status
+zpool status mypool | grep scrub
+
+# Run scrub monthly via cron
+0 2 1 * * zpool scrub mypool</code></pre>
+
+<h2>Replace a Failed Disk</h2>
+
+<pre><code># Identify the failed disk from zpool status
+zpool status mypool
+
+# Replace it (pool stays online during resilver on mirrors/RAIDZ)
+sudo zpool replace mypool /dev/sdb /dev/sde
+
+# Watch resilver progress
+zpool status mypool</code></pre>

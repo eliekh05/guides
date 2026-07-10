@@ -1,0 +1,93 @@
+<!-- installation:Installation Guides -->
+<h1>Install Pop!_OS</h1>
+
+<p>Pop!_OS is a Linux distribution by System76. It has excellent Nvidia support out of the box, a clean GNOME-based desktop, and a tiling window manager (COSMIC) built in. Popular with developers and creators.</p>
+
+<h2>Download</h2>
+
+<p>Go to <a href="https://pop.system76.com">https://pop.system76.com</a> and choose:</p>
+<ul>
+<li><strong>Intel/AMD</strong> — for Intel or AMD GPUs</li>
+<li><strong>NVIDIA</strong> — for Nvidia GPUs, includes proprietary drivers pre-installed</li>
+</ul>
+
+<p>Flash with balenaEtcher or Ventoy.</p>
+
+<h2>Install</h2>
+
+<p>Pop!_OS uses its own installer. Boot from USB.</p>
+
+<p><strong>Clean Install:</strong> Select your disk, choose Erase and Install, set your username and password.</p>
+
+<p><strong>Dual Boot:</strong> Select Custom (Advanced), create partitions manually. Pop!_OS needs at minimum a FAT32 EFI partition (512 MB) and an ext4 or Btrfs root partition.</p>
+
+<h2>First Steps After Install</h2>
+
+<pre><code># Update everything
+sudo apt update && sudo apt full-upgrade -y
+
+# Pop!_OS has its own package manager for firmware and OS upgrades
+sudo pop-upgrade release upgrade</code></pre>
+
+<h2>Nvidia Setup (if using Nvidia ISO)</h2>
+
+<p>Drivers are pre-installed. Verify:</p>
+
+<pre><code>nvidia-smi
+sudo prime-select query    # shows which GPU is active (intel or nvidia)</code></pre>
+
+<p>Switch between GPUs:</p>
+
+<pre><code>sudo prime-select nvidia    # use Nvidia GPU
+sudo prime-select intel     # use integrated Intel GPU (saves battery)
+sudo reboot</code></pre>
+
+<h2>Install Software</h2>
+
+<pre><code># Via apt
+sudo apt install git vim curl htop
+
+# Via Flatpak (Flathub is pre-configured)
+flatpak install flathub com.spotify.Client
+flatpak install flathub com.discordapp.Discord
+flatpak install flathub com.visualstudio.code</code></pre>
+
+<p>Pop!_Shop (the app store) includes both apt packages and Flatpaks in one interface.</p>
+
+<h2>COSMIC Tiling Window Manager</h2>
+
+<p>Pop!_OS 22.04 includes the COSMIC tiling extension for GNOME. Enable it:</p>
+
+<p>Super+Y — toggle tiling mode on/off</p>
+
+<table>
+<thead>
+<tr><th>Shortcut</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>Super+Enter</td><td>Open terminal</td></tr>
+<tr><td>Super+/</td><td>Launcher</td></tr>
+<tr><td>Super+Arrow</td><td>Move focus between windows</td></tr>
+<tr><td>Super+Shift+Arrow</td><td>Move window</td></tr>
+<tr><td>Super+Y</td><td>Toggle tiling</td></tr>
+<tr><td>Super+M</td><td>Toggle maximize</td></tr>
+</tbody>
+</table>
+
+<h2>Pop!_OS 24.04 — COSMIC Desktop</h2>
+
+<p>Pop!_OS 24.04 (released 2025) ships COSMIC — a completely new desktop environment written in Rust, replacing GNOME. It has a built-in tiling compositor, app library, and settings app. If you install 22.04 you can upgrade:</p>
+
+<pre><code>sudo pop-upgrade release upgrade</code></pre>
+
+<h2>Fix Common Issues</h2>
+
+<p><strong>No sound after install:</strong></p>
+<pre><code>systemctl --user restart pipewire
+systemctl --user restart wireplumber</code></pre>
+
+<p><strong>Bluetooth not working:</strong></p>
+<pre><code>sudo rfkill unblock bluetooth
+sudo systemctl restart bluetooth</code></pre>
+
+<p><strong>Screen tearing (Nvidia):</strong> Switch to Nvidia GPU with <code>sudo prime-select nvidia</code> and reboot.</p>

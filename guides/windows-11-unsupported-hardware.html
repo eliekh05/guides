@@ -1,0 +1,71 @@
+<!-- windows:Windows -->
+<h1>Install Windows 11 on Unsupported Hardware</h1>
+
+<p>Microsoft's official requirements block Windows 11 on older CPUs (Intel 7th gen and earlier, AMD Ryzen 1000 series) and machines without TPM 2.0. The registry bypass lets you install and run a fully functional Windows 11 on these machines.</p>
+
+<blockquote>
+<p>Microsoft will still provide Windows 11 updates to machines installed this way. The main risk is Microsoft could add a check in a future update that blocks installation — this has not happened as of 2026 and Microsoft has said they will not remove functionality but may not guarantee support on unsupported hardware.</p>
+</blockquote>
+
+<h2>Method 1 — Registry Bypass During Setup (Upgrade from Windows 10)</h2>
+
+<ol>
+<li>Download the Windows 11 ISO from <a href="https://microsoft.com/en-us/software-download/windows11">https://microsoft.com/en-us/software-download/windows11</a></li>
+<li>Mount the ISO (double-click it in Windows 10)</li>
+<li>Open the mounted drive and run <code>setup.exe</code></li>
+<li>When setup says "This PC doesn't meet the minimum requirements", press <strong>Shift+F10</strong> to open Command Prompt</li>
+</ol>
+
+<pre><code>reg add "HKLM\SYSTEM\Setup\MoSetup" /v AllowUpgradesWithUnsupportedTPMOrCPU /t REG_DWORD /d 1 /f</code></pre>
+
+<ol start="5">
+<li>Close Command Prompt</li>
+<li>Go back and click the refresh/check button — it should now proceed</li>
+</ol>
+
+<h2>Method 2 — Rufus (Clean Install)</h2>
+
+<p>Rufus 3.19+ has built-in support for bypassing Windows 11 requirements when creating a bootable USB:</p>
+
+<ol>
+<li>Download Rufus from <a href="https://rufus.ie">https://rufus.ie</a></li>
+<li>Select your USB drive and the Windows 11 ISO</li>
+<li>Click Start — Rufus asks about Windows customization</li>
+<li>Check <strong>Remove requirement for 4GB+ RAM, Secure Boot and TPM 2.0</strong></li>
+<li>Optionally check <strong>Remove requirement for an online Microsoft account</strong></li>
+<li>Click OK and create the USB</li>
+<li>Boot from USB and install normally</li>
+</ol>
+
+<h2>Method 3 — Registry Edit Before Running Setup</h2>
+
+<p>Add these registry keys on your Windows 10 machine before launching the installer:</p>
+
+<pre><code># Open PowerShell as Administrator and run:
+reg add "HKLM\SYSTEM\Setup\MoSetup" /v AllowUpgradesWithUnsupportedTPMOrCPU /t REG_DWORD /d 1 /f
+
+reg add "HKLM\SYSTEM\Setup\LabConfig" /v BypassTPMCheck /t REG_DWORD /d 1 /f
+reg add "HKLM\SYSTEM\Setup\LabConfig" /v BypassSecureBootCheck /t REG_DWORD /d 1 /f
+reg add "HKLM\SYSTEM\Setup\LabConfig" /v BypassRAMCheck /t REG_DWORD /d 1 /f
+reg add "HKLM\SYSTEM\Setup\LabConfig" /v BypassStorageCheck /t REG_DWORD /d 1 /f
+reg add "HKLM\SYSTEM\Setup\LabConfig" /v BypassCPUCheck /t REG_DWORD /d 1 /f</code></pre>
+
+<p>Then run setup.exe from the mounted ISO.</p>
+
+<h2>Create a Local Account (Skip Microsoft Account)</h2>
+
+<p>During setup when asked to sign in to Microsoft account:</p>
+
+<ol>
+<li>Enter a fake email like <code>no@no.com</code> and any password</li>
+<li>Setup says "Something went wrong" — click Back</li>
+<li>Now the "Sign in with a Microsoft account" option is gone and you can create a local account</li>
+</ol>
+
+<p>Or use Rufus as above and check the option to skip Microsoft account requirement.</p>
+
+<h2>Performance on Old Hardware</h2>
+
+<p>Windows 11 performance on unsupported hardware is generally fine. The system requirements are marketing decisions as much as technical ones. A machine that ran Windows 10 well will usually run Windows 11 equally well.</p>
+
+<p>The one real concern is security: without TPM 2.0, BitLocker uses a less secure mode and some security features like Credential Guard may not work. For home use this is a reasonable trade-off.</p>

@@ -1,0 +1,52 @@
+<!-- macos:macOS -->
+<h1>Fix AirDrop Not Working</h1>
+
+<p>AirDrop uses both Wi-Fi and Bluetooth simultaneously. Either one being off or unavailable breaks it entirely.</p>
+
+<h2>Check the Basics First</h2>
+
+<ul>
+<li>Both devices must have Wi-Fi ON — even if you are not on a network</li>
+<li>Both devices must have Bluetooth ON</li>
+<li>Both devices must be within 9 metres (30 feet) of each other</li>
+<li>Neither device should be in Airplane Mode</li>
+<li>Personal Hotspot must be off on iPhones</li>
+</ul>
+
+<h2>Check AirDrop Visibility</h2>
+
+<p>On Mac: Finder → AirDrop in sidebar → set "Allow me to be discovered by" to <strong>Everyone</strong> for testing. Change back to Contacts Only afterwards.</p>
+
+<p>On iPhone/iPad: Control Center → long-press the connectivity block → AirDrop → <strong>Everyone for 10 Minutes</strong>.</p>
+
+<h2>Restart Bluetooth and Wi-Fi</h2>
+
+<p>Turn Bluetooth off, wait 5 seconds, turn it back on. Do the same for Wi-Fi. Do this on both devices.</p>
+
+<h2>Restart the AirDrop Service on Mac</h2>
+
+<pre><code># Restart Bluetooth daemon
+sudo pkill bluetoothd
+
+# Restart mDNSResponder (handles device discovery)
+sudo killall mDNSResponder</code></pre>
+
+<h2>Check Firewall Settings</h2>
+
+<p>System Settings → Network → Firewall → Options → make sure <strong>Block all incoming connections</strong> is NOT checked. AirDrop needs incoming connections to receive files.</p>
+
+<h2>Sign Out and Back Into iCloud</h2>
+
+<p>AirDrop between your own Apple devices uses iCloud to verify identity. If iCloud is having issues, AirDrop between your own devices can fail. System Settings → Apple ID → Sign Out → Sign In.</p>
+
+<h2>Reset Network Settings on iPhone</h2>
+
+<p>If AirDrop is not working specifically from iPhone: Settings → General → Transfer or Reset iPhone → Reset → Reset Network Settings. This clears saved Wi-Fi passwords so have them ready.</p>
+
+<h2>macOS Ventura and Later — AirDrop Over Internet</h2>
+
+<p>macOS Ventura added AirDrop over the internet for transfers between your own Apple ID devices when they are out of Bluetooth range. This requires both devices to be signed into the same Apple ID and have Wi-Fi. If this is not working, the issue is usually iCloud connectivity — check apple.com/support/systemstatus.</p>
+
+<h2>Check for macOS/iOS Version Mismatch</h2>
+
+<p>Older iOS versions (before iOS 16) have known AirDrop issues with macOS Ventura and later. Update both devices to current versions before troubleshooting further.</p>

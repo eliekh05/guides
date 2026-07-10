@@ -1,0 +1,90 @@
+<!-- windows:Windows -->
+<h1>Debloat Windows 11</h1>
+
+<p>Windows 11 ships with a significant amount of preinstalled software, background telemetry, advertising, and services you likely do not need. This guide covers removing them safely.</p>
+
+<h2>Remove Preinstalled Apps via PowerShell</h2>
+
+<pre><code># List all installed appx packages
+Get-AppxPackage | Select Name | Sort Name
+
+# Remove specific apps (run as Administrator)
+Get-AppxPackage -Name "Microsoft.BingNews" | Remove-AppxPackage
+Get-AppxPackage -Name "Microsoft.BingWeather" | Remove-AppxPackage
+Get-AppxPackage -Name "Microsoft.GamingApp" | Remove-AppxPackage
+Get-AppxPackage -Name "Microsoft.GetHelp" | Remove-AppxPackage
+Get-AppxPackage -Name "Microsoft.Getstarted" | Remove-AppxPackage
+Get-AppxPackage -Name "Microsoft.MicrosoftOfficeHub" | Remove-AppxPackage
+Get-AppxPackage -Name "Microsoft.MicrosoftSolitaireCollection" | Remove-AppxPackage
+Get-AppxPackage -Name "Microsoft.People" | Remove-AppxPackage
+Get-AppxPackage -Name "Microsoft.Todos" | Remove-AppxPackage
+Get-AppxPackage -Name "Microsoft.WindowsFeedbackHub" | Remove-AppxPackage
+Get-AppxPackage -Name "Microsoft.Xbox*" | Remove-AppxPackage
+Get-AppxPackage -Name "Microsoft.YourPhone" | Remove-AppxPackage
+Get-AppxPackage -Name "Spotify*" | Remove-AppxPackage
+Get-AppxPackage -Name "Disney*" | Remove-AppxPackage</code></pre>
+
+<h2>Disable Telemetry</h2>
+
+<pre><code># Disable telemetry via registry (run as Administrator)
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v AllowTelemetry /t REG_DWORD /d 0 /f
+
+# Disable DiagTrack service
+sc stop DiagTrack
+sc config DiagTrack start= disabled
+
+# Disable DMWAPPUSHSERVICE
+sc stop dmwappushservice
+sc config dmwappushservice start= disabled</code></pre>
+
+<h2>Disable Advertising ID</h2>
+
+<pre><code>reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo" /v Enabled /t REG_DWORD /d 0 /f</code></pre>
+
+<p>Or: Settings → Privacy &amp; Security → General → Let apps show me personalized ads by using my advertising ID → Off</p>
+
+<h2>Remove OneDrive</h2>
+
+<pre><code># Stop OneDrive
+taskkill /f /im OneDrive.exe
+
+# Uninstall
+winget uninstall Microsoft.OneDrive
+
+# Prevent it from reinstalling
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\OneDrive" /v DisableFileSyncNGSC /t REG_DWORD /d 1 /f</code></pre>
+
+<h2>Disable Cortana</h2>
+
+<pre><code>Get-AppxPackage -Name "Microsoft.549981C3F5F10" | Remove-AppxPackage</code></pre>
+
+<h2>Disable Startup Programs</h2>
+
+<pre><code># View startup impact
+Get-CimInstance Win32_StartupCommand | Select Name, Command, Location | Format-Table -AutoSize
+
+# Or use Task Manager → Startup apps tab and disable individually
+</code></pre>
+
+<h2>Automated Debloat Scripts</h2>
+
+<p>Several community scripts automate all of the above. The most maintained in 2026:</p>
+
+<ul>
+<li><strong>Win11Debloat</strong> — <a href="https://github.com/Raphire/Win11Debloat">https://github.com/Raphire/Win11Debloat</a> — PowerShell script with GUI, reversible</li>
+<li><strong>ChrisTitusTech WinUtil</strong> — <a href="https://github.com/ChrisTitusTech/winutil">https://github.com/ChrisTitusTech/winutil</a> — comprehensive tweaks, active maintenance</li>
+</ul>
+
+<pre><code># Run ChrisTitusTech WinUtil directly (PowerShell as Admin)
+iwr -useb https://christitus.com/win | iex</code></pre>
+
+<blockquote>
+<p>Always review what a script does before running it. These are community maintained and generally safe but read the source.</p>
+</blockquote>
+
+<h2>Disable Windows Search Indexing (Low RAM Systems)</h2>
+
+<pre><code>sc stop WSearch
+sc config WSearch start= disabled</code></pre>
+
+<p>Search still works — it just searches in real time instead of from an index. Noticeably slower but saves RAM and disk I/O on older hardware.</p>

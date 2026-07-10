@@ -1,0 +1,97 @@
+<!-- linux:Linux -->
+<h1>Upgrade the Linux Kernel Without Breaking Your System</h1>
+
+<p>Upgrading the kernel can fix hardware issues, improve performance, and add support for newer devices. Done correctly it is safe — the old kernel stays installed as a fallback.</p>
+
+<h2>Check Your Current Kernel</h2>
+
+<pre><code>uname -r</code></pre>
+
+<h2>Ubuntu / Debian — Via Package Manager</h2>
+
+<pre><code># List available kernels
+apt-cache search linux-image | grep generic
+
+# Install a specific kernel version
+sudo apt install linux-image-6.8.0-45-generic linux-headers-6.8.0-45-generic -y
+
+# Or install the latest HWE (Hardware Enablement) kernel
+sudo apt install --install-recommends linux-generic-hwe-24.04 -y
+
+# Reboot to use the new kernel
+sudo reboot</code></pre>
+
+<p>After reboot, verify:</p>
+
+<pre><code>uname -r</code></pre>
+
+<p>The old kernel is still in GRUB — you can boot into it from Advanced options if the new one has problems.</p>
+
+<h2>Fedora — Via DNF</h2>
+
+<pre><code># Update all packages including kernel
+sudo dnf update -y
+sudo reboot</code></pre>
+
+<p>Fedora keeps the last 3 kernels. Boot menu shows all of them.</p>
+
+<h2>Arch Linux — Via Pacman</h2>
+
+<pre><code># Update everything including kernel
+sudo pacman -Syu
+
+# Or install a specific kernel variant
+sudo pacman -S linux-lts          # Long Term Support kernel
+sudo pacman -S linux-zen          # Optimized for desktop
+sudo pacman -S linux-hardened     # Security-hardened
+sudo mkinitcpio -P                # Rebuild initramfs for all kernels
+sudo grub-mkconfig -o /boot/grub/grub.cfg  # Update GRUB
+sudo reboot</code></pre>
+
+<h2>Install a Newer Kernel on Ubuntu Using Mainline</h2>
+
+<p>Ubuntu Mainline Kernel Installer lets you install vanilla kernels from kernel.org:</p>
+
+<pre><code>sudo add-apt-repository ppa:cappelikan/ppa
+sudo apt update
+sudo apt install mainline -y
+mainline    # Opens GUI to select and install any kernel version</code></pre>
+
+<h2>Prevent a Kernel from Being Updated (Pin)</h2>
+
+<pre><code># Ubuntu/Debian — hold a specific kernel package
+sudo apt-mark hold linux-image-6.5.0-18-generic
+sudo apt-mark hold linux-headers-6.5.0-18-generic
+
+# Check held packages
+sudo apt-mark showhold</code></pre>
+
+<h2>Boot Into Old Kernel If New One Breaks</h2>
+
+<p>At GRUB menu: <strong>Advanced options for Ubuntu</strong> → select the previous kernel version.</p>
+
+<p>If GRUB does not appear, hold Shift (BIOS) or Escape (UEFI) during boot.</p>
+
+<h2>Remove Old Kernels</h2>
+
+<pre><code># Ubuntu — remove all but current kernel automatically
+sudo apt autoremove --purge
+
+# List installed kernels
+dpkg --list | grep linux-image
+
+# Remove a specific old kernel
+sudo apt remove linux-image-6.2.0-35-generic linux-headers-6.2.0-35-generic</code></pre>
+
+<h2>Handle DKMS Modules After Kernel Upgrade</h2>
+
+<p>Some drivers (Nvidia, VirtualBox, ZFS) use DKMS to build kernel modules. They rebuild automatically after a kernel upgrade, but can fail:</p>
+
+<pre><code># Check DKMS status
+dkms status
+
+# Manually rebuild all DKMS modules for new kernel
+sudo dkms autoinstall -k $(uname -r)
+
+# If Nvidia driver fails after kernel upgrade
+sudo apt install --reinstall nvidia-dkms-$(nvidia-smi --query-gpu=driver_version --format=csv,noheader | cut -d'.' -f1)</code></pre>

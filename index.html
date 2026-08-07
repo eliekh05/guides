@@ -3,1735 +3,243 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>guides</title>
-
 <meta name="theme-color" content="#0a0a0a">
-
 <link rel="stylesheet" href="/js/xterm/xterm.css">
-
 <style>
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html,
-body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: #0a0a0a;
-}
-
-body {
-  display: flex;
-  flex-direction: column;
-}
-
-#terminal-container {
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  padding: 6px;
-}
-
-.xterm {
-  height: 100%;
-}
-
-.xterm-viewport {
-  background: #0a0a0a !important;
-}
-
-.xterm-screen {
-  padding-left: 4px;
-}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#0a0a0a}
+body{display:flex;flex-direction:column}
+#t{flex:1;overflow:hidden;padding:6px}
+.xterm{height:100%}
+.xterm-viewport{background:#0a0a0a!important}
 </style>
 </head>
-
 <body>
-
-<div
-  id="terminal-container"
-  role="application"
-  aria-label="Interactive terminal">
-</div>
-
-
+<div id="t"></div>
 <script src="/js/xterm/xterm.js"></script>
 <script src="/js/xterm/addon-fit.js"></script>
 <script src="/js/xterm/addon-web-links.js"></script>
 <script src="/js/guides-data.js"></script>
-
-
 <script>
-
-/* ============================================================
-   Terminal
-============================================================ */
-
 const term = new Terminal({
-
-  fontFamily:
-    "'JetBrains Mono','Fira Code','Cascadia Code','SF Mono',Consolas,monospace",
-
-  fontSize: 13,
-
-  lineHeight: 1.5,
-
-  cursorBlink: true,
-
-  cursorStyle: "block",
-
-  scrollback: 5000,
-
-  convertEol: true,
-
-  macOptionIsMeta: true,
-
-  theme: {
-
-    background: "#0a0a0a",
-
-    foreground: "#e0e0e0",
-
-    cursor: "#00cc66",
-
-    cursorAccent: "#0a0a0a",
-
-    black: "#0a0a0a",
-
-    brightBlack: "#333333",
-
-    white: "#e0e0e0",
-
-    brightWhite: "#ffffff",
-
-    green: "#00cc66",
-
-    brightGreen: "#00ff87",
-
-    cyan: "#79d4f0",
-
-    brightCyan: "#79d4f0",
-
-    red: "#ff6b6b",
-
-    brightRed: "#ff6b6b",
-
-    yellow: "#ffd060",
-
-    blue: "#79d4f0",
-
-    magenta: "#c792ea"
-  }
+  fontFamily:"'JetBrains Mono','Fira Code','Cascadia Code','SF Mono',Consolas,monospace",
+  fontSize:13, lineHeight:1.5, cursorBlink:true, cursorStyle:'block',
+  scrollback:5000, convertEol:true, copyOnSelect:true, macOptionIsMeta:true,
+  theme:{
+    background:'#0a0a0a', foreground:'#e0e0e0', cursor:'#00cc66', cursorAccent:'#0a0a0a',
+    black:'#0a0a0a', brightBlack:'#333', white:'#e0e0e0', brightWhite:'#f0f0f0',
+    green:'#00cc66', brightGreen:'#00ff87', cyan:'#79d4f0', brightCyan:'#79d4f0',
+    red:'#ff6b6b', brightRed:'#ff6b6b', yellow:'#ffd060', blue:'#79d4f0', magenta:'#c792ea',
+  },
 });
+const fit = new FitAddon.FitAddon();
+term.loadAddon(fit);
+term.loadAddon(new WebLinksAddon.WebLinksAddon());
+term.open(document.getElementById('t'));
+fit.fit();
+window.addEventListener('resize', () => fit.fit());
 
+// ANSI
+const R='\x1b[0m',DIM='\x1b[2m',BOLD='\x1b[1m';
+const GREEN='\x1b[32m',CYAN='\x1b[36m',BCYAN='\x1b[96m';
+const RED='\x1b[31m',YELLOW='\x1b[33m',WHITE='\x1b[37m';
+const dim=s=>DIM+s+R, bold=s=>BOLD+s+R, green=s=>GREEN+s+R;
+const cyan=s=>CYAN+s+R, bcyan=s=>BCYAN+s+R, red=s=>RED+s+R;
+const yellow=s=>YELLOW+s+R, white=s=>WHITE+s+R;
 
-const fitAddon = new FitAddon.FitAddon();
+// State
+let cwd='/', buf='', hist=[], hi=-1, busy=false;
 
-term.loadAddon(fitAddon);
+// Write helpers
+const wl=s=>term.writeln(s??'');
+const w=s=>term.write(s??'');
+const nl=()=>term.writeln('');
+const err=s=>wl(red(s));
+const prompt=()=>green(cwd==='/'?'$':cwd.slice(1)+' $')+' ';
+const writePrompt=()=>w(prompt());
 
-term.loadAddon(
-  new WebLinksAddon.WebLinksAddon()
-);
-
-
-const container =
-  document.getElementById("terminal-container");
-
-
-term.open(container);
-
-
-function resizeTerminal(){
-
-  requestAnimationFrame(() => {
-
-    fitAddon.fit();
-
-  });
-
-}
-
-
-resizeTerminal();
-
-
-window.addEventListener(
-  "resize",
-  resizeTerminal
-);
-
-
-/* ============================================================
-   ANSI helpers
-============================================================ */
-
-const ANSI = {
-
-  reset: "\x1b[0m",
-
-  bold: "\x1b[1m",
-
-  dim: "\x1b[2m",
-
-  colors: {
-
-    green: "\x1b[32m",
-
-    brightGreen: "\x1b[92m",
-
-    cyan: "\x1b[36m",
-
-    brightCyan: "\x1b[96m",
-
-    red: "\x1b[31m",
-
-    yellow: "\x1b[33m",
-
-    white: "\x1b[37m"
-
+// Copy / Paste
+term.attachCustomKeyEventHandler(e => {
+  if ((e.metaKey||(e.ctrlKey&&e.shiftKey)) && e.key==='c' && e.type==='keydown') {
+    const s=term.getSelection(); if(s) navigator.clipboard.writeText(s); return false;
   }
-
-};
-
-
-const style = (code,text)=>{
-
-  return code + text + ANSI.reset;
-
-};
-
-
-const bold =
-  text => style(ANSI.bold,text);
-
-
-const dim =
-  text => style(ANSI.dim,text);
-
-
-const green =
-  text => style(ANSI.colors.green,text);
-
-
-const cyan =
-  text => style(ANSI.colors.cyan,text);
-
-
-const brightCyan =
-  text => style(ANSI.colors.brightCyan,text);
-
-
-const red =
-  text => style(ANSI.colors.red,text);
-
-
-const yellow =
-  text => style(ANSI.colors.yellow,text);
-
-
-const white =
-  text => style(ANSI.colors.white,text);
-
-
-
-/* ============================================================
-   Output helpers
-============================================================ */
-
-
-const write =
-  text => term.write(text ?? "");
-
-
-const println =
-  text => term.writeln(text ?? "");
-
-
-const newline =
-  () => term.writeln("");
-
-
-
-function clearTerminal(){
-
-  term.clear();
-
-  term.write("\x1b[H");
-
-}
-
-
-
-/* ============================================================
-   Shell state
-============================================================ */
-
-
-const state = {
-
-  cwd: "/",
-
-  input: "",
-
-  history: [],
-
-  historyIndex: -1,
-
-  busy: false
-
-};
-
-
-
-/* ============================================================
-   Prompt
-============================================================ */
-
-
-function prompt(){
-
-  if(state.cwd === "/"){
-
-    return green("$") + " ";
-
-  }
-
-
-  return (
-    green(
-      state.cwd.slice(1)
-    )
-    +
-    " $ "
-  );
-
-}
-
-
-
-function printPrompt(){
-
-  write(prompt());
-
-}
-
-
-
-function error(message){
-
-  println(
-    red(message)
-  );
-
-}
-
-
-
-/* ============================================================
-   Clipboard
-============================================================ */
-
-
-async function copySelection(){
-
-  const text =
-    term.getSelection();
-
-
-  if(!text)
-    return;
-
-
-  try{
-
-    await navigator.clipboard.writeText(text);
-
-  }
-
-  catch(err){
-
-    console.warn(
-      "Clipboard failed",
-      err
-    );
-
-  }
-
-}
-
-
-
-async function pasteClipboard(){
-
-  try{
-
-    const text =
-      await navigator.clipboard.readText();
-
-
-    if(!text)
-      return;
-
-
-    for(const char of text){
-
-      if(char === "\n"){
-
-        runCommand(state.input);
-
-      }
-
-      else{
-
-        state.input += char;
-
-        write(char);
-
-      }
-
-    }
-
-  }
-
-  catch(err){
-
-    console.warn(
-      "Paste failed",
-      err
-    );
-
-  }
-
-}
-
-
-
-/* ============================================================
-   Keyboard shortcuts
-============================================================ */
-
-
-term.attachCustomKeyEventHandler(
-event=>{
-
-
-  if(
-    event.type === "keydown"
-    &&
-    (event.metaKey ||
-    (event.ctrlKey && event.shiftKey))
-    &&
-    event.key.toLowerCase()==="c"
-  ){
-
-    copySelection();
-
+  if ((e.metaKey||(e.ctrlKey&&e.shiftKey)) && e.key==='v' && e.type==='keydown') {
+    navigator.clipboard.readText().then(t=>{
+      if(!t) return;
+      for(const ch of t) { if(ch==='\n'||ch==='\r') runCmd(buf); else {buf+=ch;w(ch);} }
+    }).catch(()=>{});
     return false;
-
   }
-
-
-
-  if(
-    event.type === "keydown"
-    &&
-    (event.metaKey ||
-    (event.ctrlKey && event.shiftKey))
-    &&
-    event.key.toLowerCase()==="v"
-  ){
-
-    pasteClipboard();
-
-    return false;
-
-  }
-
-
   return true;
-
 });
 
-/* ============================================================
-   HTML -> ANSI renderer
-============================================================ */
-
-
-function stripHTMLTags(text){
-
-  return text
-    .replace(/<[^>]*>/g,"")
-    .replace(/\s+/g," ")
-    .trim();
-
-}
-
-
-
-function htmlToAnsi(html){
-
-  const parser =
-    new DOMParser();
-
-
-  const doc =
-    parser.parseFromString(
-      html,
-      "text/html"
-    );
-
-
-  function walk(node){
-
-    if(node.nodeType === Node.TEXT_NODE){
-
-      return node.textContent;
-
-    }
-
-
-    if(node.nodeType !== Node.ELEMENT_NODE){
-
-      return "";
-
-    }
-
-
-    const tag =
-      node.tagName.toLowerCase();
-
-
-    const children =
-      Array.from(node.childNodes)
-      .map(walk)
-      .join("");
-
-
-
-    switch(tag){
-
-
-      case "h1":
-
-        return (
-          "\r\n" +
-          bold(
-            white(
-              children.trim()
-            )
-          )
-          +
-          "\r\n" +
-          dim(
-            "─".repeat(
-              Math.min(
-                children.length,
-                60
-              )
-            )
-          )
-          +
-          "\r\n"
-        );
-
-
-
-      case "h2":
-
-        return (
-          "\r\n" +
-          green(
-            children.toUpperCase()
-          )
-          +
-          "\r\n"
-        );
-
-
-
-      case "h3":
-
-        return (
-          "\r\n" +
-          bold(children)
-          +
-          "\r\n"
-        );
-
-
-
-      case "p":
-
-        return children + "\r\n";
-
-
-
-      case "br":
-
-        return "\r\n";
-
-
-
-      case "strong":
-      case "b":
-
-        return bold(children);
-
-
-
-      case "code":
-
-        if(node.parentElement?.tagName.toLowerCase()==="pre"){
-
-          return children;
-
-        }
-
-        return green(children);
-
-
-
-      case "pre":
-
-        return (
-          "\r\n" +
-          children
-          .split("\n")
-          .map(
-            line =>
-              "  " +
-              brightCyan(line)
-          )
-          .join("\r\n")
-          +
-          "\r\n"
-        );
-
-
-
-      case "ul":
-      case "ol":
-
-        return children;
-
-
-
-      case "li":
-
-        return (
-          "  " +
-          dim("•") +
-          " " +
-          children +
-          "\r\n"
-        );
-
-
-
-      case "blockquote":
-
-        return (
-          dim(
-            "  | " +
-            children.trim()
-          )
-          +
-          "\r\n"
-        );
-
-
-
-      case "hr":
-
-        return (
-          dim(
-            "─".repeat(50)
-          )
-          +
-          "\r\n"
-        );
-
-
-
-      case "a":
-
-        return cyan(children);
-
-
-
-      case "table":
-
-        return (
-          "\r\n" +
-          children +
-          "\r\n"
-        );
-
-
-
-      case "tr":
-
-        return children + "\r\n";
-
-
-
-      case "th":
-
-        return dim(
-          children.padEnd(20)
-        );
-
-
-
-      case "td":
-
-        return children.padEnd(20);
-
-
-
-      default:
-
-        return children;
-
-    }
-
-  }
-
-
-  return walk(doc.body);
-
-}
-
-
-
-
-
-/* ============================================================
-   Guide helpers
-============================================================ */
-
-
-function currentSection(){
-
-  if(state.cwd === "/")
-    return null;
-
-
-  return SECTIONS.find(
-    section =>
-      section.id === state.cwd.slice(1)
-  );
-
-}
-
-
-
-
-
-function getGuides(){
-
-  const section =
-    currentSection();
-
-
-  return section
-    ? section.guides
-    : ALL_GUIDES;
-
-}
-
-
-
-
-
-/* ============================================================
-   Commands
-============================================================ */
-
-
-function commandLS(){
-
-  if(state.cwd === "/"){
-
-
-    SECTIONS
-    .filter(
-      s=>s.guides.length
-    )
-    .forEach(section=>{
-
-
-      println(
-        cyan(section.id + "/")
-        +
-        dim(
-          "  " +
-          section.guides.length
-        )
-      );
-
-
-    });
-
-
-    return;
-
-  }
-
-
-
-  const section =
-    currentSection();
-
-
-
-  if(!section){
-
-    error(
-      "ls: invalid directory"
-    );
-
-    return;
-
-  }
-
-
-
-  section.guides.forEach(
-    guide=>{
-
-      println(
-        dim(
-          guide.slug.padEnd(45)
-        )
-        +
-        guide.title
-      );
-
-    }
-  );
-
-
-}
-
-
-
-
-
-function commandCD(argument){
-
-
-  if(
-    !argument ||
-    argument===".." ||
-    argument==="/" ||
-    argument==="~"
-  ){
-
-    state.cwd="/";
-
-    return;
-
-  }
-
-
-
-  const section =
-    SECTIONS.find(
-      s =>
-      s.id===argument
-      ||
-      s.title.toLowerCase()
-      ===
-      argument.toLowerCase()
-    );
-
-
-
-  if(!section){
-
-    error(
-      `cd: ${argument}: no such section`
-    );
-
-    return;
-
-  }
-
-
-
-  state.cwd =
-    "/" + section.id;
-
-
-  newline();
-
-  commandLS();
-
-
-}
-
-
-
-
-
-async function commandCAT(slug){
-
-
-  const guide =
-    ALL_GUIDES.find(
-      g =>
-      g.slug===slug
-    );
-
-
-
-  if(!guide){
-
-    error(
-      `cat: ${slug}: not found`
-    );
-
-    return;
-
-  }
-
-
-
-  state.busy=true;
-
-
-
-  try{
-
-
-    const response =
-      await fetch(
-        `/guides/${guide.slug}.html`
-      );
-
-
-    if(!response.ok)
-      throw new Error();
-
-
-
-    const html =
-      await response.text();
-
-
-
-    const output =
-      htmlToAnsi(html);
-
-
-
-    newline();
-
-
-    output
-    .split("\r\n")
-    .forEach(
-      line =>
-        println(line)
-    );
-
-
-
-    term.scrollToBottom();
-
-
-
-  }
-
-
-  catch(err){
-
-    error(
-      `cat: failed loading ${slug}`
-    );
-
-  }
-
-
-
-  finally{
-
-    state.busy=false;
-
-    newline();
-
-    printPrompt();
-
-    state.input="";
-
-  }
-
-
-}
-
-
-
-
-
-
-function commandHELP(){
-
-
-  newline();
-
-
-  const commands=[
-
-    ["ls","list sections or guides"],
-
-    ["cd <section>","enter section"],
-
-    ["cat <guide>","open guide"],
-
-    ["clear","clear terminal"],
-
-    ["pwd","show current path"],
-
-    ["github","open repository"],
-
-    ["help","show commands"]
-
-  ];
-
-
-
-  commands.forEach(
-    ([cmd,desc])=>{
-
-      println(
-        green(
-          cmd.padEnd(20)
-        )
-        +
-        dim(desc)
-      );
-
-    }
-  );
-
-
-  newline();
-
-}
-
-
-
-
-function runCommand(raw){
-
-
-  if(state.busy)
-    return;
-
-
-
-  const command =
-    raw.trim();
-
-
-
-  newline();
-
-
-
-  if(!command){
-
-    printPrompt();
-
-    return;
-
-  }
-
-
-
-  state.history.unshift(command);
-
-  state.historyIndex=-1;
-
-
-
-  const parts =
-    command.split(/\s+/);
-
-
-
-  const name =
-    parts[0].toLowerCase();
-
-
-  const args =
-    parts
-    .slice(1)
-    .join(" ")
-    .replace(/\.html$/,"");
-
-
-
-
-  switch(name){
-
-
-    case "ls":
-    case "dir":
-
-      commandLS();
-
-      break;
-
-
-
-    case "cd":
-
-      commandCD(args);
-
-      break;
-
-
-
-    case "cat":
-    case "open":
-
-      commandCAT(args);
-
-      return;
-
-
-
-    case "help":
-
-      commandHELP();
-
-      break;
-
-
-
-    case "clear":
-    case "cls":
-
-      clearTerminal();
-
-      break;
-
-
-
-    case "pwd":
-
-      println(
-        state.cwd
-      );
-
-      break;
-
-
-
-    case "github":
-
-      println(
-        cyan(
-          "opening github..."
-        )
-      );
-
-
-      setTimeout(
-        ()=>window.open(
-          "https://github.com/eliekh05/guides",
-          "_blank",
-          "noopener,noreferrer"
-        ),
-        300
-      );
-
-      break;
-
-
-
-    default:
-
-      error(
-        `${name}: command not found`
-      );
-
-
-  }
-
-
-
-  newline();
-
-  printPrompt();
-
-  state.input="";
-
-
-}
-/* ============================================================
-   Tab completion
-============================================================ */
-
-
-function tabComplete(){
-
-
-  const parts =
-    state.input
-    .trim()
-    .split(/\s+/);
-
-
-
-  const command =
-    parts[0]
-    ?.toLowerCase();
-
-
-
-  const fragment =
-    parts.at(-1)
-    ?.toLowerCase() || "";
-
-
-
-  let result=null;
-
-
-
-  if(
-    command==="cd"
-    &&
-    parts.length>=2
-  ){
-
-
-    const match =
-      SECTIONS.find(
-        s =>
-        s.id.startsWith(fragment)
-      );
-
-
-    if(match)
-      result =
-        "cd " + match.id;
-
-  }
-
-
-
-  else if(
-    (command==="cat" ||
-     command==="open")
-     &&
-     parts.length>=2
-  ){
-
-
-    const guides =
-      getGuides();
-
-
-    const match =
-      guides.find(
-        g =>
-        g.slug.startsWith(fragment)
-      );
-
-
-    if(match)
-      result =
-        command +
-        " " +
-        match.slug;
-
-
-  }
-
-
-
-  else if(parts.length===1){
-
-
-    const commands=[
-
-      "ls",
-      "cd",
-      "cat",
-      "clear",
-      "pwd",
-      "github",
-      "help"
-
-    ];
-
-
-
-    const match =
-      commands.find(
-        c =>
-        c.startsWith(fragment)
-      );
-
-
-    if(match)
-      result=match;
-
-
-  }
-
-
-
-  if(
-    result &&
-    result!==state.input
-  ){
-
-
-    eraseInput();
-
-
-    state.input=result;
-
-
-    write(result);
-
-  }
-
-
-}
-
-
-
-
-
-/* ============================================================
-   Erase current line
-============================================================ */
-
-
-function eraseInput(){
-
-
-  if(!state.input)
-    return;
-
-
-
-  write(
-    "\b \b".repeat(
-      state.input.length
-    )
-  );
-
-
-}
-
-
-
-
-
-/* ============================================================
-   Keyboard input
-============================================================ */
-
-
-term.onData(data=>{
-
-
-  if(state.busy)
-    return;
-
-
-
-
-  switch(data){
-
-
-
-    case "\r":
-
-      runCommand(
-        state.input
-      );
-
-      break;
-
-
-
-    case "\x7f":
-
-
-      if(state.input.length){
-
-        state.input =
-          state.input.slice(
-            0,-1
-          );
-
-        write("\b \b");
-
+// HTML → ANSI
+function htmlToAnsi(html) {
+  const d=document.createElement('div'); d.innerHTML=html;
+  function walk(n) {
+    if(n.nodeType===3) return n.textContent;
+    const tag=(n.tagName||'').toLowerCase();
+    const ch=Array.from(n.childNodes).map(walk).join('');
+    switch(tag) {
+      case 'h1': return '\r\n'+bold(WHITE+ch+R)+'\r\n'+dim('─'.repeat(Math.min(ch.length,56)))+'\r\n';
+      case 'h2': return '\r\n'+green(ch.toUpperCase())+'\r\n';
+      case 'h3': return '\r\n'+bold(ch)+'\r\n';
+      case 'p':  return ch+'\r\n';
+      case 'ul': case 'ol': return ch;
+      case 'li': return '  '+dim('·')+' '+ch+'\r\n';
+      case 'code': return n.closest&&n.closest('pre') ? ch : green(ch);
+      case 'pre': return '\r\n'+ch.split('\n').map(l=>'  '+bcyan(l)).join('\r\n')+'\r\n';
+      case 'strong': case 'b': return bold(ch);
+      case 'a': {
+        const href=n.getAttribute&&n.getAttribute('href');
+        if(href&&href.startsWith('magnet:')) return yellow('[magnet] ')+cyan(href);
+        return cyan(ch);
       }
-
-
-      break;
-
-
-
-
-    case "\t":
-
-      tabComplete();
-
-      break;
-
-
-
-
-    case "\x1b[A":
-
-
-      if(
-        state.history.length
-      ){
-
-
-        if(
-          state.historyIndex <
-          state.history.length-1
-        ){
-
-          state.historyIndex++;
-
-          eraseInput();
-
-
-          state.input =
-            state.history[
-              state.historyIndex
-            ];
-
-
-          write(
-            state.input
-          );
-
-        }
-
-      }
-
-
-      break;
-
-
-
-
-    case "\x1b[B":
-
-
-      if(
-        state.historyIndex>=0
-      ){
-
-
-        state.historyIndex--;
-
-
-        eraseInput();
-
-
-        if(
-          state.historyIndex>=0
-        ){
-
-          state.input =
-            state.history[
-              state.historyIndex
-            ];
-
-
-          write(
-            state.input
-          );
-
-
-        }
-
-        else{
-
-          state.input="";
-
-        }
-
-      }
-
-
-      break;
-
-
-
-
-    case "\x0c":
-
-      clearTerminal();
-
-      printPrompt();
-
-      state.input="";
-
-      break;
-
-
-
-    default:
-
-
-      if(
-        data.length===1 &&
-        data>=" "
-      ){
-
-        state.input+=data;
-
-        write(data);
-
-      }
-
-
+      case 'blockquote': return dim('  | '+ch.trim())+'\r\n';
+      case 'br': return '\r\n';
+      case 'hr': return dim('─'.repeat(40))+'\r\n';
+      case 'th': return dim(ch.toUpperCase().padEnd(22));
+      case 'td': return ch.padEnd(22);
+      case 'tr': return ch+'\r\n';
+      case 'table': return '\r\n'+ch+'\r\n';
+      case 'thead': return dim(ch);
+      case 'tbody': return ch;
+      default: return ch;
+    }
   }
+  return walk(d);
+}
 
+// Commands
+function curSec() { return cwd==='/' ? null : SECTIONS.find(s=>s.id===cwd.slice(1)); }
 
+function cmdLs() {
+  if(cwd==='/') {
+    SECTIONS.filter(s=>s.guides.length).forEach(s=>wl(cyan(s.id+'/')+dim('  '+s.guides.length)));
+  } else {
+    const sec=curSec(); if(!sec){err('ls: no such section');return;}
+    sec.guides.forEach(g=>wl(dim(g.slug.padEnd(52))+' '+g.title));
+  }
+}
+
+function cmdCd(arg) {
+  if(!arg||arg==='~'||arg==='/'||arg==='..'){cwd='/';return;}
+  const sec=SECTIONS.find(s=>s.id===arg||s.title.toLowerCase()===arg.toLowerCase());
+  if(!sec){err(`cd: ${arg}: no such section`);return;}
+  cwd='/'+sec.id; nl(); cmdLs();
+}
+
+async function catGuide(slug) {
+  const guide=ALL_GUIDES.find(g=>g.slug===slug);
+  if(!guide){err(`cat: ${slug}: no such guide`);return;}
+  busy=true;
+  try {
+    const resp=await fetch(`/guides/${guide.slug}.html`);
+    if(!resp.ok) throw new Error();
+    const raw=await resp.text();
+    const html=raw.split('\n').slice(2).join('\n');
+    term.reset();
+    htmlToAnsi(html).split('\r\n').forEach(l=>wl(l));
+    requestAnimationFrame(()=>term.scrollToTop());
+  } catch(e) {
+    err(`cat: failed to load ${guide.slug}.html`);
+  } finally {
+    busy=false; nl(); writePrompt(); buf='';
+  }
+}
+
+function cmdHelp() {
+  nl();
+  [['ls','list sections or guides'],['cd <section>','enter a section'],
+   ['cd ..','back to root'],['cat <slug>','open a guide'],
+   ['github','open GitHub repo'],['clear','clear screen'],['help','show this']
+  ].forEach(([c,d])=>wl(green(c.padEnd(20))+dim(d)));
+  nl();
+}
+
+// Dispatch
+function runCmd(raw) {
+  if(busy) return;
+  const cmd=raw.trim(); nl();
+  if(!cmd){writePrompt();buf='';return;}
+  hist.unshift(cmd); hi=-1;
+  const parts=cmd.split(/\s+/), verb=parts[0].toLowerCase();
+  const arg=parts.slice(1).join(' ').replace(/\.html$/,'').trim();
+  switch(verb) {
+    case 'ls': case 'dir': nl(); cmdLs(); break;
+    case 'cd': cmdCd(arg); break;
+    case 'cat': case 'open': case 'read':
+      if(!arg){err('cat: missing filename');break;}
+      catGuide(arg); return;
+    case 'clear': case 'cls': term.reset(); writePrompt(); buf=''; return;
+    case 'help': case '?': cmdHelp(); break;
+    case 'github': case 'gh':
+      nl(); wl(cyan('opening github.com/eliekh05/guides...'));
+      setTimeout(()=>window.open('https://github.com/eliekh05/guides','_blank'),300);
+      break;
+    case 'pwd': nl(); wl(cwd==='/'?'/':'/'+cwd.slice(1)); break;
+    case 'exit': case 'quit': nl(); wl(dim('there is no exit.')); break;
+    default: err(`${verb}: command not found  (try: ls  cd  cat  help)`); break;
+  }
+  nl(); writePrompt(); buf='';
+}
+
+// Tab completion
+function tabComplete() {
+  const parts=buf.trim().split(/\s+/), verb=parts[0].toLowerCase();
+  const frag=(parts[parts.length-1]||'').toLowerCase();
+  let done=null;
+  if(verb==='cd'&&parts.length>=2) {
+    const m=SECTIONS.find(s=>s.id.startsWith(frag)); if(m) done='cd '+m.id;
+  } else if((verb==='cat'||verb==='open')&&parts.length>=2) {
+    const pool=curSec()?.guides||ALL_GUIDES;
+    const m=pool.find(g=>g.slug.startsWith(frag)); if(m) done=verb+' '+m.slug;
+  } else if(parts.length===1) {
+    const m=['ls','cd','cat','clear','help','pwd','github'].find(v=>v.startsWith(frag));
+    if(m) done=m;
+  }
+  if(done&&done!==buf){w('\b \b'.repeat(buf.length));w(done);buf=done;}
+}
+
+// Auto-suggest after 10 chars
+function autoSuggest() {
+  const parts=buf.trim().split(/\s+/), verb=parts[0].toLowerCase();
+  const frag=(parts[parts.length-1]||'').toLowerCase();
+  if(frag.length<10) return;
+  if((verb==='cat'||verb==='open')&&parts.length>=2) tabComplete();
+  else if(verb==='cd'&&parts.length>=2) tabComplete();
+}
+
+// Input
+term.onData(e=>{
+  if(busy) return;
+  if(e==='\r'){runCmd(buf);}
+  else if(e==='\x7f'){if(buf.length){buf=buf.slice(0,-1);w('\b \b');}}
+  else if(e==='\t'){tabComplete();}
+  else if(e==='\x1b[A'){if(hi<hist.length-1){hi++;w('\b \b'.repeat(buf.length));w(hist[hi]);buf=hist[hi];}}
+  else if(e==='\x1b[B'){if(hi>0){hi--;w('\b \b'.repeat(buf.length));w(hist[hi]);buf=hist[hi];}else{w('\b \b'.repeat(buf.length));hi=-1;buf='';}}
+  else if(e==='\x01'){w('\b \b'.repeat(buf.length));buf='';}
+  else if(e==='\x0c'){term.reset();writePrompt();buf='';}
+  else if(e.length===1&&e>=' '){buf+=e;w(e);autoSuggest();}
 });
 
-
-
-
-
-
-
-/* ============================================================
-   Boot banner
-============================================================ */
-
-
-function drawBanner(){
-
-
-  const count =
-    ALL_GUIDES.length;
-
-
-
-  const sections =
-    SECTIONS.filter(
-      s=>s.guides.length
-    ).length;
-
-
-
-  const width =
-    Math.max(
-      60,
-      term.cols-6
-    );
-
-
-
-  const clean =
-    text =>
-    text.replace(
-      /\x1b\[[0-9;]*m/g,
-      ""
-    );
-
-
-
-  function box(text=""){
-
-
-    const length =
-      clean(text).length;
-
-
-    return (
-      dim("  │")
-      +
-      text
-      +
-      " ".repeat(
-        Math.max(
-          0,
-          width-length
-        )
-      )
-      +
-      dim("│")
-    );
-
-
-  }
-
-
-
-  const top =
-    dim(
-      "  ┌" +
-      "─".repeat(width) +
-      "┐"
-    );
-
-
-
-  const bottom =
-    dim(
-      "  └" +
-      "─".repeat(width) +
-      "┘"
-    );
-
-
-
-  const lines=[
-
-
-    "",
-
-
-    top,
-
-
-    box(),
-
-
-    box(
-      "    "+
-      bold(
-        white(
-          "OS & Installation Guides"
-        )
-      )
-    ),
-
-
-
-    box(
-      "    "+
-      dim(
-        `${count} guides across ${sections} sections`
-      )
-    ),
-
-
-
-    box(),
-
-
-
-    box(
-      "    "+
-      dim(
-        "practical guides for problems"
-      )
-    ),
-
-
-    box(
-      "    "+
-      dim(
-        "that are hard to find online."
-      )
-    ),
-
-
-    box(),
-
-
-    bottom,
-
-
-    "",
-
-
-    "  "+
-    dim(
-      "last login: "+
-      new Date()
-      .toDateString()
-    ),
-
-
-    "",
-
-
-    "  "+
-    dim("type ")
-    +
-    green("ls")
-    +
-    dim(" to browse")
-    +
-    dim("  ·  ")
-    +
-    green("help")
-    +
-    dim(" for commands"),
-
-
-    ""
-
-  ];
-
-
-
-  lines.forEach(
-    line=>println(line)
-  );
-
-
-}
-
-
-
-
-
-/* ============================================================
-   Startup
-============================================================ */
-
-
+// Boot
 setTimeout(()=>{
-
-
-  drawBanner();
-
-
-  setTimeout(()=>{
-
-
-    printPrompt();
-
-
-  },150);
-
-
-
+  const W=Math.max(60,term.cols-4);
+  const pad=(s,w)=>{const l=s.replace(/\x1b\[[0-9;]*m/g,'').length;return s+' '.repeat(Math.max(0,w-l));};
+  const line=(s='')=>wl(dim('│')+' '+pad(s,W-4)+' '+dim('│'));
+  wl(dim('┌'+'─'.repeat(W-2)+'┐'));
+  line(); line(bold(white('OS & Installation Guides')));
+  line(dim(ALL_GUIDES.length+' guides across '+SECTIONS.filter(s=>s.guides.length).length+' sections'));
+  line();
+  line(dim('practical guides for problems that are hard to find solutions for online.'));
+  line(); line(dim('last login: '+new Date().toDateString().toLowerCase()));
+  line(); line(dim('type ')+green('ls')+dim(' to browse  ·  ')+green('help')+dim(' for all commands'));
+  line();
+  wl(dim('└'+'─'.repeat(W-2)+'┘'));
+  nl(); writePrompt();
 },100);
-
-
-
 </script>
-
 </body>
 </html>

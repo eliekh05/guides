@@ -13,6 +13,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - name: Create JS Directory
+        run: mkdir -p js
       - name: Regenerate guides-data.js
         run: node build.js
       - name: Deploy to Cloudflare Workers

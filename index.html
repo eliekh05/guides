@@ -3,243 +3,443 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>guides</title>
+<title>OS & Installation Guides</title>
+<meta name="description" content="Practical guides for problems that are hard to find solutions for online.">
 <meta name="theme-color" content="#0a0a0a">
-<link rel="stylesheet" href="/js/xterm/xterm.css">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden;background:#0a0a0a}
-body{display:flex;flex-direction:column}
-#t{flex:1;overflow:hidden;padding:6px}
-.xterm{height:100%}
-.xterm-viewport{background:#0a0a0a!important}
+
+:root{
+  --bg:#0a0a0a;
+  --bg2:#111;
+  --bg3:#161616;
+  --border:#1e1e1e;
+  --text:#e0e0e0;
+  --muted:#888;
+  --dim:#444;
+  --accent:#00cc66;
+  --blue:#79d4f0;
+  --red:#ff6b6b;
+  --yellow:#ffd060;
+  --font:'JetBrains Mono','Fira Code','Cascadia Code','SF Mono',Consolas,monospace;
+  --sidebar:240px;
+  --header:44px;
+}
+
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* HEADER */
+.hdr{position:fixed;top:0;left:0;right:0;height:var(--header);z-index:100;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;padding:0 16px}
+.hdr-logo{color:var(--accent);font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap}
+.hdr-logo span{color:var(--dim);font-weight:400}
+.hdr-search{flex:1;max-width:340px;position:relative}
+.hdr-search input{width:100%;height:28px;background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:0 10px 0 26px;font:13px var(--font);color:var(--text);outline:none;transition:border-color .15s}
+.hdr-search input:focus{border-color:var(--accent)}
+.hdr-search input::placeholder{color:var(--dim)}
+.hdr-search-icon{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--dim);font-size:11px;pointer-events:none}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.hdr-count{font-size:11px;color:var(--dim)}
+.hdr-gh{font-size:12px;color:var(--muted);text-decoration:none;transition:color .15s}
+.hdr-gh:hover{color:var(--accent)}
+.menu-btn{display:none;background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:2px 6px}
+
+/* LAYOUT */
+.layout{display:flex;padding-top:var(--header);min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);flex-shrink:0;position:fixed;top:var(--header);left:0;bottom:0;overflow-y:auto;background:#0d0d0d;border-right:1px solid var(--border);padding:10px 0 40px;scrollbar-width:thin;scrollbar-color:#222 transparent}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:#222}
+.sidebar-root{font-size:10px;color:var(--dim);padding:0 12px 8px;letter-spacing:.06em;border-bottom:1px solid var(--border);margin-bottom:6px}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;cursor:pointer;font-size:11px;color:var(--muted);transition:color .1s,background .1s;user-select:none}
+.sec-hdr:hover{color:var(--text);background:var(--bg3)}
+.sec-hdr.open{color:var(--accent)}
+.sec-label{display:flex;align-items:center;gap:4px}
+.sec-prefix{color:var(--dim)}
+.sec-hdr.open .sec-prefix{color:var(--accent);opacity:.5}
+.sec-count{font-size:10px;color:var(--dim)}
+.sec-chevron{font-size:9px;color:var(--dim);transition:transform .15s}
+.sec-hdr.open .sec-chevron{transform:rotate(90deg)}
+.sec-guides{display:none;padding-bottom:2px}
+.sec-hdr.open+.sec-guides{display:block}
+.guide-link{display:block;padding:4px 12px 4px 22px;font-size:11px;color:#777;text-decoration:none;line-height:1.5;transition:color .1s,background .1s}
+.guide-link:hover{color:var(--text);background:var(--bg3)}
+.guide-link.active{color:var(--accent);background:rgba(0,204,102,.07)}
+.guide-link.active::before{content:'▶ ';font-size:8px}
+
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;padding:0 40px}
+.content{padding:32px 0 80px;max-width:720px}
+
+/* HOME */
+.home-banner{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:20px 24px;margin-bottom:20px;font-size:12px}
+.home-banner h1{font-size:16px;color:var(--text);margin-bottom:6px;font-weight:700}
+.home-banner p{color:var(--muted);line-height:1.7}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:20px}
+.stat{background:var(--bg2);padding:12px 14px;cursor:pointer;transition:background .1s}
+.stat:hover{background:var(--bg3)}
+.stat-n{font-size:20px;font-weight:700;color:var(--accent);line-height:1;margin-bottom:2px}
+.stat-l{font-size:10px;color:var(--dim);letter-spacing:.05em;text-transform:uppercase;margin-bottom:2px}
+.stat-name{font-size:11px;color:var(--muted)}
+.notices{display:flex;flex-direction:column;gap:6px}
+.notice{padding:9px 12px;background:var(--bg2);border:1px solid var(--border);border-left:2px solid var(--dim);border-radius:0 3px 3px 0;font-size:12px;color:var(--muted);line-height:1.65}
+.notice.warn{border-left-color:var(--yellow)}
+.notice.info{border-left-color:var(--blue)}
+
+/* SECTION LIST */
+.sec-list{background:var(--bg2);border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.sec-list-item{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-bottom:1px solid var(--border);cursor:pointer;text-decoration:none;color:var(--text);transition:background .1s}
+.sec-list-item:last-child{border-bottom:none}
+.sec-list-item:hover{background:var(--bg3)}
+.sec-list-title{font-size:12px}
+.sec-list-arr{color:var(--dim);font-size:11px}
+
+/* GUIDE */
+.breadcrumb{font-size:11px;color:var(--dim);margin-bottom:18px;display:flex;align-items:center;gap:5px}
+.breadcrumb a{color:var(--muted);text-decoration:none;transition:color .1s}
+.breadcrumb a:hover{color:var(--accent)}
+
+.guide-body h1{font-size:17px;font-weight:700;color:var(--text);margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border);letter-spacing:-.01em}
+.guide-body h2{font-size:11px;font-weight:700;color:var(--accent);margin:26px 0 10px;letter-spacing:.07em;text-transform:uppercase}
+.guide-body h3{font-size:13px;font-weight:600;color:#ddd;margin:18px 0 7px}
+.guide-body p{margin-bottom:10px;font-size:13px;line-height:1.75;color:#ccc}
+.guide-body a{color:var(--accent);text-decoration:none}
+.guide-body a:hover{text-decoration:underline}
+.guide-body hr{border:none;border-top:1px solid var(--border);margin:20px 0}
+.guide-body strong{color:var(--text)}
+.guide-body blockquote{border-left:2px solid var(--dim);padding:7px 12px;margin:0 0 12px;background:var(--bg2);font-size:12px;color:var(--muted)}
+.guide-body blockquote p{margin:0;color:var(--muted)}
+
+/* UL — plain bullets */
+.guide-body ul{margin:0 0 12px 20px}
+.guide-body ul li{margin-bottom:4px;font-size:13px;color:#ccc}
+
+/* OL — checklist */
+.guide-body ol{margin:0 0 12px 0;list-style:none;counter-reset:steps}
+.guide-body ol li{counter-increment:steps;display:flex;align-items:flex-start;gap:10px;padding:7px 10px;margin-bottom:2px;background:var(--bg2);border:1px solid var(--border);border-radius:3px;font-size:13px;color:#ccc;cursor:pointer;transition:background .1s;position:relative;user-select:none}
+.guide-body ol li:hover{background:var(--bg3)}
+.guide-body ol li::before{content:counter(steps);font-size:10px;color:var(--dim);background:#1a1a1a;border:1px solid var(--border);border-radius:2px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .15s}
+.guide-body ol li.done{color:var(--dim);text-decoration:line-through}
+.guide-body ol li.done::before{content:'✓';color:var(--accent);border-color:var(--accent);background:rgba(0,204,102,.1)}
+.guide-body ol li.done *{color:var(--dim)!important}
+.guide-body ol li .step-warn{display:none;position:absolute;top:-28px;left:0;background:#1a1a1a;border:1px solid var(--yellow);border-radius:3px;padding:3px 8px;font-size:11px;color:var(--yellow);white-space:nowrap;pointer-events:none;z-index:10}
+.guide-body ol li .step-warn.show{display:block}
+
+/* CODE */
+.guide-body pre{background:#060606;border:1px solid var(--border);border-left:2px solid var(--accent);border-radius:3px;padding:12px 14px;overflow-x:auto;margin-bottom:14px;position:relative}
+.guide-body code{font-family:var(--font);font-size:12px}
+.guide-body pre code{color:#d4d4d4}
+.guide-body p code,.guide-body li code,.guide-body td code{background:#111;border:1px solid #222;border-radius:2px;padding:1px 5px;font-size:12px;color:var(--accent)}
+.copy-wrap{position:relative}
+.copy-btn{position:absolute;top:7px;right:7px;background:#1a1a1a;border:1px solid #222;border-radius:2px;padding:2px 7px;font:10px var(--font);color:var(--dim);cursor:pointer;opacity:0;transition:all .12s}
+.copy-wrap:hover .copy-btn{opacity:1}
+.copy-btn:hover{color:var(--accent);border-color:rgba(0,204,102,.3)}
+.copy-btn.ok{color:var(--accent);border-color:var(--accent);opacity:1}
+
+/* TABLE */
+.guide-body table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:12px;border:1px solid var(--border)}
+.guide-body th{background:var(--bg2);padding:6px 10px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+.guide-body td{padding:6px 10px;border-bottom:1px solid #161616;color:#ccc}
+.guide-body tr:last-child td{border-bottom:none}
+.guide-body tr:hover td{background:var(--bg2)}
+
+/* GUIDE NAV */
+.guide-nav{display:flex;gap:8px;margin-top:36px;border-top:1px solid var(--border);padding-top:18px}
+.gnav-link{flex:1;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);text-decoration:none;color:var(--text);border-radius:3px;transition:border-color .12s,background .12s}
+.gnav-link:hover{border-color:rgba(0,204,102,.25);background:var(--bg3)}
+.gnav-link.next{text-align:right}
+.gnav-lbl{font-size:10px;color:var(--dim);margin-bottom:2px;letter-spacing:.04em}
+.gnav-title{font-size:12px;color:#ccc}
+
+/* SEARCH RESULTS */
+.search-drop{display:none;position:fixed;top:var(--header);left:50%;transform:translateX(-50%);width:480px;max-width:calc(100vw - 32px);background:var(--bg2);border:1px solid var(--border);border-top:none;max-height:380px;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,.7);z-index:200}
+.search-drop.open{display:block}
+.search-overlay{display:none;position:fixed;inset:0;top:var(--header);z-index:190}
+.search-overlay.open{display:block}
+.sr-item{display:block;padding:9px 14px;border-bottom:1px solid #161616;text-decoration:none;color:var(--text);transition:background .1s}
+.sr-item:last-child{border-bottom:none}
+.sr-item:hover{background:var(--bg3)}
+.sr-title{font-size:12px;margin-bottom:2px}
+.sr-sec{font-size:10px;color:var(--dim);letter-spacing:.04em}
+.sr-empty{padding:20px;color:var(--dim);font-size:12px;text-align:center}
+
+/* MOBILE */
+@media(max-width:768px){
+  :root{--sidebar:0px}
+  .menu-btn{display:block}
+  .sidebar{width:260px;left:-260px;transition:left .2s ease;z-index:99}
+  .sidebar.open{left:0;box-shadow:4px 0 24px rgba(0,0,0,.6)}
+  .main{margin-left:0;padding:0 16px}
+  .stats{grid-template-columns:1fr 1fr}
+  .hdr-count{display:none}
+}
+.mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:98}
+.mob-overlay.open{display:block}
 </style>
 </head>
 <body>
-<div id="t"></div>
-<script src="/js/xterm/xterm.js"></script>
-<script src="/js/xterm/addon-fit.js"></script>
-<script src="/js/xterm/addon-web-links.js"></script>
+
+<header class="hdr">
+  <button class="menu-btn" id="menuBtn">☰</button>
+  <a class="hdr-logo" href="/" onclick="return nav('/')"><span>~/</span>guides</a>
+  <div class="hdr-search">
+    <span class="hdr-search-icon">⌕</span>
+    <input type="search" id="searchInput" placeholder="search guides... (⌘K)" autocomplete="off" spellcheck="false">
+  </div>
+  <div class="hdr-right">
+    <span class="hdr-count" id="hdrCount"></span>
+    <a class="hdr-gh" href="https://github.com/eliekh05/guides" target="_blank" rel="noopener">github ↗</a>
+  </div>
+</header>
+
+<div class="mob-overlay" id="mobOverlay"></div>
+<div class="search-overlay" id="searchOverlay"></div>
+<div class="search-drop" id="searchDrop"></div>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <main class="main">
+    <div class="content" id="content"></div>
+  </main>
+</div>
+
 <script src="/js/guides-data.js"></script>
 <script>
-const term = new Terminal({
-  fontFamily:"'JetBrains Mono','Fira Code','Cascadia Code','SF Mono',Consolas,monospace",
-  fontSize:13, lineHeight:1.5, cursorBlink:true, cursorStyle:'block',
-  scrollback:5000, convertEol:true, copyOnSelect:true, macOptionIsMeta:true,
-  theme:{
-    background:'#0a0a0a', foreground:'#e0e0e0', cursor:'#00cc66', cursorAccent:'#0a0a0a',
-    black:'#0a0a0a', brightBlack:'#333', white:'#e0e0e0', brightWhite:'#f0f0f0',
-    green:'#00cc66', brightGreen:'#00ff87', cyan:'#79d4f0', brightCyan:'#79d4f0',
-    red:'#ff6b6b', brightRed:'#ff6b6b', yellow:'#ffd060', blue:'#79d4f0', magenta:'#c792ea',
-  },
-});
-const fit = new FitAddon.FitAddon();
-term.loadAddon(fit);
-term.loadAddon(new WebLinksAddon.WebLinksAddon());
-term.open(document.getElementById('t'));
-fit.fit();
-window.addEventListener('resize', () => fit.fit());
+// ── Router ────────────────────────────────────────────────────────────────
+function nav(path, push=true) {
+  if(push) history.pushState({},''  ,path);
+  const p=path;
+  if(p==='/'||p==='') showHome();
+  else if(p.startsWith('/s/')) showSection(p.slice(3));
+  else if(p.startsWith('/g/')) showGuide(p.slice(3));
+  else showHome();
+  window.scrollTo(0,0);
+  closeMob();
+  return false;
+}
+window.addEventListener('popstate',()=>nav(location.pathname,false));
 
-// ANSI
-const R='\x1b[0m',DIM='\x1b[2m',BOLD='\x1b[1m';
-const GREEN='\x1b[32m',CYAN='\x1b[36m',BCYAN='\x1b[96m';
-const RED='\x1b[31m',YELLOW='\x1b[33m',WHITE='\x1b[37m';
-const dim=s=>DIM+s+R, bold=s=>BOLD+s+R, green=s=>GREEN+s+R;
-const cyan=s=>CYAN+s+R, bcyan=s=>BCYAN+s+R, red=s=>RED+s+R;
-const yellow=s=>YELLOW+s+R, white=s=>WHITE+s+R;
+// ── Sidebar ───────────────────────────────────────────────────────────────
+function buildSidebar() {
+  const sb=document.getElementById('sidebar');
+  sb.innerHTML='<div class="sidebar-root">~/guides/</div>';
+  SECTIONS.filter(s=>s.guides.length).forEach(s=>{
+    const id='sec-'+s.id;
+    const hdr=document.createElement('div');
+    hdr.className='sec-hdr';
+    hdr.innerHTML=`<span class="sec-label"><span class="sec-prefix">./</span>${s.id}</span><span style="display:flex;align-items:center;gap:5px"><span class="sec-count">${s.guides.length}</span><span class="sec-chevron">›</span></span>`;
+    hdr.onclick=()=>{hdr.classList.toggle('open');list.style.display=hdr.classList.contains('open')?'block':'none';};
+    const list=document.createElement('div');
+    list.className='sec-guides';
+    s.guides.forEach(g=>{
+      const a=document.createElement('a');
+      a.className='guide-link'; a.id='nav-'+g.slug;
+      a.href='/g/'+g.slug; a.textContent=g.title;
+      a.onclick=e=>{e.preventDefault();nav('/g/'+g.slug);};
+      list.appendChild(a);
+    });
+    sb.appendChild(hdr); sb.appendChild(list);
+  });
+  document.getElementById('hdrCount').textContent=ALL_GUIDES.length+' guides';
+}
 
-// State
-let cwd='/', buf='', hist=[], hi=-1, busy=false;
-
-// Write helpers
-const wl=s=>term.writeln(s??'');
-const w=s=>term.write(s??'');
-const nl=()=>term.writeln('');
-const err=s=>wl(red(s));
-const prompt=()=>green(cwd==='/'?'$':cwd.slice(1)+' $')+' ';
-const writePrompt=()=>w(prompt());
-
-// Copy / Paste
-term.attachCustomKeyEventHandler(e => {
-  if ((e.metaKey||(e.ctrlKey&&e.shiftKey)) && e.key==='c' && e.type==='keydown') {
-    const s=term.getSelection(); if(s) navigator.clipboard.writeText(s); return false;
-  }
-  if ((e.metaKey||(e.ctrlKey&&e.shiftKey)) && e.key==='v' && e.type==='keydown') {
-    navigator.clipboard.readText().then(t=>{
-      if(!t) return;
-      for(const ch of t) { if(ch==='\n'||ch==='\r') runCmd(buf); else {buf+=ch;w(ch);} }
-    }).catch(()=>{});
-    return false;
-  }
-  return true;
-});
-
-// HTML → ANSI
-function htmlToAnsi(html) {
-  const d=document.createElement('div'); d.innerHTML=html;
-  function walk(n) {
-    if(n.nodeType===3) return n.textContent;
-    const tag=(n.tagName||'').toLowerCase();
-    const ch=Array.from(n.childNodes).map(walk).join('');
-    switch(tag) {
-      case 'h1': return '\r\n'+bold(WHITE+ch+R)+'\r\n'+dim('─'.repeat(Math.min(ch.length,56)))+'\r\n';
-      case 'h2': return '\r\n'+green(ch.toUpperCase())+'\r\n';
-      case 'h3': return '\r\n'+bold(ch)+'\r\n';
-      case 'p':  return ch+'\r\n';
-      case 'ul': case 'ol': return ch;
-      case 'li': return '  '+dim('·')+' '+ch+'\r\n';
-      case 'code': return n.closest&&n.closest('pre') ? ch : green(ch);
-      case 'pre': return '\r\n'+ch.split('\n').map(l=>'  '+bcyan(l)).join('\r\n')+'\r\n';
-      case 'strong': case 'b': return bold(ch);
-      case 'a': {
-        const href=n.getAttribute&&n.getAttribute('href');
-        if(href&&href.startsWith('magnet:')) return yellow('[magnet] ')+cyan(href);
-        return cyan(ch);
-      }
-      case 'blockquote': return dim('  | '+ch.trim())+'\r\n';
-      case 'br': return '\r\n';
-      case 'hr': return dim('─'.repeat(40))+'\r\n';
-      case 'th': return dim(ch.toUpperCase().padEnd(22));
-      case 'td': return ch.padEnd(22);
-      case 'tr': return ch+'\r\n';
-      case 'table': return '\r\n'+ch+'\r\n';
-      case 'thead': return dim(ch);
-      case 'tbody': return ch;
-      default: return ch;
+function setActive(slug) {
+  document.querySelectorAll('.guide-link').forEach(a=>a.classList.toggle('active',a.id==='nav-'+slug));
+  if(slug) {
+    const a=document.getElementById('nav-'+slug);
+    if(a) {
+      // open parent section
+      const list=a.closest('.sec-guides');
+      if(list){list.style.display='block';list.previousElementSibling.classList.add('open');}
+      a.scrollIntoView({block:'nearest'});
     }
   }
-  return walk(d);
 }
 
-// Commands
-function curSec() { return cwd==='/' ? null : SECTIONS.find(s=>s.id===cwd.slice(1)); }
-
-function cmdLs() {
-  if(cwd==='/') {
-    SECTIONS.filter(s=>s.guides.length).forEach(s=>wl(cyan(s.id+'/')+dim('  '+s.guides.length)));
-  } else {
-    const sec=curSec(); if(!sec){err('ls: no such section');return;}
-    sec.guides.forEach(g=>wl(dim(g.slug.padEnd(52))+' '+g.title));
-  }
+// ── Home ──────────────────────────────────────────────────────────────────
+function showHome() {
+  document.title='OS & Installation Guides';
+  setActive(null);
+  const statsHTML=SECTIONS.filter(s=>s.guides.length).map(s=>`
+    <div class="stat" onclick="nav('/s/${s.id}')">
+      <div class="stat-l">section</div>
+      <div class="stat-n">${s.guides.length}</div>
+      <div class="stat-name">${s.title}</div>
+    </div>`).join('');
+  document.getElementById('content').innerHTML=`
+    <div class="home-banner">
+      <h1>OS & Installation Guides</h1>
+      <p>Practical guides for problems that are hard to find solutions for online.<br>Use the sidebar or search to find a guide.</p>
+    </div>
+    <div class="stats">${statsHTML}</div>
+    <div class="notices">
+      <div class="notice warn">Read everything before typing any command. If you do not understand what a command does, you are not ready to run it.</div>
+      <div class="notice info">Guides are written from real experience and official docs — steps may differ depending on your hardware, OS version, or configuration.</div>
+    </div>`;
 }
 
-function cmdCd(arg) {
-  if(!arg||arg==='~'||arg==='/'||arg==='..'){cwd='/';return;}
-  const sec=SECTIONS.find(s=>s.id===arg||s.title.toLowerCase()===arg.toLowerCase());
-  if(!sec){err(`cd: ${arg}: no such section`);return;}
-  cwd='/'+sec.id; nl(); cmdLs();
+// ── Section ───────────────────────────────────────────────────────────────
+function showSection(id) {
+  const sec=SECTIONS.find(s=>s.id===id);
+  if(!sec){showHome();return;}
+  document.title=sec.title+' — Guides';
+  setActive(null);
+  const items=sec.guides.map(g=>`
+    <a class="sec-list-item" href="/g/${g.slug}" onclick="return nav('/g/${g.slug}')">
+      <span class="sec-list-title">${g.title}</span>
+      <span class="sec-list-arr">→</span>
+    </a>`).join('');
+  document.getElementById('content').innerHTML=`
+    <div class="breadcrumb">
+      <a href="/" onclick="return nav('/')">~</a><span>/</span>
+      <span style="color:var(--accent)">${id}/</span>
+    </div>
+    <div class="guide-body"><h1>${sec.title} <span style="font-size:13px;color:var(--muted);font-weight:400">(${sec.guides.length})</span></h1></div>
+    <div class="sec-list">${items}</div>`;
 }
 
-async function catGuide(slug) {
+// ── Guide ─────────────────────────────────────────────────────────────────
+async function showGuide(slug) {
   const guide=ALL_GUIDES.find(g=>g.slug===slug);
-  if(!guide){err(`cat: ${slug}: no such guide`);return;}
-  busy=true;
+  if(!guide){showHome();return;}
+  const sec=SECTIONS.find(s=>s.guides.some(g=>g.slug===slug));
+  setActive(slug);
+  document.title=guide.title+' — Guides';
+  document.getElementById('content').innerHTML='<div style="padding:40px 0;color:var(--dim);font-size:12px">loading...</div>';
   try {
-    const resp=await fetch(`/guides/${guide.slug}.html`);
+    const resp=await fetch('/guides/'+slug+'.html');
     if(!resp.ok) throw new Error();
     const raw=await resp.text();
     const html=raw.split('\n').slice(2).join('\n');
-    term.reset();
-    htmlToAnsi(html).split('\r\n').forEach(l=>wl(l));
-    requestAnimationFrame(()=>term.scrollToTop());
+    const secPath=sec?`<a href="/s/${sec.id}" onclick="return nav('/s/${sec.id}')">${sec.id}</a>`:'';
+    document.getElementById('content').innerHTML=`
+      <div class="breadcrumb">
+        <a href="/" onclick="return nav('/')">~</a><span>/</span>
+        ${secPath}<span>/</span>
+        <span style="color:var(--muted)">${slug}</span>
+      </div>
+      <div class="guide-body" id="guide-body">${html}</div>
+      <div id="gnav"></div>`;
+    addCopyBtns();
+    addChecklist();
+    buildGuideNav(slug,sec);
   } catch(e) {
-    err(`cat: failed to load ${guide.slug}.html`);
-  } finally {
-    busy=false; nl(); writePrompt(); buf='';
+    document.getElementById('content').innerHTML=`<div style="padding:40px 0"><div style="color:var(--red);font-size:12px;margin-bottom:8px">error: could not load guide</div><a href="/" onclick="return nav('/')" style="color:var(--accent);font-size:12px">go home</a></div>`;
   }
 }
 
-function cmdHelp() {
-  nl();
-  [['ls','list sections or guides'],['cd <section>','enter a section'],
-   ['cd ..','back to root'],['cat <slug>','open a guide'],
-   ['github','open GitHub repo'],['clear','clear screen'],['help','show this']
-  ].forEach(([c,d])=>wl(green(c.padEnd(20))+dim(d)));
-  nl();
+// ── Checklist ─────────────────────────────────────────────────────────────
+function addChecklist() {
+  document.querySelectorAll('.guide-body ol').forEach(ol=>{
+    const items=[...ol.querySelectorAll('li')];
+    items.forEach((li,i)=>{
+      // add warning span
+      const warn=document.createElement('span');
+      warn.className='step-warn';
+      warn.textContent=`Complete step ${i} first`;
+      li.insertBefore(warn,li.firstChild);
+      li.addEventListener('click',()=>{
+        if(li.classList.contains('done')){li.classList.remove('done');return;}
+        // check all previous steps are done
+        const prev=items.slice(0,i).filter(p=>!p.classList.contains('done'));
+        if(prev.length>0) {
+          warn.classList.add('show');
+          setTimeout(()=>warn.classList.remove('show'),2000);
+          // scroll to first incomplete
+          prev[0].scrollIntoView({block:'nearest',behavior:'smooth'});
+          return;
+        }
+        li.classList.add('done');
+      });
+    });
+  });
 }
 
-// Dispatch
-function runCmd(raw) {
-  if(busy) return;
-  const cmd=raw.trim(); nl();
-  if(!cmd){writePrompt();buf='';return;}
-  hist.unshift(cmd); hi=-1;
-  const parts=cmd.split(/\s+/), verb=parts[0].toLowerCase();
-  const arg=parts.slice(1).join(' ').replace(/\.html$/,'').trim();
-  switch(verb) {
-    case 'ls': case 'dir': nl(); cmdLs(); break;
-    case 'cd': cmdCd(arg); break;
-    case 'cat': case 'open': case 'read':
-      if(!arg){err('cat: missing filename');break;}
-      catGuide(arg); return;
-    case 'clear': case 'cls': term.reset(); writePrompt(); buf=''; return;
-    case 'help': case '?': cmdHelp(); break;
-    case 'github': case 'gh':
-      nl(); wl(cyan('opening github.com/eliekh05/guides...'));
-      setTimeout(()=>window.open('https://github.com/eliekh05/guides','_blank'),300);
-      break;
-    case 'pwd': nl(); wl(cwd==='/'?'/':'/'+cwd.slice(1)); break;
-    case 'exit': case 'quit': nl(); wl(dim('there is no exit.')); break;
-    default: err(`${verb}: command not found  (try: ls  cd  cat  help)`); break;
-  }
-  nl(); writePrompt(); buf='';
+// ── Copy buttons ──────────────────────────────────────────────────────────
+function addCopyBtns() {
+  document.querySelectorAll('.guide-body pre').forEach(pre=>{
+    const wrap=document.createElement('div');
+    wrap.className='copy-wrap';
+    pre.parentNode.insertBefore(wrap,pre);
+    wrap.appendChild(pre);
+    const btn=document.createElement('button');
+    btn.className='copy-btn'; btn.textContent='copy';
+    btn.onclick=()=>{
+      navigator.clipboard.writeText(pre.querySelector('code')?.textContent||pre.textContent).then(()=>{
+        btn.textContent='copied!'; btn.classList.add('ok');
+        setTimeout(()=>{btn.textContent='copy';btn.classList.remove('ok');},1500);
+      });
+    };
+    wrap.appendChild(btn);
+  });
 }
 
-// Tab completion
-function tabComplete() {
-  const parts=buf.trim().split(/\s+/), verb=parts[0].toLowerCase();
-  const frag=(parts[parts.length-1]||'').toLowerCase();
-  let done=null;
-  if(verb==='cd'&&parts.length>=2) {
-    const m=SECTIONS.find(s=>s.id.startsWith(frag)); if(m) done='cd '+m.id;
-  } else if((verb==='cat'||verb==='open')&&parts.length>=2) {
-    const pool=curSec()?.guides||ALL_GUIDES;
-    const m=pool.find(g=>g.slug.startsWith(frag)); if(m) done=verb+' '+m.slug;
-  } else if(parts.length===1) {
-    const m=['ls','cd','cat','clear','help','pwd','github'].find(v=>v.startsWith(frag));
-    if(m) done=m;
-  }
-  if(done&&done!==buf){w('\b \b'.repeat(buf.length));w(done);buf=done;}
+// ── Guide nav ─────────────────────────────────────────────────────────────
+function buildGuideNav(slug,sec) {
+  if(!sec) return;
+  const idx=sec.guides.findIndex(g=>g.slug===slug);
+  const prev=idx>0?sec.guides[idx-1]:null;
+  const next=idx<sec.guides.length-1?sec.guides[idx+1]:null;
+  if(!prev&&!next) return;
+  document.getElementById('gnav').innerHTML=`
+    <div class="guide-nav">
+      ${prev?`<a class="gnav-link prev" href="/g/${prev.slug}" onclick="return nav('/g/${prev.slug}')"><div class="gnav-lbl">← prev</div><div class="gnav-title">${prev.title}</div></a>`:'<div></div>'}
+      ${next?`<a class="gnav-link next" href="/g/${next.slug}" onclick="return nav('/g/${next.slug}')"><div class="gnav-lbl">next →</div><div class="gnav-title">${next.title}</div></a>`:'<div></div>'}
+    </div>`;
 }
 
-// Auto-suggest after 10 chars
-function autoSuggest() {
-  const parts=buf.trim().split(/\s+/), verb=parts[0].toLowerCase();
-  const frag=(parts[parts.length-1]||'').toLowerCase();
-  if(frag.length<10) return;
-  if((verb==='cat'||verb==='open')&&parts.length>=2) tabComplete();
-  else if(verb==='cd'&&parts.length>=2) tabComplete();
-}
+// ── Search ────────────────────────────────────────────────────────────────
+const searchInput=document.getElementById('searchInput');
+const searchDrop=document.getElementById('searchDrop');
+const searchOverlay=document.getElementById('searchOverlay');
 
-// Input
-term.onData(e=>{
-  if(busy) return;
-  if(e==='\r'){runCmd(buf);}
-  else if(e==='\x7f'){if(buf.length){buf=buf.slice(0,-1);w('\b \b');}}
-  else if(e==='\t'){tabComplete();}
-  else if(e==='\x1b[A'){if(hi<hist.length-1){hi++;w('\b \b'.repeat(buf.length));w(hist[hi]);buf=hist[hi];}}
-  else if(e==='\x1b[B'){if(hi>0){hi--;w('\b \b'.repeat(buf.length));w(hist[hi]);buf=hist[hi];}else{w('\b \b'.repeat(buf.length));hi=-1;buf='';}}
-  else if(e==='\x01'){w('\b \b'.repeat(buf.length));buf='';}
-  else if(e==='\x0c'){term.reset();writePrompt();buf='';}
-  else if(e.length===1&&e>=' '){buf+=e;w(e);autoSuggest();}
+function hl(t,q){return t.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark style="background:rgba(0,204,102,.15);color:var(--accent)">$1</mark>');}
+
+searchInput.addEventListener('input',()=>{
+  const q=searchInput.value.trim().toLowerCase();
+  if(q.length<2){searchDrop.classList.remove('open');searchOverlay.classList.remove('open');return;}
+  const words=q.split(/\s+/);
+  const results=ALL_GUIDES.map(g=>{
+    const t=g.title.toLowerCase();
+    let sc=0;
+    if(t===q) sc=100;
+    else if(t.startsWith(q)) sc=80;
+    else if(words.every(w=>t.includes(w))) sc=60;
+    else if(t.includes(q)) sc=50;
+    else sc=words.filter(w=>t.includes(w)).length*15;
+    if(!sc&&g.preview?.toLowerCase().includes(q)) sc=5;
+    return{g,sc};
+  }).filter(x=>x.sc>0).sort((a,b)=>b.sc-a.sc).slice(0,10).map(x=>x.g);
+  searchDrop.innerHTML=results.length?results.map(g=>`
+    <a class="sr-item" href="/g/${g.slug}" onclick="closeSearch();return nav('/g/${g.slug}')">
+      <div class="sr-title">${hl(g.title,q)}</div>
+      <div class="sr-sec">${g.parent.toLowerCase()}</div>
+    </a>`).join(''):'<div class="sr-empty">no results</div>';
+  searchDrop.classList.add('open');
+  searchOverlay.classList.add('open');
 });
 
-// Boot
-setTimeout(()=>{
-  const W=Math.max(60,term.cols-4);
-  const pad=(s,w)=>{const l=s.replace(/\x1b\[[0-9;]*m/g,'').length;return s+' '.repeat(Math.max(0,w-l));};
-  const line=(s='')=>wl(dim('│')+' '+pad(s,W-4)+' '+dim('│'));
-  wl(dim('┌'+'─'.repeat(W-2)+'┐'));
-  line(); line(bold(white('OS & Installation Guides')));
-  line(dim(ALL_GUIDES.length+' guides across '+SECTIONS.filter(s=>s.guides.length).length+' sections'));
-  line();
-  line(dim('practical guides for problems that are hard to find solutions for online.'));
-  line(); line(dim('last login: '+new Date().toDateString().toLowerCase()));
-  line(); line(dim('type ')+green('ls')+dim(' to browse  ·  ')+green('help')+dim(' for all commands'));
-  line();
-  wl(dim('└'+'─'.repeat(W-2)+'┘'));
-  nl(); writePrompt();
-},100);
+searchInput.addEventListener('keydown',e=>{ if(e.key==='Escape') closeSearch(); });
+searchOverlay.addEventListener('click',closeSearch);
+document.addEventListener('keydown',e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();searchInput.focus();searchInput.select();}
+});
+function closeSearch(){searchDrop.classList.remove('open');searchOverlay.classList.remove('open');}
+
+// ── Mobile ────────────────────────────────────────────────────────────────
+document.getElementById('menuBtn').addEventListener('click',()=>{
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('mobOverlay').classList.toggle('open');
+});
+document.getElementById('mobOverlay').addEventListener('click',closeMob);
+function closeMob(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('mobOverlay').classList.remove('open');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+buildSidebar();
+nav(location.pathname,false);
 </script>
 </body>
 </html>

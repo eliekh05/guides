@@ -1,0 +1,109 @@
+<!-- windows:Windows -->
+<h1>Windows Terminal — Setup and Customization</h1>
+
+<p>Windows Terminal is Microsoft's modern terminal — it supports multiple tabs, panes, GPU rendering, and full Unicode. It replaced the old Command Prompt and PowerShell windows and is the best terminal experience on Windows.</p>
+
+<h2>Install</h2>
+
+<pre><code># Via winget
+winget install Microsoft.WindowsTerminal
+
+# Or download from Microsoft Store — search "Windows Terminal"</code></pre>
+
+<h2>Set as Default Terminal</h2>
+
+<pre><code>Settings → Startup → Default terminal application → Windows Terminal</code></pre>
+
+<p>After this, clicking "Open in Terminal" in File Explorer, or launching CMD or PowerShell, opens in Windows Terminal instead of the old windows.</p>
+
+<h2>Keyboard Shortcuts</h2>
+
+<table>
+<thead>
+<tr><th>Shortcut</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>Ctrl+Shift+T</td><td>New tab</td></tr>
+<tr><td>Ctrl+Shift+D</td><td>Duplicate tab</td></tr>
+<tr><td>Ctrl+Tab</td><td>Next tab</td></tr>
+<tr><td>Ctrl+Shift+W</td><td>Close tab</td></tr>
+<tr><td>Alt+Shift+D</td><td>Split pane (horizontal)</td></tr>
+<tr><td>Alt+Shift+Plus</td><td>Split pane (vertical)</td></tr>
+<tr><td>Alt+Arrow</td><td>Move between panes</td></tr>
+<tr><td>Ctrl+Shift+P</td><td>Command palette</td></tr>
+<tr><td>Ctrl+Shift+F</td><td>Find in terminal</td></tr>
+<tr><td>Ctrl+,</td><td>Open settings</td></tr>
+</tbody>
+</table>
+
+<h2>Install Oh My Posh (Prompt Customization)</h2>
+
+<pre><code># Install Oh My Posh
+winget install JanDeDobbeleer.OhMyPosh
+
+# Install a Nerd Font (required for icons)
+oh-my-posh font install</code></pre>
+
+<p>Select a font (Meslo LGM NF is popular), then set it in Windows Terminal settings → Profiles → Defaults → Font face.</p>
+
+<pre><code># Add to PowerShell profile
+notepad $PROFILE
+
+# Add this line:
+oh-my-posh init pwsh | Invoke-Expression</code></pre>
+
+<h2>Install PSReadLine (Better PowerShell Experience)</h2>
+
+<pre><code># Install
+Install-Module PSReadLine -Force
+
+# Add to $PROFILE:
+Set-PSReadLineOption -PredictionSource History
+Set-PSReadLineOption -PredictionViewStyle ListView
+Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete</code></pre>
+
+<p>PSReadLine adds inline command history predictions (type the start of a previous command, press right arrow to complete it) and tab completion with a menu.</p>
+
+<h2>settings.json Key Options</h2>
+
+<pre><code># Open settings.json via:
+# Settings → Open JSON file (bottom left)
+
+{
+  "defaultProfile": "{PowerShell GUID}",
+  "copyOnSelect": true,
+  "profiles": {
+    "defaults": {
+      "font": {
+        "face": "MesloLGM Nerd Font",
+        "size": 12
+      },
+      "opacity": 95,
+      "useAcrylic": true,
+      "colorScheme": "One Half Dark",
+      "cursorShape": "filledBox",
+      "padding": "8"
+    }
+  }
+}</code></pre>
+
+<h2>Add Git Bash as a Profile</h2>
+
+<ol>
+<li>Settings → Add a new profile → New empty profile</li>
+<li>Name: Git Bash</li>
+<li>Command line: <code>C:\Program Files\Git\bin\bash.exe --login -i</code></li>
+<li>Starting directory: <code>%USERPROFILE%</code></li>
+</ol>
+
+<h2>Add WSL as a Profile</h2>
+
+<p>If WSL is installed, Windows Terminal auto-detects it and adds it as a profile. If not:</p>
+<ol>
+<li>Settings → Add a new profile</li>
+<li>Command line: <code>wsl.exe -d Ubuntu</code></li>
+</ol>
+
+<h2>Color Schemes</h2>
+
+<p>Built-in schemes: One Half Dark, Campbell, Solarized Dark, Tango Dark. Browse community themes at <a href="https://windowsterminalthemes.dev">https://windowsterminalthemes.dev</a> — copy the JSON and add to <code>schemes</code> array in settings.json.</p>

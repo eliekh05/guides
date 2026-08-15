@@ -1,0 +1,125 @@
+<!-- linux:Linux -->
+<h1>Fix Nvidia Driver Issues on Linux</h1>
+
+<p>Nvidia on Linux has a reputation for being difficult. Most problems fall into a few categories — wrong driver version, module not loading, or Wayland compatibility issues.</p>
+
+<h2>Check Current Driver Status</h2>
+
+<pre><code># Check if Nvidia module is loaded
+lsmod | grep nvidia
+
+# Check GPU detection and driver version
+nvidia-smi
+
+# Check what driver package is installed
+dpkg -l | grep nvidia        # Ubuntu/Debian
+rpm -qa | grep nvidia        # Fedora/RHEL</code></pre>
+
+<h2>Install Nvidia Drivers on Ubuntu/Debian</h2>
+
+<pre><code># Find recommended driver version
+ubuntu-drivers devices
+
+# Install automatically (recommended)
+sudo ubuntu-drivers autoinstall
+
+# Or install a specific version
+sudo apt install nvidia-driver-560
+
+sudo reboot</code></pre>
+
+<h2>Install Nvidia Drivers on Fedora</h2>
+
+<pre><code># Enable RPM Fusion
+sudo dnf install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+sudo dnf install https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+
+# Install drivers
+sudo dnf install akmod-nvidia xorg-x11-drv-nvidia-cuda
+
+# Wait for kernel module to build (important — do not reboot yet)
+sudo akmods --force
+sudo dracut --force
+sudo reboot</code></pre>
+
+<h2>Install Nvidia Drivers on Arch</h2>
+
+<pre><code># For current kernel
+sudo pacman -S nvidia nvidia-utils nvidia-settings
+
+# For LTS kernel
+sudo pacman -S nvidia-lts
+
+# Rebuild initramfs
+sudo mkinitcpio -P
+sudo reboot</code></pre>
+
+<h2>Fix Black Screen After Installing Drivers</h2>
+
+<p>Boot to TTY: at login screen press Ctrl+Alt+F2.</p>
+
+<pre><code># Check for driver errors
+journalctl -b | grep -i nvidia | tail -30
+
+# Check Xorg logs
+cat /var/log/Xorg.0.log | grep -i "(EE)"</code></pre>
+
+<p>Common fix — remove conflicting nouveau driver:</p>
+
+<pre><code># Blacklist nouveau
+echo "blacklist nouveau" | sudo tee /etc/modprobe.d/blacklist-nouveau.conf
+echo "options nouveau modeset=0" | sudo tee -a /etc/modprobe.d/blacklist-nouveau.conf
+sudo update-initramfs -u    # Ubuntu/Debian
+sudo dracut --force          # Fedora
+sudo reboot</code></pre>
+
+<h2>Nvidia on Wayland</h2>
+
+<p>Nvidia Wayland support improved significantly with driver version 555+ (released 2024). If you are on an older driver, Wayland may not work properly.</p>
+
+<pre><code># Check driver version — need 555+ for good Wayland support
+nvidia-smi | grep "Driver Version"
+
+# Enable DRM kernel mode setting (required for Wayland)
+sudo nano /etc/modprobe.d/nvidia.conf</code></pre>
+
+<pre><code>options nvidia-drm modeset=1 fbdev=1</code></pre>
+
+<pre><code>sudo update-initramfs -u    # Ubuntu/Debian
+sudo dracut --force          # Fedora
+sudo reboot</code></pre>
+
+<h2>Fix Tearing on X11</h2>
+
+<pre><code>sudo nano /etc/X11/xorg.conf.d/20-nvidia.conf</code></pre>
+
+<pre><code>Section "Device"
+    Identifier "Nvidia Card"
+    Driver "nvidia"
+    Option "NoLogo" "true"
+    Option "TripleBuffer" "true"
+    Option "ForceFullCompositionPipeline" "true"
+EndSection</code></pre>
+
+<h2>Switch Between Nvidia and Integrated GPU (Laptops)</h2>
+
+<pre><code># Install nvidia-prime
+sudo apt install nvidia-prime    # Ubuntu/Debian
+
+# Use Nvidia GPU
+sudo prime-select nvidia
+
+# Use integrated GPU (Intel/AMD — saves battery)
+sudo prime-select intel
+
+sudo reboot</code></pre>
+
+<h2>Check DKMS Module Status After Kernel Update</h2>
+
+<pre><code># Check if Nvidia module built for current kernel
+dkms status
+
+# Rebuild if missing
+sudo dkms autoinstall
+sudo update-initramfs -u
+sudo reboot</code></pre>

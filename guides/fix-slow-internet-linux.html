@@ -1,0 +1,118 @@
+<!-- networking:Networking & DNS -->
+<h1>Fix Slow Internet on Linux</h1>
+
+<p>Slow internet on Linux is usually one of four things — DNS, Wi-Fi driver issues, network settings not optimised, or a specific app throttling. Work through these in order.</p>
+
+<h2>Confirm the Problem Is the OS, Not the Connection</h2>
+
+<pre><code># Test download speed from terminal
+curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python3 -
+
+# Or install speedtest-cli
+pip install speedtest-cli
+speedtest
+
+# Or use fast.com from terminal
+curl -s https://raw.githubusercontent.com/sindresorhus/fast-cli/main/fast | node</code></pre>
+
+<p>Compare with a speed test on another device on the same network. If other devices are fast and Linux is slow, it is a Linux configuration issue.</p>
+
+<h2>Fix DNS — Most Common Cause of Slow Browsing</h2>
+
+<pre><code># Test DNS resolution speed
+time dig google.com @8.8.8.8      # Google DNS
+time dig google.com @1.1.1.1      # Cloudflare DNS
+time dig google.com               # Current DNS
+
+# Check what DNS server you are using
+resolvectl status | grep "DNS Servers"
+# or
+cat /etc/resolv.conf</code></pre>
+
+<p>Switch to a faster DNS server:</p>
+
+<pre><code># NetworkManager — change DNS via settings
+nmcli con show                    # list connections
+nmcli con mod "CONNECTION-NAME" ipv4.dns "1.1.1.1 8.8.8.8"
+nmcli con up "CONNECTION-NAME"
+
+# Flush DNS cache
+sudo resolvectl flush-caches</code></pre>
+
+<h2>Wi-Fi — Check for Driver Issues</h2>
+
+<pre><code># Check Wi-Fi interface and signal strength
+iwconfig
+iwconfig wlan0 | grep -E "Bit Rate|Signal level|Link Quality"
+
+# Check for driver errors
+dmesg | grep -i "wifi\|wlan\|wireless\|80211" | tail -20
+
+# Check what driver is in use
+lspci -k | grep -A3 "Network controller"
+# or for USB Wi-Fi
+lsusb | grep -i wireless</code></pre>
+
+<h2>Disable Wi-Fi Power Saving</h2>
+
+<p>Power saving puts the Wi-Fi adapter to sleep between packets — causes high latency and slow speeds especially on Intel Wi-Fi cards.</p>
+
+<pre><code># Check current power management state
+iwconfig wlan0 | grep "Power Management"
+
+# Disable power saving
+sudo iwconfig wlan0 power off
+
+# Make it permanent
+sudo nano /etc/NetworkManager/conf.d/wifi-powersave.conf</code></pre>
+
+<pre><code>[connection]
+wifi.powersave = 2</code></pre>
+
+<pre><code>sudo systemctl restart NetworkManager</code></pre>
+
+<h2>Enable BBR Congestion Control</h2>
+
+<p>BBR is a modern TCP congestion control algorithm that improves throughput on high-latency connections.</p>
+
+<pre><code># Check current algorithm
+sysctl net.ipv4.tcp_congestion_control
+
+# Enable BBR
+echo "net.core.default_qdisc=fq" | sudo tee -a /etc/sysctl.conf
+echo "net.ipv4.tcp_congestion_control=bbr" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+
+# Verify
+sysctl net.ipv4.tcp_congestion_control</code></pre>
+
+<h2>Increase Network Buffer Sizes</h2>
+
+<pre><code>sudo nano /etc/sysctl.conf</code></pre>
+
+<pre><code>net.core.rmem_max=16777216
+net.core.wmem_max=16777216
+net.ipv4.tcp_rmem=4096 87380 16777216
+net.ipv4.tcp_wmem=4096 65536 16777216</code></pre>
+
+<pre><code>sudo sysctl -p</code></pre>
+
+<h2>Check for Network Interface Errors</h2>
+
+<pre><code># Check for packet errors and drops
+ip -s link show
+netstat -s | grep -E "errors|dropped|failed"
+
+# Watch real-time interface stats
+watch -n1 'ip -s link show wlan0'</code></pre>
+
+<h2>Test with a Different DNS and Compare</h2>
+
+<pre><code># Test latency to various DNS servers
+for dns in 1.1.1.1 8.8.8.8 9.9.9.9 208.67.222.222; do
+  echo -n "$dns: "; ping -c3 $dns | tail -1
+done</code></pre>
+
+<h2>Check if VPN Is Throttling</h2>
+
+<p>If you are using a VPN, disconnect it and retest. VPNs add overhead and many free VPNs throttle speeds significantly.</p>

@@ -1,0 +1,85 @@
+<!-- server:Server & Self-Hosting -->
+<h1>Tailscale Exit Node — Route All Traffic Through Another Machine</h1>
+
+<p>A Tailscale exit node lets you route all your internet traffic through another machine on your Tailnet. Useful for accessing region-locked content, securing traffic on public Wi-Fi, or routing through your home network while travelling.</p>
+
+<h2>Requirements</h2>
+
+<ul>
+<li>Tailscale installed on both machines</li>
+<li>Both machines logged into the same Tailscale account</li>
+<li>The exit node machine must have a stable internet connection</li>
+</ul>
+
+<h2>Set Up the Exit Node (Server Side)</h2>
+
+<pre><code># Enable IP forwarding (required for routing traffic)
+echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.d/99-tailscale.conf
+echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.d/99-tailscale.conf
+sudo sysctl -p /etc/sysctl.d/99-tailscale.conf
+
+# Advertise this machine as an exit node
+sudo tailscale up --advertise-exit-node</code></pre>
+
+<h2>Approve the Exit Node in Tailscale Admin</h2>
+
+<ol>
+<li>Go to <a href="https://login.tailscale.com/admin/machines">https://login.tailscale.com/admin/machines</a></li>
+<li>Find the machine you just configured</li>
+<li>Click the three dots → <strong>Edit route settings</strong></li>
+<li>Enable <strong>Use as exit node</strong></li>
+<li>Save</li>
+</ol>
+
+<p>Without this approval step, clients cannot use the exit node even if it is advertised.</p>
+
+<h2>Use the Exit Node (Client Side)</h2>
+
+<pre><code># Linux / macOS — route all traffic through the exit node
+sudo tailscale up --exit-node=MACHINE-NAME-OR-IP
+
+# Use the machine's Tailscale hostname (easier)
+sudo tailscale up --exit-node=my-home-server
+
+# Stop using the exit node
+sudo tailscale up --exit-node=</code></pre>
+
+<p>On Windows and macOS, you can also select the exit node from the Tailscale system tray icon → Exit nodes.</p>
+
+<h2>Allow LAN Access While Using Exit Node</h2>
+
+<p>By default, when you use an exit node, local network access (printers, NAS, local devices) is blocked because all traffic goes through the exit node.</p>
+
+<pre><code># Allow local network access while using exit node
+sudo tailscale up --exit-node=my-home-server --exit-node-allow-lan-access</code></pre>
+
+<h2>Exit Node on a VPS</h2>
+
+<p>If you want a fixed IP in a specific country, install Tailscale on a VPS and use it as an exit node:</p>
+
+<pre><code># On a cheap VPS (Hetzner, DigitalOcean, Vultr)
+curl -fsSL https://tailscale.com/install.sh | sh
+sudo tailscale up --advertise-exit-node --authkey=YOUR-AUTH-KEY</code></pre>
+
+<p>Generate an auth key at <a href="https://login.tailscale.com/admin/settings/keys">https://login.tailscale.com/admin/settings/keys</a> — use a reusable key for servers.</p>
+
+<h2>Check Traffic Is Routing Correctly</h2>
+
+<pre><code># Check your public IP — should show the exit node's IP
+curl ifconfig.me
+
+# Check Tailscale status
+tailscale status
+tailscale ping MACHINE-NAME</code></pre>
+
+<h2>Mullvad Exit Nodes</h2>
+
+<p>Tailscale has a partnership with Mullvad VPN. If you have a Mullvad subscription, you can use Mullvad's servers as exit nodes without running your own:</p>
+
+<pre><code># List available Mullvad exit nodes
+tailscale exit-node list
+
+# Use a Mullvad exit node
+sudo tailscale up --exit-node=mullvad.exitnode.country-city</code></pre>
+
+<p>Enable at <a href="https://login.tailscale.com/admin/settings/general">https://login.tailscale.com/admin/settings/general</a> → Mullvad exit nodes.</p>

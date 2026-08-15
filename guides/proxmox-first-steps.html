@@ -1,0 +1,104 @@
+<!-- server:Server & Self-Hosting -->
+<h1>Proxmox — First Steps After Install</h1>
+
+<p>Proxmox VE is an open-source hypervisor for running virtual machines and containers. After a fresh install, several important steps make it production-ready and remove the subscription nag.</p>
+
+<h2>Access the Web Interface</h2>
+
+<p>Open a browser and go to <code>https://YOUR-SERVER-IP:8006</code>. Login as <code>root</code> with the password you set during install. Accept the self-signed certificate warning.</p>
+
+<h2>Remove the Subscription Nag</h2>
+
+<pre><code># SSH into your Proxmox server and run:
+sed -Ezi.bak "s/(Ext.Msg.show\(\{[\s\S]*?Proxmox VE.*?\}.*?\);)/void(0);/g" \
+  /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
+
+# Restart the web service
+systemctl restart pveproxy</code></pre>
+
+<p>Or use the community script that handles this automatically:</p>
+
+<pre><code>bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/misc/post-pve-install.sh)"</code></pre>
+
+<h2>Switch to No-Subscription Repository</h2>
+
+<p>The default repository requires a paid subscription. Switch to the free community repo:</p>
+
+<pre><code># Disable enterprise repo
+echo "# deb https://enterprise.proxmox.com/debian/pve bookworm pve-enterprise" > /etc/apt/sources.list.d/pve-enterprise.list
+
+# Add no-subscription repo
+echo "deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription" > /etc/apt/sources.list.d/pve-no-subscription.list
+
+# Update
+apt update && apt full-upgrade -y</code></pre>
+
+<h2>Update Proxmox</h2>
+
+<pre><code>apt update && apt dist-upgrade -y
+reboot</code></pre>
+
+<h2>Upload an ISO</h2>
+
+<ol>
+<li>In the web UI: select your node (pve) → local storage → ISO Images</li>
+<li>Click <strong>Upload</strong> to upload from your computer</li>
+<li>Or click <strong>Download from URL</strong> to fetch directly to the server (faster)</li>
+</ol>
+
+<h2>Create a Virtual Machine</h2>
+
+<ol>
+<li>Click <strong>Create VM</strong> in the top right</li>
+<li>General: set VM ID and name</li>
+<li>OS: select the ISO you uploaded</li>
+<li>System: keep defaults (OVMF for UEFI, SeaBIOS for legacy)</li>
+<li>Disks: set disk size (32 GB minimum for Linux, 64 GB for Windows)</li>
+<li>CPU: set core count (2 minimum)</li>
+<li>Memory: set RAM (2048 MB minimum for Linux, 4096 for Windows)</li>
+<li>Network: keep default (virtio bridge)</li>
+<li>Confirm and start the VM</li>
+</ol>
+
+<h2>Create an LXC Container</h2>
+
+<p>Containers are lighter than VMs — good for services like Nginx, databases, or Home Assistant.</p>
+
+<ol>
+<li>Download a template: node → local → CT Templates → Templates → select and download</li>
+<li>Click <strong>Create CT</strong></li>
+<li>Set hostname, password, template, disk size, CPU, memory</li>
+<li>Start the container</li>
+</ol>
+
+<h2>Enable IOMMU for GPU Passthrough</h2>
+
+<pre><code># Edit GRUB
+nano /etc/default/grub
+
+# Change GRUB_CMDLINE_LINUX_DEFAULT to:
+GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_iommu=on iommu=pt"
+# (use amd_iommu=on for AMD CPUs)
+
+update-grub
+
+# Add kernel modules
+echo -e "vfio\nvfio_iommu_type1\nvfio_pci\nvfio_virqfd" >> /etc/modules
+
+update-initramfs -u -k all
+reboot</code></pre>
+
+<h2>Useful Proxmox Commands</h2>
+
+<pre><code>pvesh get /nodes                          # list nodes
+qm list                                   # list VMs
+pct list                                  # list containers
+qm start 100                              # start VM 100
+qm stop 100                               # stop VM 100
+qm snapshot 100 snap1                     # snapshot VM 100
+pveversion                                # Proxmox version
+pvecm status                              # cluster status (if clustered)</code></pre>
+
+<h2>Backups</h2>
+
+<p>Datacenter → Backup → Add. Set schedule, storage, and which VMs/containers to include. Proxmox creates consistent backups by briefly suspending or using QEMU snapshots.</p>

@@ -1,0 +1,99 @@
+<!-- linux:Linux -->
+<h1>ncdu — Find What Is Using Your Disk Space</h1>
+
+<p>ncdu (NCurses Disk Usage) is an interactive terminal tool for finding what is eating your disk space. Far faster and more useful than <code>du</code> for navigating large directory trees.</p>
+
+<h2>Install</h2>
+
+<pre><code>sudo apt install ncdu       # Ubuntu/Debian
+sudo dnf install ncdu       # Fedora/RHEL
+sudo pacman -S ncdu         # Arch
+brew install ncdu            # macOS</code></pre>
+
+<h2>Basic Usage</h2>
+
+<pre><code># Scan current directory
+ncdu
+
+# Scan a specific path
+ncdu /var
+
+# Scan the whole system (exclude special filesystems)
+sudo ncdu /
+
+# Scan but exclude a path
+ncdu / --exclude /proc --exclude /sys --exclude /dev</code></pre>
+
+<h2>Navigation</h2>
+
+<table>
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>↑ ↓</td><td>Move up/down the list</td></tr>
+<tr><td>Enter / →</td><td>Enter directory</td></tr>
+<tr><td>← / q in dir</td><td>Go back to parent</td></tr>
+<tr><td>d</td><td>Delete selected file or directory</td></tr>
+<tr><td>n</td><td>Sort by name</td></tr>
+<tr><td>s</td><td>Sort by size (default)</td></tr>
+<tr><td>C</td><td>Sort by item count</td></tr>
+<tr><td>g</td><td>Toggle graph/percentage display</td></tr>
+<tr><td>e</td><td>Toggle display of hidden files</td></tr>
+<tr><td>i</td><td>Show file info</td></tr>
+<tr><td>r</td><td>Recalculate/refresh</td></tr>
+<tr><td>q</td><td>Quit</td></tr>
+</tbody>
+</table>
+
+<h2>Common Places to Check</h2>
+
+<pre><code>sudo ncdu /var          # logs, databases, package cache
+sudo ncdu /home         # user files
+sudo ncdu /tmp          # temp files
+sudo ncdu /opt          # installed software
+sudo ncdu /usr          # system software</code></pre>
+
+<h2>Export Results for Later</h2>
+
+<pre><code># Export scan to file (scan now, browse later without rescanning)
+sudo ncdu / -o /tmp/scan.json
+
+# Load the saved scan
+ncdu -f /tmp/scan.json</code></pre>
+
+<p>Useful for scanning a remote server and browsing the results locally.</p>
+
+<h2>Scan a Remote Server</h2>
+
+<pre><code># Scan remote server and browse locally
+ssh user@server 'ncdu -1xo- /' | ncdu -f-</code></pre>
+
+<h2>Common Disk Space Culprits</h2>
+
+<ul>
+<li><code>/var/log</code> — log files that were never rotated</li>
+<li><code>/var/cache/apt</code> or <code>/var/cache/dnf</code> — package manager cache</li>
+<li><code>/var/lib/docker</code> — Docker images, stopped containers, build cache</li>
+<li><code>~/.local/share/Trash</code> — items in trash not emptied</li>
+<li><code>/tmp</code> — temp files from crashed processes</li>
+<li><code>~/Downloads</code> — forgotten large files</li>
+<li>Old kernel images in <code>/boot</code></li>
+</ul>
+
+<h2>Quick Cleanup After Finding Culprits</h2>
+
+<pre><code># Clean apt cache
+sudo apt clean
+
+# Clean dnf cache
+sudo dnf clean all
+
+# Clean Docker
+docker system prune -af
+
+# Remove old kernels (Ubuntu)
+sudo apt autoremove --purge
+
+# Clear journal logs older than 7 days
+sudo journalctl --vacuum-time=7d</code></pre>

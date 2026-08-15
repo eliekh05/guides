@@ -1,0 +1,102 @@
+<!-- networking:Networking & DNS -->
+<h1>Set Up SSH Keys for GitHub</h1>
+
+<p>SSH keys let you push and pull from GitHub without entering your password every time. GitHub removed password authentication for Git operations in 2021 — SSH keys or personal access tokens are now required.</p>
+
+<h2>Check for Existing SSH Keys</h2>
+
+<pre><code>ls -la ~/.ssh</code></pre>
+
+<p>If you see <code>id_ed25519</code> and <code>id_ed25519.pub</code> (or <code>id_rsa</code> and <code>id_rsa.pub</code>), you already have keys. Skip to the "Add Key to GitHub" section.</p>
+
+<h2>Generate a New SSH Key</h2>
+
+<pre><code># Ed25519 is the recommended algorithm (faster and more secure than RSA)
+ssh-keygen -t ed25519 -C "your_email@example.com"</code></pre>
+
+<p>When prompted:</p>
+<ul>
+<li><strong>File location</strong> — press Enter to accept default (<code>~/.ssh/id_ed25519</code>)</li>
+<li><strong>Passphrase</strong> — set one for security, or press Enter for no passphrase</li>
+</ul>
+
+<h2>Add the Key to the SSH Agent</h2>
+
+<pre><code># Start the agent
+eval "$(ssh-agent -s)"
+
+# Add your key
+ssh-add ~/.ssh/id_ed25519</code></pre>
+
+<p>On macOS, add to <code>~/.ssh/config</code> so it loads automatically:</p>
+
+<pre><code>Host github.com
+  AddKeysToAgent yes
+  UseKeychain yes
+  IdentityFile ~/.ssh/id_ed25519</code></pre>
+
+<h2>Add the Public Key to GitHub</h2>
+
+<pre><code># Copy the public key to clipboard
+cat ~/.ssh/id_ed25519.pub    # copy this output
+
+# macOS shortcut
+pbcopy < ~/.ssh/id_ed25519.pub
+
+# Linux with xclip
+xclip -selection clipboard < ~/.ssh/id_ed25519.pub</code></pre>
+
+<ol>
+<li>Go to <a href="https://github.com/settings/keys">https://github.com/settings/keys</a></li>
+<li>Click <strong>New SSH key</strong></li>
+<li>Give it a title (e.g. "MacBook Pro" or "Work laptop")</li>
+<li>Paste the public key</li>
+<li>Click <strong>Add SSH key</strong></li>
+</ol>
+
+<h2>Test the Connection</h2>
+
+<pre><code>ssh -T git@github.com</code></pre>
+
+<p>Expected output:</p>
+<pre><code>Hi username! You've successfully authenticated, but GitHub does not provide shell access.</code></pre>
+
+<h2>Use SSH Instead of HTTPS for Repos</h2>
+
+<pre><code># Clone with SSH (use this format going forward)
+git clone git@github.com:username/repo.git
+
+# Change an existing repo from HTTPS to SSH
+git remote -v                                          # check current
+git remote set-url origin git@github.com:username/repo.git
+git remote -v                                          # verify</code></pre>
+
+<h2>Multiple GitHub Accounts</h2>
+
+<p>If you have a personal and work GitHub account, generate a second key and configure SSH to use different keys per host:</p>
+
+<pre><code># Generate second key
+ssh-keygen -t ed25519 -C "work@company.com" -f ~/.ssh/id_ed25519_work</code></pre>
+
+<pre><code># ~/.ssh/config
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519
+
+Host github-work
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519_work</code></pre>
+
+<pre><code># Clone using the work alias
+git clone git@github-work:company/repo.git</code></pre>
+
+<h2>Fix Common Errors</h2>
+
+<p><strong>Permission denied (publickey)</strong> — key not added to agent or not added to GitHub. Run <code>ssh-add ~/.ssh/id_ed25519</code> and verify the public key is in GitHub settings.</p>
+
+<p><strong>Bad permissions on ~/.ssh/config</strong> — SSH requires strict permissions:</p>
+<pre><code>chmod 600 ~/.ssh/config
+chmod 700 ~/.ssh/
+chmod 600 ~/.ssh/id_ed25519</code></pre>

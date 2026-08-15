@@ -1,0 +1,131 @@
+<!-- package-managers:Package Managers (All OSes) -->
+<h1>Nix Flakes — Modern Nix Package Management</h1>
+
+<p>Flakes are the modern way to use Nix — they make package versions reproducible and eliminate the need for <code>nix-channel</code>. If you are learning Nix in 2026, start with flakes.</p>
+
+<h2>Enable Flakes</h2>
+
+<pre><code># Add to /etc/nix/nix.conf or ~/.config/nix/nix.conf
+echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.conf
+
+# Restart nix daemon
+sudo systemctl restart nix-daemon   # Linux
+# On macOS the daemon restarts automatically</code></pre>
+
+<h2>Run a Package Without Installing</h2>
+
+<pre><code># Run a command from nixpkgs without installing it
+nix run nixpkgs#cowsay -- "hello"
+nix run nixpkgs#htop
+nix run nixpkgs#neovim
+
+# Run a specific version
+nix run nixpkgs/23.11#neovim</code></pre>
+
+<h2>Start a Temporary Shell With Packages</h2>
+
+<pre><code># Open a shell with specific packages available
+nix shell nixpkgs#nodejs nixpkgs#yarn
+
+# Multiple packages
+nix shell nixpkgs#python3 nixpkgs#python3Packages.requests
+
+# Exit the shell to remove them
+exit</code></pre>
+
+<h2>Create a flake.nix</h2>
+
+<p>A <code>flake.nix</code> defines your project's dependencies reproducibly.</p>
+
+<pre><code>{
+  description = "My project";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+  };
+
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in {
+        devShells.default = pkgs.mkShell {
+          packages = with pkgs; [
+            nodejs_20
+            yarn
+            git
+          ];
+          shellHook = ''
+            echo "Dev environment ready"
+          '';
+        };
+      }
+    );
+}</code></pre>
+
+<pre><code># Enter the dev shell defined in flake.nix
+nix develop
+
+# direnv integration — auto-activate when entering directory
+echo "use flake" > .envrc
+direnv allow</code></pre>
+
+<h2>Update Flake Inputs</h2>
+
+<pre><code># Update all inputs to latest
+nix flake update
+
+# Update a specific input
+nix flake update nixpkgs
+
+# Check what would be updated
+nix flake metadata</code></pre>
+
+<h2>The flake.lock File</h2>
+
+<p><code>flake.lock</code> pins every dependency to an exact commit. Commit it to Git — anyone who checks out your project gets the exact same packages. This is the main advantage of flakes over channels.</p>
+
+<h2>Search for Packages</h2>
+
+<pre><code># Search nixpkgs
+nix search nixpkgs neovim
+nix search nixpkgs#python
+
+# Or use the web search
+# https://search.nixos.org/packages</code></pre>
+
+<h2>Show Package Info</h2>
+
+<pre><code>nix eval nixpkgs#neovim.version
+nix show-derivation nixpkgs#neovim</code></pre>
+
+<h2>Common Flake Commands</h2>
+
+<pre><code>nix flake show          # show outputs of current flake
+nix flake check         # validate the flake
+nix flake metadata      # show input versions
+nix build               # build the default package
+nix build .#myPackage   # build a specific output</code></pre>
+
+<h2>Home Manager with Flakes</h2>
+
+<pre><code>{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  outputs = { nixpkgs, home-manager, ... }: {
+    homeConfigurations."username" = home-manager.lib.homeManagerConfiguration {
+      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      modules = [ ./home.nix ];
+    };
+  };
+}</code></pre>
+
+<pre><code># Apply home-manager config
+home-manager switch --flake .#username</code></pre>

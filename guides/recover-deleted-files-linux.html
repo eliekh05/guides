@@ -1,0 +1,91 @@
+<!-- linux:Linux -->
+<h1>Recover Deleted Files on Linux</h1>
+
+<p>Linux has no recycle bin for files deleted from the terminal with <code>rm</code>. Recovery depends on how quickly you act and which filesystem you are using.</p>
+
+<h2>Stop Writing to the Disk Immediately</h2>
+
+<p>Every second you continue using the system, new data may overwrite the deleted file's blocks. If the file is important:</p>
+<ol>
+<li>Stop whatever is writing to the disk</li>
+<li>If it is on an external drive, unmount it immediately</li>
+<li>If it is the system drive, consider booting from a live USB instead</li>
+</ol>
+
+<h2>Check if the File Is Still Open</h2>
+
+<p>If a process has the file open, you can recover it even after deletion — Linux only removes the directory entry, not the data, while a process holds it open.</p>
+
+<pre><code># Find deleted files still held open by processes
+lsof | grep deleted
+
+# Recover a file held open by process PID with file descriptor FD
+cp /proc/PID/fd/FD /path/to/recovered-file</code></pre>
+
+<h2>ext4 — Use extundelete</h2>
+
+<pre><code>sudo apt install extundelete     # Debian/Ubuntu
+sudo dnf install extundelete     # Fedora
+
+# Unmount the partition first (use a live USB if it is the root partition)
+sudo umount /dev/sda2
+
+# Recover all recently deleted files
+sudo extundelete /dev/sda2 --restore-all
+
+# Recover a specific file
+sudo extundelete /dev/sda2 --restore-file path/to/file.txt</code></pre>
+
+<p>Recovered files appear in <code>RECOVERED_FILES/</code> in your current directory.</p>
+
+<h2>Any Filesystem — Use testdisk and photorec</h2>
+
+<pre><code>sudo apt install testdisk    # includes photorec
+sudo dnf install testdisk
+
+# For file recovery (photorec recovers by file type, not filename)
+sudo photorec /dev/sda2</code></pre>
+
+<p>PhotoRec works on ext4, Btrfs, XFS, NTFS, FAT32. It recovers files by scanning for known file headers — it finds the data but filenames are lost. Good for photos, documents, videos.</p>
+
+<pre><code># testdisk can sometimes recover with original filenames on ext2/ext3
+sudo testdisk /dev/sda2</code></pre>
+
+<h2>Btrfs — Use Snapshots</h2>
+
+<p>If you have Snapper or automatic snapshots enabled, the deleted file is almost certainly in a snapshot:</p>
+
+<pre><code># List snapshots
+sudo snapper list
+
+# Browse a snapshot
+sudo ls /.snapshots/5/snapshot/home/youruser/
+
+# Copy the file back
+sudo cp /.snapshots/5/snapshot/home/youruser/deleted-file.txt ~/</code></pre>
+
+<h2>Check Backup Locations First</h2>
+
+<p>Before running recovery tools, check:</p>
+<ul>
+<li><code>~/.local/share/Trash/</code> — files deleted via file manager go here</li>
+<li>Time Machine / Timeshift snapshots</li>
+<li>Git history if the file was in a repo</li>
+<li>Cloud sync (Dropbox, Nextcloud) — often keeps deleted file history</li>
+</ul>
+
+<h2>Prevent This in the Future</h2>
+
+<pre><code># Alias rm to move to trash instead of permanent delete
+# Add to ~/.bashrc or ~/.zshrc:
+alias rm='mv --target-directory=$HOME/.local/share/Trash/'
+
+# Or install trash-cli for proper trash support
+sudo apt install trash-cli
+alias rm='trash-put'
+
+# Then use:
+trash-put file.txt       # delete
+trash-list               # list trash
+trash-restore            # restore
+trash-empty              # empty trash</code></pre>

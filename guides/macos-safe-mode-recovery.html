@@ -1,0 +1,110 @@
+<!-- macos:macOS -->
+<h1>macOS Safe Mode and Recovery Mode — When to Use Each</h1>
+
+<p>Safe Mode and Recovery Mode are two different troubleshooting environments. Knowing which to use and how to enter them saves time when your Mac has problems.</p>
+
+<h2>Safe Mode</h2>
+
+<p>Safe Mode boots macOS normally but disables third-party kernel extensions, login items, and startup agents. The desktop loads — you can use the Mac, just with minimal software.</p>
+
+<p><strong>Use Safe Mode when:</strong></p>
+<ul>
+<li>The Mac is slow or unstable and you suspect a third-party app or extension</li>
+<li>An app crashes on launch</li>
+<li>You want to run Disk Utility's First Aid while the system is running</li>
+<li>You need to uninstall a problematic app that launches at startup</li>
+</ul>
+
+<h3>Enter Safe Mode</h3>
+
+<p><strong>Apple Silicon (M1/M2/M3/M4):</strong></p>
+<ol>
+<li>Shut down completely</li>
+<li>Press and hold the Power button until "Loading startup options" appears</li>
+<li>Select your startup disk</li>
+<li>Hold Shift and click <strong>Continue in Safe Mode</strong></li>
+</ol>
+
+<p><strong>Intel Mac:</strong></p>
+<ol>
+<li>Restart</li>
+<li>Immediately hold Shift until the login screen appears</li>
+<li>"Safe Boot" appears in the top right corner of the login screen</li>
+</ol>
+
+<p>Safe Mode does a directory check and clears some caches on boot — it takes longer than normal.</p>
+
+<h3>Exit Safe Mode</h3>
+
+<p>Restart normally. No special steps needed.</p>
+
+<h2>Recovery Mode</h2>
+
+<p>Recovery Mode boots a separate minimal macOS environment from a recovery partition. The desktop does not load — you get a menu with tools.</p>
+
+<p><strong>Use Recovery Mode when:</strong></p>
+<ul>
+<li>macOS will not boot at all</li>
+<li>You need to reinstall macOS</li>
+<li>You need to run First Aid on the startup disk itself</li>
+<li>You need to disable or enable SIP (System Integrity Protection)</li>
+<li>You need to reset a forgotten login password</li>
+<li>You need to restore from a Time Machine backup</li>
+</ul>
+
+<h3>Enter Recovery Mode</h3>
+
+<p><strong>Apple Silicon:</strong></p>
+<ol>
+<li>Shut down completely</li>
+<li>Press and hold the Power button until "Loading startup options" appears</li>
+<li>Click <strong>Options</strong> → <strong>Continue</strong></li>
+</ol>
+
+<p><strong>Intel Mac:</strong></p>
+<ol>
+<li>Restart</li>
+<li>Immediately hold <strong>Cmd+R</strong></li>
+<li>Hold until the Apple logo or spinning globe appears</li>
+</ol>
+
+<h3>Recovery Mode Tools</h3>
+
+<ul>
+<li><strong>Restore from Time Machine</strong> — restore your entire Mac from a backup</li>
+<li><strong>Reinstall macOS</strong> — clean install without erasing data, or full erase</li>
+<li><strong>Safari</strong> — limited web browsing (useful for downloading drivers or guides)</li>
+<li><strong>Disk Utility</strong> — repair disk errors, erase drives, manage volumes</li>
+<li><strong>Terminal</strong> — command line access, including <code>resetpassword</code> utility</li>
+</ul>
+
+<h2>Disable SIP in Recovery Mode</h2>
+
+<pre><code># In Recovery Mode → Utilities → Terminal
+csrutil disable
+reboot</code></pre>
+
+<pre><code># Re-enable SIP (do this after you are done)
+csrutil enable
+reboot</code></pre>
+
+<h2>Reset Password in Recovery Mode</h2>
+
+<p>Recovery Mode → Utilities menu → Terminal:</p>
+
+<pre><code>resetpassword</code></pre>
+
+<p>A GUI tool opens to reset any user's password.</p>
+
+<h2>Internet Recovery</h2>
+
+<p>If the recovery partition is damaged, Intel Macs can boot from Apple's servers:</p>
+
+<ul>
+<li><strong>Cmd+Option+R</strong> — boot latest macOS available for your Mac</li>
+<li><strong>Cmd+Option+Shift+R</strong> — boot the macOS that came with your Mac</li>
+</ul>
+
+<p>Internet Recovery requires a Wi-Fi connection and takes 15–30 minutes to download.</p>
+
+<p>Apple Silicon Macs always use the on-device recovery — Internet Recovery is not needed.</p>

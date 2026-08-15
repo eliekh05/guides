@@ -1,0 +1,74 @@
+<!-- linux:Linux -->
+<h1>Which Linux Distribution Should You Use</h1>
+
+<p>The most searched Linux question. The honest answer depends entirely on what you are trying to do — there is no single best distro.</p>
+
+<h2>If You Are New to Linux</h2>
+
+<p><strong>Linux Mint</strong> is the best starting point. It looks familiar, hardware support is excellent, software installation is straightforward, and it does not change under you. Based on Ubuntu LTS, it gets security updates for 5 years and rarely breaks.</p>
+
+<p><strong>Ubuntu</strong> is fine but has made questionable decisions (Snap by default, telemetry, pushing Ubuntu One). Mint avoids all of that while staying compatible with all Ubuntu guides and packages.</p>
+
+<p><strong>Pop!_OS</strong> is a good second choice, especially if you have an Nvidia GPU — drivers are pre-installed and the tiling window manager is genuinely useful.</p>
+
+<h2>If You Want a Stable Server or Workstation</h2>
+
+<p><strong>Debian</strong> — the foundation of Ubuntu, Mint, and dozens of others. Extremely stable, conservative package versions, minimal bloat, 5-year support. The right choice if you want something that just works and does not change.</p>
+
+<p><strong>Rocky Linux / AlmaLinux</strong> — free RHEL alternatives. 10-year support cycle. Used in enterprise and scientific computing. If you need to work with RHEL-based systems at work, this is what to learn on at home.</p>
+
+<h2>If You Want the Latest Software</h2>
+
+<p><strong>Fedora</strong> — sponsored by Red Hat, ships the latest kernel and GNOME, 6-month release cycle. Packages are a few months newer than Ubuntu. Stable enough for daily use. Good balance of cutting-edge and reliable.</p>
+
+<p><strong>Arch Linux</strong> — rolling release, always the latest packages. No installer hand-holding. Requires reading documentation. Excellent if you want to understand how Linux works. The AUR (Arch User Repository) has nearly every package that exists.</p>
+
+<h2>If You Want Gaming</h2>
+
+<p><strong>Bazzite</strong> — the best Linux gaming experience in 2026. Based on Fedora Atomic, ships with Steam, Lutris, and Heroic pre-configured, Nvidia and AMD drivers work out of the box, and you can switch to a Steam Deck-like gaming mode. Immutable OS means updates cannot break your system.</p>
+
+<p><strong>Nobara</strong> — Fedora with gaming patches applied. More traditional install than Bazzite.</p>
+
+<h2>If You Want Immutable / Atomic</h2>
+
+<p>Immutable distros update the base OS atomically and roll back if something breaks. The system files are read-only. Apps install via Flatpak or in containers.</p>
+
+<ul>
+<li><strong>Bazzite</strong> — gaming focus, Fedora base</li>
+<li><strong>Silverblue</strong> — GNOME desktop, Fedora base, developer-oriented</li>
+<li><strong>NixOS</strong> — fully declarative, entire system state in config files, steep learning curve but extremely powerful</li>
+</ul>
+
+<h2>If You Are on Old Hardware</h2>
+
+<p><strong>Linux Mint XFCE edition</strong> — runs well on machines from 2010 with 2 GB RAM. XFCE is lightweight but fully functional.</p>
+
+<p><strong>Lubuntu</strong> — even lighter, uses LXQt. For machines with 1 GB RAM.</p>
+
+<p><strong>AntiX</strong> — runs on machines with 256 MB RAM. For truly ancient hardware.</p>
+
+<h2>The Distro Decision Matrix</h2>
+
+<table>
+<thead>
+<tr><th>Situation</th><th>Recommendation</th></tr>
+</thead>
+<tbody>
+<tr><td>New to Linux</td><td>Linux Mint</td></tr>
+<tr><td>Nvidia GPU</td><td>Pop!_OS or Bazzite</td></tr>
+<tr><td>Gaming</td><td>Bazzite</td></tr>
+<tr><td>Stable workstation</td><td>Debian or Fedora</td></tr>
+<tr><td>Server</td><td>Debian or Rocky Linux</td></tr>
+<tr><td>Latest packages</td><td>Arch or Fedora</td></tr>
+<tr><td>Old hardware</td><td>Linux Mint XFCE</td></tr>
+<tr><td>Learn Linux deeply</td><td>Arch Linux</td></tr>
+<tr><td>Enterprise / RHEL compat</td><td>Rocky Linux</td></tr>
+<tr><td>Declarative config</td><td>NixOS</td></tr>
+</tbody>
+</table>
+
+<h2>What Does Not Matter as Much as People Think</h2>
+
+<p>Desktop environment (GNOME vs KDE vs XFCE) is mostly preference and can be changed after install. Package manager differences (apt vs dnf vs pacman) are minor — you learn whichever one you use. Performance differences between distros are negligible on modern hardware.</p>
+
+<p>Pick one, use it for 3 months. You will learn more by actually using it than by researching which one to pick.</p>

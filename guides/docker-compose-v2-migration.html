@@ -1,0 +1,86 @@
+<!-- server:Server & Self-Hosting -->
+<h1>Docker Compose V2 Migration</h1>
+
+<p>Docker Compose V1 (<code>docker-compose</code> as a separate Python tool) reached end of life in July 2023. V2 (<code>docker compose</code> as a Docker plugin) is now the standard. If your scripts or guides use <code>docker-compose</code>, they need updating.</p>
+
+<h2>The Key Difference</h2>
+
+<pre><code># V1 — separate binary, Python-based, EOL
+docker-compose up -d
+
+# V2 — Docker plugin, Go-based, current
+docker compose up -d</code></pre>
+
+<p>The only syntactic change is removing the hyphen. V2 is backwards compatible with V1 <code>docker-compose.yml</code> files — your compose files do not need changes.</p>
+
+<h2>Check Your Version</h2>
+
+<pre><code>docker compose version    # V2 — should show v2.x.x
+docker-compose version    # V1 — if this works, you have the old one</code></pre>
+
+<h2>Install Compose V2</h2>
+
+<pre><code># Ubuntu/Debian — install Docker's official package (includes V2)
+sudo apt remove docker-compose    # remove V1 if present
+sudo apt install docker-compose-plugin
+
+# Or via Docker's official apt repo
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin</code></pre>
+
+<pre><code># Fedora/RHEL
+sudo dnf install docker-compose-plugin</code></pre>
+
+<pre><code># Arch
+sudo pacman -S docker-compose    # Arch ships V2 as docker-compose</code></pre>
+
+<h2>Compatibility Shim (Optional)</h2>
+
+<p>If you have scripts you cannot update immediately, create a shim:</p>
+
+<pre><code>sudo ln -s /usr/libexec/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose</code></pre>
+
+<p>This makes <code>docker-compose</code> call V2 — buys time to update scripts without breaking them.</p>
+
+<h2>What Changed in V2</h2>
+
+<p><strong>Container naming</strong> — V1 used underscores (<code>myproject_web_1</code>), V2 uses hyphens (<code>myproject-web-1</code>). If you reference container names in scripts or other configs, update them.</p>
+
+<pre><code># Check container names after migrating
+docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"</code></pre>
+
+<p><strong>Profiles</strong> — V2 has better profile support for conditional service loading:</p>
+
+<pre><code>services:
+  web:
+    image: nginx
+  debug-tools:
+    image: nicolaka/netshoot
+    profiles: ["debug"]    # only starts with --profile debug</code></pre>
+
+<pre><code>docker compose --profile debug up</code></pre>
+
+<p><strong>Watch mode</strong> — V2.22+ has a <code>watch</code> command for auto-syncing files during development:</p>
+
+<pre><code>docker compose watch</code></pre>
+
+<h2>Update Scripts and CI/CD</h2>
+
+<pre><code># Find all docker-compose references in your project
+grep -r "docker-compose" . --include="*.sh" --include="*.yml" --include="*.yaml" --include="Makefile"
+
+# Replace with sed (careful — review before running)
+sed -i 's/docker-compose/docker compose/g' your-script.sh</code></pre>
+
+<h2>Common V2 Commands</h2>
+
+<pre><code>docker compose up -d              # start in background
+docker compose down               # stop and remove containers
+docker compose down -v            # also remove volumes
+docker compose logs -f            # follow logs
+docker compose logs -f service    # follow specific service
+docker compose ps                 # list containers
+docker compose exec web bash      # shell into container
+docker compose pull               # pull latest images
+docker compose build --no-cache   # rebuild images
+docker compose restart service    # restart one service
+docker compose top                # show running processes</code></pre>

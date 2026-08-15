@@ -1,0 +1,133 @@
+<!-- scheduling:Task Scheduling -->
+<h1>Windows Task Scheduler — Advanced Usage</h1>
+
+<p>Task Scheduler is more powerful than most people use it. Beyond basic scheduled tasks, it supports event-triggered tasks, dependency chains, and tasks that run whether or not a user is logged in.</p>
+
+<h2>Create a Task via PowerShell (Faster Than GUI)</h2>
+
+<pre><code># Run a script daily at 9 AM
+$action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-NonInteractive -File C:\Scripts\backup.ps1"
+$trigger = New-ScheduledTaskTrigger -Daily -At "9:00AM"
+$settings = New-ScheduledTaskSettingsSet -RunOnlyIfNetworkAvailable -WakeToRun
+Register-ScheduledTask -TaskName "Daily Backup" -Action $action -Trigger $trigger -Settings $settings -RunLevel Highest</code></pre>
+
+<h2>Run Whether or Not User Is Logged In</h2>
+
+<pre><code># Run as SYSTEM — no user session needed
+$principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+Register-ScheduledTask -TaskName "System Task" -Action $action -Trigger $trigger -Principal $principal</code></pre>
+
+<h2>Event-Triggered Tasks</h2>
+
+<p>Run a task when a specific event appears in the Windows Event Log:</p>
+
+<pre><code># Trigger when Event ID 1001 appears in Application log
+$trigger = New-ScheduledTaskTrigger -AtStartup   # base trigger
+$trigger.Repetition = $null
+
+# For event-based trigger, use XML directly
+$xml = @'
+&lt;?xml version="1.0"?&gt;
+&lt;Task xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task"&gt;
+  &lt;Triggers&gt;
+    &lt;EventTrigger&gt;
+      &lt;Subscription&gt;
+        &lt;QueryList&gt;
+          &lt;Query Id="0" Path="Application"&gt;
+            &lt;Select Path="Application"&gt;*[System[EventID=1001]]&lt;/Select&gt;
+          &lt;/Query&gt;
+        &lt;/QueryList&gt;
+      &lt;/Subscription&gt;
+    &lt;/EventTrigger&gt;
+  &lt;/Triggers&gt;
+&lt;/Task&gt;
+'@</code></pre>
+
+<h2>Common Trigger Types</h2>
+
+<pre><code># At system startup
+$trigger = New-ScheduledTaskTrigger -AtStartup
+
+# At user login
+$trigger = New-ScheduledTaskTrigger -AtLogOn
+
+# Every 15 minutes
+$trigger = New-ScheduledTaskTrigger -RepetitionInterval (New-TimeSpan -Minutes 15) -Once -At (Get-Date)
+
+# Weekly on Monday and Wednesday at 8 AM
+$trigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Monday,Wednesday -At "8:00AM"
+
+# Monthly on the 1st at midnight
+$trigger = New-ScheduledTaskTrigger -Monthly -DaysOfMonth 1 -At "00:00"</code></pre>
+
+<h2>Task Settings That Matter</h2>
+
+<pre><code>$settings = New-ScheduledTaskSettingsSet `
+  -RunOnlyIfNetworkAvailable `        # only run if network is up
+  -WakeToRun `                        # wake machine from sleep to run
+  -StartWhenAvailable `               # run if missed (machine was off)
+  -ExecutionTimeLimit (New-TimeSpan -Hours 1) `   # kill if runs longer than 1 hour
+  -RestartCount 3 `                   # retry 3 times on failure
+  -RestartInterval (New-TimeSpan -Minutes 5)      # wait 5 min between retries</code></pre>
+
+<h2>Manage Tasks via PowerShell</h2>
+
+<pre><code># List all tasks
+Get-ScheduledTask
+
+# List tasks in a specific folder
+Get-ScheduledTask -TaskPath "\MyTasks\"
+
+# Run a task immediately
+Start-ScheduledTask -TaskName "Daily Backup"
+
+# Stop a running task
+Stop-ScheduledTask -TaskName "Daily Backup"
+
+# Get last run result
+(Get-ScheduledTaskInfo -TaskName "Daily Backup").LastRunTime
+(Get-ScheduledTaskInfo -TaskName "Daily Backup").LastTaskResult   # 0 = success
+
+# Disable a task
+Disable-ScheduledTask -TaskName "Daily Backup"
+
+# Enable a task
+Enable-ScheduledTask -TaskName "Daily Backup"
+
+# Delete a task
+Unregister-ScheduledTask -TaskName "Daily Backup" -Confirm:$false</code></pre>
+
+<h2>Export and Import Tasks</h2>
+
+<pre><code># Export task to XML
+Export-ScheduledTask -TaskName "Daily Backup" | Out-File C:\backup-task.xml
+
+# Import on another machine
+Register-ScheduledTask -Xml (Get-Content C:\backup-task.xml | Out-String) -TaskName "Daily Backup"</code></pre>
+
+<h2>View Task History and Logs</h2>
+
+<pre><code># Enable task history (disabled by default)
+Get-ScheduledTask | Enable-ScheduledTask
+wevtutil set-log Microsoft-Windows-TaskScheduler/Operational /enabled:true
+
+# View recent task history
+Get-WinEvent -LogName "Microsoft-Windows-TaskScheduler/Operational" | 
+  Where-Object {$_.Message -like "*Daily Backup*"} | 
+  Select -First 20 TimeCreated, Message | Format-List</code></pre>
+
+<h2>Common Last Task Result Codes</h2>
+
+<table>
+<thead>
+<tr><th>Code</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>0x0</td><td>Success</td></tr>
+<tr><td>0x1</td><td>Incorrect function — script error</td></tr>
+<tr><td>0x41301</td><td>Task is currently running</td></tr>
+<tr><td>0x41303</td><td>Task has not yet run</td></tr>
+<tr><td>0x8004131F</td><td>Instance already running</td></tr>
+<tr><td>0x80070002</td><td>File not found — check script path</td></tr>
+</tbody>
+</table>

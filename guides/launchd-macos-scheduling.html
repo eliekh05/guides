@@ -1,0 +1,133 @@
+<!-- scheduling:Task Scheduling -->
+<h1>launchd — macOS Task Scheduling</h1>
+
+<p>launchd is the macOS system for scheduling tasks. It replaces cron on macOS and handles everything from system daemons to user launch agents. Understanding launchd properly is essential for automating anything on macOS.</p>
+
+<h2>launchd vs cron on macOS</h2>
+
+<p>cron technically still works on macOS but Apple deprecated it. launchd is the correct approach — it handles sleep/wake cycles, runs missed jobs after wakeup, and integrates with the system properly. Use launchd for any new automation on macOS.</p>
+
+<h2>Plist File Locations</h2>
+
+<table>
+<thead>
+<tr><th>Location</th><th>Runs as</th><th>When</th></tr>
+</thead>
+<tbody>
+<tr><td>~/Library/LaunchAgents/</td><td>Current user</td><td>When user is logged in</td></tr>
+<tr><td>/Library/LaunchAgents/</td><td>Current user</td><td>When any user logs in</td></tr>
+<tr><td>/Library/LaunchDaemons/</td><td>root</td><td>System boot, no login needed</td></tr>
+<tr><td>/System/Library/LaunchDaemons/</td><td>root</td><td>Apple system services (don't touch)</td></tr>
+</tbody>
+</table>
+
+<h2>Create a Launch Agent</h2>
+
+<pre><code>nano ~/Library/LaunchAgents/com.yourname.myscript.plist</code></pre>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+  &lt;key&gt;Label&lt;/key&gt;
+  &lt;string&gt;com.yourname.myscript&lt;/string&gt;
+
+  &lt;key&gt;ProgramArguments&lt;/key&gt;
+  &lt;array&gt;
+    &lt;string&gt;/bin/bash&lt;/string&gt;
+    &lt;string&gt;/Users/yourname/scripts/myscript.sh&lt;/string&gt;
+  &lt;/array&gt;
+
+  &lt;key&gt;StartCalendarInterval&lt;/key&gt;
+  &lt;dict&gt;
+    &lt;key&gt;Hour&lt;/key&gt;
+    &lt;integer&gt;9&lt;/integer&gt;
+    &lt;key&gt;Minute&lt;/key&gt;
+    &lt;integer&gt;0&lt;/integer&gt;
+  &lt;/dict&gt;
+
+  &lt;key&gt;StandardOutPath&lt;/key&gt;
+  &lt;string&gt;/tmp/myscript.log&lt;/string&gt;
+
+  &lt;key&gt;StandardErrorPath&lt;/key&gt;
+  &lt;string&gt;/tmp/myscript.error.log&lt;/string&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;</code></pre>
+
+<h2>StartCalendarInterval Examples</h2>
+
+<pre><code>&lt;!-- Every day at 9:00 AM --&gt;
+&lt;key&gt;StartCalendarInterval&lt;/key&gt;
+&lt;dict&gt;
+  &lt;key&gt;Hour&lt;/key&gt;&lt;integer&gt;9&lt;/integer&gt;
+  &lt;key&gt;Minute&lt;/key&gt;&lt;integer&gt;0&lt;/integer&gt;
+&lt;/dict&gt;
+
+&lt;!-- Every Monday at 8:30 AM (Weekday 1 = Monday) --&gt;
+&lt;key&gt;StartCalendarInterval&lt;/key&gt;
+&lt;dict&gt;
+  &lt;key&gt;Weekday&lt;/key&gt;&lt;integer&gt;1&lt;/integer&gt;
+  &lt;key&gt;Hour&lt;/key&gt;&lt;integer&gt;8&lt;/integer&gt;
+  &lt;key&gt;Minute&lt;/key&gt;&lt;integer&gt;30&lt;/integer&gt;
+&lt;/dict&gt;
+
+&lt;!-- Every 15 minutes --&gt;
+&lt;key&gt;StartInterval&lt;/key&gt;
+&lt;integer&gt;900&lt;/integer&gt;
+
+&lt;!-- Run at login --&gt;
+&lt;key&gt;RunAtLoad&lt;/key&gt;
+&lt;true/&gt;</code></pre>
+
+<h2>Load, Unload, and Manage</h2>
+
+<pre><code># Load (activate) a launch agent
+launchctl load ~/Library/LaunchAgents/com.yourname.myscript.plist
+
+# Load and start immediately
+launchctl load -w ~/Library/LaunchAgents/com.yourname.myscript.plist
+
+# Unload (deactivate)
+launchctl unload ~/Library/LaunchAgents/com.yourname.myscript.plist
+
+# Run immediately (for testing)
+launchctl start com.yourname.myscript
+
+# Stop
+launchctl stop com.yourname.myscript
+
+# Check if loaded
+launchctl list | grep yourname
+
+# Check last exit status and last run time
+launchctl list com.yourname.myscript</code></pre>
+
+<h2>Bootstrap / Bootout (macOS 10.11+)</h2>
+
+<pre><code># Modern way to load (use this on Ventura and later)
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.yourname.myscript.plist
+
+# Modern way to unload
+launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.yourname.myscript.plist</code></pre>
+
+<h2>Run on File Change (Watch a Folder)</h2>
+
+<pre><code>&lt;key&gt;WatchPaths&lt;/key&gt;
+&lt;array&gt;
+  &lt;string&gt;/Users/yourname/Desktop/watch-folder&lt;/string&gt;
+&lt;/array&gt;</code></pre>
+
+<h2>Validate Your Plist</h2>
+
+<pre><code>plutil -lint ~/Library/LaunchAgents/com.yourname.myscript.plist</code></pre>
+
+<p>Always validate before loading — a syntax error in the plist causes silent failure.</p>
+
+<h2>View Logs</h2>
+
+<pre><code># System log for launchd errors
+log show --predicate 'subsystem == "com.apple.launchd"' --last 1h
+
+# Your script's output (if you set StandardOutPath)
+tail -f /tmp/myscript.log</code></pre>

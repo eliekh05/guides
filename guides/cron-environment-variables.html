@@ -1,0 +1,106 @@
+<!-- scheduling:Task Scheduling -->
+<h1>Cron Environment Variables and PATH Issues</h1>
+
+<p>The most common reason cron jobs fail silently is environment variables — specifically PATH. Cron runs with a minimal environment that does not include your normal PATH, so commands that work in the terminal fail in cron.</p>
+
+<h2>The Problem</h2>
+
+<pre><code># This works in your terminal:
+node /home/user/app/script.js
+
+# This fails in cron because /usr/local/bin (where node lives) is not in cron's PATH
+* * * * * node /home/user/app/script.js</code></pre>
+
+<h2>Cron's Default Environment</h2>
+
+<pre><code># See what environment cron actually uses
+* * * * * env >> /tmp/cron-env.txt 2>&1
+
+# Check the output
+cat /tmp/cron-env.txt</code></pre>
+
+<p>Cron typically only has: <code>PATH=/usr/bin:/bin</code>, <code>SHELL=/bin/sh</code>, <code>HOME=/root</code> (or your home dir), and <code>LOGNAME</code>.</p>
+
+<h2>Fix 1 — Use Full Paths</h2>
+
+<pre><code># Instead of:
+* * * * * node script.js
+
+# Use full path:
+* * * * * /usr/local/bin/node /home/user/app/script.js</code></pre>
+
+<pre><code># Find the full path of any command
+which node
+which python3
+which pip</code></pre>
+
+<h2>Fix 2 — Set PATH at Top of Crontab</h2>
+
+<pre><code>crontab -e
+
+# Add at the top of the file:
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/user/.local/bin
+
+# Then your jobs can use short command names
+* * * * * node /home/user/app/script.js</code></pre>
+
+<h2>Fix 3 — Source Your Profile in the Job</h2>
+
+<pre><code># Source ~/.bashrc or ~/.profile before the command
+* * * * * source /home/user/.bashrc && node /home/user/app/script.js
+
+# Or use bash with login flag (loads full profile)
+* * * * * /bin/bash -l -c "node /home/user/app/script.js"</code></pre>
+
+<h2>Fix 4 — Wrap in a Shell Script</h2>
+
+<pre><code>#!/bin/bash
+source /home/user/.bashrc
+export NVM_DIR="$HOME/.nvm"
+source "$NVM_DIR/nvm.sh"
+
+node /home/user/app/script.js</code></pre>
+
+<pre><code>chmod +x /home/user/scripts/run-app.sh
+crontab -e
+
+# Now call the wrapper script
+* * * * * /home/user/scripts/run-app.sh</code></pre>
+
+<h2>nvm, rbenv, pyenv in Cron</h2>
+
+<p>Version managers like nvm, rbenv, and pyenv do not work in cron without explicit setup — they rely on shell functions and PATH modifications done by your .bashrc.</p>
+
+<pre><code># nvm in cron
+* * * * * /bin/bash -c 'export NVM_DIR="$HOME/.nvm" && source "$NVM_DIR/nvm.sh" && node script.js'
+
+# pyenv in cron
+* * * * * /home/user/.pyenv/shims/python /home/user/script.py
+
+# rbenv in cron
+* * * * * /home/user/.rbenv/shims/ruby /home/user/script.rb</code></pre>
+
+<h2>Other Common Cron Variables</h2>
+
+<pre><code>crontab -e
+
+SHELL=/bin/bash          # use bash instead of sh
+PATH=/usr/local/bin:/usr/bin:/bin
+MAILTO=user@example.com  # email output to this address
+MAILTO=""                # disable email entirely
+HOME=/home/user          # set home directory</code></pre>
+
+<h2>Capture Output for Debugging</h2>
+
+<pre><code># Redirect both stdout and stderr to a log file
+* * * * * /home/user/scripts/job.sh >> /tmp/job.log 2>&1
+
+# Timestamp each log entry
+* * * * * echo "$(date): Starting job" >> /tmp/job.log && /home/user/scripts/job.sh >> /tmp/job.log 2>&1</code></pre>
+
+<h2>Test Cron Environment Locally</h2>
+
+<pre><code># Simulate cron's environment to test your job
+env -i HOME=/home/user SHELL=/bin/sh PATH=/usr/bin:/bin /bin/sh -c "your command here"</code></pre>
+
+<p>If your command fails here, it will fail in cron too. Fix it in this environment before adding to crontab.</p>

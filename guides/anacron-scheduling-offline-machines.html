@@ -1,0 +1,93 @@
+<!-- scheduling:Task Scheduling -->
+<h1>anacron — Schedule Tasks on Machines That Are Not Always On</h1>
+
+<p>cron assumes the machine runs 24/7. If a cron job is scheduled for 3 AM and the machine is off, the job never runs. anacron solves this — it runs jobs based on how many days have elapsed since they last ran, catching up when the machine turns on.</p>
+
+<h2>How anacron Works</h2>
+
+<p>anacron checks timestamps stored in <code>/var/spool/anacron/</code>. When the machine boots or when anacron runs, it checks each job — if the required number of days have passed since the last run, it executes the job after a configurable delay.</p>
+
+<h2>Install</h2>
+
+<pre><code>sudo apt install anacron      # Ubuntu/Debian (often pre-installed)
+sudo dnf install cronie-anacron   # Fedora/RHEL
+sudo pacman -S cronie         # Arch (includes anacron)</code></pre>
+
+<h2>The anacrontab File</h2>
+
+<pre><code>sudo nano /etc/anacrontab</code></pre>
+
+<pre><code># Format: period  delay  job-id  command
+# period = days between runs
+# delay  = minutes to wait after boot before running
+# job-id = unique name for logging
+
+1     5    daily-backup    /usr/local/bin/backup.sh
+7     10   weekly-cleanup  /usr/local/bin/cleanup.sh
+30    15   monthly-report  /usr/local/bin/report.sh</code></pre>
+
+<h2>Field Explanation</h2>
+
+<table>
+<thead>
+<tr><th>Field</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Run every 1 day</td></tr>
+<tr><td>7</td><td>Run every 7 days</td></tr>
+<tr><td>@monthly</td><td>Run once a month</td></tr>
+<tr><td>5 (delay)</td><td>Wait 5 minutes after boot before running</td></tr>
+<tr><td>daily-backup</td><td>Job ID — used for the timestamp file name</td></tr>
+</tbody>
+</table>
+
+<h2>Per-User anacron (No Root Required)</h2>
+
+<pre><code>mkdir -p ~/.anacron/spool
+
+# Create user anacrontab
+nano ~/.anacrontab</code></pre>
+
+<pre><code>MAILTO=""
+1   5   daily-job   /home/youruser/scripts/daily.sh
+7   10  weekly-job  /home/youruser/scripts/weekly.sh</code></pre>
+
+<pre><code># Run manually (add to ~/.profile or cron @reboot)
+anacron -t ~/.anacrontab -T ~/.anacron/spool -S ~/.anacron/spool</code></pre>
+
+<pre><code># Add to crontab to run at boot
+crontab -e
+@reboot anacron -t ~/.anacrontab -T ~/.anacron/spool -S ~/.anacron/spool</code></pre>
+
+<h2>Test Without Waiting</h2>
+
+<pre><code># Force run all jobs regardless of timing
+sudo anacron -f -n
+
+# Run a specific job immediately
+sudo anacron -f -n daily-backup
+
+# Dry run — show what would run without executing
+sudo anacron -n -d</code></pre>
+
+<h2>Check Last Run Times</h2>
+
+<pre><code>ls -la /var/spool/anacron/
+cat /var/spool/anacron/daily-backup    # contains the date of last run</code></pre>
+
+<h2>anacron vs cron vs systemd timers</h2>
+
+<table>
+<thead>
+<tr><th>Feature</th><th>cron</th><th>anacron</th><th>systemd timer</th></tr>
+</thead>
+<tbody>
+<tr><td>Runs on always-on servers</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Catches up missed jobs</td><td>No</td><td>Yes</td><td>Yes (Persistent=true)</td></tr>
+<tr><td>Sub-day scheduling</td><td>Yes</td><td>No (days only)</td><td>Yes</td></tr>
+<tr><td>Root required</td><td>No</td><td>No (user mode)</td><td>No (user units)</td></tr>
+<tr><td>Best for</td><td>Servers</td><td>Laptops/desktops</td><td>Modern Linux</td></tr>
+</tbody>
+</table>
+
+<p>For laptops and desktops — use anacron or systemd timers with <code>Persistent=true</code>. Both catch up missed jobs. systemd timers are more powerful but more verbose to configure. anacron is simpler for daily/weekly/monthly tasks.</p>

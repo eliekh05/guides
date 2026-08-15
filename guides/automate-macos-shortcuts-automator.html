@@ -1,0 +1,109 @@
+<!-- scheduling:Task Scheduling -->
+<h1>Automate macOS with Shortcuts and Automator</h1>
+
+<p>macOS has two built-in automation tools — Shortcuts (modern, replaces Automator for most tasks) and Automator (still useful for folder actions and legacy workflows). Both can be combined with launchd for scheduled automation.</p>
+
+<h2>Shortcuts on macOS</h2>
+
+<p>Shortcuts arrived on macOS in Monterey (2021). It is the same app as iOS Shortcuts — cross-platform automation with a visual block editor.</p>
+
+<h3>Create a Shortcut</h3>
+<ol>
+<li>Open Shortcuts app (Spotlight → Shortcuts)</li>
+<li>Click + to create a new shortcut</li>
+<li>Search for actions in the right panel and drag them in</li>
+<li>Connect blocks to build a workflow</li>
+</ol>
+
+<h3>Run Shortcuts from Terminal</h3>
+
+<pre><code># Run a shortcut by name
+shortcuts run "My Shortcut Name"
+
+# Run with input
+echo "some text" | shortcuts run "Process Text"
+
+# List all shortcuts
+shortcuts list</code></pre>
+
+<h3>Schedule a Shortcut with launchd</h3>
+
+<pre><code>nano ~/Library/LaunchAgents/com.yourname.shortcut.plist</code></pre>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+  &lt;key&gt;Label&lt;/key&gt;
+  &lt;string&gt;com.yourname.shortcut&lt;/string&gt;
+  &lt;key&gt;ProgramArguments&lt;/key&gt;
+  &lt;array&gt;
+    &lt;string&gt;/usr/bin/shortcuts&lt;/string&gt;
+    &lt;string&gt;run&lt;/string&gt;
+    &lt;string&gt;My Shortcut Name&lt;/string&gt;
+  &lt;/array&gt;
+  &lt;key&gt;StartCalendarInterval&lt;/key&gt;
+  &lt;dict&gt;
+    &lt;key&gt;Hour&lt;/key&gt;&lt;integer&gt;8&lt;/integer&gt;
+    &lt;key&gt;Minute&lt;/key&gt;&lt;integer&gt;0&lt;/integer&gt;
+  &lt;/dict&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;</code></pre>
+
+<pre><code>launchctl load ~/Library/LaunchAgents/com.yourname.shortcut.plist</code></pre>
+
+<h2>Automator</h2>
+
+<p>Automator is older but still the best tool for Folder Actions — automatically processing files when they are added to a folder.</p>
+
+<h3>Create a Folder Action</h3>
+<ol>
+<li>Open Automator → New Document → Folder Action</li>
+<li>At the top, choose which folder to watch</li>
+<li>Add actions — common uses: convert images, rename files, move to another folder, run a script</li>
+<li>Save the workflow</li>
+<li>Right-click the folder in Finder → Quick Actions → Folder Action Setup → enable it</li>
+</ol>
+
+<h3>Run AppleScript from Automator</h3>
+
+<p>Add a "Run AppleScript" action to do anything the GUI can do:</p>
+
+<pre><code>on run {input, parameters}
+  tell application "Safari"
+    activate
+    open location "https://example.com"
+  end tell
+  return input
+end run</code></pre>
+
+<h3>Run Shell Script from Automator</h3>
+
+<p>Add a "Run Shell Script" action. Set "Pass input" to "as arguments" to process files dropped onto it:</p>
+
+<pre><code>#!/bin/bash
+for f in "$@"; do
+  # Process each file
+  ffmpeg -i "$f" "${f%.mp4}.mp3"
+done</code></pre>
+
+<h2>Useful Automation Ideas</h2>
+
+<ul>
+<li>Folder Action on Downloads — auto-move PDFs to a specific folder, rename screenshots</li>
+<li>Scheduled Shortcut — daily backup of specific folders to an external drive</li>
+<li>Shortcut — resize and compress images in a folder with one click</li>
+<li>Shortcut — daily summary of calendar events sent as a notification</li>
+<li>Automator — batch rename files with a consistent naming pattern</li>
+</ul>
+
+<h2>Script Editor for AppleScript</h2>
+
+<pre><code># Run AppleScript from terminal
+osascript -e 'tell application "Finder" to empty trash'
+
+# Run an AppleScript file
+osascript /path/to/script.applescript
+
+# Schedule with launchd like any other command</code></pre>

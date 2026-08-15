@@ -1,0 +1,114 @@
+<!-- scheduling:Task Scheduling -->
+<h1>cron vs systemd Timers vs launchd — Which to Use</h1>
+
+<p>Three different task scheduling systems across Linux and macOS. Here is when to use each and how they compare.</p>
+
+<h2>Quick Decision Guide</h2>
+
+<table>
+<thead>
+<tr><th>Situation</th><th>Use</th></tr>
+</thead>
+<tbody>
+<tr><td>Linux server, simple recurring task</td><td>cron</td></tr>
+<tr><td>Linux, need missed-run catch-up</td><td>systemd timer (Persistent=true)</td></tr>
+<tr><td>Linux, service dependency or resource limits</td><td>systemd timer</td></tr>
+<tr><td>Linux laptop/desktop, daily/weekly job</td><td>anacron or systemd timer</td></tr>
+<tr><td>macOS, any scheduled task</td><td>launchd</td></tr>
+<tr><td>macOS, folder automation</td><td>Automator Folder Action</td></tr>
+<tr><td>One-time task, run once at a time</td><td>at command</td></tr>
+<tr><td>Windows, any scheduled task</td><td>Task Scheduler</td></tr>
+</tbody>
+</table>
+
+<h2>Syntax Comparison</h2>
+
+<h3>cron — Run every day at 3 AM</h3>
+<pre><code>0 3 * * * /usr/local/bin/backup.sh</code></pre>
+
+<h3>systemd timer — Run every day at 3 AM</h3>
+<pre><code># backup.timer
+[Timer]
+OnCalendar=*-*-* 03:00:00
+Persistent=true
+
+# backup.service
+[Service]
+ExecStart=/usr/local/bin/backup.sh</code></pre>
+
+<h3>launchd — Run every day at 3 AM</h3>
+<pre><code>&lt;key&gt;StartCalendarInterval&lt;/key&gt;
+&lt;dict&gt;
+  &lt;key&gt;Hour&lt;/key&gt;&lt;integer&gt;3&lt;/integer&gt;
+  &lt;key&gt;Minute&lt;/key&gt;&lt;integer&gt;0&lt;/integer&gt;
+&lt;/dict&gt;</code></pre>
+
+<h2>Feature Comparison</h2>
+
+<table>
+<thead>
+<tr><th>Feature</th><th>cron</th><th>systemd timer</th><th>launchd</th></tr>
+</thead>
+<tbody>
+<tr><td>OS</td><td>Linux/macOS/BSD</td><td>Linux only</td><td>macOS only</td></tr>
+<tr><td>Syntax complexity</td><td>Simple</td><td>Verbose</td><td>Verbose (XML)</td></tr>
+<tr><td>Missed run catch-up</td><td>No</td><td>Yes (Persistent)</td><td>Yes</td></tr>
+<tr><td>Logging</td><td>Email/file</td><td>journald (auto)</td><td>System log</td></tr>
+<tr><td>Resource limits</td><td>No</td><td>Yes (cgroups)</td><td>Limited</td></tr>
+<tr><td>Service dependencies</td><td>No</td><td>Yes</td><td>Limited</td></tr>
+<tr><td>Per-user scheduling</td><td>Yes</td><td>Yes (--user)</td><td>Yes (LaunchAgents)</td></tr>
+<tr><td>Run at boot</td><td>@reboot</td><td>OnBootSec</td><td>RunAtLoad</td></tr>
+<tr><td>Watch file changes</td><td>No</td><td>No</td><td>Yes (WatchPaths)</td></tr>
+<tr><td>Network dependency</td><td>No</td><td>Yes (After=network)</td><td>Limited</td></tr>
+</tbody>
+</table>
+
+<h2>When cron Is Still the Right Choice</h2>
+
+<ul>
+<li>Simple, well-understood syntax everyone knows</li>
+<li>Shared hosting or environments without systemd</li>
+<li>Scripts that run on both Linux and macOS</li>
+<li>Quick one-liner jobs that do not need logging infrastructure</li>
+<li>Teams where everyone knows cron and nobody knows systemd timer syntax</li>
+</ul>
+
+<h2>When systemd Timers Win</h2>
+
+<ul>
+<li>The job absolutely must not be missed if the machine was off — <code>Persistent=true</code></li>
+<li>The job should only run after another service is ready</li>
+<li>You want automatic logging via <code>journalctl</code></li>
+<li>You need to limit CPU or memory for the scheduled task</li>
+<li>You want to manage the task with <code>systemctl</code> alongside other services</li>
+</ul>
+
+<h2>When launchd Is the Only Option</h2>
+
+<p>On macOS, launchd is the correct tool. cron technically works but Apple deprecated it. launchd handles macOS sleep/wake correctly, integrates with Keychain for passwords, and is the official supported method. Use launchd for everything on macOS.</p>
+
+<h2>Migration — cron to systemd timer</h2>
+
+<pre><code># Old cron job:
+# 0 3 * * * /usr/local/bin/backup.sh
+
+# Equivalent systemd timer:
+# /etc/systemd/system/backup.service
+[Unit]
+Description=Backup Script
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/backup.sh
+
+# /etc/systemd/system/backup.timer
+[Unit]
+Description=Run backup daily at 3 AM
+[Timer]
+OnCalendar=*-*-* 03:00:00
+Persistent=true
+[Install]
+WantedBy=timers.target</code></pre>
+
+<pre><code>sudo systemctl daemon-reload
+sudo systemctl enable --now backup.timer
+sudo systemctl disable cron   # optionally disable cron if fully migrated</code></pre>

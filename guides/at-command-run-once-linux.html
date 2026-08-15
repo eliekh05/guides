@@ -1,0 +1,107 @@
+<!-- scheduling:Task Scheduling -->
+<h1>at — Run a Command Once at a Specific Time</h1>
+
+<p>The <code>at</code> command schedules a one-time task to run at a specific time. Unlike cron which repeats, <code>at</code> runs a command once and removes the job. Perfect for "run this in 2 hours" or "restart this service at midnight".</p>
+
+<h2>Install</h2>
+
+<pre><code>sudo apt install at      # Ubuntu/Debian
+sudo dnf install at      # Fedora/RHEL
+sudo pacman -S at        # Arch
+
+# Enable and start the atd daemon
+sudo systemctl enable --now atd</code></pre>
+
+<h2>Basic Usage</h2>
+
+<pre><code># Run a command in 2 hours
+echo "systemctl restart nginx" | at now + 2 hours
+
+# Run at a specific time today
+echo "/usr/local/bin/backup.sh" | at 23:00
+
+# Run at a specific date and time
+echo "/usr/local/bin/report.sh" | at 9:00 AM July 25
+
+# Run tomorrow at 8am
+echo "apt update && apt upgrade -y" | at 8am tomorrow</code></pre>
+
+<h2>Interactive Mode</h2>
+
+<pre><code>at now + 1 hour</code></pre>
+
+<p>Type your commands, press Enter after each, then press <strong>Ctrl+D</strong> to finish. The job is queued.</p>
+
+<pre><code>at 3:00 PM
+at> /home/user/scripts/cleanup.sh
+at> logger "cleanup ran"
+at> 
+job 5 at Thu Aug 15 15:00:00 2026</code></pre>
+
+<h2>Time Formats</h2>
+
+<pre><code>at now + 5 minutes
+at now + 2 hours
+at now + 3 days
+at now + 1 week
+at midnight
+at noon
+at teatime          # 4:00 PM
+at 14:30
+at 2:30 PM
+at 2:30 PM tomorrow
+at 2:30 PM Aug 20
+at 2:30 PM 08/20/2026</code></pre>
+
+<h2>List Queued Jobs</h2>
+
+<pre><code>atq
+# or
+at -l</code></pre>
+
+<p>Output shows job number, execution time, queue, and owner:</p>
+
+<pre><code>5   Thu Aug 15 15:00:00 2026 a youruser
+6   Fri Aug 16 09:00:00 2026 a youruser</code></pre>
+
+<h2>View Job Contents</h2>
+
+<pre><code>at -c 5    # show the full job script for job number 5</code></pre>
+
+<h2>Remove a Queued Job</h2>
+
+<pre><code>atrm 5     # remove job 5
+# or
+at -r 5</code></pre>
+
+<h2>Run Multiple Commands</h2>
+
+<pre><code># Using a heredoc
+at now + 1 hour << 'EOF'
+cd /var/www/html
+git pull
+systemctl restart php-fpm
+EOF</code></pre>
+
+<h2>Run a Script File</h2>
+
+<pre><code>at -f /usr/local/bin/myscript.sh now + 2 hours</code></pre>
+
+<h2>Environment Variables</h2>
+
+<p><code>at</code> does not inherit your full shell environment — only a minimal environment is set. Always use full paths in at jobs:</p>
+
+<pre><code># Wrong — might not find the command
+echo "backup.sh" | at midnight
+
+# Correct — full path
+echo "/usr/local/bin/backup.sh" | at midnight
+
+# Or source environment first
+echo "source /etc/profile && backup.sh" | at midnight</code></pre>
+
+<h2>Batch Processing with batch</h2>
+
+<p>The <code>batch</code> command is like <code>at</code> but runs the job when system load drops below 1.5 (configurable). Useful for resource-intensive jobs you want to run "when the machine is not busy":</p>
+
+<pre><code>echo "/usr/local/bin/heavy-conversion.sh" | batch</code></pre>

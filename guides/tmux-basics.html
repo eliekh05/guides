@@ -1,0 +1,142 @@
+<!-- linux:Linux -->
+<h1>tmux — Terminal Multiplexer</h1>
+
+<p>tmux lets you run multiple terminal sessions inside one window, detach from them, and reattach later. Essential for remote servers — if your SSH connection drops, your processes keep running inside tmux.</p>
+
+<h2>Install</h2>
+
+<pre><code>sudo apt install tmux      # Ubuntu/Debian
+sudo dnf install tmux      # Fedora/RHEL
+sudo pacman -S tmux        # Arch
+brew install tmux           # macOS</code></pre>
+
+<h2>Core Concept</h2>
+
+<p>tmux has three levels: <strong>sessions</strong> → <strong>windows</strong> → <strong>panes</strong>. A session contains windows (like browser tabs). A window contains panes (split terminal areas). The prefix key <code>Ctrl+B</code> precedes every tmux command.</p>
+
+<h2>Essential Commands</h2>
+
+<pre><code># Start a new session
+tmux
+
+# Start a named session
+tmux new -s mysession
+
+# List sessions
+tmux ls
+
+# Attach to a session
+tmux attach -t mysession
+tmux a        # attach to last session
+
+# Detach from session (keeps it running)
+Ctrl+B  d
+
+# Kill a session
+tmux kill-session -t mysession</code></pre>
+
+<h2>Pane Shortcuts</h2>
+
+<table>
+<thead>
+<tr><th>Shortcut</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>Ctrl+B %</td><td>Split pane vertically</td></tr>
+<tr><td>Ctrl+B "</td><td>Split pane horizontally</td></tr>
+<tr><td>Ctrl+B Arrow</td><td>Move between panes</td></tr>
+<tr><td>Ctrl+B z</td><td>Zoom pane to full window (toggle)</td></tr>
+<tr><td>Ctrl+B x</td><td>Close current pane</td></tr>
+<tr><td>Ctrl+B q</td><td>Show pane numbers</td></tr>
+<tr><td>Ctrl+B {</td><td>Swap pane left</td></tr>
+<tr><td>Ctrl+B }</td><td>Swap pane right</td></tr>
+</tbody>
+</table>
+
+<h2>Window Shortcuts</h2>
+
+<table>
+<thead>
+<tr><th>Shortcut</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>Ctrl+B c</td><td>Create new window</td></tr>
+<tr><td>Ctrl+B n</td><td>Next window</td></tr>
+<tr><td>Ctrl+B p</td><td>Previous window</td></tr>
+<tr><td>Ctrl+B [0-9]</td><td>Switch to window by number</td></tr>
+<tr><td>Ctrl+B ,</td><td>Rename current window</td></tr>
+<tr><td>Ctrl+B &</td><td>Close current window</td></tr>
+<tr><td>Ctrl+B w</td><td>List all windows</td></tr>
+</tbody>
+</table>
+
+<h2>Copy Mode (Scroll and Select Text)</h2>
+
+<pre><code>Ctrl+B [        # enter copy mode
+Arrow keys      # scroll
+Space           # start selection
+Enter           # copy selection
+Ctrl+B ]        # paste</code></pre>
+
+<h2>~/.tmux.conf — Essential Config</h2>
+
+<pre><code># Change prefix from Ctrl+B to Ctrl+A (like screen)
+unbind C-b
+set -g prefix C-a
+bind C-a send-prefix
+
+# Enable mouse support
+set -g mouse on
+
+# Start windows and panes from 1 not 0
+set -g base-index 1
+setw -g pane-base-index 1
+
+# Increase scrollback buffer
+set -g history-limit 10000
+
+# Status bar
+set -g status-style bg=black,fg=green
+set -g status-right '%H:%M %d-%b'
+
+# Split panes with | and -
+bind | split-window -h -c "#{pane_current_path}"
+bind - split-window -v -c "#{pane_current_path}"
+
+# Reload config
+bind r source-file ~/.tmux.conf \; display "Reloaded"</code></pre>
+
+<pre><code># Apply config without restarting
+tmux source ~/.tmux.conf</code></pre>
+
+<h2>Keep SSH Sessions Alive</h2>
+
+<pre><code># Start tmux on your server
+ssh user@server
+tmux new -s work
+
+# Run your long-running commands
+# If SSH drops — reconnect and:
+ssh user@server
+tmux attach -t work    # everything is still running</code></pre>
+
+<h2>Send Commands to All Panes</h2>
+
+<pre><code># Synchronize input to all panes in window
+Ctrl+B :setw synchronize-panes on
+
+# Type a command — it goes to all panes simultaneously
+# Turn off when done
+Ctrl+B :setw synchronize-panes off</code></pre>
+
+<h2>Scripted Session Setup</h2>
+
+<pre><code>#!/bin/bash
+# Create a dev environment with one command
+tmux new-session -d -s dev -x 220 -y 50
+tmux rename-window -t dev:1 'editor'
+tmux send-keys -t dev:1 'nvim .' Enter
+tmux new-window -t dev:2 -n 'server'
+tmux send-keys -t dev:2 'npm run dev' Enter
+tmux new-window -t dev:3 -n 'git'
+tmux attach-session -t dev</code></pre>

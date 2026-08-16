@@ -1,0 +1,127 @@
+<!-- macos:macOS -->
+<h1>macOS Terminal Tips and Tricks</h1>
+
+<p>Practical terminal tricks for macOS that save time day to day — most people discover these years in, if at all.</p>
+
+<h2>Open Finder from Terminal</h2>
+
+<pre><code>open .                    # open current directory in Finder
+open ~/Downloads          # open specific folder
+open -a "TextEdit" file   # open file with specific app
+open -a "Google Chrome" https://example.com</code></pre>
+
+<h2>Open Terminal in Current Finder Folder</h2>
+
+<p>System Settings → Privacy &amp; Security → Full Disk Access → enable Terminal. Then in Finder: right-click a folder → New Terminal at Folder (or drag folder into Terminal window).</p>
+
+<h2>Copy Terminal Output to Clipboard</h2>
+
+<pre><code># Copy output of any command to clipboard
+cat file.txt | pbcopy
+ls -la | pbcopy
+pwd | pbcopy
+
+# Paste from clipboard
+pbpaste
+pbpaste > newfile.txt</code></pre>
+
+<h2>Quick Look a File from Terminal</h2>
+
+<pre><code>qlmanage -p file.jpg       # opens Quick Look preview
+# or
+open -R file.jpg           # reveal in Finder</code></pre>
+
+<h2>Say Command — Text to Speech</h2>
+
+<pre><code>say "Hello"
+say -v Samantha "Your script has finished"
+say -v Daniel "Build complete"    # British voice
+
+# List available voices
+say -v ?
+
+# Useful for long scripts
+./long-build.sh && say "Build complete" || say "Build failed"</code></pre>
+
+<h2>Network Utilities</h2>
+
+<pre><code># Flush DNS cache
+sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder
+
+# Show all network interfaces
+networksetup -listallnetworkservices
+
+# Get IP address
+ipconfig getifaddr en0      # Wi-Fi
+ipconfig getifaddr en1      # Ethernet
+
+# Show ARP table (devices on local network)
+arp -a</code></pre>
+
+<h2>System Information</h2>
+
+<pre><code># macOS version
+sw_vers
+
+# Hardware info
+system_profiler SPHardwareDataType
+
+# CPU info
+sysctl -n machdep.cpu.brand_string
+
+# Memory
+sysctl hw.memsize | awk '{print $2/1024/1024/1024 " GB"}'
+
+# Uptime
+uptime</code></pre>
+
+<h2>Spotlight from Terminal</h2>
+
+<pre><code># Search with mdfind (Spotlight in CLI)
+mdfind -name "document.pdf"
+mdfind "kind:pdf author:John"
+
+# Find files modified today
+mdfind -onlyin ~ 'kMDItemContentModificationDate >= $time.today'</code></pre>
+
+<h2>Disable/Enable Desktop Gatekeeper for Scripts</h2>
+
+<pre><code># Remove quarantine from a downloaded app
+xattr -rd com.apple.quarantine /Applications/App.app
+
+# Check quarantine status
+xattr -l /Applications/App.app</code></pre>
+
+<h2>Set Default App for File Type</h2>
+
+<pre><code># Install duti (brew install duti)
+# Set VS Code as default for .md files
+duti -s com.microsoft.VSCode .md all
+
+# Find app bundle ID
+osascript -e 'id of app "Visual Studio Code"'</code></pre>
+
+<h2>Caffeinate — Prevent Sleep</h2>
+
+<pre><code># Prevent sleep indefinitely
+caffeinate
+
+# Prevent sleep for 2 hours
+caffeinate -t 7200
+
+# Prevent sleep until a command finishes
+caffeinate -i ./long-script.sh
+
+# Prevent display sleep (not just system sleep)
+caffeinate -d</code></pre>
+
+<h2>Useful Aliases for ~/.zshrc</h2>
+
+<pre><code># Add to ~/.zshrc
+alias ll='ls -laG'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias flushdns='sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder'
+alias ip='ipconfig getifaddr en0'
+alias pubkey='cat ~/.ssh/id_ed25519.pub | pbcopy && echo "Copied to clipboard"'
+alias cleanup='find . -name ".DS_Store" -delete && find . -name "*.pyc" -delete'</code></pre>

@@ -1,0 +1,127 @@
+<!-- linux:Linux -->
+<h1>rsync — Efficient Backups and File Sync</h1>
+
+<p>rsync copies only what has changed — making it far faster than cp for backups and syncing large directories. It works locally and over SSH.</p>
+
+<h2>Basic Syntax</h2>
+
+<pre><code>rsync [options] source destination</code></pre>
+
+<p>Trailing slash on source matters:</p>
+<pre><code># Copy the folder itself
+rsync -av /home/user/docs /backup/
+
+# Copy the contents of the folder (trailing slash)
+rsync -av /home/user/docs/ /backup/docs/</code></pre>
+
+<h2>Essential Options</h2>
+
+<table>
+<thead>
+<tr><th>Option</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>-a</td><td>Archive mode — preserves permissions, timestamps, symlinks, owner</td></tr>
+<tr><td>-v</td><td>Verbose — show files being transferred</td></tr>
+<tr><td>-z</td><td>Compress during transfer (useful over slow connections)</td></tr>
+<tr><td>-P</td><td>Show progress + keep partial files on interrupt</td></tr>
+<tr><td>-n</td><td>Dry run — show what would be transferred without doing it</td></tr>
+<tr><td>--delete</td><td>Delete files at destination that no longer exist at source</td></tr>
+<tr><td>--exclude</td><td>Exclude files matching a pattern</td></tr>
+<tr><td>-h</td><td>Human readable sizes</td></tr>
+</tbody>
+</table>
+
+<h2>Common Use Cases</h2>
+
+<pre><code># Local backup of home directory
+rsync -avh --delete /home/user/ /backup/home/
+
+# Dry run first — always do this before --delete
+rsync -avhn --delete /home/user/ /backup/home/
+
+# Sync to external drive
+rsync -avhP /home/user/Documents/ /media/backup-drive/Documents/
+
+# Exclude directories
+rsync -avh \
+  --exclude='.cache' \
+  --exclude='node_modules' \
+  --exclude='*.tmp' \
+  /home/user/ /backup/home/</code></pre>
+
+<h2>Remote Sync Over SSH</h2>
+
+<pre><code># Local to remote
+rsync -avhz /home/user/docs/ user@server:/backup/docs/
+
+# Remote to local
+rsync -avhz user@server:/var/www/html/ /local/backup/
+
+# Specify SSH port
+rsync -avhz -e "ssh -p 2222" /home/user/ user@server:/backup/
+
+# Use SSH key
+rsync -avhz -e "ssh -i ~/.ssh/id_ed25519" /home/user/ user@server:/backup/</code></pre>
+
+<h2>Automated Daily Backup Script</h2>
+
+<pre><code>#!/bin/bash
+# /usr/local/bin/backup.sh
+
+SOURCE="/home/user/"
+DEST="/backup/home/"
+LOG="/var/log/rsync-backup.log"
+DATE=$(date '+%Y-%m-%d %H:%M:%S')
+
+echo "[$DATE] Starting backup" >> "$LOG"
+
+rsync -avh --delete \
+  --exclude='.cache' \
+  --exclude='node_modules' \
+  --exclude='.local/share/Trash' \
+  --log-file="$LOG" \
+  "$SOURCE" "$DEST"
+
+echo "[$DATE] Backup complete" >> "$LOG"</code></pre>
+
+<pre><code>chmod +x /usr/local/bin/backup.sh
+
+# Schedule with cron — daily at 2 AM
+crontab -e
+0 2 * * * /usr/local/bin/backup.sh</code></pre>
+
+<h2>Incremental Backups with Hardlinks</h2>
+
+<p>Keep multiple daily snapshots without using full disk space per snapshot — unchanged files are hardlinked to the previous backup:</p>
+
+<pre><code>#!/bin/bash
+DATE=$(date +%Y-%m-%d)
+DEST="/backup/snapshots"
+LATEST="$DEST/latest"
+
+rsync -avh --delete \
+  --link-dest="$LATEST" \
+  /home/user/ \
+  "$DEST/$DATE/"
+
+# Update the 'latest' symlink
+rm -f "$LATEST"
+ln -s "$DEST/$DATE" "$LATEST"</code></pre>
+
+<p>Each snapshot directory looks complete but shares unchanged files with previous snapshots via hardlinks — uses only the space of actual changes.</p>
+
+<h2>Bandwidth Limiting</h2>
+
+<pre><code># Limit to 1MB/s (useful on metered connections)
+rsync -avhz --bwlimit=1000 /source/ user@server:/dest/</code></pre>
+
+<h2>Check What Would Change (Itemize)</h2>
+
+<pre><code># Show exactly what would be transferred and why
+rsync -avhn --itemize-changes /source/ /dest/
+
+# Output format: YXcstpoguax filename
+# Y = update type (< send, > receive, c create, d delete)
+# X = file type (f file, d dir, L symlink)
+# cstpoguax = what changed (checksum, size, time, permissions, owner...)</code></pre>

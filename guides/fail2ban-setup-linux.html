@@ -1,0 +1,107 @@
+<!-- security:Security & Apps -->
+<h1>Fail2ban — Block Brute Force Attacks</h1>
+
+<p>Fail2ban monitors log files for repeated failed authentication attempts and temporarily bans the offending IP using firewall rules. Essential for any internet-facing Linux server with SSH open.</p>
+
+<h2>Install</h2>
+
+<pre><code>sudo apt install fail2ban -y      # Ubuntu/Debian
+sudo dnf install fail2ban -y      # Fedora/RHEL
+sudo pacman -S fail2ban           # Arch
+
+sudo systemctl enable --now fail2ban</code></pre>
+
+<h2>Configuration</h2>
+
+<p>Never edit <code>/etc/fail2ban/jail.conf</code> directly — it gets overwritten on updates. Create a local override:</p>
+
+<pre><code>sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+sudo nano /etc/fail2ban/jail.local</code></pre>
+
+<p>Key settings in <code>[DEFAULT]</code>:</p>
+
+<pre><code>[DEFAULT]
+bantime  = 1h        # ban duration (use -1 for permanent)
+findtime = 10m       # window to count failures
+maxretry = 5         # failures before ban
+banaction = iptables-multiport   # or nftables on newer systems
+
+# Whitelist your own IPs
+ignoreip = 127.0.0.1/8 ::1 YOUR.HOME.IP.ADDRESS</code></pre>
+
+<h2>Enable SSH Protection</h2>
+
+<pre><code>[sshd]
+enabled  = true
+port     = ssh        # or your custom port e.g. 2222
+maxretry = 3
+bantime  = 24h</code></pre>
+
+<pre><code>sudo systemctl restart fail2ban</code></pre>
+
+<h2>Check Status</h2>
+
+<pre><code># Overall status
+sudo fail2ban-client status
+
+# SSH jail status — shows banned IPs
+sudo fail2ban-client status sshd
+
+# Watch bans in real time
+sudo tail -f /var/log/fail2ban.log</code></pre>
+
+<h2>Manually Ban and Unban IPs</h2>
+
+<pre><code># Ban an IP manually
+sudo fail2ban-client set sshd banip 1.2.3.4
+
+# Unban an IP
+sudo fail2ban-client set sshd unbanip 1.2.3.4
+
+# Check if an IP is banned
+sudo fail2ban-client get sshd banip | grep 1.2.3.4</code></pre>
+
+<h2>Protect Nginx — HTTP Auth Brute Force</h2>
+
+<pre><code>[nginx-http-auth]
+enabled  = true
+port     = http,https
+maxretry = 5
+bantime  = 1h</code></pre>
+
+<h2>Protect Nginx — Bad Bots and 404 Floods</h2>
+
+<pre><code>[nginx-botsearch]
+enabled  = true
+port     = http,https
+maxretry = 2
+bantime  = 24h</code></pre>
+
+<h2>Custom Jail for Any Log File</h2>
+
+<pre><code>sudo nano /etc/fail2ban/jail.local</code></pre>
+
+<pre><code>[my-app]
+enabled  = true
+logpath  = /var/log/my-app/auth.log
+maxretry = 5
+bantime  = 1h
+filter   = my-app    # points to /etc/fail2ban/filter.d/my-app.conf</code></pre>
+
+<pre><code>sudo nano /etc/fail2ban/filter.d/my-app.conf</code></pre>
+
+<pre><code>[Definition]
+failregex = ^.*Failed login from <HOST>.*$
+ignoreregex =</code></pre>
+
+<h2>Test a Filter</h2>
+
+<pre><code># Test filter against log file before enabling
+sudo fail2ban-regex /var/log/auth.log /etc/fail2ban/filter.d/sshd.conf</code></pre>
+
+<h2>Permanent Bans</h2>
+
+<pre><code>[DEFAULT]
+bantime = -1    # negative value = permanent ban</code></pre>
+
+<p>Permanent bans survive restarts but accumulate over time. Consider using a shorter bantime for most jails and permanent only for known bad actors.</p>

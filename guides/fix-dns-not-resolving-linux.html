@@ -1,0 +1,126 @@
+<!-- networking:Networking & DNS -->
+<h1>Fix DNS Not Resolving on Linux</h1>
+
+<p>DNS resolution failures cause websites to be unreachable even when the internet connection itself is working. The site loads if you use an IP address but not a domain name.</p>
+
+<h2>Confirm It Is a DNS Issue</h2>
+
+<pre><code># Test with IP vs domain
+curl -I https://1.1.1.1          # works = internet is fine
+curl -I https://google.com       # fails = DNS issue
+
+# Directly test DNS resolution
+dig google.com
+nslookup google.com
+host google.com
+
+# Test against a specific DNS server
+dig google.com @8.8.8.8          # test against Google DNS
+dig google.com @1.1.1.1          # test against Cloudflare</code></pre>
+
+<h2>Check Current DNS Configuration</h2>
+
+<pre><code># Modern systemd systems
+resolvectl status
+
+# Legacy
+cat /etc/resolv.conf
+
+# Check what is answering DNS queries
+systemd-resolve --status | grep "DNS Servers"</code></pre>
+
+<h2>Flush DNS Cache</h2>
+
+<pre><code># systemd-resolved
+sudo resolvectl flush-caches
+sudo systemd-resolve --flush-caches
+
+# nscd (older systems)
+sudo systemctl restart nscd
+
+# dnsmasq
+sudo systemctl restart dnsmasq</code></pre>
+
+<h2>Restart systemd-resolved</h2>
+
+<pre><code>sudo systemctl restart systemd-resolved
+sudo systemctl status systemd-resolved</code></pre>
+
+<h2>Fix Broken /etc/resolv.conf</h2>
+
+<pre><code># Check what resolv.conf points to
+ls -la /etc/resolv.conf
+
+# On systems using systemd-resolved, it should be a symlink:
+# /etc/resolv.conf -> /run/systemd/resolve/stub-resolv.conf
+
+# If it is a regular file or wrong symlink, fix it:
+sudo rm /etc/resolv.conf
+sudo ln -s /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+sudo systemctl restart systemd-resolved</code></pre>
+
+<h2>Set a Manual DNS Server</h2>
+
+<pre><code># Via NetworkManager (persists across reboots)
+nmcli connection show                          # list connections
+nmcli connection modify "CONNECTION-NAME" ipv4.dns "1.1.1.1 8.8.8.8"
+nmcli connection modify "CONNECTION-NAME" ipv4.ignore-auto-dns yes
+nmcli connection up "CONNECTION-NAME"
+
+# Verify
+resolvectl status</code></pre>
+
+<h2>Fix DNS on Ubuntu with systemd-resolved</h2>
+
+<pre><code">sudo nano /etc/systemd/resolved.conf</code></pre>
+
+<pre><code>[Resolve]
+DNS=1.1.1.1 8.8.8.8
+FallbackDNS=9.9.9.9
+DNSStubListener=yes</code></pre>
+
+<pre><code>sudo systemctl restart systemd-resolved</code></pre>
+
+<h2>DNS Works for Some Domains but Not Others</h2>
+
+<p>This usually means the DNS server is returning NXDOMAIN for certain domains, or there is a search domain issue.</p>
+
+<pre><code># Check search domains
+cat /etc/resolv.conf | grep search
+
+# Test without search domains
+dig google.com.     # note the trailing dot — disables search domain appending
+
+# Check if DNSSEC validation is failing
+dig +dnssec google.com
+resolvectl query google.com</code></pre>
+
+<h2>Fix Docker Breaking Host DNS</h2>
+
+<p>Docker can interfere with host DNS by modifying <code>/etc/resolv.conf</code>:</p>
+
+<pre><code># Check if Docker is the problem
+systemctl stop docker
+resolvectl flush-caches
+# Test DNS — if it works now, Docker was the issue
+
+# Fix — configure Docker to use a specific DNS
+sudo nano /etc/docker/daemon.json</code></pre>
+
+<pre><code>{
+  "dns": ["1.1.1.1", "8.8.8.8"]
+}</code></pre>
+
+<pre><code>sudo systemctl restart docker</code></pre>
+
+<h2>VPN Breaking DNS</h2>
+
+<p>VPNs often push their own DNS servers which may be slow or broken:</p>
+
+<pre><code># Check DNS after connecting to VPN
+resolvectl status
+
+# If VPN DNS is the problem, either:
+# 1. Disconnect the VPN
+# 2. Override DNS in your VPN client settings
+# 3. Configure split DNS in NetworkManager</code></pre>

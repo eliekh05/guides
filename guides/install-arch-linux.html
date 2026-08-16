@@ -1,0 +1,130 @@
+<!-- installation:Installation Guides -->
+<h1>Install Arch Linux</h1>
+
+<p>Arch Linux has no graphical installer. Installation is done entirely from the command line, which means you understand exactly what is on your system. This guide covers a standard UEFI installation.</p>
+
+<h2>Download and Boot</h2>
+
+<p>Download the ISO from <a href="https://archlinux.org/download/">https://archlinux.org/download/</a>. Flash with Ventoy or dd:</p>
+
+<pre><code>sudo dd if=archlinux-x86_64.iso of=/dev/sdX bs=4M status=progress && sync</code></pre>
+
+<p>Boot from USB. You land at a root shell.</p>
+
+<h2>Connect to the Internet</h2>
+
+<pre><code># Ethernet — usually auto-connects
+ping archlinux.org
+
+# Wi-Fi
+iwctl
+[iwd] device list
+[iwd] station wlan0 scan
+[iwd] station wlan0 get-networks
+[iwd] station wlan0 connect "NetworkName"
+[iwd] exit</code></pre>
+
+<h2>Update System Clock</h2>
+
+<pre><code>timedatectl set-ntp true</code></pre>
+
+<h2>Partition the Disk</h2>
+
+<pre><code># List disks
+fdisk -l
+lsblk
+
+# Partition with gdisk (UEFI/GPT)
+gdisk /dev/sda</code></pre>
+
+<p>Create these partitions:</p>
+<table>
+<thead>
+<tr><th>Partition</th><th>Size</th><th>Type</th><th>Mount</th></tr>
+</thead>
+<tbody>
+<tr><td>/dev/sda1</td><td>512 MB</td><td>EFI System (ef00)</td><td>/boot</td></tr>
+<tr><td>/dev/sda2</td><td>Remaining</td><td>Linux filesystem (8300)</td><td>/</td></tr>
+</tbody>
+</table>
+
+<pre><code># Format
+mkfs.fat -F32 /dev/sda1
+mkfs.ext4 /dev/sda2     # or mkfs.btrfs /dev/sda2 for Btrfs
+
+# Mount
+mount /dev/sda2 /mnt
+mount --mkdir /dev/sda1 /mnt/boot</code></pre>
+
+<h2>Install Base System</h2>
+
+<pre><code>pacstrap -K /mnt base linux linux-firmware base-devel vim networkmanager</code></pre>
+
+<h2>Configure the System</h2>
+
+<pre><code># Generate fstab
+genfstab -U /mnt >> /mnt/etc/fstab
+
+# Chroot
+arch-chroot /mnt
+
+# Set timezone
+ln -sf /usr/share/zoneinfo/Region/City /etc/localtime
+hwclock --systohc
+
+# Locale
+echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+locale-gen
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
+
+# Hostname
+echo "myhostname" > /etc/hostname
+
+# Root password
+passwd</code></pre>
+
+<h2>Install Bootloader</h2>
+
+<pre><code># Install GRUB
+pacman -S grub efibootmgr
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=ARCH
+grub-mkconfig -o /boot/grub/grub.cfg</code></pre>
+
+<h2>Create a User</h2>
+
+<pre><code">useradd -m -G wheel -s /bin/bash youruser
+passwd youruser
+
+# Enable sudo for wheel group
+EDITOR=vim visudo
+# Uncomment: %wheel ALL=(ALL:ALL) ALL</code></pre>
+
+<h2>Enable NetworkManager</h2>
+
+<pre><code>systemctl enable NetworkManager</code></pre>
+
+<h2>Reboot</h2>
+
+<pre><code>exit          # exit chroot
+umount -R /mnt
+reboot</code></pre>
+
+<p>Remove the USB drive when the screen goes blank.</p>
+
+<h2>Post-Install</h2>
+
+<pre><code># Connect to Wi-Fi
+nmcli device wifi connect "NetworkName" password "password"
+
+# Install yay (AUR helper)
+sudo pacman -S git
+git clone https://aur.archlinux.org/yay-bin.git
+cd yay-bin && makepkg -si
+
+# Install a desktop environment (optional)
+sudo pacman -S gnome gnome-extra
+sudo systemctl enable gdm
+
+# Or KDE
+sudo pacman -S plasma kde-applications
+sudo systemctl enable sddm</code></pre>

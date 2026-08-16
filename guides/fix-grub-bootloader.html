@@ -1,0 +1,115 @@
+<!-- linux:Linux -->
+<h1>Fix GRUB Bootloader</h1>
+
+<p>A broken GRUB leaves you with a system that will not boot — either a blank screen, a GRUB rescue prompt, or an error message. Here is how to diagnose and fix each case.</p>
+
+<h2>Identify Your Situation</h2>
+
+<ul>
+<li><strong>GRUB rescue&gt;</strong> prompt — GRUB loads but cannot find its configuration or modules</li>
+<li><strong>error: no such partition</strong> — the root partition GRUB expects is missing or changed</li>
+<li><strong>Blank screen after POST</strong> — GRUB itself is not loading (MBR/EFI issue)</li>
+<li><strong>GRUB menu appears but OS fails to boot</strong> — GRUB is fine, issue is with the kernel or initramfs</li>
+</ul>
+
+<h2>Boot from Live USB First</h2>
+
+<p>For most fixes, boot a Linux live USB (Ubuntu, Fedora, or any distro) and chroot into your broken system.</p>
+
+<h2>Chroot Into Your System</h2>
+
+<pre><code># Find your partitions
+lsblk
+fdisk -l
+
+# Mount root partition (replace /dev/sda2 with yours)
+sudo mount /dev/sda2 /mnt
+
+# If you have a separate /boot partition
+sudo mount /dev/sda1 /mnt/boot
+
+# If using EFI
+sudo mount /dev/sda1 /mnt/boot/efi
+
+# Bind system directories
+sudo mount --bind /dev /mnt/dev
+sudo mount --bind /proc /mnt/proc
+sudo mount --bind /sys /mnt/sys
+sudo mount --bind /run /mnt/run
+
+# Chroot
+sudo chroot /mnt</code></pre>
+
+<h2>Reinstall GRUB (Most Common Fix)</h2>
+
+<pre><code># Inside chroot — BIOS/MBR systems
+grub-install /dev/sda     # install to disk, not partition
+update-grub
+
+# UEFI systems
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=ubuntu
+update-grub</code></pre>
+
+<pre><code># Fedora/RHEL (inside chroot)
+grub2-install /dev/sda
+grub2-mkconfig -o /boot/grub2/grub.cfg
+
+# UEFI Fedora
+grub2-install --target=x86_64-efi --efi-directory=/boot/efi
+grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg</code></pre>
+
+<h2>Fix from GRUB Rescue Prompt</h2>
+
+<pre><code># List available partitions
+grub rescue> ls
+
+# Try each partition to find your root
+grub rescue> ls (hd0,1)/
+grub rescue> ls (hd0,2)/     # look for /etc, /home etc
+
+# Once found, set root and prefix
+grub rescue> set root=(hd0,2)
+grub rescue> set prefix=(hd0,2)/boot/grub
+grub rescue> insmod normal
+grub rescue> normal</code></pre>
+
+<p>This boots into your system temporarily. Then reinstall GRUB properly from there.</p>
+
+<h2>Regenerate GRUB Config</h2>
+
+<pre><code># Regenerate without reinstalling (if GRUB loads but menu is wrong)
+sudo update-grub           # Ubuntu/Debian
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg    # Fedora/RHEL
+sudo grub-mkconfig -o /boot/grub/grub.cfg      # Arch</code></pre>
+
+<h2>Fix GRUB After Windows Update Overwrites Boot Sector</h2>
+
+<p>Windows updates sometimes overwrite the EFI boot entry, making Windows boot instead of GRUB. Fix from a live USB:</p>
+
+<pre><code># After chroot (see above)
+# Reinstall GRUB to EFI
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=ubuntu --recheck
+update-grub
+
+# Exit chroot and reboot
+exit
+sudo umount -R /mnt
+reboot</code></pre>
+
+<h2>Fix Missing initramfs</h2>
+
+<pre><code># Inside chroot — rebuild initramfs
+update-initramfs -u -k all     # Ubuntu/Debian
+dracut --force --regenerate-all # Fedora/RHEL
+mkinitcpio -P                   # Arch</code></pre>
+
+<h2>Verify UEFI Boot Entries</h2>
+
+<pre><code># List EFI boot entries
+sudo efibootmgr -v
+
+# Add a missing GRUB entry
+sudo efibootmgr --create --disk /dev/sda --part 1 --label "Ubuntu" --loader /EFI/ubuntu/grubx64.efi
+
+# Set boot order (put GRUB first)
+sudo efibootmgr --bootorder 0001,0002,0000</code></pre>

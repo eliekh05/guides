@@ -1,0 +1,145 @@
+<!-- security:Security & Apps -->
+<h1>Secure a Linux Server — Essential First Steps</h1>
+
+<p>Every new Linux server exposed to the internet needs these steps before anything else. A default install is not secure.</p>
+
+<h2>Create a Non-Root User</h2>
+
+<pre><code># Create user
+adduser youruser
+
+# Add to sudo group
+usermod -aG sudo youruser      # Debian/Ubuntu
+usermod -aG wheel youruser     # Fedora/RHEL/Arch
+
+# Switch to new user and verify sudo works
+su - youruser
+sudo whoami    # should output: root</code></pre>
+
+<h2>Set Up SSH Key Authentication</h2>
+
+<pre><code># On your local machine — generate a key if you don't have one
+ssh-keygen -t ed25519 -C "your-server"
+
+# Copy public key to server
+ssh-copy-id youruser@server-ip
+
+# Or manually:
+cat ~/.ssh/id_ed25519.pub | ssh youruser@server-ip "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys"
+
+# Test key login before disabling passwords
+ssh youruser@server-ip</code></pre>
+
+<h2>Disable Password Authentication</h2>
+
+<pre><code>sudo nano /etc/ssh/sshd_config</code></pre>
+
+<pre><code>PermitRootLogin no
+PasswordAuthentication no
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys</code></pre>
+
+<pre><code>sudo systemctl restart sshd
+
+# Test from a new terminal BEFORE closing current session
+ssh youruser@server-ip</code></pre>
+
+<blockquote>
+<p>Always test in a new terminal window before closing your current SSH session. A mistake here can lock you out permanently.</p>
+</blockquote>
+
+<h2>Configure the Firewall</h2>
+
+<pre><code># UFW (Ubuntu/Debian)
+sudo apt install ufw -y
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow ssh
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw enable
+sudo ufw status verbose
+
+# firewalld (Fedora/RHEL)
+sudo firewall-cmd --permanent --add-service=ssh
+sudo firewall-cmd --permanent --add-service=http
+sudo firewall-cmd --permanent --add-service=https
+sudo firewall-cmd --reload
+sudo firewall-cmd --list-all</code></pre>
+
+<h2>Install and Configure fail2ban</h2>
+
+<p>fail2ban bans IPs that fail authentication repeatedly — stops brute force attacks.</p>
+
+<pre><code>sudo apt install fail2ban -y    # Ubuntu/Debian
+sudo dnf install fail2ban -y    # Fedora/RHEL
+
+sudo nano /etc/fail2ban/jail.local</code></pre>
+
+<pre><code>[DEFAULT]
+bantime  = 1h
+findtime  = 10m
+maxretry = 5
+
+[sshd]
+enabled = true
+port = ssh
+logpath = %(sshd_log)s
+backend = %(sshd_backend)s</code></pre>
+
+<pre><code>sudo systemctl enable --now fail2ban
+sudo fail2ban-client status sshd</code></pre>
+
+<h2>Keep the System Updated</h2>
+
+<pre><code># Ubuntu/Debian — enable automatic security updates
+sudo apt install unattended-upgrades -y
+sudo dpkg-reconfigure -plow unattended-upgrades
+
+# Check what would be upgraded
+sudo unattended-upgrade --dry-run --debug
+
+# Manual update
+sudo apt update && sudo apt upgrade -y</code></pre>
+
+<h2>Change the SSH Port (Optional)</h2>
+
+<p>Changing from 22 to a non-standard port reduces noise in logs but is not real security — treat it as log cleanup, not protection.</p>
+
+<pre><code>sudo nano /etc/ssh/sshd_config
+# Change: Port 22
+# To:     Port 2222
+
+# Allow the new port through firewall first
+sudo ufw allow 2222/tcp
+sudo ufw delete allow ssh
+sudo systemctl restart sshd
+
+# Connect with:
+ssh -p 2222 youruser@server-ip</code></pre>
+
+<h2>Disable Unused Services</h2>
+
+<pre><code># List all running services
+systemctl list-units --type=service --state=running
+
+# Disable services you don't need
+sudo systemctl disable --now avahi-daemon
+sudo systemctl disable --now cups</code></pre>
+
+<h2>Check for Open Ports</h2>
+
+<pre><code># See what is listening
+sudo ss -tlnp
+sudo netstat -tlnp
+
+# Scan from outside (on your local machine)
+nmap -sV server-ip</code></pre>
+
+<h2>Set Up Automatic Reboot for Kernel Updates</h2>
+
+<pre><code># Install needrestart
+sudo apt install needrestart -y
+
+# Check if a reboot is needed
+needrestart -r a</code></pre>

@@ -5,265 +5,464 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OS & Installation Guides</title>
 <meta name="description" content="Practical guides for problems that are hard to find solutions for online.">
-<meta name="theme-color" content="#0a0a0a">
+<meta name="theme-color" content="#0c0c0e">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root{
-  --bg:#0a0a0a;
-  --bg2:#111;
-  --bg3:#161616;
-  --border:#1e1e1e;
-  --text:#e0e0e0;
-  --muted:#666;
-  --dim:#333;
-  --accent:#00cc66;
-  --blue:#79d4f0;
-  --red:#ff6b6b;
-  --yellow:#ffd060;
+  --bg:#0c0c0e;
+  --bg2:#111114;
+  --bg3:#16161a;
+  --bg4:#1c1c21;
+  --border:#222228;
+  --border2:#2a2a32;
+  --text:#e8e8f0;
+  --text2:#a0a0b0;
+  --muted:#555560;
+  --dim:#2a2a35;
+  --accent:#3dd68c;
+  --accent2:#2ab87a;
+  --accent-bg:rgba(61,214,140,.08);
+  --accent-border:rgba(61,214,140,.18);
+  --blue:#7eb8f7;
+  --purple:#b19dff;
+  --red:#ff6b7a;
+  --yellow:#f5c842;
   --mono:'JetBrains Mono','Fira Code','SF Mono',Consolas,monospace;
   --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
-  --header:48px;
+  --header:52px;
+  --sidebar:256px;
+  --radius:10px;
+  --radius-sm:7px;
 }
 
-html,body{height:100%;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+html,body{height:100%;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 body{font-family:var(--sans);font-size:15px;line-height:1.6}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+* {scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
 
 /* ── HEADER ── */
 .hdr{
-  position:fixed;top:0;left:0;right:0;height:var(--header);z-index:100;
-  background:rgba(10,10,10,.95);border-bottom:1px solid var(--border);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  display:flex;align-items:center;gap:10px;padding:0 14px;
+  position:fixed;top:0;left:0;right:0;height:var(--header);z-index:200;
+  background:rgba(12,12,14,.92);border-bottom:1px solid var(--border);
+  backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%);
+  display:flex;align-items:center;gap:12px;padding:0 16px;
 }
-.hdr-logo{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--accent);text-decoration:none;white-space:nowrap;flex-shrink:0}
+.hdr-logo{
+  font-family:var(--mono);font-size:14px;font-weight:700;
+  color:var(--accent);text-decoration:none;white-space:nowrap;flex-shrink:0;
+  letter-spacing:-.01em;
+}
 .hdr-logo span{color:var(--muted);font-weight:400}
 .hdr-search{
-  flex:1;height:32px;background:var(--bg2);border:1px solid var(--border);
-  border-radius:8px;padding:0 10px;font-size:14px;font-family:var(--sans);
-  color:var(--text);outline:none;transition:border-color .15s;
+  flex:1;height:34px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:8px;padding:0 12px 0 34px;font-size:14px;font-family:var(--sans);
+  color:var(--text);outline:none;transition:border-color .15s,background .15s;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23555560' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:10px center;
 }
-.hdr-search:focus{border-color:rgba(0,204,102,.4)}
+.hdr-search:focus{border-color:var(--accent-border);background-color:var(--bg3)}
 .hdr-search::placeholder{color:var(--muted)}
-.menu-btn{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px;flex-shrink:0;line-height:1}
-.hdr-gh{font-size:12px;color:var(--muted);text-decoration:none;flex-shrink:0;display:none}
-.hdr-gh:hover{color:var(--accent)}
+.menu-btn{
+  background:none;border:none;color:var(--muted);cursor:pointer;
+  padding:6px;flex-shrink:0;line-height:1;border-radius:6px;
+  transition:color .1s,background .1s;
+}
+.menu-btn:hover{color:var(--text);background:var(--bg3)}
+.menu-btn svg{display:block}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.hdr-gh{
+  font-size:12px;color:var(--muted);text-decoration:none;
+  padding:5px 10px;border:1px solid var(--border);border-radius:6px;
+  transition:color .1s,border-color .1s;display:none;
+  font-family:var(--mono);letter-spacing:-.01em;
+}
+.hdr-gh:hover{color:var(--text);border-color:var(--border2)}
 
 /* ── LAYOUT ── */
 .layout{display:flex;padding-top:var(--header);min-height:100vh}
 
 /* ── SIDEBAR ── */
 .sidebar{
-  width:260px;flex-shrink:0;position:fixed;top:var(--header);left:-260px;
-  bottom:0;overflow-y:auto;background:#0d0d0d;border-right:1px solid var(--border);
-  padding:8px 0 60px;z-index:99;transition:left .25s ease;
-  scrollbar-width:thin;scrollbar-color:#1e1e1e transparent;
+  width:var(--sidebar);flex-shrink:0;
+  position:fixed;top:var(--header);left:calc(-1 * var(--sidebar));
+  bottom:0;overflow-y:auto;
+  background:var(--bg);
+  border-right:1px solid var(--border);
+  padding:12px 0 80px;z-index:150;
+  transition:left .22s cubic-bezier(.4,0,.2,1);
 }
-.sidebar.open{left:0;box-shadow:8px 0 32px rgba(0,0,0,.7)}
-.sidebar::-webkit-scrollbar{width:3px}
-.sidebar::-webkit-scrollbar-thumb{background:#1e1e1e}
+.sidebar.open{left:0;box-shadow:12px 0 40px rgba(0,0,0,.6)}
+.sidebar-inner{padding:0}
 
-.sb-root{font-size:10px;color:var(--dim);padding:8px 14px 10px;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--border);margin-bottom:4px}
-.sb-sec{cursor:pointer}
+.sb-label{
+  font-size:10px;color:var(--muted);
+  padding:6px 16px 8px;letter-spacing:.1em;text-transform:uppercase;
+  font-weight:600;
+}
+.sb-sec{}
 .sb-sec-hdr{
   display:flex;align-items:center;justify-content:space-between;
-  padding:8px 14px;font-size:13px;color:var(--muted);
-  transition:color .1s,background .1s;user-select:none;
+  padding:7px 16px;font-size:13px;color:var(--text2);
+  transition:color .1s,background .1s;user-select:none;cursor:pointer;
+  border-radius:0;gap:8px;
 }
 .sb-sec-hdr:hover{color:var(--text);background:var(--bg3)}
-.sb-sec-hdr.open{color:var(--accent)}
-.sb-sec-hdr .chev{font-size:10px;color:var(--dim);transition:transform .15s}
-.sb-sec-hdr.open .chev{transform:rotate(90deg);color:var(--accent);opacity:.5}
-.sb-sec-count{font-size:11px;color:var(--dim)}
-.sb-guides{display:none}
+.sb-sec-hdr.open{color:var(--text)}
+.sb-sec-name{flex:1;font-weight:500}
+.sb-sec-right{display:flex;align-items:center;gap:6px}
+.sb-sec-count{
+  font-size:10px;color:var(--muted);
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:4px;padding:1px 5px;font-family:var(--mono);
+}
+.sb-chev{
+  font-size:10px;color:var(--muted);
+  transition:transform .15s;line-height:1;
+}
+.sb-sec-hdr.open .sb-chev{transform:rotate(90deg);color:var(--accent)}
+.sb-sec-hdr.open .sb-sec-count{border-color:var(--accent-border);color:var(--accent)}
+
+.sb-guides{display:none;padding:2px 0 4px}
 .sb-sec-hdr.open+.sb-guides{display:block}
 .sb-link{
-  display:block;padding:5px 14px 5px 24px;font-size:12px;color:#555;
-  text-decoration:none;line-height:1.5;transition:color .1s,background .1s;
+  display:block;padding:5px 16px 5px 28px;
+  font-size:12.5px;color:var(--muted);
+  text-decoration:none;line-height:1.5;
+  transition:color .1s,background .1s;
+  border-radius:0;
 }
-.sb-link:hover{color:var(--text);background:var(--bg3)}
-.sb-link.active{color:var(--accent);background:rgba(0,204,102,.06)}
+.sb-link:hover{color:var(--text2);background:var(--bg3)}
+.sb-link.active{
+  color:var(--accent);background:var(--accent-bg);
+  font-weight:500;
+}
 
 /* ── MAIN ── */
 .main{flex:1;width:100%;min-width:0}
-.content{padding:20px 16px 80px;max-width:680px;margin:0 auto}
+.content{padding:24px 18px 100px;max-width:700px;margin:0 auto}
 
-/* ── HOME ── */
-.home-hero{margin-bottom:20px}
-.home-title{font-size:22px;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:-.02em}
-.home-title span{color:var(--accent)}
-.home-sub{font-size:14px;color:var(--muted);line-height:1.6}
+/* ── HOME HERO ── */
+.home-hero{
+  padding:32px 0 28px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:28px;
+}
+.home-eyebrow{
+  font-size:11px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;
+  font-weight:600;margin-bottom:10px;font-family:var(--mono);
+}
+.home-title{
+  font-size:26px;font-weight:700;color:var(--text);
+  letter-spacing:-.03em;line-height:1.2;margin-bottom:10px;
+}
+.home-title em{color:var(--accent);font-style:normal}
+.home-sub{font-size:14px;color:var(--text2);line-height:1.7;max-width:480px}
 
+/* ── SEARCH ── */
+.search-wrap{position:relative;margin-bottom:28px}
+.search-icon{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  color:var(--muted);pointer-events:none;
+}
 .search-bar-big{
-  width:100%;height:44px;background:var(--bg2);border:1px solid var(--border);
-  border-radius:10px;padding:0 14px;font-size:15px;font-family:var(--sans);
-  color:var(--text);outline:none;margin-bottom:20px;transition:border-color .15s;
+  width:100%;height:48px;background:var(--bg2);
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:0 16px 0 42px;font-size:15px;font-family:var(--sans);
+  color:var(--text);outline:none;transition:border-color .15s,background .15s;
   -webkit-appearance:none;
 }
-.search-bar-big:focus{border-color:rgba(0,204,102,.4)}
+.search-bar-big:focus{border-color:var(--accent-border);background:var(--bg3)}
 .search-bar-big::placeholder{color:var(--muted)}
 
-.sections-grid{display:flex;flex-direction:column;gap:1px;background:var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px}
-.sec-card{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 16px;background:var(--bg2);text-decoration:none;
-  transition:background .1s;cursor:pointer;
+/* ── SECTION GRID ── */
+.sections-label{
+  font-size:11px;color:var(--muted);letter-spacing:.1em;
+  text-transform:uppercase;font-weight:600;margin-bottom:10px;
+  font-family:var(--mono);
 }
-.sec-card:hover{background:var(--bg3)}
-.sec-card:active{background:#1a1a1a}
-.sec-left{display:flex;align-items:center;gap:12px}
-.sec-num{font-size:20px;font-weight:700;color:var(--accent);font-family:var(--mono);min-width:36px;line-height:1}
-.sec-name{font-size:15px;color:var(--text);font-weight:500}
-.sec-arr{color:var(--dim);font-size:16px}
+.sections-grid{
+  display:grid;grid-template-columns:1fr;
+  gap:6px;margin-bottom:24px;
+}
+.sec-card{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 16px;background:var(--bg2);
+  border:1px solid var(--border);border-radius:var(--radius);
+  text-decoration:none;cursor:pointer;
+  transition:background .12s,border-color .12s,transform .1s;
+}
+.sec-card:hover{background:var(--bg3);border-color:var(--border2)}
+.sec-card:active{transform:scale(.99)}
+.sec-badge{
+  font-size:13px;font-weight:700;color:var(--accent);
+  font-family:var(--mono);min-width:32px;text-align:right;flex-shrink:0;
+  line-height:1;
+}
+.sec-name{font-size:14px;color:var(--text);font-weight:500;flex:1;line-height:1.3}
+.sec-arr{color:var(--muted);font-size:16px;flex-shrink:0;transition:transform .1s}
+.sec-card:hover .sec-arr{transform:translateX(2px);color:var(--text2)}
 
+/* ── NOTICES ── */
+.notices{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
 .notice{
-  padding:12px 14px;background:var(--bg2);border-radius:8px;
-  font-size:13px;color:var(--muted);line-height:1.65;
-  border-left:2px solid var(--dim);margin-bottom:8px;
+  padding:11px 14px;background:var(--bg2);
+  border-radius:var(--radius-sm);
+  font-size:13px;color:var(--text2);line-height:1.65;
+  border-left:2px solid var(--border2);
 }
 .notice.warn{border-left-color:var(--yellow)}
 .notice.info{border-left-color:var(--blue)}
 
 /* ── SECTION PAGE ── */
-.page-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px;letter-spacing:-.01em}
-.page-sub{font-size:13px;color:var(--muted);margin-bottom:16px}
-.back-btn{display:inline-flex;align-items:center;gap:4px;font-size:13px;color:var(--muted);text-decoration:none;margin-bottom:14px;padding:4px 0}
+.page-hdr{margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.page-title{font-size:20px;font-weight:700;color:var(--text);letter-spacing:-.02em;margin-bottom:3px}
+.page-sub{font-size:13px;color:var(--muted)}
+
+.back-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:12px;color:var(--muted);text-decoration:none;
+  margin-bottom:16px;padding:5px 0;
+  transition:color .1s;
+  font-family:var(--mono);letter-spacing:-.01em;
+}
 .back-btn:hover{color:var(--accent)}
 
-.guide-list{display:flex;flex-direction:column;gap:1px;background:var(--border);border-radius:10px;overflow:hidden}
+.guide-list{display:flex;flex-direction:column;gap:4px}
 .guide-item{
   display:flex;align-items:center;justify-content:space-between;
-  padding:13px 16px;background:var(--bg2);text-decoration:none;
-  color:var(--text);transition:background .1s;
+  padding:12px 16px;background:var(--bg2);
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+  text-decoration:none;color:var(--text);
+  transition:background .1s,border-color .1s;gap:10px;
 }
-.guide-item:hover{background:var(--bg3)}
-.guide-item:active{background:#1a1a1a}
-.guide-item-title{font-size:14px;line-height:1.4;padding-right:10px}
-.guide-item-arr{color:var(--dim);font-size:14px;flex-shrink:0}
+.guide-item:hover{background:var(--bg3);border-color:var(--border2)}
+.guide-item-title{font-size:14px;line-height:1.4;color:var(--text)}
+.guide-item-arr{color:var(--muted);font-size:14px;flex-shrink:0;transition:transform .1s,color .1s}
+.guide-item:hover .guide-item-arr{transform:translateX(2px);color:var(--text2)}
 
-/* ── GUIDE CONTENT ── */
+/* ── GUIDE BODY ── */
 .guide-body{font-size:15px}
-.guide-body h1{font-size:20px;font-weight:700;color:var(--text);margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border);line-height:1.3;letter-spacing:-.02em}
-.guide-body h2{font-size:11px;font-weight:700;color:var(--accent);margin:24px 0 10px;letter-spacing:.08em;text-transform:uppercase}
-.guide-body h3{font-size:15px;font-weight:600;color:#ddd;margin:18px 0 7px}
-.guide-body p{margin-bottom:10px;font-size:14px;line-height:1.75;color:#bbb}
+
+.guide-body h1{
+  font-size:21px;font-weight:700;color:var(--text);
+  margin-bottom:20px;padding-bottom:16px;
+  border-bottom:1px solid var(--border);
+  line-height:1.3;letter-spacing:-.025em;
+}
+.guide-body h2{
+  font-size:11px;font-weight:700;color:var(--accent);
+  margin:28px 0 10px;letter-spacing:.1em;text-transform:uppercase;
+  font-family:var(--mono);
+}
+.guide-body h3{
+  font-size:15px;font-weight:600;color:var(--text);
+  margin:20px 0 8px;letter-spacing:-.01em;
+}
+.guide-body p{
+  margin-bottom:12px;font-size:14px;
+  line-height:1.8;color:var(--text2);
+}
 .guide-body a{color:var(--accent);text-decoration:none;word-break:break-all}
 .guide-body a:hover{text-decoration:underline}
-.guide-body hr{border:none;border-top:1px solid var(--border);margin:20px 0}
+.guide-body hr{border:none;border-top:1px solid var(--border);margin:24px 0}
 .guide-body strong{color:var(--text);font-weight:600}
-.guide-body blockquote{border-left:2px solid var(--yellow);padding:8px 12px;margin:0 0 12px;background:rgba(255,208,96,.04);font-size:13px;color:#999;border-radius:0 6px 6px 0}
-.guide-body blockquote p{margin:0;color:#999;font-size:13px}
+.guide-body blockquote{
+  border-left:2px solid var(--yellow);padding:10px 14px;
+  margin:0 0 14px;background:rgba(245,200,66,.04);
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+}
+.guide-body blockquote p{margin:0;color:#999;font-size:13px;line-height:1.6}
 
-.guide-body ul{margin:0 0 12px 18px}
-.guide-body ul li{margin-bottom:5px;font-size:14px;color:#bbb;line-height:1.6}
+/* ── LISTS ── */
+.guide-body ul{margin:0 0 14px 0;padding-left:20px}
+.guide-body ul li{
+  margin-bottom:6px;font-size:14px;
+  color:var(--text2);line-height:1.7;
+  padding-left:4px;
+}
+.guide-body ul li::marker{color:var(--accent)}
 
-/* OL checklist */
-.guide-body ol{margin:0 0 14px 0;list-style:none;counter-reset:steps}
+/* ── CHECKLIST OL ── */
+.guide-body ol{margin:0 0 16px 0;list-style:none;counter-reset:steps;display:flex;flex-direction:column;gap:4px}
 .guide-body ol li{
   counter-increment:steps;
-  padding:9px 12px 9px 42px;margin-bottom:2px;
+  padding:10px 14px 10px 46px;
   background:var(--bg2);border:1px solid var(--border);
-  border-radius:8px;font-size:14px;color:#bbb;cursor:pointer;
-  transition:background .1s;position:relative;user-select:none;
-  line-height:1.6;word-break:break-word;
+  border-radius:var(--radius-sm);font-size:14px;color:var(--text2);
+  cursor:pointer;transition:background .1s,border-color .1s;
+  position:relative;user-select:none;line-height:1.7;word-break:break-word;
 }
-.guide-body ol li:hover{background:var(--bg3)}
+.guide-body ol li:hover{background:var(--bg3);border-color:var(--border2)}
 .guide-body ol li::before{
   content:counter(steps);font-size:10px;color:var(--muted);
-  background:#1a1a1a;border:1px solid var(--border);border-radius:4px;
-  width:20px;height:20px;display:flex;align-items:center;justify-content:center;
-  font-family:var(--mono);transition:all .15s;
-  position:absolute;left:12px;top:10px;
+  background:var(--bg3);border:1px solid var(--border2);border-radius:5px;
+  width:22px;height:22px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-weight:700;transition:all .15s;
+  position:absolute;left:13px;top:11px;
 }
-.guide-body ol li.done{color:var(--dim);text-decoration:line-through}
-.guide-body ol li.done::before{content:'✓';color:var(--accent);border-color:rgba(0,204,102,.3);background:rgba(0,204,102,.08)}
-.guide-body ol li.done *{color:var(--dim)!important}
+.guide-body ol li.done{color:var(--muted);text-decoration:line-through;background:var(--bg)}
+.guide-body ol li.done::before{content:'✓';color:var(--accent);border-color:var(--accent-border);background:var(--accent-bg)}
+.guide-body ol li.done *{color:var(--muted)!important}
+
 .step-warn{
-  display:none;position:absolute;top:-32px;left:0;
-  background:#1a1a1a;border:1px solid var(--yellow);border-radius:6px;
-  padding:4px 10px;font-size:12px;color:var(--yellow);white-space:nowrap;
-  pointer-events:none;z-index:10;
+  display:none;position:absolute;top:-34px;left:0;
+  background:var(--bg4);border:1px solid var(--yellow);border-radius:6px;
+  padding:5px 11px;font-size:12px;color:var(--yellow);white-space:nowrap;
+  pointer-events:none;z-index:10;font-family:var(--mono);
 }
 .step-warn.show{display:block}
 
-/* CODE */
+/* ── CODE ── */
 .guide-body pre{
-  background:#060606;border:1px solid var(--border);border-left:2px solid rgba(0,204,102,.4);
-  border-radius:8px;padding:14px;overflow-x:auto;margin-bottom:14px;
-  position:relative;-webkit-overflow-scrolling:touch;
+  background:#070709;border:1px solid var(--border);
+  border-left:2px solid var(--accent-border);
+  border-radius:var(--radius);padding:16px;overflow-x:auto;
+  margin-bottom:14px;position:relative;
+  -webkit-overflow-scrolling:touch;
 }
-.guide-body code{font-family:var(--mono);font-size:12px}
-.guide-body pre code{color:#c9d1d9;font-size:12px;line-height:1.6}
+.guide-body code{font-family:var(--mono);font-size:12.5px}
+.guide-body pre code{color:#c8d0da;font-size:12.5px;line-height:1.7}
 .guide-body p code,.guide-body li code,.guide-body td code{
-  background:#111;border:1px solid #1e1e1e;border-radius:4px;
+  background:var(--bg3);border:1px solid var(--border2);border-radius:4px;
   padding:1px 5px;font-size:12px;color:var(--accent);font-family:var(--mono);
 }
+
 .copy-wrap{position:relative}
 .copy-btn{
-  position:absolute;top:8px;right:8px;background:#1a1a1a;border:1px solid #222;
-  border-radius:5px;padding:3px 8px;font:11px var(--mono);color:var(--muted);
+  position:absolute;top:9px;right:9px;
+  background:var(--bg3);border:1px solid var(--border2);
+  border-radius:5px;padding:3px 9px;
+  font:11px/1.5 var(--mono);color:var(--muted);
   cursor:pointer;transition:all .12s;opacity:0;
 }
 .copy-wrap:hover .copy-btn,.copy-wrap:focus-within .copy-btn{opacity:1}
-.copy-btn.ok{color:var(--accent);border-color:rgba(0,204,102,.3);opacity:1}
+.copy-btn:hover{color:var(--text);border-color:var(--border2)}
+.copy-btn.ok{color:var(--accent);border-color:var(--accent-border);opacity:1}
 
-/* TABLE */
-.guide-body table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:13px;border:1px solid var(--border);border-radius:8px;overflow:hidden;display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.guide-body th{background:var(--bg2);padding:8px 12px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap}
-.guide-body td{padding:8px 12px;border-bottom:1px solid #111;color:#bbb;vertical-align:top}
+/* ── TABLE ── */
+.guide-body table{
+  width:100%;border-collapse:collapse;margin-bottom:16px;
+  font-size:13px;border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+  display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;
+}
+.guide-body th{
+  background:var(--bg3);padding:9px 14px;text-align:left;
+  font-size:10px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);
+  border-bottom:1px solid var(--border);white-space:nowrap;
+  font-family:var(--mono);
+}
+.guide-body td{
+  padding:9px 14px;border-bottom:1px solid var(--border);
+  color:var(--text2);vertical-align:top;line-height:1.6;
+}
 .guide-body tr:last-child td{border-bottom:none}
+.guide-body tr:hover td{background:var(--bg3)}
 
-/* GUIDE NAV */
-.guide-nav{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:32px;border-top:1px solid var(--border);padding-top:16px}
-.gnav-link{padding:12px;background:var(--bg2);border:1px solid var(--border);text-decoration:none;color:var(--text);border-radius:8px;transition:border-color .12s,background .12s;display:block}
-.gnav-link:hover{border-color:rgba(0,204,102,.2);background:var(--bg3)}
+/* ── GUIDE NAV ── */
+.guide-nav{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  margin-top:36px;border-top:1px solid var(--border);padding-top:18px;
+}
+.gnav-link{
+  padding:13px 14px;background:var(--bg2);
+  border:1px solid var(--border);text-decoration:none;
+  color:var(--text);border-radius:var(--radius);
+  transition:border-color .12s,background .12s;display:block;
+}
+.gnav-link:hover{border-color:var(--accent-border);background:var(--bg3)}
 .gnav-link.next{text-align:right}
-.gnav-lbl{font-size:10px;color:var(--muted);margin-bottom:3px;letter-spacing:.04em}
-.gnav-title{font-size:12px;color:#bbb;line-height:1.4}
+.gnav-lbl{font-size:10px;color:var(--muted);margin-bottom:4px;letter-spacing:.06em;font-family:var(--mono)}
+.gnav-title{font-size:12.5px;color:var(--text2);line-height:1.4}
 
-/* SEARCH RESULTS */
-.search-results{margin-top:4px}
+/* ── SEARCH RESULTS ── */
+.search-results-wrap{margin-top:0}
 .sr-item{
   display:flex;align-items:center;justify-content:space-between;
-  padding:12px 14px;background:var(--bg2);border:1px solid var(--border);
-  border-radius:8px;margin-bottom:6px;text-decoration:none;color:var(--text);
-  transition:background .1s;
+  padding:12px 16px;background:var(--bg2);
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+  margin-bottom:5px;text-decoration:none;color:var(--text);
+  transition:background .1s,border-color .1s;gap:10px;
 }
-.sr-item:hover,.sr-item:active{background:var(--bg3)}
+.sr-item:hover{background:var(--bg3);border-color:var(--border2)}
 .sr-title{font-size:14px;margin-bottom:2px;line-height:1.4}
-.sr-sec{font-size:11px;color:var(--muted)}
-.sr-empty{padding:32px 0;color:var(--muted);font-size:14px;text-align:center}
+.sr-sec{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.sr-empty{
+  padding:40px 0;color:var(--muted);font-size:14px;
+  text-align:center;font-family:var(--mono);
+}
+mark{background:rgba(61,214,140,.12);color:var(--accent);border-radius:2px;font-style:normal}
 
-/* OVERLAY */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:98;backdrop-filter:blur(2px)}
+/* ── OVERLAY ── */
+.overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.65);z-index:140;
+  backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+}
 .overlay.open{display:block}
 
-/* DESKTOP */
+/* ── LOADING ── */
+.loading{
+  padding:48px 0;color:var(--muted);
+  font-size:13px;text-align:center;font-family:var(--mono);
+}
+
+/* ── ERROR ── */
+.err-msg{
+  color:var(--red);font-size:14px;padding:24px 0;
+  font-family:var(--mono);
+}
+
+/* ── DESKTOP ── */
 @media(min-width:768px){
+  :root{--header:52px}
   .menu-btn{display:none}
   .hdr-gh{display:block}
-  .sidebar{left:0;width:240px}
-  .main{margin-left:240px}
-  .content{padding:28px 32px 80px}
-  .home-title{font-size:26px}
   .hdr-search{display:none}
-  .sections-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px}
+  .sidebar{left:0;width:var(--sidebar)}
+  .main{margin-left:var(--sidebar)}
+  .content{padding:32px 40px 100px;max-width:720px}
+  .home-title{font-size:30px}
+  .home-sub{font-size:15px}
+  .search-bar-big{height:50px;font-size:15px}
+  .sections-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .sec-card{padding:16px 18px}
+  .hdr-search{display:none}
+  .home-hero{padding:40px 0 32px}
+}
+
+@media(min-width:1100px){
+  .content{max-width:740px}
 }
 </style>
 </head>
 <body>
 
 <header class="hdr">
-  <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+  <button class="menu-btn" id="menuBtn" aria-label="Menu">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <path d="M2 4.5h14M2 9h14M2 13.5h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </button>
   <a class="hdr-logo" href="/" onclick="return nav('/')"><span>~/</span>guides</a>
-  <input class="hdr-search" type="search" id="hdrSearch" placeholder="search..." autocomplete="off" spellcheck="false">
-  <a class="hdr-gh" href="https://github.com/eliekh05/guides" target="_blank" rel="noopener">github ↗</a>
+  <input class="hdr-search" type="search" id="hdrSearch" placeholder="search guides..." autocomplete="off" spellcheck="false">
+  <div class="hdr-right">
+    <a class="hdr-gh" href="https://github.com/eliekh05/guides" target="_blank" rel="noopener">github ↗</a>
+  </div>
 </header>
 
 <div class="overlay" id="overlay"></div>
 
 <div class="layout">
-  <nav class="sidebar" id="sidebar"></nav>
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-inner" id="sidebarInner"></div>
+  </nav>
   <main class="main">
     <div class="content" id="content"></div>
   </main>
@@ -287,40 +486,44 @@ window.addEventListener('popstate', () => nav(location.pathname, false));
 
 // ── Sidebar ───────────────────────────────────────────────────────────────
 function buildSidebar() {
-  const sb = document.getElementById('sidebar');
-  sb.innerHTML = '<div class="sb-root">sections</div>';
+  const inner = document.getElementById('sidebarInner');
+  inner.innerHTML = '<div class="sb-label">Sections</div>';
   SECTIONS.filter(s => s.guides.length).forEach(s => {
-    const hdr = document.createElement('div');
-    hdr.className = 'sb-sec';
-    hdr.innerHTML = `<div class="sb-sec-hdr" id="sbh-${s.id}">
-      <span>${s.title}</span>
-      <span style="display:flex;align-items:center;gap:6px">
-        <span class="sb-sec-count">${s.guides.length}</span>
-        <span class="chev">›</span>
-      </span>
-    </div>
-    <div class="sb-guides" id="sbg-${s.id}"></div>`;
-    sb.appendChild(hdr);
-    const list = document.getElementById('sbg-'+s.id);
-    const secHdr = document.getElementById('sbh-'+s.id);
-    secHdr.onclick = () => {
-      const open = secHdr.classList.toggle('open');
+    const sec = document.createElement('div');
+    sec.className = 'sb-sec';
+    sec.innerHTML = `
+      <div class="sb-sec-hdr" id="sbh-${s.id}">
+        <span class="sb-sec-name">${s.title}</span>
+        <span class="sb-sec-right">
+          <span class="sb-sec-count">${s.guides.length}</span>
+          <span class="sb-chev">›</span>
+        </span>
+      </div>
+      <div class="sb-guides" id="sbg-${s.id}"></div>`;
+    inner.appendChild(sec);
+
+    const list = document.getElementById('sbg-' + s.id);
+    const hdr = document.getElementById('sbh-' + s.id);
+    hdr.addEventListener('click', () => {
+      const open = hdr.classList.toggle('open');
       list.style.display = open ? 'block' : 'none';
-    };
+    });
     s.guides.forEach(g => {
       const a = document.createElement('a');
-      a.className = 'sb-link'; a.id = 'nav-'+g.slug;
-      a.href = '/g/'+g.slug; a.textContent = g.title;
-      a.onclick = e => { e.preventDefault(); nav('/g/'+g.slug); };
+      a.className = 'sb-link';
+      a.id = 'nav-' + g.slug;
+      a.href = '/g/' + g.slug;
+      a.textContent = g.title;
+      a.addEventListener('click', e => { e.preventDefault(); nav('/g/' + g.slug); });
       list.appendChild(a);
     });
   });
 }
 
 function setActive(slug) {
-  document.querySelectorAll('.sb-link').forEach(a => a.classList.toggle('active', a.id === 'nav-'+slug));
+  document.querySelectorAll('.sb-link').forEach(a => a.classList.toggle('active', a.id === 'nav-' + slug));
   if(slug) {
-    const a = document.getElementById('nav-'+slug);
+    const a = document.getElementById('nav-' + slug);
     if(a) {
       const list = a.closest('.sb-guides');
       const hdr = list?.previousElementSibling;
@@ -328,7 +531,7 @@ function setActive(slug) {
         hdr.classList.add('open');
         list.style.display = 'block';
       }
-      setTimeout(() => a.scrollIntoView({block:'nearest'}), 100);
+      setTimeout(() => a.scrollIntoView({ block: 'nearest' }), 80);
     }
   }
 }
@@ -337,30 +540,37 @@ function setActive(slug) {
 function showHome() {
   document.title = 'OS & Installation Guides';
   setActive(null);
+  const totalGuides = ALL_GUIDES.length;
   const cards = SECTIONS.filter(s => s.guides.length).map(s => `
-    <div class="sec-card" onclick="nav('/s/${s.id}')">
-      <div class="sec-left">
-        <div class="sec-num">${s.guides.length}</div>
-        <div class="sec-name">${s.title}</div>
-      </div>
-      <div class="sec-arr">›</div>
+    <div class="sec-card" onclick="nav('/s/${s.id}')" role="button" tabindex="0">
+      <span class="sec-badge">${s.guides.length}</span>
+      <span class="sec-name">${s.title}</span>
+      <span class="sec-arr">›</span>
     </div>`).join('');
 
   document.getElementById('content').innerHTML = `
     <div class="home-hero">
-      <div class="home-title">OS &amp; <span>Installation</span> Guides</div>
-      <div class="home-sub">Practical guides for problems that are hard to find solutions for online.</div>
+      <div class="home-eyebrow">documentation</div>
+      <div class="home-title">OS &amp; <em>Installation</em> Guides</div>
+      <div class="home-sub">Practical, no-fluff guides for things that are genuinely hard to find good answers for.</div>
     </div>
-    <input class="search-bar-big" type="search" id="bigSearch" placeholder="Search ${ALL_GUIDES.length} guides..." autocomplete="off" spellcheck="false">
-    <div id="search-results"></div>
-    <div class="sections-grid" id="sections-grid">${cards}</div>
-    <div class="notice warn">Read everything before typing any command. If you do not understand what a command does, you are not ready to run it.</div>
-    <div class="notice info" style="margin-top:8px">Guides are written from real experience and official docs — steps may differ depending on your hardware, OS version, or configuration.</div>`;
+    <div class="search-wrap">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input class="search-bar-big" type="search" id="bigSearch" placeholder="Search ${totalGuides} guides..." autocomplete="off" spellcheck="false">
+    </div>
+    <div id="searchResults"></div>
+    <div id="sectionsWrap">
+      <div class="sections-label">Browse by section</div>
+      <div class="sections-grid">${cards}</div>
+      <div class="notices">
+        <div class="notice warn">Read everything before typing any command. If you don't understand what a command does, stop and find out first.</div>
+        <div class="notice info">Steps may vary depending on your hardware, OS version, or configuration. Adapt as needed.</div>
+      </div>
+    </div>`;
 
-  // Big search
   const bigSearch = document.getElementById('bigSearch');
-  bigSearch.addEventListener('input', () => doSearch(bigSearch.value, 'search-results', 'sections-grid'));
-  bigSearch.addEventListener('search', () => doSearch(bigSearch.value, 'search-results', 'sections-grid'));
+  bigSearch.addEventListener('input', () => doSearch(bigSearch.value));
+  bigSearch.addEventListener('search', () => doSearch(bigSearch.value));
 }
 
 // ── Section ───────────────────────────────────────────────────────────────
@@ -376,8 +586,10 @@ function showSection(id) {
     </a>`).join('');
   document.getElementById('content').innerHTML = `
     <a class="back-btn" href="/" onclick="return nav('/')">← home</a>
-    <div class="page-title">${sec.title}</div>
-    <div class="page-sub">${sec.guides.length} guides</div>
+    <div class="page-hdr">
+      <div class="page-title">${sec.title}</div>
+      <div class="page-sub">${sec.guides.length} guides</div>
+    </div>
     <div class="guide-list">${items}</div>`;
 }
 
@@ -388,14 +600,14 @@ async function showGuide(slug) {
   const sec = SECTIONS.find(s => s.guides.some(g => g.slug === slug));
   setActive(slug);
   document.title = guide.title + ' — Guides';
-  document.getElementById('content').innerHTML = '<div style="padding:40px 0;color:var(--muted);font-size:13px;text-align:center">loading...</div>';
+  document.getElementById('content').innerHTML = '<div class="loading">loading...</div>';
   try {
-    const resp = await fetch('/guides/'+slug+'.html');
+    const resp = await fetch('/guides/' + slug + '.html');
     if(!resp.ok) throw new Error();
     const raw = await resp.text();
     const html = raw.split('\n').slice(2).join('\n');
-    const backPath = sec ? '/s/'+sec.id : '/';
-    const backLabel = sec ? '← '+sec.title : '← home';
+    const backPath = sec ? '/s/' + sec.id : '/';
+    const backLabel = sec ? '← ' + sec.title : '← home';
     document.getElementById('content').innerHTML = `
       <a class="back-btn" href="${backPath}" onclick="return nav('${backPath}')">${backLabel}</a>
       <div class="guide-body" id="gbody">${html}</div>
@@ -406,7 +618,7 @@ async function showGuide(slug) {
   } catch(e) {
     document.getElementById('content').innerHTML = `
       <a class="back-btn" href="/" onclick="return nav('/')">← home</a>
-      <div style="color:var(--red);font-size:14px;padding:20px 0">Could not load guide.</div>`;
+      <div class="err-msg">Could not load guide.</div>`;
   }
 }
 
@@ -422,10 +634,10 @@ function addChecklist() {
       li.addEventListener('click', () => {
         if(li.classList.contains('done')) { li.classList.remove('done'); return; }
         const prev = items.slice(0, i).filter(p => !p.classList.contains('done'));
-        if(prev.length > 0) {
+        if(prev.length) {
           warn.classList.add('show');
           setTimeout(() => warn.classList.remove('show'), 2000);
-          prev[0].scrollIntoView({block:'nearest', behavior:'smooth'});
+          prev[0].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
           return;
         }
         li.classList.add('done');
@@ -442,14 +654,16 @@ function addCopyBtns() {
     pre.parentNode.insertBefore(wrap, pre);
     wrap.appendChild(pre);
     const btn = document.createElement('button');
-    btn.className = 'copy-btn'; btn.textContent = 'copy';
-    btn.onclick = () => {
+    btn.className = 'copy-btn';
+    btn.textContent = 'copy';
+    btn.addEventListener('click', () => {
       const text = pre.querySelector('code')?.textContent || pre.textContent;
       navigator.clipboard.writeText(text).then(() => {
-        btn.textContent = 'copied!'; btn.classList.add('ok');
+        btn.textContent = 'copied!';
+        btn.classList.add('ok');
         setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('ok'); }, 1500);
       });
-    };
+    });
     wrap.appendChild(btn);
   });
 }
@@ -458,32 +672,37 @@ function addCopyBtns() {
 function buildGuideNav(slug, sec) {
   if(!sec) return;
   const idx = sec.guides.findIndex(g => g.slug === slug);
-  const prev = idx > 0 ? sec.guides[idx-1] : null;
-  const next = idx < sec.guides.length-1 ? sec.guides[idx+1] : null;
+  const prev = idx > 0 ? sec.guides[idx - 1] : null;
+  const next = idx < sec.guides.length - 1 ? sec.guides[idx + 1] : null;
   if(!prev && !next) return;
   document.getElementById('gnav').innerHTML = `
     <div class="guide-nav">
-      ${prev ? `<a class="gnav-link" href="/g/${prev.slug}" onclick="return nav('/g/${prev.slug}')"><div class="gnav-lbl">← prev</div><div class="gnav-title">${prev.title}</div></a>` : '<div></div>'}
-      ${next ? `<a class="gnav-link next" href="/g/${next.slug}" onclick="return nav('/g/${next.slug}')"><div class="gnav-lbl">next →</div><div class="gnav-title">${next.title}</div></a>` : '<div></div>'}
+      ${prev ? `<a class="gnav-link" href="/g/${prev.slug}" onclick="return nav('/g/${prev.slug}')">
+        <div class="gnav-lbl">← prev</div>
+        <div class="gnav-title">${prev.title}</div></a>` : '<div></div>'}
+      ${next ? `<a class="gnav-link next" href="/g/${next.slug}" onclick="return nav('/g/${next.slug}')">
+        <div class="gnav-lbl">next →</div>
+        <div class="gnav-title">${next.title}</div></a>` : '<div></div>'}
     </div>`;
 }
 
 // ── Search ────────────────────────────────────────────────────────────────
 function hl(t, q) {
-  return t.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),
-    '<mark style="background:rgba(0,204,102,.15);color:var(--accent);border-radius:2px">$1</mark>');
+  if(!q) return t;
+  return t.replace(new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi'),
+    '<mark>$1</mark>');
 }
 
-function doSearch(q, resultsId, hideId) {
-  const resultsEl = document.getElementById(resultsId);
-  const hideEl = hideId ? document.getElementById(hideId) : null;
-  q = q.trim().toLowerCase();
+function doSearch(q) {
+  const resultsEl = document.getElementById('searchResults');
+  const sectionsWrap = document.getElementById('sectionsWrap');
+  q = (q || '').trim().toLowerCase();
   if(q.length < 2) {
     if(resultsEl) resultsEl.innerHTML = '';
-    if(hideEl) hideEl.style.display = '';
+    if(sectionsWrap) sectionsWrap.style.display = '';
     return;
   }
-  if(hideEl) hideEl.style.display = 'none';
+  if(sectionsWrap) sectionsWrap.style.display = 'none';
   const words = q.split(/\s+/);
   const results = ALL_GUIDES.map(g => {
     const t = g.title.toLowerCase();
@@ -494,27 +713,30 @@ function doSearch(q, resultsId, hideId) {
     else if(t.includes(q)) sc = 50;
     else sc = words.filter(w => t.includes(w)).length * 15;
     if(!sc && g.preview?.toLowerCase().includes(q)) sc = 5;
-    return {g, sc};
-  }).filter(x => x.sc > 0).sort((a,b) => b.sc - a.sc).slice(0, 12).map(x => x.g);
+    return { g, sc };
+  }).filter(x => x.sc > 0).sort((a, b) => b.sc - a.sc).slice(0, 14).map(x => x.g);
 
-  resultsEl.innerHTML = results.length ? `<div class="search-results">${results.map(g => `
-    <a class="sr-item" href="/g/${g.slug}" onclick="return nav('/g/${g.slug}')">
-      <div><div class="sr-title">${hl(g.title, q)}</div><div class="sr-sec">${g.parent.toLowerCase()}</div></div>
-      <span style="color:var(--dim);font-size:14px">›</span>
-    </a>`).join('')}</div>` : '<div class="sr-empty">No results found</div>';
+  resultsEl.innerHTML = results.length
+    ? `<div class="search-results-wrap">${results.map(g => `
+        <a class="sr-item" href="/g/${g.slug}" onclick="return nav('/g/${g.slug}')">
+          <div>
+            <div class="sr-title">${hl(g.title, q)}</div>
+            <div class="sr-sec">${g.parent.toLowerCase()}</div>
+          </div>
+          <span style="color:var(--muted);font-size:14px">›</span>
+        </a>`).join('')}</div>`
+    : '<div class="sr-empty">no results found</div>';
 }
 
-// Header search (mobile)
+// ── Header search (mobile) ────────────────────────────────────────────────
 document.getElementById('hdrSearch').addEventListener('input', e => {
   const q = e.target.value;
   if(q.length >= 2) {
-    // navigate to home with search
-    if(location.pathname !== '/') nav('/', false);
-    showHome();
+    if(location.pathname !== '/') { history.pushState({}, '', '/'); showHome(); }
     setTimeout(() => {
       const big = document.getElementById('bigSearch');
-      if(big) { big.value = q; doSearch(q, 'search-results', 'sections-grid'); }
-    }, 50);
+      if(big) { big.value = q; doSearch(q); }
+    }, 30);
   }
 });
 
@@ -524,6 +746,7 @@ document.getElementById('menuBtn').addEventListener('click', () => {
   document.getElementById('overlay').classList.toggle('open');
 });
 document.getElementById('overlay').addEventListener('click', closeSidebar);
+
 function closeSidebar() {
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('overlay').classList.remove('open');

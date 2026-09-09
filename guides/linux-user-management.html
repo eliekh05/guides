@@ -1,0 +1,165 @@
+<!-- system:System & Users -->
+<h1>Linux User and Group Management</h1>
+
+<p>Linux is a multi-user system. Understanding how to create, modify, and manage users and groups is essential for any administrator.</p>
+
+<h2>View Users</h2>
+
+<pre><code># List all users
+cat /etc/passwd
+
+# Current user
+whoami
+
+# Current user + groups
+id
+
+# Who is logged in
+w
+who</code></pre>
+
+<h2>Create a User</h2>
+
+<pre><code># Create user with home directory
+sudo useradd -m username
+
+# Create user with specific shell and comment
+sudo useradd -m -s /bin/bash -c "John Smith" john
+
+# Set password immediately
+sudo passwd username
+
+# Create user interactively (Debian/Ubuntu)
+sudo adduser username    # friendlier than useradd</code></pre>
+
+<h2>Modify a User</h2>
+
+<pre><code># Change username
+sudo usermod -l newname oldname
+
+# Change home directory
+sudo usermod -d /new/home -m username
+
+# Change shell
+sudo usermod -s /bin/zsh username
+
+# Lock an account (disable login)
+sudo usermod -L username
+
+# Unlock an account
+sudo usermod -U username
+
+# Set account expiry date
+sudo usermod -e 2025-12-31 username</code></pre>
+
+<h2>Delete a User</h2>
+
+<pre><code># Delete user (keep home directory)
+sudo userdel username
+
+# Delete user and home directory
+sudo userdel -r username</code></pre>
+
+<h2>Groups</h2>
+
+<pre><code># List all groups
+cat /etc/group
+
+# Show groups current user belongs to
+groups
+
+# Show groups for a specific user
+groups username
+
+# Create a group
+sudo groupadd developers
+
+# Add user to a group
+sudo usermod -aG developers username
+sudo gpasswd -a username developers
+
+# Remove user from a group
+sudo gpasswd -d username developers
+
+# Delete a group
+sudo groupdel groupname</code></pre>
+
+<h2>sudo Access</h2>
+
+<pre><code># Grant sudo access (Ubuntu/Debian — sudo group)
+sudo usermod -aG sudo username
+
+# Grant sudo access (Fedora/RHEL — wheel group)
+sudo usermod -aG wheel username
+
+# Edit sudoers file safely
+sudo visudo
+
+# Allow a user to run specific commands without password
+username ALL=(ALL) NOPASSWD: /usr/bin/apt, /bin/systemctl</code></pre>
+
+<h2>Switch Users</h2>
+
+<pre><code"># Switch to another user
+su - username
+
+# Switch to root
+su -
+sudo -i
+
+# Run a single command as another user
+sudo -u username command
+
+# Run a command as root
+sudo command</code></pre>
+
+<h2>File Ownership and Permissions</h2>
+
+<pre><code># Change file owner
+sudo chown username file.txt
+sudo chown username:groupname file.txt
+
+# Change group owner
+sudo chgrp groupname file.txt
+
+# Recursive ownership change
+sudo chown -R username:groupname /path/to/directory
+
+# View permissions
+ls -la
+
+# Change permissions
+chmod 755 file.txt      # rwxr-xr-x
+chmod 644 file.txt      # rw-r--r--
+chmod +x script.sh      # add execute permission</code></pre>
+
+<h2>Password Management</h2>
+
+<pre><code># Set or change password
+sudo passwd username
+
+# Force password change on next login
+sudo chage -d 0 username
+
+# Show password aging info
+sudo chage -l username
+
+# Set password expiry (days)
+sudo chage -M 90 username    # expire after 90 days
+
+# Lock/disable password (SSH key access still works)
+sudo passwd -l username</code></pre>
+
+<h2>View Login History</h2>
+
+<pre><code># Last logins
+last
+
+# Failed login attempts
+sudo lastb
+
+# Who is currently logged in
+w
+
+# Login records
+sudo journalctl _COMM=sshd | grep "Accepted"</code></pre>

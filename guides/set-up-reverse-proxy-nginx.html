@@ -1,0 +1,142 @@
+<!-- server:Server & Self-Hosting -->
+<h1>Set Up a Reverse Proxy with Nginx</h1>
+
+<p>A reverse proxy sits in front of your app and forwards requests to it. This lets you run apps on internal ports (3000, 8080, etc.) while exposing them on port 80/443 with a domain name, SSL, and extra security.</p>
+
+<h2>Install Nginx</h2>
+
+<pre><code># Ubuntu/Debian
+sudo apt install nginx -y
+
+# Fedora/RHEL
+sudo dnf install nginx -y
+
+# Start and enable
+sudo systemctl enable --now nginx</code></pre>
+
+<h2>Basic Reverse Proxy Config</h2>
+
+<p>Create a new config file for your site:</p>
+
+<pre><code">sudo nano /etc/nginx/sites-available/myapp</code></pre>
+
+<pre><code>server {
+    listen 80;
+    server_name myapp.example.com;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}</code></pre>
+
+<pre><code># Enable the site
+sudo ln -s /etc/nginx/sites-available/myapp /etc/nginx/sites-enabled/
+
+# Test config syntax
+sudo nginx -t
+
+# Reload Nginx
+sudo systemctl reload nginx</code></pre>
+
+<h2>Add SSL with Let's Encrypt</h2>
+
+<pre><code">sudo apt install certbot python3-certbot-nginx -y
+sudo certbot --nginx -d myapp.example.com</code></pre>
+
+<p>Certbot automatically updates your Nginx config to add SSL and redirect HTTP to HTTPS.</p>
+
+<h2>Proxy Multiple Apps</h2>
+
+<pre><code># /etc/nginx/sites-available/apps
+
+# App 1 — running on port 3000
+server {
+    listen 443 ssl;
+    server_name app1.example.com;
+    # ssl_certificate lines added by certbot
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+# App 2 — running on port 8080
+server {
+    listen 443 ssl;
+    server_name app2.example.com;
+
+    location / {
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}</code></pre>
+
+<h2>Proxy to a Docker Container</h2>
+
+<pre><code>location / {
+    proxy_pass http://172.17.0.2:3000;    # Docker container IP
+    # OR use container name if on custom network:
+    proxy_pass http://mycontainer:3000;
+}</code></pre>
+
+<h2>WebSocket Support</h2>
+
+<p>Apps using WebSockets (Next.js dev, Socket.io, etc.) need these headers:</p>
+
+<pre><code>location / {
+    proxy_pass http://localhost:3000;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+}</code></pre>
+
+<h2>Useful Settings</h2>
+
+<pre><code>server {
+    # Increase timeout for slow apps
+    proxy_connect_timeout 60s;
+    proxy_send_timeout 60s;
+    proxy_read_timeout 60s;
+
+    # Increase upload size limit (default is 1MB)
+    client_max_body_size 50M;
+
+    # Gzip compression
+    gzip on;
+    gzip_types text/plain application/json application/javascript text/css;
+}</code></pre>
+
+<h2>Check Logs</h2>
+
+<pre><code># Access log
+sudo tail -f /var/log/nginx/access.log
+
+# Error log
+sudo tail -f /var/log/nginx/error.log
+
+# Logs for a specific site
+sudo tail -f /var/log/nginx/myapp.access.log</code></pre>
+
+<h2>Common Errors</h2>
+
+<table>
+<thead><tr><th>Error</th><th>Cause</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>502 Bad Gateway</td><td>App not running on the proxied port</td><td>Start your app, check the port</td></tr>
+<tr><td>504 Gateway Timeout</td><td>App took too long to respond</td><td>Increase proxy_read_timeout</td></tr>
+<tr><td>413 Request Too Large</td><td>Upload exceeds client_max_body_size</td><td>Increase client_max_body_size</td></tr>
+<tr><td>ERR_TOO_MANY_REDIRECTS</td><td>SSL redirect loop</td><td>Add X-Forwarded-Proto header</td></tr>
+</tbody>
+</table>

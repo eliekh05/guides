@@ -1,0 +1,126 @@
+<!-- system:System & Users -->
+<h1>Python Virtual Environments</h1>
+
+<p>A virtual environment is an isolated Python installation for a project. Each project gets its own packages at its own versions — no conflicts, no system pollution.</p>
+
+<h2>Why Use Virtual Environments</h2>
+
+<ul>
+<li>Project A needs Django 3.2, Project B needs Django 5.0 — both work fine</li>
+<li>Installing packages does not affect the system Python</li>
+<li>Easy to reproduce on another machine with <code>requirements.txt</code></li>
+<li>Delete the env folder to cleanly uninstall everything</li>
+</ul>
+
+<h2>venv — Built-in (Recommended)</h2>
+
+<pre><code># Create a virtual environment called .venv in current folder
+python3 -m venv .venv
+
+# Activate it
+source .venv/bin/activate        # macOS/Linux
+.venv\Scripts\activate           # Windows PowerShell
+.venv\Scripts\activate.bat       # Windows CMD
+
+# Your prompt changes to show the active env:
+# (.venv) user@host:~/project$
+
+# Deactivate when done
+deactivate</code></pre>
+
+<h2>Install Packages</h2>
+
+<pre><code># Always activate first, then install
+source .venv/bin/activate
+pip install requests flask django
+
+# Install from a requirements file
+pip install -r requirements.txt</code></pre>
+
+<h2>Save and Share Dependencies</h2>
+
+<pre><code># Save current packages to requirements.txt
+pip freeze > requirements.txt
+
+# requirements.txt looks like:
+# Django==5.0.1
+# requests==2.31.0
+# gunicorn==21.2.0
+
+# Someone else restores the exact same environment:
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt</code></pre>
+
+<h2>Add .venv to .gitignore</h2>
+
+<pre><code"># .gitignore
+.venv/
+__pycache__/
+*.pyc
+.env</code></pre>
+
+<p>Never commit the <code>.venv</code> folder — it is large, platform-specific, and reproducible from <code>requirements.txt</code>.</p>
+
+<h2>uv — Fast Modern Alternative</h2>
+
+<p><code>uv</code> is a drop-in replacement for pip and venv, written in Rust — 10-100x faster than pip:</p>
+
+<pre><code># Install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Create and sync environment
+uv venv
+source .venv/bin/activate
+uv pip install requests flask
+
+# Install from requirements.txt
+uv pip install -r requirements.txt
+
+# Sync from pyproject.toml (modern projects)
+uv sync</code></pre>
+
+<h2>pipx — Global CLI Tools</h2>
+
+<p>For command-line tools (not library dependencies), use pipx to install them in isolated environments but make them available globally:</p>
+
+<pre><code"># Install pipx
+pip install pipx
+pipx ensurepath
+
+# Install CLI tools
+pipx install black       # code formatter
+pipx install httpie      # HTTP client
+pipx install poetry      # dependency manager
+
+# Run them anywhere
+black myfile.py
+http GET https://api.example.com</code></pre>
+
+<h2>Useful pip Commands</h2>
+
+<pre><code># List installed packages
+pip list
+
+# Show info about a package
+pip show django
+
+# Upgrade a package
+pip install --upgrade django
+
+# Uninstall a package
+pip uninstall requests
+
+# Check for outdated packages
+pip list --outdated</code></pre>
+
+<h2>VS Code Integration</h2>
+
+<p>VS Code automatically detects virtual environments in your workspace. If it does not:</p>
+
+<ol>
+<li>Cmd/Ctrl+Shift+P → Python: Select Interpreter</li>
+<li>Choose the interpreter at <code>.venv/bin/python</code></li>
+</ol>
+
+<p>The terminal in VS Code will automatically activate the venv.</p>

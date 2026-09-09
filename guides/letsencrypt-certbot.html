@@ -1,0 +1,116 @@
+<!-- server:Server & Self-Hosting -->
+<h1>Let's Encrypt — Free SSL Certificates with Certbot</h1>
+
+<p>Let's Encrypt issues free, trusted SSL/TLS certificates. Certbot is the official tool that automates getting and renewing them. This guide covers Nginx and Apache on Ubuntu/Debian.</p>
+
+<h2>Install Certbot</h2>
+
+<pre><code># Ubuntu/Debian with Nginx
+sudo apt install certbot python3-certbot-nginx -y
+
+# Ubuntu/Debian with Apache
+sudo apt install certbot python3-certbot-apache -y
+
+# Fedora/RHEL with Nginx
+sudo dnf install certbot python3-certbot-nginx -y</code></pre>
+
+<h2>Get a Certificate — Nginx</h2>
+
+<pre><code># Certbot reads your Nginx config and handles everything
+sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+
+# Follow the prompts:
+# - Enter an email address for renewal reminders
+# - Agree to terms of service
+# - Choose whether to redirect HTTP to HTTPS (choose yes)</code></pre>
+
+<h2>Get a Certificate — Apache</h2>
+
+<pre><code>sudo certbot --apache -d yourdomain.com -d www.yourdomain.com</code></pre>
+
+<h2>Get a Certificate — Standalone</h2>
+
+<p>If you are not using Nginx or Apache, or want to handle configuration yourself:</p>
+
+<pre><code># Temporarily stops any web server on port 80
+sudo certbot certonly --standalone -d yourdomain.com
+
+# Certificate files will be at:
+# /etc/letsencrypt/live/yourdomain.com/fullchain.pem
+# /etc/letsencrypt/live/yourdomain.com/privkey.pem</code></pre>
+
+<h2>Where Certificates Are Stored</h2>
+
+<pre><code>/etc/letsencrypt/live/yourdomain.com/
+  fullchain.pem   # certificate + intermediate chain (use this in Nginx/Apache)
+  privkey.pem     # private key
+  cert.pem        # certificate only
+  chain.pem       # intermediate chain only</code></pre>
+
+<h2>Test Renewal</h2>
+
+<pre><code># Dry run — checks everything without actually renewing
+sudo certbot renew --dry-run</code></pre>
+
+<h2>Auto-Renewal</h2>
+
+<p>Certbot installs a systemd timer or cron job automatically. Verify it is active:</p>
+
+<pre><code># Check the systemd timer
+sudo systemctl status certbot.timer
+
+# Or check cron
+sudo crontab -l | grep certbot
+
+# Test automatic renewal
+sudo certbot renew --dry-run</code></pre>
+
+<p>Certificates expire after 90 days. Certbot renews them automatically when they are within 30 days of expiry.</p>
+
+<h2>Nginx Config After Certbot</h2>
+
+<p>Certbot modifies your Nginx config automatically. The result looks like this:</p>
+
+<pre><code>server {
+    listen 443 ssl;
+    server_name yourdomain.com www.yourdomain.com;
+
+    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+
+    location / {
+        proxy_pass http://localhost:3000;
+    }
+}
+
+server {
+    listen 80;
+    server_name yourdomain.com www.yourdomain.com;
+    return 301 https://$host$request_uri;
+}</code></pre>
+
+<h2>Wildcard Certificates</h2>
+
+<p>Wildcard certificates cover all subdomains (<code>*.yourdomain.com</code>) and require DNS validation:</p>
+
+<pre><code>sudo certbot certonly --manual --preferred-challenges dns \
+  -d yourdomain.com -d *.yourdomain.com</code></pre>
+
+<p>Certbot will ask you to create a TXT DNS record to prove domain ownership. Add it at your DNS provider, wait a minute, then press Enter to continue.</p>
+
+<h2>Revoke a Certificate</h2>
+
+<pre><code>sudo certbot revoke --cert-path /etc/letsencrypt/live/yourdomain.com/cert.pem
+sudo certbot delete --cert-name yourdomain.com</code></pre>
+
+<h2>Troubleshooting</h2>
+
+<pre><code># Port 80 must be open for HTTP challenge
+sudo ufw allow 80
+
+# Check Certbot logs
+sudo cat /var/log/letsencrypt/letsencrypt.log
+
+# List all certificates
+sudo certbot certificates</code></pre>

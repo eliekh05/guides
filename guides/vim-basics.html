@@ -1,0 +1,122 @@
+<!-- linux:Linux -->
+<h1>Vim Basics — Editing Files in the Terminal</h1>
+
+<p>Vim is a terminal text editor available on virtually every Linux/Unix system. It has a steep learning curve but once you know the basics, you can edit any file on any server without needing a GUI.</p>
+
+<h2>Open a File</h2>
+
+<pre><code>vim filename.txt         # open or create a file
+vim /etc/nginx/nginx.conf    # edit a system file (use sudo if needed)
+sudo vim /etc/hosts</code></pre>
+
+<h2>The Most Important Concept — Modes</h2>
+
+<p>Vim has modes. You cannot just start typing. When you open a file you are in <strong>Normal mode</strong>.</p>
+
+<table>
+<thead><tr><th>Mode</th><th>Purpose</th><th>How to enter</th></tr></thead>
+<tbody>
+<tr><td>Normal</td><td>Navigate, copy, delete, run commands</td><td>Press Esc</td></tr>
+<tr><td>Insert</td><td>Type text</td><td>Press i</td></tr>
+<tr><td>Visual</td><td>Select text</td><td>Press v</td></tr>
+<tr><td>Command</td><td>Save, quit, search, replace</td><td>Press : (colon)</td></tr>
+</tbody>
+</table>
+
+<h2>The Bare Minimum — Open, Edit, Save, Quit</h2>
+
+<ol>
+<li>Open a file: <code>vim file.txt</code></li>
+<li>Press <code>i</code> to enter Insert mode</li>
+<li>Type your changes</li>
+<li>Press <code>Esc</code> to return to Normal mode</li>
+<li>Type <code>:wq</code> and press Enter to save and quit</li>
+</ol>
+
+<h2>Saving and Quitting</h2>
+
+<pre><code>:w        save
+:q        quit (fails if unsaved changes)
+:wq       save and quit
+:x        save and quit (same as :wq)
+:q!       quit WITHOUT saving — discard all changes
+:w !sudo tee %    save a file you opened without sudo</code></pre>
+
+<h2>Moving Around (Normal Mode)</h2>
+
+<pre><code>h j k l    left, down, up, right (or use arrow keys)
+w          jump forward one word
+b          jump backward one word
+0          go to start of line
+$          go to end of line
+gg         go to first line of file
+G          go to last line of file
+:50        go to line 50
+Ctrl+f     page down
+Ctrl+b     page up</code></pre>
+
+<h2>Entering Insert Mode</h2>
+
+<pre><code">i    insert before cursor
+a    insert after cursor
+o    open new line below and insert
+O    open new line above and insert
+A    insert at end of current line
+I    insert at beginning of current line</code></pre>
+
+<h2>Editing in Normal Mode</h2>
+
+<pre><code">dd       delete (cut) current line
+yy       yank (copy) current line
+p        paste below current line
+P        paste above current line
+u        undo
+Ctrl+r   redo
+x        delete character under cursor
+dw       delete word
+D        delete from cursor to end of line
+cw       change word (delete word and enter insert mode)</code></pre>
+
+<h2>Search and Replace</h2>
+
+<pre><code">/pattern      search forward for pattern
+?pattern      search backward
+n             next match
+N             previous match
+
+# Replace all occurrences on current line
+:s/old/new/g
+
+# Replace all occurrences in entire file
+:%s/old/new/g
+
+# Replace with confirmation prompt
+:%s/old/new/gc</code></pre>
+
+<h2>Visual Mode — Select Text</h2>
+
+<pre><code>v        character-by-character selection
+V        select whole lines
+Ctrl+v   block/column selection
+
+# After selecting:
+d        delete selection
+y        yank (copy) selection
+>        indent
+<        unindent</code></pre>
+
+<h2>Useful Commands</h2>
+
+<pre><code">:set number        show line numbers
+:set nonumber      hide line numbers
+:set paste         disable auto-indent (useful when pasting)
+:syntax on         enable syntax highlighting
+:noh               clear search highlight</code></pre>
+
+<h2>Exit Vim — The Classic Problem</h2>
+
+<pre><code">Esc Esc :q! Enter    # quit without saving — always works</code></pre>
+
+<h2>Learn More</h2>
+
+<pre><code">vimtutor    # interactive 30-minute tutorial built into vim</code></pre>

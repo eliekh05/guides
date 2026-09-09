@@ -1,0 +1,132 @@
+<!-- windows:Windows -->
+<h1>WSL2 Setup — Linux on Windows</h1>
+
+<p>Windows Subsystem for Linux 2 (WSL2) runs a real Linux kernel inside Windows. You get a full Linux terminal, package manager, and development environment — all integrated with Windows files and apps.</p>
+
+<h2>Requirements</h2>
+
+<ul>
+<li>Windows 10 version 2004+ (Build 19041+) or Windows 11</li>
+<li>64-bit system with virtualization enabled in BIOS</li>
+</ul>
+
+<h2>Install WSL</h2>
+
+<p>Open PowerShell as Administrator and run:</p>
+
+<pre><code>wsl --install</code></pre>
+
+<p>This installs WSL2 and Ubuntu by default. Restart when prompted.</p>
+
+<p>After restarting, Ubuntu opens automatically and asks you to create a Linux username and password.</p>
+
+<h2>Install a Different Distro</h2>
+
+<pre><code># List available distros
+wsl --list --online
+
+# Install a specific one
+wsl --install -d Debian
+wsl --install -d kali-linux
+wsl --install -d openSUSE-42</code></pre>
+
+<h2>Basic WSL Commands (PowerShell)</h2>
+
+<pre><code># List installed distros
+wsl --list --verbose
+
+# Launch default distro
+wsl
+
+# Launch a specific distro
+wsl -d Ubuntu
+
+# Shutdown all WSL instances
+wsl --shutdown
+
+# Set default distro
+wsl --set-default Ubuntu</code></pre>
+
+<h2>Access Windows Files from Linux</h2>
+
+<pre><code># Windows C: drive is mounted at /mnt/c
+ls /mnt/c/Users/YourName/
+
+# Navigate to your Windows Downloads folder
+cd /mnt/c/Users/YourName/Downloads</code></pre>
+
+<h2>Access Linux Files from Windows</h2>
+
+<p>In File Explorer, navigate to <code>\\wsl$\Ubuntu\</code> or click the Linux penguin icon in the sidebar. You can drag files in and out normally.</p>
+
+<p>From the Linux terminal, open the current folder in Windows Explorer:</p>
+
+<pre><code">explorer.exe .</code></pre>
+
+<h2>Install Development Tools</h2>
+
+<pre><code"># Update packages
+sudo apt update && sudo apt upgrade -y
+
+# Common dev tools
+sudo apt install build-essential git curl wget unzip -y
+
+# Node.js (via nvm — recommended)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+source ~/.bashrc
+nvm install --lts
+
+# Python
+sudo apt install python3 python3-pip python3-venv -y
+
+# Docker (use Docker Desktop for Windows, not apt)</code></pre>
+
+<h2>VS Code Integration</h2>
+
+<p>Install the <strong>WSL</strong> extension in VS Code. Then from your Linux terminal:</p>
+
+<pre><code">code .    # opens VS Code connected to WSL</code></pre>
+
+<p>VS Code runs natively on Windows but the file system and terminal operate inside Linux.</p>
+
+<h2>Configure WSL Resources</h2>
+
+<p>Create <code>C:\Users\YourName\.wslconfig</code> to limit memory and CPU:</p>
+
+<pre><code>[wsl2]
+memory=4GB       # default is 50% of RAM
+processors=2     # default is all logical CPUs
+swap=2GB
+localhostForwarding=true</code></pre>
+
+<pre><code"># Apply changes
+wsl --shutdown</code></pre>
+
+<h2>Run Linux GUI Apps</h2>
+
+<p>WSL2 on Windows 11 (and updated Windows 10) supports GUI apps via WSLg:</p>
+
+<pre><code># Install a GUI app
+sudo apt install gedit -y
+
+# Launch it (opens a native window on Windows)
+gedit</code></pre>
+
+<h2>Port Forwarding</h2>
+
+<p>Ports open in WSL2 are automatically forwarded to Windows localhost. If you start a web server on port 3000 in Linux, open <code>http://localhost:3000</code> in your Windows browser.</p>
+
+<h2>Troubleshooting</h2>
+
+<pre><code># Enable virtualization if WSL install fails
+# Go to BIOS/UEFI → enable Intel VT-x or AMD-V
+
+# Reset a distro to factory state
+wsl --unregister Ubuntu
+wsl --install -d Ubuntu
+
+# Check WSL version
+wsl --status
+
+# Update WSL kernel
+wsl --update</code></pre>

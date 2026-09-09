@@ -64,6 +64,7 @@ body{font-family:var(--sans);font-size:15px;line-height:1.6}
   color:var(--text);outline:none;transition:border-color .15s,background .15s;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23555560' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:10px center;
+  display:none;
 }
 .hdr-search:focus{border-color:var(--accent-border);background-color:var(--bg3)}
 .hdr-search::placeholder{color:var(--muted)}
@@ -144,13 +145,13 @@ body{font-family:var(--sans);font-size:15px;line-height:1.6}
 
 /* ── MAIN ── */
 .main{flex:1;width:100%;min-width:0}
-.content{padding:24px 18px 100px;max-width:700px;margin:0 auto}
+.content{padding:16px 16px 100px;max-width:700px;margin:0 auto}
 
 /* ── HOME HERO ── */
 .home-hero{
-  padding:20px 0 20px;
+  padding:16px 0 16px;
   border-bottom:1px solid var(--border);
-  margin-bottom:20px;
+  margin-bottom:14px;
 }
 .home-eyebrow{
   font-size:11px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;
@@ -164,7 +165,7 @@ body{font-family:var(--sans);font-size:15px;line-height:1.6}
 .home-sub{font-size:14px;color:var(--text2);line-height:1.7;max-width:480px}
 
 /* ── SEARCH ── */
-.search-wrap{position:relative;margin-bottom:20px}
+.search-wrap{position:relative;margin-bottom:14px}
 .search-icon{
   position:absolute;left:14px;top:50%;transform:translateY(-50%);
   color:var(--muted);pointer-events:none;
@@ -190,8 +191,8 @@ body{font-family:var(--sans);font-size:15px;line-height:1.6}
   gap:5px;margin-bottom:16px;
 }
 .sec-card{
-  display:flex;align-items:center;gap:14px;
-  padding:13px 16px;background:var(--bg2);
+  display:flex;align-items:center;gap:12px;
+  padding:11px 14px;background:var(--bg2);
   border:1px solid var(--border);border-radius:var(--radius);
   text-decoration:none;cursor:pointer;
   transition:background .12s,border-color .12s,transform .1s;
@@ -432,9 +433,10 @@ mark{background:rgba(61,214,140,.12);color:var(--accent);border-radius:2px;font-
   .home-sub{font-size:15px}
   .search-bar-big{height:50px;font-size:15px}
   .sections-grid{grid-template-columns:1fr 1fr;gap:7px}
-  .sec-card{padding:15px 18px}
-  .hdr-search{display:none}
-  .home-hero{padding:32px 0 24px;margin-bottom:24px}
+  .sec-card{padding:14px 18px}
+  .hdr-search{display:block}
+  .home-hero{padding:32px 0 20px;margin-bottom:20px}
+  .content{padding:28px 36px 100px}
 }
 
 @media(min-width:1100px){

@@ -1,0 +1,165 @@
+<!-- system:System & Users -->
+<h1>Git Basics — Version Control for Everyone</h1>
+
+<p>Git tracks changes to files over time. Whether you are working alone or with a team, Git lets you save snapshots of your work, undo mistakes, and collaborate without overwriting each other's changes.</p>
+
+<h2>Install Git</h2>
+
+<pre><code># macOS (comes pre-installed, or via Homebrew)
+brew install git
+
+# Ubuntu/Debian
+sudo apt install git -y
+
+# Fedora
+sudo dnf install git -y
+
+# Windows — download from git-scm.com</code></pre>
+
+<h2>First-Time Setup</h2>
+
+<pre><code>git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+git config --global core.editor nano    # or vim, code, etc.
+git config --global init.defaultBranch main</code></pre>
+
+<h2>Start a Repository</h2>
+
+<pre><code># Create a new repo in the current folder
+git init
+
+# Clone an existing repo from GitHub/GitLab
+git clone https://github.com/user/repo.git
+git clone git@github.com:user/repo.git    # SSH (faster, no password)</code></pre>
+
+<h2>The Basic Workflow</h2>
+
+<pre><code># 1. Check what has changed
+git status
+
+# 2. Stage changes for commit
+git add filename.txt        # stage one file
+git add .                   # stage everything changed
+git add -p                  # interactively choose chunks to stage
+
+# 3. Commit the staged changes
+git commit -m "Add login page"
+
+# 4. Push to remote (GitHub/GitLab)
+git push</code></pre>
+
+<h2>Common Day-to-Day Commands</h2>
+
+<pre><code># See commit history
+git log
+git log --oneline --graph    # compact view with branch graph
+
+# See what changed in a file
+git diff filename.txt
+git diff --staged            # changes that are staged
+
+# Undo changes to a file (before staging)
+git checkout -- filename.txt
+git restore filename.txt     # newer syntax
+
+# Unstage a file
+git reset HEAD filename.txt
+git restore --staged filename.txt    # newer syntax</code></pre>
+
+<h2>Branches</h2>
+
+<pre><code># List branches
+git branch
+
+# Create and switch to a new branch
+git switch -c feature/login
+git checkout -b feature/login    # older syntax
+
+# Switch to an existing branch
+git switch main
+
+# Merge a branch into current branch
+git merge feature/login
+
+# Delete a branch after merging
+git branch -d feature/login</code></pre>
+
+<h2>Working with Remotes</h2>
+
+<pre><code># Show remotes
+git remote -v
+
+# Fetch latest changes without merging
+git fetch
+
+# Pull = fetch + merge
+git pull
+
+# Pull and rebase instead of merge (cleaner history)
+git pull --rebase
+
+# Push a new branch to remote
+git push -u origin feature/login</code></pre>
+
+<h2>Fixing Mistakes</h2>
+
+<pre><code># Amend the last commit message
+git commit --amend -m "Better message"
+
+# Add a forgotten file to the last commit
+git add forgotten.txt
+git commit --amend --no-edit
+
+# Undo the last commit but keep the changes
+git reset --soft HEAD~1
+
+# Undo the last commit and discard all changes
+git reset --hard HEAD~1
+
+# Revert a commit (safe — creates a new undo commit)
+git revert abc1234</code></pre>
+
+<h2>Stashing</h2>
+
+<p>Save work-in-progress without committing so you can switch branches:</p>
+
+<pre><code># Stash current changes
+git stash
+
+# List stashes
+git stash list
+
+# Apply most recent stash
+git stash pop
+
+# Apply a specific stash
+git stash apply stash@{2}</code></pre>
+
+<h2>.gitignore</h2>
+
+<p>Tell Git which files to never track:</p>
+
+<pre><code># .gitignore example
+node_modules/
+.env
+*.log
+dist/
+.DS_Store
+__pycache__/</code></pre>
+
+<pre><code># Ignore a file that is already tracked
+git rm --cached filename.txt</code></pre>
+
+<h2>Useful Shortcuts</h2>
+
+<pre><code># Stage all and commit in one command
+git commit -am "Fix typo"
+
+# Show who changed each line of a file
+git blame filename.txt
+
+# Search for a string in all commits
+git log -S "function login"
+
+# Show changes introduced by a commit
+git show abc1234</code></pre>

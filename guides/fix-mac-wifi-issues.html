@@ -1,0 +1,88 @@
+<!-- macos:macOS -->
+<h1>Fix Wi-Fi Issues on Mac</h1>
+
+<p>Wi-Fi problems on macOS usually fall into a few categories — slow speeds, dropping connection, not connecting after wake, or not seeing a network at all.</p>
+
+<h2>Basic Checks First</h2>
+
+<ul>
+<li>Restart your router — unplug it for 30 seconds</li>
+<li>Toggle Wi-Fi off and on from the menu bar</li>
+<li>Check if other devices on the same network have issues — if they do, it is the router, not your Mac</li>
+<li>Move closer to the router to rule out signal strength</li>
+</ul>
+
+<h2>Forget and Reconnect</h2>
+
+<ol>
+<li>System Settings → Wi-Fi → click the network name → Forget This Network</li>
+<li>Reconnect and enter the password again</li>
+</ol>
+
+<h2>Flush DNS and Renew DHCP</h2>
+
+<pre><code># Flush DNS cache
+sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder
+
+# Renew DHCP lease
+sudo ipconfig set en0 DHCP    # en0 is usually Wi-Fi</code></pre>
+
+<h2>Delete Wi-Fi Preferences</h2>
+
+<p>Corrupted network preferences cause persistent Wi-Fi issues:</p>
+
+<pre><code>sudo rm /Library/Preferences/com.apple.airport.preferences.plist
+sudo rm -rf /Library/Preferences/SystemConfiguration/
+sudo reboot</code></pre>
+
+<p>macOS recreates these files on reboot. You will need to reconnect to all saved networks.</p>
+
+<h2>Fix Wi-Fi Dropping After Sleep</h2>
+
+<p>System Settings → Battery → Options → disable <strong>Enable Power Nap</strong> and <strong>Wake for network access</strong>. Power Nap wakes the Mac periodically which can disrupt Wi-Fi reconnection.</p>
+
+<pre><code># Also try resetting the Wi-Fi interface
+sudo ifconfig en0 down
+sudo ifconfig en0 up</code></pre>
+
+<h2>Check for Channel Interference</h2>
+
+<p>If your Mac shows full Wi-Fi bars but speeds are slow, neighboring Wi-Fi networks may be using the same channel.</p>
+
+<pre><code># Open Wireless Diagnostics
+/System/Library/CoreServices/Wi-Fi\ Diagnostics.app
+
+# Or hold Option and click the Wi-Fi icon for quick stats</code></pre>
+
+<p>In Wireless Diagnostics: Window → Scan. Look at what channels nearby networks use. Change your router to a less congested channel (1, 6, or 11 for 2.4GHz — any channel on 5GHz).</p>
+
+<h2>Reset Network Settings</h2>
+
+<pre><code># Remove all network configs and start fresh
+sudo rm /Library/Preferences/SystemConfiguration/com.apple.network.identification.plist
+sudo rm /Library/Preferences/SystemConfiguration/com.apple.wifi.message-tracer.plist
+sudo rm /Library/Preferences/SystemConfiguration/NetworkInterfaces.plist
+sudo rm /Library/Preferences/SystemConfiguration/preferences.plist
+sudo reboot</code></pre>
+
+<h2>Check for macOS Update</h2>
+
+<p>Wi-Fi driver bugs are common in new macOS releases and fixed in point updates. System Settings → General → Software Update. If a known Wi-Fi bug exists, the fix is usually in the next .1 update.</p>
+
+<h2>Reset SMC (Intel Macs)</h2>
+
+<p>The SMC controls hardware including the Wi-Fi card. If nothing else works on an Intel Mac, reset it:</p>
+
+<p>Shut down → hold Shift+Control+Option+Power for 7 seconds → release → power on.</p>
+
+<p>Apple Silicon Macs: shut down and leave off for 30 seconds.</p>
+
+<h2>Check Wi-Fi Hardware</h2>
+
+<pre><code># Check if Wi-Fi hardware is detected
+system_profiler SPAirPortDataType | head -20
+
+# Check for hardware errors
+log show --predicate 'subsystem == "com.apple.wifi"' --last 1h | grep -i error | head -20</code></pre>
+
+<p>If Wi-Fi does not appear at all and the menu bar shows no Wi-Fi icon, the hardware may have failed. On MacBooks this sometimes happens after a drop or liquid damage.</p>

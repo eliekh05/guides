@@ -1,0 +1,121 @@
+<!-- linux:Linux -->
+<h1>Linux File System — Directory Structure Explained</h1>
+
+<p>Linux has a single directory tree starting at <code>/</code>. Every file and device lives somewhere in this tree. Understanding where things go is essential for administering any Linux system.</p>
+
+<h2>Top-Level Directories</h2>
+
+<table>
+<thead><tr><th>Directory</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td>/</td><td>Root — top of the entire filesystem</td></tr>
+<tr><td>/bin</td><td>Essential user binaries (ls, cp, mv, bash). Symlink to /usr/bin on modern systems</td></tr>
+<tr><td>/boot</td><td>Bootloader, kernel, initramfs</td></tr>
+<tr><td>/dev</td><td>Device files — disks, terminals, null, random</td></tr>
+<tr><td>/etc</td><td>System-wide configuration files</td></tr>
+<tr><td>/home</td><td>User home directories (/home/username)</td></tr>
+<tr><td>/lib</td><td>Shared libraries. Symlink to /usr/lib on modern systems</td></tr>
+<tr><td>/media</td><td>Mount points for removable media (USB, optical)</td></tr>
+<tr><td>/mnt</td><td>Temporary mount points</td></tr>
+<tr><td>/opt</td><td>Optional/third-party software installed outside the package manager</td></tr>
+<tr><td>/proc</td><td>Virtual filesystem — running processes and kernel info</td></tr>
+<tr><td>/root</td><td>Root user's home directory</td></tr>
+<tr><td>/run</td><td>Runtime data since last boot (PIDs, sockets)</td></tr>
+<tr><td>/sbin</td><td>System binaries for administration. Symlink to /usr/sbin</td></tr>
+<tr><td>/srv</td><td>Data for services (web, FTP)</td></tr>
+<tr><td>/sys</td><td>Virtual filesystem — kernel and hardware info</td></tr>
+<tr><td>/tmp</td><td>Temporary files, cleared on reboot</td></tr>
+<tr><td>/usr</td><td>User programs, libraries, documentation</td></tr>
+<tr><td>/var</td><td>Variable data — logs, databases, mail, package cache</td></tr>
+</tbody>
+</table>
+
+<h2>Important Subdirectories</h2>
+
+<pre><code>/etc/
+  passwd        # user accounts
+  shadow        # password hashes (root only)
+  hosts         # hostname to IP mappings
+  fstab         # filesystem mount configuration
+  crontab       # system cron jobs
+  ssh/          # SSH daemon config
+  systemd/      # systemd service files
+  apt/          # apt package manager config
+  nginx/        # nginx web server config
+
+/var/
+  log/          # system and application logs
+  lib/          # persistent app data (databases, package state)
+  cache/        # cached data (package downloads)
+  www/          # web server files (traditional)
+  run/          # runtime state (symlink to /run)
+
+/usr/
+  bin/          # user commands (ls, grep, python3)
+  sbin/         # admin commands (useradd, fdisk)
+  lib/          # shared libraries
+  local/        # locally installed software (not from package manager)
+  share/        # architecture-independent data (man pages, icons)
+  include/      # C header files</code></pre>
+
+<h2>/proc — Process and Kernel Info</h2>
+
+<pre><code># CPU info
+cat /proc/cpuinfo
+
+# Memory info
+cat /proc/meminfo
+
+# Kernel version
+cat /proc/version
+
+# Running processes (each PID is a directory)
+ls /proc/ | grep '^[0-9]'
+
+# Info about process 1 (systemd/init)
+cat /proc/1/cmdline
+cat /proc/1/status</code></pre>
+
+<h2>/dev — Device Files</h2>
+
+<pre><code>/dev/sda          # first SATA/SCSI disk
+/dev/sda1         # first partition of sda
+/dev/nvme0n1      # first NVMe disk
+/dev/nvme0n1p1    # first partition of NVMe disk
+/dev/null         # discard all data written to it
+/dev/zero         # produces infinite zeros
+/dev/random       # random data from kernel entropy pool
+/dev/tty          # current terminal
+/dev/stdin        # standard input
+/dev/stdout       # standard output</code></pre>
+
+<h2>Finding Files</h2>
+
+<pre><code># Find a file by name
+find / -name "filename.txt" 2>/dev/null
+
+# Find all config files for a package
+dpkg -L nginx    # Debian/Ubuntu
+rpm -ql nginx    # Fedora/RHEL
+
+# Find what package owns a file
+dpkg -S /usr/bin/python3
+rpm -qf /usr/bin/python3
+
+# Find large files
+find / -type f -size +100M 2>/dev/null | sort -rh | head -20</code></pre>
+
+<h2>Filesystem Types</h2>
+
+<table>
+<thead><tr><th>Type</th><th>Use case</th></tr></thead>
+<tbody>
+<tr><td>ext4</td><td>Default Linux filesystem, stable, widely supported</td></tr>
+<tr><td>Btrfs</td><td>Snapshots, compression, checksums — Fedora default</td></tr>
+<tr><td>XFS</td><td>High performance, good for large files — RHEL default</td></tr>
+<tr><td>ZFS</td><td>Enterprise features, pools, deduplication</td></tr>
+<tr><td>tmpfs</td><td>RAM-based, used for /tmp and /run</td></tr>
+<tr><td>vfat/FAT32</td><td>Boot partition (EFI), USB drives</td></tr>
+<tr><td>NTFS</td><td>Windows drives (read/write on Linux via ntfs-3g)</td></tr>
+</tbody>
+</table>

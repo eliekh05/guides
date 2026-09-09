@@ -1,0 +1,116 @@
+<!-- server:Server & Self-Hosting -->
+<h1>WireGuard VPN — Self-Hosted Setup</h1>
+
+<p>WireGuard is a modern, fast VPN protocol. Simpler to configure than OpenVPN, significantly faster, and built into the Linux kernel since 5.6. This guide sets up a server you control.</p>
+
+<h2>Install WireGuard</h2>
+
+<pre><code># Ubuntu/Debian
+sudo apt install wireguard -y
+
+# Fedora/RHEL
+sudo dnf install wireguard-tools -y
+
+# Arch
+sudo pacman -S wireguard-tools</code></pre>
+
+<h2>Generate Keys (Server)</h2>
+
+<pre><code">cd /etc/wireguard
+umask 077
+
+# Generate server keys
+wg genkey | tee server_private.key | wg pubkey > server_public.key
+
+# Generate client keys
+wg genkey | tee client_private.key | wg pubkey > client_public.key
+
+# View the keys (you'll need these for config)
+cat server_private.key
+cat server_public.key
+cat client_private.key
+cat client_public.key</code></pre>
+
+<h2>Server Configuration</h2>
+
+<pre><code>sudo nano /etc/wireguard/wg0.conf</code></pre>
+
+<pre><code>[Interface]
+PrivateKey = SERVER_PRIVATE_KEY
+Address = 10.0.0.1/24
+ListenPort = 51820
+PostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -A FORWARD -o wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -D FORWARD -o wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+
+[Peer]
+# Client
+PublicKey = CLIENT_PUBLIC_KEY
+AllowedIPs = 10.0.0.2/32</code></pre>
+
+<p>Replace <code>eth0</code> with your actual network interface (<code>ip link show</code> to find it).</p>
+
+<h2>Enable IP Forwarding</h2>
+
+<pre><code">echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p</code></pre>
+
+<h2>Start WireGuard</h2>
+
+<pre><code>sudo systemctl enable --now wg-quick@wg0
+sudo wg show    # verify it is running</code></pre>
+
+<h2>Open Firewall Port</h2>
+
+<pre><code># UFW
+sudo ufw allow 51820/udp
+
+# firewalld
+sudo firewall-cmd --permanent --add-port=51820/udp
+sudo firewall-cmd --reload</code></pre>
+
+<h2>Client Configuration</h2>
+
+<p>Create this on the client device:</p>
+
+<pre><code>[Interface]
+PrivateKey = CLIENT_PRIVATE_KEY
+Address = 10.0.0.2/24
+DNS = 1.1.1.1
+
+[Peer]
+PublicKey = SERVER_PUBLIC_KEY
+Endpoint = YOUR_SERVER_IP:51820
+AllowedIPs = 0.0.0.0/0    # route ALL traffic through VPN
+PersistentKeepalive = 25</code></pre>
+
+<p>To route only specific traffic through the VPN (split tunnel), change <code>AllowedIPs</code>:</p>
+
+<pre><code>AllowedIPs = 10.0.0.0/24    # only VPN subnet traffic goes through tunnel</code></pre>
+
+<h2>Connect on macOS / iOS / Android</h2>
+
+<p>Install the WireGuard app from the App Store or Google Play. Import the client config file or generate a QR code:</p>
+
+<pre><code># Generate QR code for mobile
+sudo apt install qrencode
+qrencode -t ansiutf8 < /path/to/client.conf</code></pre>
+
+<h2>Add More Clients</h2>
+
+<pre><code># Generate new key pair
+wg genkey | tee client2_private.key | wg pubkey > client2_public.key
+
+# Add to server config
+sudo wg set wg0 peer CLIENT2_PUBLIC_KEY allowed-ips 10.0.0.3/32
+
+# Or add to wg0.conf and restart
+[Peer]
+PublicKey = CLIENT2_PUBLIC_KEY
+AllowedIPs = 10.0.0.3/32</code></pre>
+
+<h2>Useful Commands</h2>
+
+<pre><code>sudo wg show              # connection status and traffic stats
+sudo wg showconf wg0      # show current running config
+sudo systemctl restart wg-quick@wg0    # restart
+sudo systemctl stop wg-quick@wg0       # stop</code></pre>

@@ -1,0 +1,126 @@
+<!-- linux:Linux -->
+<h1>Managing Processes and Jobs on Linux</h1>
+
+<p>Understanding how to view, control, and kill processes is fundamental to Linux administration.</p>
+
+<h2>View Running Processes</h2>
+
+<pre><code># Snapshot of all processes
+ps aux
+
+# Filter by name
+ps aux | grep nginx
+
+# Interactive process viewer (better than ps)
+top
+htop    # install with: sudo apt install htop</code></pre>
+
+<h2>top / htop Keys</h2>
+
+<table>
+<thead><tr><th>Key</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td>k</td><td>Kill process (enter PID)</td></tr>
+<tr><td>r</td><td>Renice (change priority)</td></tr>
+<tr><td>f</td><td>Filter/sort columns</td></tr>
+<tr><td>u</td><td>Filter by user</td></tr>
+<tr><td>q</td><td>Quit</td></tr>
+<tr><td>M</td><td>Sort by memory</td></tr>
+<tr><td>P</td><td>Sort by CPU</td></tr>
+</tbody>
+</table>
+
+<h2>Find a Process</h2>
+
+<pre><code># Find PID by name
+pgrep nginx
+pgrep -a nginx    # show full command
+
+# Find and show process tree
+pstree -p
+
+# Find what is using a port
+sudo ss -tlnp | grep :80
+sudo lsof -i :80</code></pre>
+
+<h2>Kill Processes</h2>
+
+<pre><code># Kill by PID
+kill PID           # SIGTERM — polite request to stop
+kill -9 PID        # SIGKILL — force kill immediately
+
+# Kill by name
+pkill nginx        # kill all processes named nginx
+killall nginx      # same
+
+# Kill all processes matching pattern
+pkill -f "python script.py"</code></pre>
+
+<h2>Background and Foreground Jobs</h2>
+
+<pre><code># Run a command in the background
+./long-script.sh &
+
+# List background jobs
+jobs
+
+# Bring a job to foreground
+fg %1       # job number 1
+fg          # most recent job
+
+# Send running command to background
+# Press Ctrl+Z to pause, then:
+bg          # resume in background</code></pre>
+
+<h2>nohup — Keep Running After Logout</h2>
+
+<pre><code># Run command that survives SSH disconnection
+nohup ./script.sh &
+
+# Output goes to nohup.out by default
+nohup ./script.sh > /var/log/script.log 2>&1 &
+
+# Check it is running
+jobs
+ps aux | grep script.sh</code></pre>
+
+<h2>Process Priority (nice)</h2>
+
+<pre><code># Run with lower priority (nicer to other processes)
+nice -n 10 ./cpu-heavy-script.sh
+
+# Run with higher priority (requires root)
+sudo nice -n -10 ./important-script.sh
+
+# Change priority of running process
+renice +10 -p PID       # lower priority
+sudo renice -5 -p PID   # higher priority</code></pre>
+
+<h2>systemd Service Processes</h2>
+
+<pre><code># Check all processes for a service
+systemctl status nginx
+
+# See process tree for a service
+systemd-cgls /system.slice/nginx.service</code></pre>
+
+<h2>Watch a Process</h2>
+
+<pre><code># Watch memory and CPU of a specific process
+watch -n 1 'ps -p PID -o pid,pcpu,pmem,cmd'
+
+# Watch with htop filtered to one process
+htop -p PID</code></pre>
+
+<h2>Zombie Processes</h2>
+
+<p>A zombie process (Z in ps output) is a finished process whose parent has not collected its exit code. They cannot be killed directly — kill the parent process instead:</p>
+
+<pre><code># Find zombies
+ps aux | grep 'Z'
+
+# Find the parent of a zombie
+ps -o ppid= -p ZOMBIE_PID
+
+# Kill the parent
+kill PARENT_PID</code></pre>

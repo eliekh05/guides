@@ -1,6 +1,9 @@
 .git
+.git/**
 .github
 *.md
 build.js
 convert.sh
 node_modules
+node_modules/**
+.wrangler

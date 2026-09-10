@@ -3,9 +3,17 @@
 
 <p>Homebrew is the package manager for macOS. It lets you install command-line tools, programming languages, databases, and GUI apps from the terminal — and keep them all updated in one command.</p>
 
+<h2>Apple Silicon Only</h2>
+
+<p>As of September 2026, Homebrew dropped support for Intel Macs. Apple stopped supporting Intel in macOS 27 (Golden Gate), and Homebrew — a volunteer-run nonprofit — followed suit. If you're on an Intel Mac, Homebrew will still install but you'll get a warning telling you you're on your own, and things will increasingly break over time.</p>
+
+<p>If you're on Intel, use MacPorts instead — it still fully supports Intel x86_64: <a href="https://www.macports.org" target="_blank" rel="noopener">macports.org</a></p>
+
+<p>To check which chip you have: Apple menu → About This Mac. If it says Intel, you're affected.</p>
+
 <h2>Install Homebrew</h2>
 
-<pre><code">/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</code></pre>
+<pre><code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</code></pre>
 
 <p>After installing on Apple Silicon, add Homebrew to your PATH:</p>
 

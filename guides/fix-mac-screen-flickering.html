@@ -1,0 +1,74 @@
+<!-- macos:macOS -->
+<h1>Fix Screen Flickering on Mac</h1>
+
+<p>Screen flickering on a Mac is usually caused by a GPU driver issue, an external display misconfiguration, or a hardware fault starting to develop. Here's how to tell which one and what to do about it.</p>
+
+<h2>First — Narrow It Down</h2>
+
+<ul>
+<li>Does it flicker on the built-in screen, an external display, or both?</li>
+<li>Does it happen constantly or only when doing something specific (scrolling, playing video, waking from sleep)?</li>
+<li>Did it start after a macOS update?</li>
+</ul>
+
+<h2>External Display Flickering</h2>
+
+<p>If it's only the external monitor:</p>
+<ul>
+<li>Try a different cable — HDMI and DisplayPort cables degrade and cause flickering</li>
+<li>Try a different port on your Mac or hub</li>
+<li>Reduce the refresh rate: System Settings → Displays → select the monitor → change refresh rate from 144Hz to 60Hz</li>
+<li>Turn off "Automatically adjust brightness" if it's toggling constantly</li>
+</ul>
+
+<h2>Disable Automatic Graphics Switching</h2>
+
+<p>Macs with dual GPUs (integrated + discrete) switch between them automatically. This switching can cause flickering:</p>
+
+<pre><code>System Settings → Battery → uncheck "Automatic graphics switching"</code></pre>
+
+<p>This forces the discrete GPU to stay on — uses more power but stops the switching flicker.</p>
+
+<h2>Reset NVRAM</h2>
+
+<p>NVRAM holds display settings. Resetting it clears bad display configs:</p>
+
+<p><strong>Intel Mac:</strong> Shut down → power on and hold Option+Command+P+R for 20 seconds until the startup chime plays twice.</p>
+
+<p><strong>Apple Silicon:</strong> Just restart — NVRAM resets on every boot.</p>
+
+<h2>Reset SMC (Intel Only)</h2>
+
+<p>The SMC controls GPU power management. Resetting it can fix GPU-related flickering:</p>
+
+<p>Shut down → hold Shift+Control+Option+Power for 7 seconds → release all → power on normally.</p>
+
+<h2>Check for macOS Updates</h2>
+
+<p>GPU driver bugs are common right after major macOS releases and usually fixed in .1 or .2 updates. System Settings → General → Software Update.</p>
+
+<h2>Check GPU Errors in Logs</h2>
+
+<pre><code>log show --predicate 'subsystem contains "gpu"' --last 1h | grep -i error</code></pre>
+
+<p>If you see repeated GPU errors this points to either a driver bug (fixed by update) or failing hardware.</p>
+
+<h2>Safe Mode Test</h2>
+
+<p>Boot into Safe Mode to check if the flickering is caused by a third-party extension or login item:</p>
+
+<p><strong>Intel:</strong> Restart and hold Shift until the login screen appears.<br>
+<strong>Apple Silicon:</strong> Shut down → hold Power until "Loading startup options" appears → select disk → hold Shift → click Continue in Safe Mode.</p>
+
+<p>If the flickering stops in Safe Mode, a login item or extension is the cause. Disable them one by one under System Settings → General → Login Items.</p>
+
+<h2>Hardware — When It's the Display Itself</h2>
+
+<p>If none of the above helps and the flicker is on the built-in screen, it's likely a hardware issue:</p>
+<ul>
+<li>Loose display cable — common on MacBook hinges after years of opening and closing</li>
+<li>Failing GPU — usually accompanied by graphical glitches and artifacts</li>
+<li>Dying backlight — flicker gets worse in cold temperatures</li>
+</ul>
+
+<p>Book a Genius Bar appointment or run Apple Diagnostics: restart and hold D on Intel, or hold D right after powering on Apple Silicon.</p>

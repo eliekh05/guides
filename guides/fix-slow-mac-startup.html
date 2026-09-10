@@ -1,0 +1,85 @@
+<!-- macos:macOS -->
+<h1>Fix Slow Mac Startup</h1>
+
+<p>A Mac that takes forever to boot usually has too many login items, a full or almost-full drive, or a background process that won't stop spinning. Here's how to diagnose and fix it.</p>
+
+<h2>How Long Is Normal?</h2>
+
+<ul>
+<li>Apple Silicon Mac with SSD: 10–20 seconds from power button to desktop</li>
+<li>Intel Mac with SSD: 20–40 seconds</li>
+<li>Intel Mac with spinning hard drive: 1–2 minutes (the drive is the bottleneck)</li>
+</ul>
+
+<h2>Check Login Items</h2>
+
+<p>Login items are apps that launch automatically at startup — each one adds startup time:</p>
+
+<pre><code">System Settings → General → Login Items & Extensions</code></pre>
+
+<p>Remove anything you don't need running at startup. Common culprits: Dropbox, Creative Cloud, Spotify, Steam, printer software, old apps you forgot about.</p>
+
+<h2>Check Startup Agents (Advanced)</h2>
+
+<p>Some apps add hidden startup agents that don't show in the Login Items list:</p>
+
+<pre><code"># List all startup agents
+ls ~/Library/LaunchAgents/
+ls /Library/LaunchAgents/
+ls /Library/LaunchDaemons/</code></pre>
+
+<p>Delete <code>.plist</code> files for apps you've uninstalled — they keep loading even after the app is gone.</p>
+
+<h2>Free Up Disk Space</h2>
+
+<p>macOS needs roughly 10–15% free disk space to breathe. A nearly full drive causes dramatically slower performance including startup:</p>
+
+<pre><code">Apple menu → About This Mac → Storage</code></pre>
+
+<p>Delete large files, empty the Trash, and clear Downloads. Use <code>ncdu</code> (install with Homebrew) in the terminal to find what's taking up space:</p>
+
+<pre><code"">sudo ncdu /</code></pre>
+
+<h2>Rebuild Spotlight Index</h2>
+
+<p>A corrupted Spotlight index causes Spotlight to re-index at startup, hogging CPU and slowing things down:</p>
+
+<pre><code"># Remove and rebuild the index
+sudo mdutil -E /
+# macOS will rebuild overnight or when idle</code></pre>
+
+<h2>Check What's Slow with Console</h2>
+
+<pre><code"># View boot logs
+log show --predicate 'eventMessage contains "boot"' --last boot | head -50
+
+# Find slow startup items in Console.app
+Open Console → search for "slow" or "timeout"</code></pre>
+
+<h2>Reset NVRAM and SMC</h2>
+
+<p>Corrupted NVRAM can add several seconds to startup:</p>
+
+<p><strong>Intel NVRAM reset:</strong> Shut down → power on and hold Option+Command+P+R for 20 seconds.</p>
+
+<p><strong>Intel SMC reset:</strong> Shut down → hold Shift+Control+Option+Power for 7 seconds → release → power on.</p>
+
+<p><strong>Apple Silicon:</strong> Just restart — both reset automatically.</p>
+
+<h2>Run First Aid on the Startup Drive</h2>
+
+<pre><code">Open Disk Utility → select Macintosh HD → click First Aid → Run</code></pre>
+
+<p>Filesystem errors force macOS to check and repair the drive on every boot, adding significant time.</p>
+
+<h2>Disable FileVault (Last Resort)</h2>
+
+<p>FileVault encrypts your drive and adds 2–5 seconds to startup time. If startup time matters more than encryption for your use case:</p>
+
+<pre><code">System Settings → Privacy & Security → FileVault → Turn Off FileVault</code></pre>
+
+<p>Decryption takes a few hours to complete in the background.</p>
+
+<h2>Check for Malware</h2>
+
+<p>Unexpected background processes at startup can be malware. Download Malwarebytes for Mac (free version is enough) and run a scan.</p>

@@ -1,0 +1,89 @@
+<!-- windows:Windows -->
+<h1>Fix Blue Screen of Death (BSOD) on Windows</h1>
+
+<p>A blue screen means Windows hit a critical error it couldn't recover from. The stop code on the screen tells you where to look. Most BSODs are caused by bad drivers, failing hardware, or corrupted system files.</p>
+
+<h2>Read the Stop Code</h2>
+
+<p>The stop code appears on the blue screen itself. Common ones:</p>
+
+<table>
+<thead><tr><th>Stop Code</th><th>Likely Cause</th></tr></thead>
+<tbody>
+<tr><td>IRQL_NOT_LESS_OR_EQUAL</td><td>Bad driver, usually recently installed</td></tr>
+<tr><td>PAGE_FAULT_IN_NONPAGED_AREA</td><td>Faulty RAM or bad driver</td></tr>
+<tr><td>SYSTEM_SERVICE_EXCEPTION</td><td>Driver or software bug</td></tr>
+<tr><td>DRIVER_POWER_STATE_FAILURE</td><td>Driver not handling sleep/wake properly</td></tr>
+<tr><td>CRITICAL_PROCESS_DIED</td><td>Essential Windows process crashed — often corrupted system files</td></tr>
+<tr><td>MEMORY_MANAGEMENT</td><td>RAM problem</td></tr>
+<tr><td>NTFS_FILE_SYSTEM</td><td>Failing hard drive</td></tr>
+<tr><td>DPC_WATCHDOG_VIOLATION</td><td>Driver taking too long — often SSD driver issue</td></tr>
+</tbody>
+</table>
+
+<h2>View Crash Logs</h2>
+
+<pre><code">Win+R → eventvwr → Windows Logs → System → filter for "Critical"</code></pre>
+
+<p>Or use WhoCrashed (free tool) — it reads the memory dump and tells you which driver caused the crash in plain English. Download from resplendence.com.</p>
+
+<h2>Check for Driver Issues</h2>
+
+<p>If a BSOD started after installing new software or a driver update:</p>
+
+<ol>
+<li>Boot into Safe Mode — hold Shift while clicking Restart</li>
+<li>Device Manager → right-click the recently updated driver → Roll Back Driver</li>
+<li>Or uninstall it entirely and reinstall a previous version</li>
+</ol>
+
+<pre><code"># Run Driver Verifier to stress-test drivers (causes deliberate crashes to identify bad ones)
+# Only do this if you can afford a few crashes
+verifier    # in Run dialog</code></pre>
+
+<h2>Repair System Files</h2>
+
+<pre><code"># Open Command Prompt as Administrator
+sfc /scannow
+
+# If sfc finds issues it can't fix, run DISM first
+DISM /Online /Cleanup-Image /RestoreHealth
+sfc /scannow</code></pre>
+
+<h2>Test Your RAM</h2>
+
+<pre><code">Win+R → mdsched → restart and run memory test</code></pre>
+
+<p>Let it run — the extended test takes a couple of hours. If it finds errors, your RAM is failing and needs replacing. Try reseating the RAM sticks first — remove and firmly press back in.</p>
+
+<h2>Check the Hard Drive</h2>
+
+<pre><code"># Check disk health
+# Open Command Prompt as Administrator
+chkdsk C: /f /r /x
+
+# This requires a restart to run on the system drive
+# It will scan and fix filesystem errors on next boot</code></pre>
+
+<p>Download CrystalDiskInfo (free) to check the S.M.A.R.T. data on your drive — if it shows "Caution" or "Bad" status, the drive is failing and needs replacing soon.</p>
+
+<h2>Check for Overheating</h2>
+
+<p>BSODs during heavy tasks (gaming, video encoding) often mean thermal throttling or shutdown:</p>
+
+<pre><code">Download HWiNFO64 → run sensors-only mode → check CPU and GPU temperatures under load</code></pre>
+
+<p>CPU over 95°C or GPU over 90°C under sustained load is too hot. Clean the fans and heatsinks, reapply thermal paste if it's been a few years.</p>
+
+<h2>Undo Recent Changes</h2>
+
+<pre><code">Start → "Create a restore point" → System Restore → pick a date before BSODs started</code></pre>
+
+<h2>If Windows Won't Boot at All</h2>
+
+<ol>
+<li>Force shut down 3 times in a row during startup — Windows enters Automatic Repair</li>
+<li>Advanced Options → Startup Repair</li>
+<li>Advanced Options → Command Prompt → run <code>sfc /scannow</code> and <code>chkdsk</code></li>
+<li>Last resort: Reset This PC (keeps files) or reinstall Windows</li>
+</ol>

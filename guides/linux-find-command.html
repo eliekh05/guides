@@ -1,0 +1,138 @@
+<!-- linux:Linux -->
+<h1>The Linux find Command — Finding Files That Actually Match What You Want</h1>
+
+<p>The <code>find</code> command searches for files by name, size, date, permissions, owner, type, and more. It's one of the most useful commands on Linux once you get past the syntax.</p>
+
+<h2>Basic Syntax</h2>
+
+<pre><code">find [where to look] [what to look for] [what to do with results]</code></pre>
+
+<h2>Find by Name</h2>
+
+<pre><code"># Find a file by exact name
+find / -name "config.json"
+
+# Case-insensitive
+find / -iname "readme.md"
+
+# Wildcards
+find /home -name "*.log"
+find /var -name "access*"
+
+# Suppress permission errors
+find / -name "*.conf" 2>/dev/null</code></pre>
+
+<h2>Find by Type</h2>
+
+<pre><code"># Files only
+find /etc -type f -name "*.conf"
+
+# Directories only
+find /home -type d -name ".ssh"
+
+# Symlinks
+find /usr -type l</code></pre>
+
+<h2>Find by Size</h2>
+
+<pre><code"># Larger than 100MB
+find / -type f -size +100M
+
+# Smaller than 10KB
+find /var -type f -size -10k
+
+# Exactly 1GB
+find / -type f -size 1G
+
+# Between 50MB and 500MB
+find / -type f -size +50M -size -500M</code></pre>
+
+<h2>Find by Age</h2>
+
+<pre><code"># Modified in the last 7 days
+find /home -mtime -7
+
+# Modified more than 30 days ago
+find /var/log -mtime +30
+
+# Modified in the last 24 hours
+find /tmp -mtime -1
+
+# Accessed in the last hour
+find /home -amin -60</code></pre>
+
+<h2>Find by Owner and Permissions</h2>
+
+<pre><code"># Files owned by a specific user
+find /home -user alice
+
+# Files owned by root
+find /var -user root
+
+# Files with specific permissions
+find / -perm 777    # exactly rwxrwxrwx
+find / -perm -004   # world-readable
+find / -perm /u+s   # setuid files (security audit)</code></pre>
+
+<h2>Do Something with the Results</h2>
+
+<pre><code"># Delete all .log files older than 7 days
+find /var/log -name "*.log" -mtime +7 -delete
+
+# Run a command on each result
+find /home -name "*.sh" -exec chmod +x {} \;
+
+# Print file size alongside name
+find /var -type f -size +10M -exec ls -lh {} \;
+
+# Copy each result somewhere
+find /home -name "*.conf" -exec cp {} /backup/ \;</code></pre>
+
+<h2>Combine Conditions</h2>
+
+<pre><code"># AND (default — both must match)
+find / -type f -name "*.py" -size +1M
+
+# OR
+find / -name "*.jpg" -o -name "*.png"
+
+# NOT
+find / -not -name "*.log"
+find / ! -name "*.log"    # same thing</code></pre>
+
+<h2>Limit Search Depth</h2>
+
+<pre><code"># Only look 2 directories deep
+find /etc -maxdepth 2 -name "*.conf"
+
+# Start at depth 2 (skip top level)
+find /usr -mindepth 2 -maxdepth 3 -name "*.so"</code></pre>
+
+<h2>Useful Real-World Examples</h2>
+
+<pre><code"># Find the 10 largest files on the system
+find / -type f -printf '%s %p\n' 2>/dev/null | sort -rn | head -10
+
+# Find files changed in the last hour (useful after installs)
+find / -newer /tmp/timestamp -type f 2>/dev/null
+# (create timestamp with: touch /tmp/timestamp)
+
+# Find empty files and directories
+find /home -empty
+
+# Find files with no owner
+find / -nouser 2>/dev/null
+
+# Find duplicate log files
+find /var/log -name "*.log.gz" -mtime +30 -delete</code></pre>
+
+<h2>xargs — Faster Than -exec for Many Files</h2>
+
+<pre><code"># Delete all found files efficiently
+find /tmp -name "*.tmp" | xargs rm -f
+
+# Run with multiple files at once
+find /home -name "*.sh" | xargs chmod +x
+
+# Handle filenames with spaces
+find /home -name "*.mp3" -print0 | xargs -0 rm</code></pre>

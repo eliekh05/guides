@@ -1,0 +1,124 @@
+<!-- server:Server & Self-Hosting -->
+<h1>Docker Volumes — Persistent Data That Survives Container Restarts</h1>
+
+<p>Containers are ephemeral — when you remove one, everything inside it is gone. Volumes are how you keep data around. Databases, uploads, config files — anything that needs to persist goes in a volume.</p>
+
+<h2>The Three Ways to Store Data</h2>
+
+<table>
+<thead><tr><th>Type</th><th>What it is</th><th>Use for</th></tr></thead>
+<tbody>
+<tr><td>Volume</td><td>Managed by Docker, stored in /var/lib/docker/volumes</td><td>Databases, persistent app data</td></tr>
+<tr><td>Bind mount</td><td>A folder on your host machine</td><td>Dev work, config files you need to edit</td></tr>
+<tr><td>tmpfs</td><td>RAM only, gone when container stops</td><td>Sensitive temp data, caches</td></tr>
+</tbody>
+</table>
+
+<h2>Named Volumes</h2>
+
+<pre><code"># Create a volume
+docker volume create mydata
+
+# Use it when running a container
+docker run -v mydata:/var/lib/postgresql/data postgres
+
+# List volumes
+docker volume ls
+
+# Inspect a volume (see where data actually lives)
+docker volume inspect mydata
+
+# Remove a volume (data is gone permanently)
+docker volume rm mydata</code></pre>
+
+<h2>Volumes in Docker Compose</h2>
+
+<pre><code">services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    volumes:
+      - redisdata:/data
+
+volumes:
+  pgdata:
+  redisdata:</code></pre>
+
+<p>Compose creates the volumes automatically when you run <code>docker compose up</code>. They persist even when you do <code>docker compose down</code> — use <code>docker compose down -v</code> to also remove them.</p>
+
+<h2>Bind Mounts</h2>
+
+<pre><code"># Mount your current directory into the container
+docker run -v $(pwd):/app node:20 npm start
+
+# Mount a specific folder
+docker run -v /home/user/config:/etc/myapp/config myapp
+
+# Read-only bind mount
+docker run -v /home/user/config:/etc/myapp/config:ro myapp</code></pre>
+
+<pre><code">services:
+  api:
+    image: myapi
+    volumes:
+      - ./src:/app/src        # bind mount — host path:container path
+      - appdata:/app/data     # named volume
+
+volumes:
+  appdata:</code></pre>
+
+<h2>Backup a Volume</h2>
+
+<pre><code"># Backup volume data to a tar file
+docker run --rm \
+  -v mydata:/source \
+  -v $(pwd):/backup \
+  alpine tar czf /backup/mydata-backup.tar.gz -C /source .
+
+# Restore from backup
+docker run --rm \
+  -v mydata:/target \
+  -v $(pwd):/backup \
+  alpine tar xzf /backup/mydata-backup.tar.gz -C /target</code></pre>
+
+<h2>Copy Files In and Out</h2>
+
+<pre><code"># Copy a file from container to host
+docker cp mycontainer:/etc/config.json ./config.json
+
+# Copy a file from host to container
+docker cp ./config.json mycontainer:/etc/config.json</code></pre>
+
+<h2>Explore Volume Contents</h2>
+
+<pre><code"># Spin up a temporary container to browse the volume
+docker run --rm -it -v mydata:/data alpine sh
+# Now you can ls /data, cat files, etc.</code></pre>
+
+<h2>Clean Up Unused Volumes</h2>
+
+<pre><code"># Remove all volumes not attached to a container
+docker volume prune
+
+# Remove everything unused (containers, images, networks, volumes)
+docker system prune --volumes</code></pre>
+
+<h2>Volume Permissions</h2>
+
+<p>A common headache: the app inside the container runs as a non-root user but the volume is owned by root. Fix it by setting the user in your Dockerfile or compose file:</p>
+
+<pre><code">services:
+  app:
+    image: myapp
+    user: "1000:1000"    # match the UID inside the container
+    volumes:
+      - appdata:/data</code></pre>
+
+<pre><code"># Or fix ownership from a temporary container
+docker run --rm -v mydata:/data alpine chown -R 1000:1000 /data</code></pre>

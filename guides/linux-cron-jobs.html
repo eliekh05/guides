@@ -1,0 +1,109 @@
+<!-- taskscheduling:Task Scheduling -->
+<h1>Linux Cron Jobs — Schedule Tasks the Right Way</h1>
+
+<p>Cron runs commands on a schedule — backups, cleanup scripts, reports, anything that needs to happen automatically. It's been on every Unix system for decades and works exactly the same everywhere.</p>
+
+<h2>Edit Your Crontab</h2>
+
+<pre><code>crontab -e    # edit your user's cron jobs
+crontab -l    # list current cron jobs
+crontab -r    # delete all cron jobs (careful)</code></pre>
+
+<h2>Cron Syntax</h2>
+
+<pre><code># ┌─ minute (0-59)
+# │ ┌─ hour (0-23)
+# │ │ ┌─ day of month (1-31)
+# │ │ │ ┌─ month (1-12)
+# │ │ │ │ ┌─ day of week (0-7, 0 and 7 are Sunday)
+# │ │ │ │ │
+# * * * * *  command to run</code></pre>
+
+<h2>Common Examples</h2>
+
+<pre><code># Every minute
+* * * * * /path/to/script.sh
+
+# Every hour at minute 0
+0 * * * * /path/to/script.sh
+
+# Every day at 2:30am
+30 2 * * * /path/to/script.sh
+
+# Every Monday at 9am
+0 9 * * 1 /path/to/script.sh
+
+# Every 15 minutes
+*/15 * * * * /path/to/script.sh
+
+# First day of every month at midnight
+0 0 1 * * /path/to/script.sh
+
+# Weekdays at 8am
+0 8 * * 1-5 /path/to/script.sh
+
+# Multiple times — 9am and 5pm daily
+0 9,17 * * * /path/to/script.sh</code></pre>
+
+<h2>Shorthand Schedules</h2>
+
+<pre><code">@reboot     # once at startup
+@hourly     # = 0 * * * *
+@daily      # = 0 0 * * *
+@weekly     # = 0 0 * * 0
+@monthly    # = 0 0 1 * *
+@yearly     # = 0 0 1 1 *</code></pre>
+
+<h2>Capture Output and Errors</h2>
+
+<pre><code"># By default, cron emails output to the local user
+# Redirect to a log file instead:
+30 2 * * * /path/to/script.sh >> /var/log/myscript.log 2>&1
+
+# Discard all output
+30 2 * * * /path/to/script.sh > /dev/null 2>&1</code></pre>
+
+<h2>Things That Catch People Out</h2>
+
+<p><strong>Use full paths everywhere.</strong> Cron doesn't load your shell's PATH. <code>python3</code> won't work — use <code>/usr/bin/python3</code>. Find the path with <code>which python3</code>.</p>
+
+<p><strong>Scripts must be executable.</strong> Run <code>chmod +x /path/to/script.sh</code> first.</p>
+
+<p><strong>No interactive shell.</strong> Cron jobs can't prompt for input or read from a terminal.</p>
+
+<p><strong>Environment is minimal.</strong> If your script needs environment variables, set them at the top of the crontab or source your profile inside the script.</p>
+
+<pre><code"># Set environment variables in crontab
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+HOME=/home/youruser
+
+30 2 * * * /path/to/script.sh</code></pre>
+
+<h2>System-Wide Cron Jobs</h2>
+
+<pre><code"># System crontab (has an extra user field)
+sudo nano /etc/crontab
+
+# 30 2 * * * root /path/to/script.sh
+#             ^^^^ user to run as
+
+# Drop scripts into these directories instead:
+/etc/cron.hourly/
+/etc/cron.daily/
+/etc/cron.weekly/
+/etc/cron.monthly/</code></pre>
+
+<h2>Check If Cron Ran</h2>
+
+<pre><code"># Check cron logs
+grep CRON /var/log/syslog | tail -20       # Debian/Ubuntu
+sudo journalctl -u cron | tail -20          # systemd systems
+sudo grep CRON /var/log/cron | tail -20     # RHEL/Fedora</code></pre>
+
+<h2>Test a Cron Job Without Waiting</h2>
+
+<pre><code"># Run the exact command cron would run, as your user
+env -i HOME=$HOME /bin/bash -c '/path/to/script.sh'
+
+# This simulates cron's minimal environment</code></pre>

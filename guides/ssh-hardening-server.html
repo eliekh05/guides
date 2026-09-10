@@ -1,0 +1,123 @@
+<!-- security:Security & Apps -->
+<h1>SSH Hardening — Lock Down Your Server</h1>
+
+<p>A default SSH setup is fine for a home server. A public-facing server is a different story — bots start probing port 22 within minutes of going online. These steps cut the attack surface significantly.</p>
+
+<h2>Before You Start</h2>
+
+<p>Always keep your current SSH session open while making changes. Test your new config in a second terminal before closing the first one — a mistake could lock you out.</p>
+
+<h2>1. Use SSH Keys, Disable Password Login</h2>
+
+<pre><code># First — make sure your SSH key is on the server
+ssh-copy-id user@yourserver
+# or manually add your public key to ~/.ssh/authorized_keys
+
+# Test that key login works BEFORE disabling passwords
+ssh user@yourserver    # should log in without a password prompt</code></pre>
+
+<pre><code>sudo nano /etc/ssh/sshd_config</code></pre>
+
+<pre><code>PasswordAuthentication no
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys</code></pre>
+
+<pre><code>sudo systemctl restart sshd</code></pre>
+
+<h2>2. Disable Root Login</h2>
+
+<pre><code># In /etc/ssh/sshd_config
+PermitRootLogin no</code></pre>
+
+<p>Log in as a regular user and use <code>sudo</code> for root tasks. Direct root SSH login is unnecessary and risky.</p>
+
+<h2>3. Change the Default Port</h2>
+
+<p>Not real security — but it eliminates 99% of automated scanning noise:</p>
+
+<pre><code># In /etc/ssh/sshd_config
+Port 2222    # pick anything from 1024-65535
+
+# Open the new port in your firewall first
+sudo ufw allow 2222/tcp
+sudo ufw delete allow 22/tcp    # after confirming new port works</code></pre>
+
+<pre><code># Connect with non-default port
+ssh -p 2222 user@yourserver</code></pre>
+
+<h2>4. Limit Login Attempts</h2>
+
+<pre><code># In /etc/ssh/sshd_config
+MaxAuthTries 3
+MaxSessions 5
+LoginGraceTime 20</code></pre>
+
+<h2>5. Restrict Which Users Can Log In</h2>
+
+<pre><code># Only allow specific users
+AllowUsers alice bob
+
+# Only allow users in a specific group
+AllowGroups sshusers</code></pre>
+
+<h2>6. Disable Unused Features</h2>
+
+<pre><code># In /etc/ssh/sshd_config
+X11Forwarding no
+AllowTcpForwarding no    # unless you need SSH tunneling
+PermitEmptyPasswords no
+PermitUserEnvironment no</code></pre>
+
+<h2>7. Use Fail2ban</h2>
+
+<p>Fail2ban watches for repeated failed logins and temporarily bans the IP:</p>
+
+<pre><code>sudo apt install fail2ban -y
+
+# Create a local config (don't edit the default)
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+sudo nano /etc/fail2ban/jail.local</code></pre>
+
+<pre><code>[sshd]
+enabled = true
+port = 2222       # match your SSH port
+maxretry = 3
+bantime = 1h
+findtime = 10m</code></pre>
+
+<pre><code">sudo systemctl enable --now fail2ban
+
+# Check ban status
+sudo fail2ban-client status sshd</code></pre>
+
+<h2>8. Full Hardened Config Example</h2>
+
+<pre><code># /etc/ssh/sshd_config
+Port 2222
+PermitRootLogin no
+PasswordAuthentication no
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys
+MaxAuthTries 3
+LoginGraceTime 20
+X11Forwarding no
+PermitEmptyPasswords no
+AllowUsers youruser</code></pre>
+
+<pre><code># Test config for syntax errors before restarting
+sudo sshd -t
+
+# Restart SSH
+sudo systemctl restart sshd</code></pre>
+
+<h2>Check Who's Trying to Connect</h2>
+
+<pre><code># Failed attempts
+sudo journalctl -u sshd | grep "Failed"
+sudo grep "Failed password" /var/log/auth.log
+
+# Successful logins
+sudo journalctl -u sshd | grep "Accepted"
+
+# Currently banned IPs
+sudo fail2ban-client status sshd</code></pre>

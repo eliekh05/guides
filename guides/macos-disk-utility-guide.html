@@ -1,0 +1,114 @@
+<!-- macos:macOS -->
+<h1>macOS Disk Utility — Complete Guide</h1>
+
+<p>Disk Utility handles formatting drives, creating partitions, repairing disks, making disk images, and erasing data. It's one of the most useful built-in tools on macOS.</p>
+
+<h2>Open Disk Utility</h2>
+
+<ul>
+<li>Applications → Utilities → Disk Utility</li>
+<li>Spotlight: Cmd+Space → "Disk Utility"</li>
+<li>From Recovery Mode: Utilities menu → Disk Utility</li>
+</ul>
+
+<h2>Show All Devices</h2>
+
+<p>By default Disk Utility hides some drives. Go to View → Show All Devices to see the full picture — physical disks and their partitions.</p>
+
+<h2>Erase (Format) a Drive</h2>
+
+<ol>
+<li>Select the drive in the sidebar (the top-level disk, not a partition)</li>
+<li>Click Erase</li>
+<li>Choose a name and format</li>
+<li>Click Erase</li>
+</ol>
+
+<table>
+<thead><tr><th>Format</th><th>Use for</th></tr></thead>
+<tbody>
+<tr><td>APFS</td><td>Any Mac drive (macOS 10.13+). Best choice for SSDs</td></tr>
+<tr><td>Mac OS Extended (HFS+)</td><td>Hard drives, or drives that need to work with older Macs</td></tr>
+<tr><td>ExFAT</td><td>Drives shared between Mac and Windows — no size limits</td></tr>
+<tr><td>MS-DOS (FAT32)</td><td>USB drives for older devices — 4GB file size limit</td></tr>
+</tbody>
+</table>
+
+<h2>First Aid — Repair a Disk</h2>
+
+<p>First Aid checks the filesystem for errors and repairs what it can.</p>
+
+<ol>
+<li>Select the disk or partition in the sidebar</li>
+<li>Click First Aid → Run</li>
+</ol>
+
+<p>If First Aid fails on your startup disk, boot into Recovery Mode (hold Cmd+R on Intel, hold Power button on Apple Silicon) and run First Aid from there instead.</p>
+
+<h2>Partition a Drive</h2>
+
+<ol>
+<li>Select the top-level disk</li>
+<li>Click Partition</li>
+<li>Click + to add a partition</li>
+<li>Set the size and format for each partition</li>
+<li>Click Apply</li>
+</ol>
+
+<p>You can't partition the startup drive while macOS is running — do it from Recovery Mode.</p>
+
+<h2>Create a Disk Image</h2>
+
+<p>Disk images are .dmg files — containers that can be mounted as virtual drives.</p>
+
+<pre><code>File → New Image → Blank Image</code></pre>
+
+<ul>
+<li><strong>Size:</strong> how large the image can grow</li>
+<li><strong>Encryption:</strong> 128-bit or 256-bit AES — good for sensitive backups</li>
+<li><strong>Image Format:</strong> sparse bundle grows as you add files; read/write lets you add files later</li>
+</ul>
+
+<h2>Create a Disk Image from a Folder</h2>
+
+<pre><code>File → New Image → Image from Folder</code></pre>
+
+<p>Useful for making a compressed, portable backup of a folder. Choose "compressed" format to shrink it.</p>
+
+<h2>Restore (Clone) a Drive</h2>
+
+<ol>
+<li>Select the destination drive</li>
+<li>Click Restore</li>
+<li>Choose the source (a disk, partition, or .dmg file)</li>
+<li>Click Restore</li>
+</ol>
+
+<p>This wipes the destination and makes it an exact copy of the source.</p>
+
+<h2>Securely Erase Free Space</h2>
+
+<p>On older spinning hard drives, deleted files can be recovered. Erase Free Space overwrites deleted data:</p>
+
+<pre><code>Select a volume → Erase → Security Options</code></pre>
+
+<p>Not useful on SSDs — TRIM handles this automatically and overwriting doesn't work the same way.</p>
+
+<h2>Disk Utility from Terminal</h2>
+
+<pre><code"># List all disks
+diskutil list
+
+# Get info on a disk
+diskutil info /dev/disk2
+
+# Erase a drive (replaces Disk Utility GUI)
+diskutil eraseDisk APFS "MyDrive" /dev/disk2
+
+# Repair
+diskutil repairDisk /dev/disk2
+diskutil repairVolume /dev/disk2s1
+
+# Unmount
+diskutil unmount /dev/disk2s1
+diskutil eject /dev/disk2</code></pre>

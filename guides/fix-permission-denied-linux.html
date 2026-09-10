@@ -1,0 +1,107 @@
+<!-- linux:Linux -->
+<h1>Fix "Permission Denied" Errors on Linux</h1>
+
+<p>Permission denied errors mean the user running the command doesn't have the right to read, write, or execute that file or directory. Here's how to diagnose and fix them.</p>
+
+<h2>Read the Error Carefully</h2>
+
+<pre><code>bash: ./script.sh: Permission denied       # file isn't executable
+cat: /etc/shadow: Permission denied        # need root to read this
+mkdir: cannot create directory: Permission denied  # can't write here</code></pre>
+
+<h2>Check Who Owns the File</h2>
+
+<pre><code>ls -la /path/to/file
+
+# Output:
+# -rw-r--r-- 1 root root 1234 Jan 1 12:00 file.txt
+#  ^^^^^^^^^   ^^^^
+#  permissions  owner</code></pre>
+
+<p>The three permission groups are: owner, group, everyone else. Each has read (r), write (w), execute (x) — or a dash if that permission is missing.</p>
+
+<h2>Fix 1 — Make a Script Executable</h2>
+
+<pre><code>chmod +x script.sh
+./script.sh    # now works</code></pre>
+
+<h2>Fix 2 — Run as Root</h2>
+
+<pre><code># For one-off commands that need root
+sudo command
+
+# To become root for multiple commands
+sudo -i
+# or
+sudo su -</code></pre>
+
+<h2>Fix 3 — Change File Ownership</h2>
+
+<pre><code># Give a file to your user
+sudo chown youruser file.txt
+
+# Give a whole directory tree to your user
+sudo chown -R youruser:youruser /path/to/dir
+
+# Find your username
+whoami</code></pre>
+
+<h2>Fix 4 — Change File Permissions</h2>
+
+<pre><code># Let everyone read and write (use carefully)
+chmod 666 file.txt
+
+# Let owner read/write/execute, others read only
+chmod 755 file.txt
+
+# Let only the owner do anything
+chmod 700 file.txt
+
+# Recursively fix a directory
+chmod -R 755 /path/to/dir</code></pre>
+
+<h2>Fix 5 — Add Yourself to a Group</h2>
+
+<p>Some files are accessible to a specific group (e.g. docker, sudo, www-data). Add your user to that group:</p>
+
+<pre><code># Find what group owns the file
+ls -la /var/run/docker.sock
+# srw-rw---- 1 root docker ...
+
+# Add yourself to that group
+sudo usermod -aG docker $USER
+
+# Log out and back in for it to take effect
+# Then verify
+groups</code></pre>
+
+<h2>Fix 6 — SSH Key Permissions</h2>
+
+<p>SSH refuses to use keys if the permissions are too open:</p>
+
+<pre><code>chmod 700 ~/.ssh
+chmod 600 ~/.ssh/id_rsa
+chmod 644 ~/.ssh/id_rsa.pub
+chmod 600 ~/.ssh/authorized_keys</code></pre>
+
+<h2>Fix 7 — Web Server Files</h2>
+
+<pre><code># Nginx/Apache typically run as www-data
+sudo chown -R www-data:www-data /var/www/mysite
+sudo chmod -R 755 /var/www/mysite
+
+# Or give your user ownership but let www-data read
+sudo chown -R $USER:www-data /var/www/mysite
+sudo chmod -R 750 /var/www/mysite</code></pre>
+
+<h2>Don't Do This</h2>
+
+<pre><code># Don't chmod 777 unless you absolutely have to
+# It gives everyone full read/write/execute — a security hole
+chmod 777 file.txt   # bad idea on servers</code></pre>
+
+<h2>Diagnose with namei</h2>
+
+<pre><code># Shows permissions of every part of the path
+namei -l /var/www/html/index.html
+# Lets you spot which part of the path is blocked</code></pre>

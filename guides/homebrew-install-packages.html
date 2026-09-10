@@ -1,0 +1,129 @@
+<!-- package:Package Managers -->
+<h1>Homebrew — Installing and Managing Packages on macOS</h1>
+
+<p>Homebrew is the package manager for macOS. It lets you install command-line tools, programming languages, databases, and GUI apps from the terminal — and keep them all updated in one command.</p>
+
+<h2>Install Homebrew</h2>
+
+<pre><code">/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</code></pre>
+
+<p>After installing on Apple Silicon, add Homebrew to your PATH:</p>
+
+<pre><code">echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv)"</code></pre>
+
+<h2>Basic Commands</h2>
+
+<pre><code"># Install a package
+brew install wget
+brew install git
+brew install node
+
+# Uninstall
+brew uninstall wget
+
+# Update Homebrew itself
+brew update
+
+# Upgrade all installed packages
+brew upgrade
+
+# Upgrade a specific package
+brew upgrade git
+
+# Search for a package
+brew search python
+
+# Get info about a package
+brew info node</code></pre>
+
+<h2>List What You Have Installed</h2>
+
+<pre><code"># All installed packages
+brew list
+
+# Only top-level installs (not dependencies)
+brew leaves
+
+# Which packages are outdated
+brew outdated</code></pre>
+
+<h2>Install GUI Apps with Casks</h2>
+
+<p>Homebrew Cask installs macOS apps (.app bundles) — the same ones you'd normally download from a website:</p>
+
+<pre><code"># Install apps
+brew install --cask firefox
+brew install --cask visual-studio-code
+brew install --cask rectangle
+brew install --cask iterm2
+
+# List installed casks
+brew list --cask
+
+# Uninstall a cask
+brew uninstall --cask firefox</code></pre>
+
+<h2>Install Specific Versions</h2>
+
+<pre><code"># Search for available versions
+brew search python@
+
+# Install a specific version
+brew install python@3.11
+brew install node@18
+
+# Link a version as the default
+brew link python@3.11</code></pre>
+
+<h2>Taps — Third-Party Repositories</h2>
+
+<pre><code"># Add a tap (third-party repo)
+brew tap hashicorp/tap
+brew install hashicorp/tap/terraform
+
+# List your taps
+brew tap
+
+# Remove a tap
+brew untap hashicorp/tap</code></pre>
+
+<h2>Clean Up Old Versions</h2>
+
+<pre><code"># Remove old versions of installed packages
+brew cleanup
+
+# Remove everything unused (dependencies no longer needed)
+brew autoremove
+
+# See what cleanup would remove (dry run)
+brew cleanup -n</code></pre>
+
+<h2>Fix Problems</h2>
+
+<pre><code"># Check for issues
+brew doctor
+
+# Fix permissions
+sudo chown -R $(whoami) $(brew --prefix)/*
+
+# Reinstall a broken package
+brew reinstall wget</code></pre>
+
+<h2>Brewfile — Save and Restore Your Setup</h2>
+
+<pre><code"># Export your current setup to a Brewfile
+brew bundle dump --file=~/Brewfile
+
+# Install everything from a Brewfile (on a new Mac)
+brew bundle install --file=~/Brewfile</code></pre>
+
+<p>A Brewfile is just a text file — commit it to git to keep your setup reproducible across machines.</p>
+
+<h2>Useful One-Liners</h2>
+
+<pre><code"># Update, upgrade, and clean in one go
+brew update && brew upgrade && brew cleanup
+
+# Install multiple packages at once
+brew install git wget curl jq fzf ripgrep</code></pre>

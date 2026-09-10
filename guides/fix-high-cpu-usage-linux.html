@@ -1,0 +1,110 @@
+<!-- linux:Linux -->
+<h1>Fix High CPU Usage on Linux</h1>
+
+<p>CPU usage spikes are normal — the problem is when something is pegging the CPU and not letting go. Here's how to find what's doing it and stop it.</p>
+
+<h2>Find What's Using the CPU</h2>
+
+<pre><code"># Interactive view — updates every 2 seconds
+top
+
+# Better version with color and easier controls
+htop    # install: sudo apt install htop
+
+# Sort by CPU (already default in top/htop)
+# In top: press P to sort by CPU
+# In htop: press F6 → CPU%</code></pre>
+
+<pre><code"># One-shot snapshot sorted by CPU
+ps aux --sort=-%cpu | head -15</code></pre>
+
+<h2>Reading top Output</h2>
+
+<pre><code">%CPU column — CPU percentage this process is using
+PID        — process ID (needed to kill it)
+USER       — who is running it
+COMMAND    — the program name</code></pre>
+
+<p>A process using 100% CPU on a quad-core machine is maxing out one core. That's normal for some tasks (video encoding, compiling). It's a problem if it's something that should be idle.</p>
+
+<h2>Identify the Process</h2>
+
+<pre><code"># Get the full command, not just the truncated name
+ps -p PID -o pid,pcpu,pmem,cmd
+
+# See what files it has open
+lsof -p PID
+
+# See what network connections it has
+ss -tp | grep PID</code></pre>
+
+<h2>Common Causes</h2>
+
+<table>
+<thead><tr><th>Process</th><th>Likely cause</th></tr></thead>
+<tbody>
+<tr><td>kswapd0</td><td>Out of RAM — Linux swapping heavily. Add RAM or find the memory hog</td></tr>
+<tr><td>kworker</td><td>Kernel worker thread — could be a hardware issue or driver bug</td></tr>
+<tr><td>compilerc / cc1 / ld</td><td>Something is compiling — normal, just wait</td></tr>
+<tr><td>python / node / php</td><td>A script is in an infinite loop or doing heavy work</td></tr>
+<tr><td>mysqld / postgres</td><td>A slow query running. Check the DB slow query log</td></tr>
+<tr><td>rcu_sched</td><td>Kernel RCU — usually a sign of an overloaded system</td></tr>
+</tbody>
+</table>
+
+<h2>Kill a Runaway Process</h2>
+
+<pre><code"># Graceful kill (lets process clean up)
+kill PID
+
+# Force kill (immediate)
+kill -9 PID
+
+# Kill by name
+pkill processname
+pkill -9 processname</code></pre>
+
+<h2>Throttle a Process Instead of Killing It</h2>
+
+<pre><code"># Lower priority so it uses less CPU
+renice +19 -p PID    # very low priority
+renice +10 -p PID    # moderately lower priority
+
+# Limit CPU usage with cpulimit (install first)
+sudo apt install cpulimit
+cpulimit -p PID -l 25    # cap at 25% CPU</code></pre>
+
+<h2>Find CPU Hogs from the Last Hour</h2>
+
+<pre><code"># Check system activity (if sysstat is installed)
+sudo apt install sysstat
+sar -u 1 10    # CPU usage every 1 second, 10 times
+
+# Check for cron jobs that ran recently
+grep CRON /var/log/syslog | tail -20</code></pre>
+
+<h2>Check for Crypto Mining (Servers)</h2>
+
+<p>If your VPS suddenly pegs the CPU and you didn't cause it, check for mining malware:</p>
+
+<pre><code"># Look for processes with high CPU owned by unexpected users
+ps aux --sort=-%cpu | head -10
+
+# Check for unusual network connections
+ss -tulnp
+
+# Check recently modified files in /tmp
+find /tmp -newer /tmp -type f 2>/dev/null
+
+# Check crontabs for all users
+for user in $(cut -f1 -d: /etc/passwd); do
+  sudo crontab -u $user -l 2>/dev/null && echo "--- $user ---"
+done</code></pre>
+
+<h2>Persistent High CPU — Check Logs</h2>
+
+<pre><code"># System journal
+sudo journalctl -p err -b    # errors since last boot
+
+# dmesg for kernel errors
+dmesg | grep -i error | tail -20</code></pre>

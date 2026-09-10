@@ -1,0 +1,94 @@
+<!-- windows:Windows -->
+<h1>Fix No Sound on Windows 11 and 10</h1>
+
+<p>No audio on Windows is almost always a driver issue, a muted device, or Windows routing sound to the wrong output. Work through these in order.</p>
+
+<h2>Check the Obvious First</h2>
+
+<ul>
+<li>Volume mixer isn't muted — right-click the speaker icon in the taskbar</li>
+<li>The right output device is selected — click the speaker icon and make sure it shows your headphones or speakers</li>
+<li>Cable is plugged into the right port (front panel vs rear, headphone jack vs line out)</li>
+<li>Bluetooth headphones are connected and not connected to another device simultaneously</li>
+</ul>
+
+<h2>Check Sound Settings</h2>
+
+<ol>
+<li>Right-click the speaker icon → Sound settings</li>
+<li>Under Output, make sure your speakers/headphones are selected</li>
+<li>Click the device and check the volume slider isn't at zero</li>
+<li>Click "Test" to see if sound plays</li>
+</ol>
+
+<h2>Run the Audio Troubleshooter</h2>
+
+<ol>
+<li>Settings → System → Troubleshoot → Other troubleshooters</li>
+<li>Click Run next to "Playing Audio"</li>
+<li>Follow the steps — it fixes the most common issues automatically</li>
+</ol>
+
+<h2>Restart the Windows Audio Service</h2>
+
+<ol>
+<li>Press Win+R → type <code>services.msc</code> → Enter</li>
+<li>Find "Windows Audio" → right-click → Restart</li>
+<li>Also restart "Windows Audio Endpoint Builder"</li>
+</ol>
+
+<pre><code"># Or from an admin command prompt
+net stop audiosrv && net start audiosrv</code></pre>
+
+<h2>Update or Reinstall Audio Drivers</h2>
+
+<ol>
+<li>Right-click Start → Device Manager</li>
+<li>Expand "Sound, video and game controllers"</li>
+<li>Right-click your audio device → Update driver → Search automatically</li>
+</ol>
+
+<p>If that doesn't work, uninstall the driver entirely (check "Delete the driver software for this device"), restart, and let Windows reinstall it automatically.</p>
+
+<p>For better results, go directly to your motherboard or laptop manufacturer's website and download the latest Realtek, Intel, or AMD audio driver for your model.</p>
+
+<h2>Check Volume Mixer Per-App</h2>
+
+<pre><code">Right-click speaker icon → Open volume mixer</code></pre>
+
+<p>Some apps can be individually muted here even when the system volume is up. Check if the specific app you're trying to hear has a separate muted slider.</p>
+
+<h2>Set Default Audio Device</h2>
+
+<ol>
+<li>Right-click speaker icon → Sound settings → More sound settings</li>
+<li>Playback tab — right-click your device → Set as Default Device</li>
+<li>Also set it as Default Communication Device</li>
+</ol>
+
+<h2>Disable Audio Enhancements</h2>
+
+<p>Some systems have audio processing that conflicts with certain hardware:</p>
+
+<ol>
+<li>Sound settings → More sound settings → Playback</li>
+<li>Right-click your device → Properties → Advanced</li>
+<li>Uncheck "Enable audio enhancements"</li>
+</ol>
+
+<h2>HDMI / DisplayPort Audio</h2>
+
+<p>If you're using a monitor with built-in speakers via HDMI or DisplayPort, Windows may not pick it as the output automatically:</p>
+
+<ol>
+<li>Sound settings → More sound settings → Playback</li>
+<li>Look for an entry named after your monitor or "HDMI Output"</li>
+<li>Right-click → Enable (if it's greyed out)</li>
+<li>Right-click → Set as Default Device</li>
+</ol>
+
+<h2>System Restore</h2>
+
+<p>If audio was working before and stopped after an update:</p>
+
+<pre><code">Start → "Create a restore point" → System Restore → choose a date before it broke</code></pre>

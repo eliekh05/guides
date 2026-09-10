@@ -1,0 +1,99 @@
+<!-- linux:Linux -->
+<h1>Check Memory Usage on Linux</h1>
+
+<p>Memory issues on Linux are often misread — Linux deliberately uses free RAM for disk cache, so "low free memory" is normal and not a problem. Here's how to read memory usage correctly.</p>
+
+<h2>The Main Commands</h2>
+
+<pre><code"># Human-readable overview
+free -h
+
+# Example output:
+#               total    used    free  shared  buff/cache  available
+# Mem:           15Gi    4.2Gi   8.1Gi   312Mi    3.1Gi      10Gi
+# Swap:          2.0Gi      0B   2.0Gi</code></pre>
+
+<p>The column that matters is <strong>available</strong> — not free. Available is what applications can actually use. Free means truly unused RAM.</p>
+
+<h2>What the Columns Mean</h2>
+
+<table>
+<thead><tr><th>Column</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>total</td><td>Total physical RAM</td></tr>
+<tr><td>used</td><td>RAM in use by processes</td></tr>
+<tr><td>free</td><td>Completely unused RAM — usually low and that's fine</td></tr>
+<tr><td>shared</td><td>RAM used by tmpfs (shared memory between processes)</td></tr>
+<tr><td>buff/cache</td><td>RAM used as disk cache — Linux reclaims this instantly if an app needs it</td></tr>
+<tr><td>available</td><td>Estimate of RAM available for new applications — the number to watch</td></tr>
+</tbody>
+</table>
+
+<h2>Find What's Using Memory</h2>
+
+<pre><code"># Interactive — sort by memory with M in top, or F6 in htop
+top
+htop
+
+# Static snapshot sorted by memory
+ps aux --sort=-%mem | head -15
+
+# Show RSS (actual RAM) and VSZ (virtual) for each process
+ps aux --sort=-%mem | awk '{print $4, $6, $11}' | head -15</code></pre>
+
+<h2>/proc/meminfo — Detailed Breakdown</h2>
+
+<pre><code"">cat /proc/meminfo
+
+# Key fields:
+# MemTotal        — total RAM
+# MemFree         — unused RAM
+# MemAvailable    — available for applications
+# Buffers         — raw disk block cache
+# Cached          — page cache
+# SwapTotal       — total swap space
+# SwapFree        — unused swap</code></pre>
+
+<h2>Check Swap Usage</h2>
+
+<pre><code"># Overview
+swapon --show
+free -h
+
+# Detailed swap usage per process
+cat /proc/*/status 2>/dev/null | grep -E "Name|VmSwap" | paste - - | sort -k4 -rh | head -10</code></pre>
+
+<p>Heavy swap usage means you're genuinely out of RAM. Light swap usage is normal.</p>
+
+<h2>Find Memory Leaks</h2>
+
+<pre><code"># Watch a process's memory over time
+watch -n 2 'ps -p PID -o pid,rss,vsz,cmd'
+
+# Monitor all processes and log anything over 1GB
+ps aux --sort=-%mem | awk '$6 > 1000000 {print $0}'</code></pre>
+
+<h2>Drop the Cache (Testing Only)</h2>
+
+<p>Sometimes useful to free cache memory for benchmarking — not needed in normal use:</p>
+
+<pre><code"">sudo sync
+echo 3 | sudo tee /proc/sys/vm/drop_caches</code></pre>
+
+<h2>Get a Memory Report</h2>
+
+<pre><code"># smem shows per-process proportional set size (more accurate than RSS)
+sudo apt install smem
+smem -r | head -15
+
+# vmstat — shows memory, swap, and I/O together
+vmstat 1 5    # 1-second intervals, 5 times</code></pre>
+
+<h2>You're Actually Low on Memory When</h2>
+
+<ul>
+<li>The <strong>available</strong> column in <code>free -h</code> is near zero</li>
+<li>Swap usage is high and increasing</li>
+<li>The system feels sluggish and disk activity is constant (thrashing)</li>
+<li>The OOM killer starts terminating processes — check with <code>dmesg | grep -i "killed process"</code></li>
+</ul>

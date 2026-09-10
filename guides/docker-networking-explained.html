@@ -1,0 +1,121 @@
+<!-- server:Server & Self-Hosting -->
+<h1>Docker Networking Explained</h1>
+
+<p>Docker containers are isolated by default — they can't talk to each other or the outside world unless you wire them up. Understanding how Docker networking works saves a lot of head-scratching.</p>
+
+<h2>The Three Default Networks</h2>
+
+<pre><code>docker network ls
+
+# NETWORK ID    NAME      DRIVER    SCOPE
+# abc123        bridge    bridge    local
+# def456        host      host      local
+# ghi789        none      null      local</code></pre>
+
+<table>
+<thead><tr><th>Network</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td>bridge</td><td>Default. Containers get their own IP, can reach the internet, can't reach each other by name</td></tr>
+<tr><td>host</td><td>Container shares the host's network — no isolation, fastest performance</td></tr>
+<tr><td>none</td><td>No networking at all</td></tr>
+</tbody>
+</table>
+
+<h2>The Problem with the Default Bridge</h2>
+
+<p>Containers on the default bridge network can't find each other by name — only by IP, which changes every restart. The fix is to create a custom bridge network.</p>
+
+<h2>Custom Bridge Networks (the Right Way)</h2>
+
+<pre><code># Create a network
+docker network create myapp
+
+# Run containers on it
+docker run -d --name db --network myapp postgres
+docker run -d --name api --network myapp myapi
+
+# Now containers can reach each other by name
+# From inside the api container:
+ping db          # works
+curl http://db:5432    # works</code></pre>
+
+<h2>Docker Compose Networks</h2>
+
+<p>Compose automatically creates a custom network for each project. All services in the same <code>compose.yml</code> can reach each other by service name:</p>
+
+<pre><code>services:
+  db:
+    image: postgres
+
+  api:
+    image: myapi
+    environment:
+      DB_HOST: db    # just use the service name</code></pre>
+
+<pre><code># Services on different compose projects can't talk by default
+# Put them on a shared external network:
+networks:
+  shared:
+    external: true
+
+services:
+  api:
+    networks:
+      - shared</code></pre>
+
+<pre><code># Create the shared network first
+docker network create shared</code></pre>
+
+<h2>Expose vs Publish Ports</h2>
+
+<pre><code># EXPOSE in Dockerfile — documents the port, does nothing by itself
+EXPOSE 3000
+
+# -p publishes the port — maps host port to container port
+docker run -p 8080:3000 myapp
+# Now http://localhost:8080 reaches port 3000 inside the container
+
+# Bind to a specific interface (more secure)
+docker run -p 127.0.0.1:8080:3000 myapp
+# Only reachable from localhost, not from the network</code></pre>
+
+<h2>Container to Host Communication</h2>
+
+<pre><code># From inside a container, reach the host machine
+# On Linux:
+curl http://172.17.0.1      # host IP on default bridge
+
+# On Docker Desktop (Mac/Windows):
+curl http://host.docker.internal</code></pre>
+
+<h2>Useful Networking Commands</h2>
+
+<pre><code># Inspect a network — see which containers are on it
+docker network inspect myapp
+
+# See a container's IP address
+docker inspect mycontainer | grep IPAddress
+
+# Connect a running container to a network
+docker network connect myapp mycontainer
+
+# Disconnect from a network
+docker network disconnect myapp mycontainer
+
+# Remove unused networks
+docker network prune</code></pre>
+
+<h2>Troubleshooting</h2>
+
+<pre><code># Can't reach another container?
+# Check they're on the same network
+docker inspect container1 | grep -A 10 Networks
+docker inspect container2 | grep -A 10 Networks
+
+# Test from inside a container
+docker exec -it mycontainer sh
+ping othername
+curl http://othername:port
+
+# Check what ports are actually published
+docker ps    # shows port mappings in the last column</code></pre>

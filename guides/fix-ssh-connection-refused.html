@@ -1,0 +1,104 @@
+<!-- networking:Networking & DNS -->
+<h1>Fix SSH "Connection Refused" and "Timeout" Errors</h1>
+
+<p>SSH connection errors usually come down to one of four things: the service isn't running, the port is wrong, a firewall is blocking it, or you're connecting to the wrong address. Here's how to narrow it down fast.</p>
+
+<h2>Understand the Error</h2>
+
+<table>
+<thead><tr><th>Error</th><th>Most likely cause</th></tr></thead>
+<tbody>
+<tr><td>Connection refused</td><td>SSH isn't running, or wrong port</td></tr>
+<tr><td>Connection timed out</td><td>Firewall blocking the connection</td></tr>
+<tr><td>No route to host</td><td>Wrong IP, or machine is offline</td></tr>
+<tr><td>Host key verification failed</td><td>Server fingerprint changed</td></tr>
+</tbody>
+</table>
+
+<h2>Step 1 — Can You Reach the Server at All?</h2>
+
+<pre><code">ping yourserver    # does it respond?
+
+# If no ping response, the machine is offline, wrong IP, or ICMP is blocked
+# Try connecting directly (console/VNC) if you can</code></pre>
+
+<h2>Step 2 — Is SSH Running on the Server?</h2>
+
+<p>If you have console access:</p>
+
+<pre><code"># Check if sshd is running
+sudo systemctl status sshd
+sudo systemctl status ssh     # Debian/Ubuntu uses "ssh"
+
+# Start it if it's stopped
+sudo systemctl start sshd
+
+# Enable so it starts on boot
+sudo systemctl enable sshd</code></pre>
+
+<h2>Step 3 — What Port Is SSH On?</h2>
+
+<pre><code"># Check the configured port
+grep Port /etc/ssh/sshd_config
+# Default is 22 — if it's something else, use -p
+
+ssh -p 2222 user@yourserver</code></pre>
+
+<pre><code"># Verify something is actually listening on that port
+sudo ss -tlnp | grep sshd
+# or
+sudo netstat -tlnp | grep :22</code></pre>
+
+<h2>Step 4 — Is a Firewall Blocking the Port?</h2>
+
+<pre><code"># UFW (Ubuntu/Debian)
+sudo ufw status
+sudo ufw allow 22/tcp    # or your custom port
+
+# firewalld (Fedora/RHEL)
+sudo firewall-cmd --list-all
+sudo firewall-cmd --permanent --add-service=ssh
+sudo firewall-cmd --reload
+
+# iptables
+sudo iptables -L INPUT -n | grep 22</code></pre>
+
+<p>If you're on a VPS or cloud server, also check the cloud provider's firewall/security group — it's separate from the OS firewall and often blocks everything by default.</p>
+
+<h2>Step 5 — Test From Another Machine</h2>
+
+<pre><code"># Test if port 22 is reachable
+nc -zv yourserver 22
+# or
+telnet yourserver 22
+
+# Connection refused = port reached but service rejected it
+# Timeout = firewall blocking</code></pre>
+
+<h2>Fix: Host Key Verification Failed</h2>
+
+<p>This happens when the server's key changes — after a reinstall, or if you reused an IP address:</p>
+
+<pre><code">ssh-keygen -R yourserver
+# or
+ssh-keygen -R 192.168.1.100
+
+# Then reconnect and accept the new fingerprint</code></pre>
+
+<h2>Fix: Too Many Authentication Failures</h2>
+
+<pre><code"># SSH tried too many keys from your agent
+ssh -o IdentitiesOnly=yes -i ~/.ssh/id_rsa user@yourserver</code></pre>
+
+<h2>Debug Mode</h2>
+
+<pre><code"># Add -v for verbose output — shows exactly where it fails
+ssh -v user@yourserver
+ssh -vvv user@yourserver    # even more detail</code></pre>
+
+<h2>Check Server Logs</h2>
+
+<pre><code"># On the server
+sudo journalctl -u sshd -f    # follow live
+sudo tail -f /var/log/auth.log    # Debian/Ubuntu
+sudo tail -f /var/log/secure      # Fedora/RHEL</code></pre>

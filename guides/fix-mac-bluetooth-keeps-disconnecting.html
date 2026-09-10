@@ -1,0 +1,76 @@
+<!-- macos:macOS -->
+<h1>Fix Bluetooth Keeps Disconnecting on Mac</h1>
+
+<p>Bluetooth disconnections on Mac are almost always caused by interference, corrupted preference files, or a firmware hiccup. Most cases are fixed without reinstalling anything.</p>
+
+<h2>Quick Fixes to Try First</h2>
+
+<ul>
+<li>Turn Bluetooth off and on — click the Bluetooth icon in the menu bar</li>
+<li>Remove the device and pair it again from scratch</li>
+<li>Move the device closer — Bluetooth range is roughly 10 metres but drops through walls</li>
+<li>Disconnect any USB 3.0 devices — they emit interference in the 2.4GHz band that disrupts Bluetooth</li>
+<li>Switch your Wi-Fi to 5GHz — 2.4GHz Wi-Fi and Bluetooth share the same frequency</li>
+</ul>
+
+<h2>Reset the Bluetooth Module</h2>
+
+<p>This resets the Bluetooth hardware without losing your paired devices on modern macOS:</p>
+
+<pre><code"># Hold Option + Shift and click the Bluetooth icon in the menu bar
+# Click "Reset the Bluetooth module"
+# Reconnect your devices</code></pre>
+
+<p>On older macOS versions the option may appear differently or not at all — proceed to the preference file fix instead.</p>
+
+<h2>Delete Bluetooth Preference Files</h2>
+
+<p>Corrupted Bluetooth preferences cause persistent disconnection issues:</p>
+
+<pre><code"># Quit all apps first, then run:
+sudo rm -f /Library/Preferences/com.apple.Bluetooth.plist
+sudo rm -f ~/Library/Preferences/com.apple.Bluetooth.plist
+sudo rm -f /Library/Preferences/com.apple.bluetoothd.plist</code></pre>
+
+<p>Restart your Mac. macOS recreates these files and you'll need to re-pair your devices.</p>
+
+<h2>Reset NVRAM</h2>
+
+<p>NVRAM stores Bluetooth state information. Resetting it can fix persistent issues:</p>
+
+<p><strong>Intel Mac:</strong> Shut down → power on and immediately hold Option+Command+P+R for about 20 seconds until you hear the startup chime twice.</p>
+
+<p><strong>Apple Silicon:</strong> NVRAM resets automatically on boot — just restart.</p>
+
+<h2>Check for Interference</h2>
+
+<ul>
+<li>USB 3.0 hubs and cables are major Bluetooth offenders — try unplugging them</li>
+<li>Microwave ovens cause temporary interference — keep your Mac away from one when it's running</li>
+<li>Dense Wi-Fi environments (offices, apartments) cause congestion — nothing to do except use 5GHz Wi-Fi</li>
+<li>Fluorescent lights and LED strips with poor EMI shielding can also interfere</li>
+</ul>
+
+<h2>Update macOS and Device Firmware</h2>
+
+<p>Bluetooth issues are often fixed in point releases. System Settings → General → Software Update. For Apple peripherals like AirPods, firmware updates install automatically when connected.</p>
+
+<h2>Check the Bluetooth Menu Bar for Clues</h2>
+
+<pre><code"># Hold Option and click the Bluetooth icon
+# Shows signal strength and detailed status for each device
+# Look for "RSSI" — values below -70 indicate a weak signal</code></pre>
+
+<h2>For Keyboards and Mice Specifically</h2>
+
+<p>If your keyboard or mouse disconnects during sleep/wake:</p>
+
+<ol>
+<li>System Settings → Battery → Options</li>
+<li>Disable "Enable Power Nap"</li>
+<li>System Settings → Bluetooth → click your device → uncheck "Allow Bluetooth devices to wake this computer" if it appears</li>
+</ol>
+
+<h2>Last Resort — Bluetooth USB Dongle</h2>
+
+<p>If nothing else works, a Bluetooth 5.0 USB dongle (about $10) bypasses the built-in hardware entirely. Plug it in and macOS uses it automatically. Useful when the built-in chip is failing.</p>

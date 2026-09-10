@@ -1,0 +1,126 @@
+<!-- linux:Linux -->
+<h1>Linux Disk Partitioning with fdisk and lsblk</h1>
+
+<p>Partitioning divides a disk into separate sections, each with its own filesystem. You need to do this when adding a new drive, setting up a server, or preparing a disk for a fresh install.</p>
+
+<h2>Find Your Disks</h2>
+
+<pre><code># List all block devices
+lsblk
+
+# Example output:
+# NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+# sda      8:0    0   500G  0 disk
+# ├─sda1   8:1    0   512M  0 part /boot/efi
+# ├─sda2   8:2    0     2G  0 part /boot
+# └─sda3   8:3    0 497.5G  0 part /
+# sdb      8:16   0     2T  0 disk       ← new empty drive
+
+# More details including filesystem type
+lsblk -f
+
+# List with size info
+fdisk -l</code></pre>
+
+<h2>Partition a New Disk with fdisk</h2>
+
+<pre><code">sudo fdisk /dev/sdb    # replace sdb with your disk</code></pre>
+
+<p>Inside fdisk, use these commands:</p>
+
+<table>
+<thead><tr><th>Key</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td>m</td><td>Show help menu</td></tr>
+<tr><td>p</td><td>Print current partition table</td></tr>
+<tr><td>g</td><td>Create new GPT partition table (recommended for disks over 2TB or UEFI)</td></tr>
+<tr><td>o</td><td>Create new MBR partition table (legacy)</td></tr>
+<tr><td>n</td><td>New partition</td></tr>
+<tr><td>d</td><td>Delete partition</td></tr>
+<tr><td>t</td><td>Change partition type</td></tr>
+<tr><td>w</td><td>Write changes and exit</td></tr>
+<tr><td>q</td><td>Quit without saving</td></tr>
+</tbody>
+</table>
+
+<pre><code># Typical flow for a new data disk:
+Command: g          # create GPT table
+Command: n          # new partition
+Partition number: 1
+First sector: (press Enter for default)
+Last sector: (press Enter to use entire disk)
+Command: w          # write and exit</code></pre>
+
+<h2>Format the Partition</h2>
+
+<pre><code"># ext4 — standard Linux filesystem
+sudo mkfs.ext4 /dev/sdb1
+
+# xfs — better for large files and high performance
+sudo mkfs.xfs /dev/sdb1
+
+# fat32 — for USB drives or EFI partitions
+sudo mkfs.vfat -F32 /dev/sdb1</code></pre>
+
+<h2>Mount the Partition</h2>
+
+<pre><code># Create a mount point
+sudo mkdir -p /mnt/data
+
+# Mount it
+sudo mount /dev/sdb1 /mnt/data
+
+# Verify
+df -h /mnt/data</code></pre>
+
+<h2>Mount Automatically at Boot (fstab)</h2>
+
+<pre><code"># Get the UUID — more reliable than /dev/sdb1 which can change
+sudo blkid /dev/sdb1
+# /dev/sdb1: UUID="a1b2c3d4-..." TYPE="ext4"
+
+sudo nano /etc/fstab</code></pre>
+
+<pre><code>UUID=a1b2c3d4-xxxx-xxxx-xxxx-xxxxxxxxxxxx  /mnt/data  ext4  defaults  0  2</code></pre>
+
+<pre><code"># Test fstab without rebooting
+sudo mount -a    # mounts everything in fstab
+
+# Verify
+df -h</code></pre>
+
+<h2>Resize a Partition</h2>
+
+<pre><code># Unmount first (if possible)
+sudo umount /dev/sdb1
+
+# Resize with parted
+sudo parted /dev/sdb
+(parted) resizepart 1 100%    # expand partition 1 to end of disk
+(parted) quit
+
+# Resize the filesystem to fill the partition
+sudo resize2fs /dev/sdb1      # ext4
+sudo xfs_growfs /mnt/data     # xfs (must be mounted)</code></pre>
+
+<h2>Check and Repair a Filesystem</h2>
+
+<pre><code># Must be unmounted
+sudo umount /dev/sdb1
+
+# Check and auto-repair
+sudo fsck -y /dev/sdb1
+
+# For xfs (must be unmounted)
+sudo xfs_repair /dev/sdb1</code></pre>
+
+<h2>parted — Alternative to fdisk</h2>
+
+<pre><code">sudo parted /dev/sdb
+
+(parted) mklabel gpt
+(parted) mkpart primary ext4 0% 100%
+(parted) print
+(parted) quit</code></pre>
+
+<p>parted works better for large disks and supports resizing. fdisk is simpler for basic partitioning tasks.</p>

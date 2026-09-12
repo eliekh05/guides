@@ -1,0 +1,186 @@
+<!-- windows:Windows -->
+<h1>PowerShell Scripting Basics</h1>
+
+<p>PowerShell is more than just a terminal — it's a full scripting language. Once you get past the syntax it's one of the most capable automation tools on Windows.</p>
+
+<h2>Run Scripts</h2>
+
+<pre><code># Check current execution policy
+Get-ExecutionPolicy
+
+# Allow running local scripts
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# Run a script
+.\myscript.ps1</code></pre>
+
+<h2>Variables</h2>
+
+<pre><code>$name = "Alice"
+$age = 30
+$files = Get-ChildItem C:\Users
+
+# Print a variable
+Write-Host "Hello, $name"
+Write-Output $age</code></pre>
+
+<h2>Conditionals</h2>
+
+<pre><code>$x = 10
+
+if ($x -gt 5) {
+    Write-Host "Greater than 5"
+} elseif ($x -eq 5) {
+    Write-Host "Equal to 5"
+} else {
+    Write-Host "Less than 5"
+}
+
+# Comparison operators
+# -eq   equal
+# -ne   not equal
+# -gt   greater than
+# -lt   less than
+# -ge   greater than or equal
+# -le   less than or equal
+# -like wildcard match
+# -match regex match</code></pre>
+
+<h2>Loops</h2>
+
+<pre><code># foreach loop
+foreach ($file in Get-ChildItem C:\Logs) {
+    Write-Host $file.Name
+}
+
+# for loop
+for ($i = 0; $i -lt 5; $i++) {
+    Write-Host "Number: $i"
+}
+
+# while loop
+$count = 0
+while ($count -lt 3) {
+    Write-Host $count
+    $count++
+}
+
+# Loop over an array
+$fruits = @("apple", "banana", "cherry")
+foreach ($fruit in $fruits) {
+    Write-Host $fruit
+}</code></pre>
+
+<h2>Functions</h2>
+
+<pre><code>function Greet {
+    param($Name)
+    Write-Host "Hello, $Name"
+}
+
+Greet -Name "Bob"
+
+# Function with default value
+function Add {
+    param(
+        [int]$a,
+        [int]$b = 10
+    )
+    return $a + $b
+}
+
+$result = Add -a 5
+Write-Host $result    # outputs 15</code></pre>
+
+<h2>Working with Files</h2>
+
+<pre><code># Read a file
+Get-Content C:\logs\app.log
+
+# Read last 20 lines
+Get-Content C:\logs\app.log -Tail 20
+
+# Write to a file
+"Hello World" | Out-File C:\output.txt
+
+# Append to a file
+"New line" | Add-Content C:\output.txt
+
+# Copy, move, delete
+Copy-Item C:\source.txt C:\dest.txt
+Move-Item C:\old.txt C:\new.txt
+Remove-Item C:\unwanted.txt
+
+# Create a directory
+New-Item -ItemType Directory -Path C:\MyFolder</code></pre>
+
+<h2>Working with Processes and Services</h2>
+
+<pre><code># List running processes
+Get-Process
+
+# Kill a process
+Stop-Process -Name "notepad"
+Stop-Process -Id 1234
+
+# List services
+Get-Service
+
+# Start/stop a service
+Start-Service -Name "wuauserv"
+Stop-Service -Name "wuauserv"
+
+# Check if a service is running
+(Get-Service -Name "wuauserv").Status</code></pre>
+
+<h2>Useful One-Liners</h2>
+
+<pre><code># Find large files over 100MB
+Get-ChildItem C:\ -Recurse -ErrorAction SilentlyContinue |
+  Where-Object {$_.Length -gt 100MB} |
+  Sort-Object Length -Descending |
+  Select-Object FullName, Length
+
+# Get IP address
+(Get-NetIPAddress -AddressFamily IPv4).IPAddress
+
+# List installed software
+Get-WmiObject -Class Win32_Product | Select-Object Name, Version
+
+# Check disk space
+Get-PSDrive C | Select-Object Used, Free
+
+# Search for text in files
+Select-String -Path C:\logs\*.log -Pattern "ERROR"</code></pre>
+
+<h2>Error Handling</h2>
+
+<pre><code">try {
+    Remove-Item C:\doesnotexist.txt -ErrorAction Stop
+} catch {
+    Write-Host "Error: $_"
+} finally {
+    Write-Host "Done regardless"
+}</code></pre>
+
+<h2>Script Template</h2>
+
+<pre><code>#Requires -Version 5.1
+<#
+.SYNOPSIS
+    Brief description of what the script does
+.EXAMPLE
+    .\myscript.ps1 -Path C:\logs
+#>
+
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$Path,
+
+    [int]$DaysOld = 30
+)
+
+# Main logic
+Get-ChildItem $Path -Recurse |
+  Where-Object {$_.LastWriteTime -lt (Get-Date).AddDays(-$DaysOld)} |
+  Remove-Item -WhatIf    # remove -WhatIf to actually delete</code></pre>

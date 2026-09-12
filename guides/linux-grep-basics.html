@@ -1,0 +1,129 @@
+<!-- linux:Linux -->
+<h1>grep — Search Through Files and Output</h1>
+
+<p>grep searches for patterns in text. It's one of those commands you'll use every single day once you know it — filtering logs, finding config values, searching code, checking if something is running.</p>
+
+<h2>Basic Usage</h2>
+
+<pre><code># Search for a word in a file
+grep "error" logfile.txt
+
+# Search in multiple files
+grep "error" *.log
+
+# Search recursively in a directory
+grep -r "TODO" /home/user/project/
+
+# Case-insensitive search
+grep -i "Error" logfile.txt</code></pre>
+
+<h2>Most Useful Flags</h2>
+
+<table>
+<thead><tr><th>Flag</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td>-i</td><td>Case insensitive</td></tr>
+<tr><td>-r</td><td>Recursive (search subdirectories)</td></tr>
+<tr><td>-n</td><td>Show line numbers</td></tr>
+<tr><td>-l</td><td>Only print filenames that match</td></tr>
+<tr><td>-c</td><td>Count matching lines</td></tr>
+<tr><td>-v</td><td>Invert — show lines that do NOT match</td></tr>
+<tr><td>-A 3</td><td>Show 3 lines After each match</td></tr>
+<tr><td>-B 3</td><td>Show 3 lines Before each match</td></tr>
+<tr><td>-C 3</td><td>Show 3 lines Context (before and after)</td></tr>
+<tr><td>-w</td><td>Match whole words only</td></tr>
+<tr><td>-E</td><td>Extended regex (same as egrep)</td></tr>
+<tr><td>-o</td><td>Print only the matching part, not the whole line</td></tr>
+</tbody>
+</table>
+
+<h2>Context Lines</h2>
+
+<pre><code># Show 3 lines before and after each match — extremely useful in logs
+grep -C 3 "connection refused" /var/log/nginx/error.log
+
+# Show what came right after an error
+grep -A 5 "FATAL" app.log</code></pre>
+
+<h2>Invert Match</h2>
+
+<pre><code># Show all lines that are NOT comments
+grep -v "^#" /etc/nginx/nginx.conf
+
+# Show all lines that are not blank and not comments
+grep -v "^#" /etc/ssh/sshd_config | grep -v "^$"</code></pre>
+
+<h2>Search Recursively in a Project</h2>
+
+<pre><code># Find all files containing a function name
+grep -r "def login" /home/user/project/
+
+# Show filenames only
+grep -rl "TODO" /home/user/project/
+
+# Exclude a directory
+grep -r "error" /var/log/ --exclude-dir=old-logs
+
+# Only search specific file types
+grep -r "import" /home/user/project/ --include="*.py"</code></pre>
+
+<h2>Regex Patterns</h2>
+
+<pre><code"># Match lines starting with a pattern
+grep "^ERROR" logfile.txt
+
+# Match lines ending with a pattern
+grep "failed$" logfile.txt
+
+# Match any character
+grep "er.or" logfile.txt    # matches error, erxor, er or
+
+# Match digits
+grep "[0-9]\{3\}" file.txt      # 3 consecutive digits
+grep -E "[0-9]{3}" file.txt     # same with extended regex (-E)
+
+# Match an IP address (approximate)
+grep -E "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" logfile.txt
+
+# Match either of two patterns
+grep -E "error|warning" logfile.txt</code></pre>
+
+<h2>Grep with Pipes — Where It Shines</h2>
+
+<pre><code># Filter command output
+ps aux | grep nginx
+docker ps | grep myapp
+systemctl list-units | grep failed
+
+# Count how many times something appears
+grep -c "404" /var/log/nginx/access.log
+
+# Find which processes are using a port
+ss -tlnp | grep :80
+
+# Filter out noise from a log
+tail -f /var/log/syslog | grep -v "systemd"
+
+# Chain multiple greps
+cat /var/log/auth.log | grep "Failed" | grep "root"</code></pre>
+
+<h2>Extract Specific Parts</h2>
+
+<pre><code"># Print only the matched portion
+grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+" access.log    # extract IPs
+
+# With extended regex
+grep -oE "[0-9]{1,3}(\.[0-9]{1,3}){3}" access.log</code></pre>
+
+<h2>ripgrep — A Faster Alternative</h2>
+
+<p>If you find yourself using grep on large codebases constantly, ripgrep (<code>rg</code>) is 5-10x faster and smarter about ignoring <code>.git</code> and <code>node_modules</code>:</p>
+
+<pre><code"># Install
+sudo apt install ripgrep       # Ubuntu/Debian
+brew install ripgrep           # macOS
+
+# Same usage as grep, mostly
+rg "TODO" /home/user/project/
+rg -i "error" logfile.txt
+rg -l "pattern" .              # filenames only</code></pre>

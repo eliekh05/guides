@@ -1,0 +1,123 @@
+<!-- linux:Linux -->
+<h1>Fix "No Space Left on Device" on Linux</h1>
+
+<p>Running out of disk space on Linux causes all sorts of cascading failures — services crash, databases corrupt, logs stop, builds fail. Here's how to find what's eating your disk and get space back fast.</p>
+
+<h2>Confirm You're Actually Out of Space</h2>
+
+<pre><code># Check disk usage on all filesystems
+df -h
+
+# Example showing a full disk:
+# Filesystem      Size  Used Avail Use% Mounted on
+# /dev/sda1        50G   50G     0 100% /
+
+# Also check inodes — you can run out of inodes even with space available
+df -i</code></pre>
+
+<h2>Find What's Taking Up Space</h2>
+
+<pre><code># Check the biggest directories from root
+du -sh /* 2>/dev/null | sort -rh | head -15
+
+# Drill down into the biggest one
+du -sh /var/* 2>/dev/null | sort -rh | head -10
+
+# Interactive ncdu — much easier (install first)
+sudo apt install ncdu
+sudo ncdu /</code></pre>
+
+<h2>Common Culprits</h2>
+
+<h3>Log files in /var/log</h3>
+
+<pre><code># Find large log files
+du -sh /var/log/* | sort -rh | head -10
+
+# See the biggest log files
+find /var/log -type f -size +100M
+
+# Truncate a log without deleting it (safe for running services)
+sudo truncate -s 0 /var/log/nginx/access.log
+
+# Or delete old rotated logs
+sudo find /var/log -name "*.gz" -delete
+sudo find /var/log -name "*.1" -delete</code></pre>
+
+<h3>Docker taking over</h3>
+
+<pre><code"># See how much Docker is using
+docker system df
+
+# Remove stopped containers, unused images, unused volumes
+docker system prune -a
+
+# Nuclear option — remove everything Docker owns
+docker system prune -a --volumes</code></pre>
+
+<h3>Package manager cache</h3>
+
+<pre><code"># APT cache (Ubuntu/Debian)
+sudo apt clean           # remove all cached packages
+sudo apt autoremove      # remove unused dependencies
+du -sh /var/cache/apt/
+
+# dnf/yum cache (Fedora/RHEL)
+sudo dnf clean all
+
+# snap cache
+sudo find /var/lib/snapd -name "*.snap" | head -10
+snap list --all | grep disabled    # old snap revisions</code></pre>
+
+<h3>Old kernels</h3>
+
+<pre><code"># List installed kernels
+dpkg --list | grep linux-image
+
+# Remove old ones (Ubuntu/Debian — keeps current + one previous automatically)
+sudo apt autoremove --purge</code></pre>
+
+<h3>Core dumps</h3>
+
+<pre><code"># Find core dumps (can be huge)
+find / -name "core" -type f 2>/dev/null
+find /var/crash -type f 2>/dev/null
+
+# Clear systemd core dumps
+sudo journalctl --vacuum-size=100M    # keep only 100MB of journal logs
+sudo systemd-tmpfiles --clean</code></pre>
+
+<h3>Temporary files</h3>
+
+<pre><code"># Clear /tmp (reboot does this automatically on most systems)
+sudo rm -rf /tmp/*
+
+# Find large files in /tmp
+find /tmp -type f -size +10M</code></pre>
+
+<h2>Find Large Files Anywhere</h2>
+
+<pre><code"># Files over 500MB anywhere on the system
+sudo find / -type f -size +500M -exec ls -lh {} \; 2>/dev/null | sort -k5 -rh
+
+# Files over 1GB
+sudo find / -xdev -type f -size +1G 2>/dev/null</code></pre>
+
+<h2>If You Can't Even Write to Fix Things</h2>
+
+<pre><code"># Delete something immediately to get 1% space back
+sudo rm /var/log/syslog
+sudo journalctl --vacuum-size=50M
+
+# Then do the proper cleanup above</code></pre>
+
+<h2>Prevent It Happening Again</h2>
+
+<pre><code"># Set up log rotation to cap log sizes
+sudo nano /etc/logrotate.conf
+
+# Add monitoring
+df -h | awk 'NR>1 && $5+0 > 80 {print "WARNING: " $6 " is " $5 " full"}'
+
+# Add that to a cron job to alert you
+# Or use a tool like netdata, grafana agent, or beszel for disk alerts</code></pre>

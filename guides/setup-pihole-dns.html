@@ -1,0 +1,119 @@
+<!-- networking:Networking & DNS -->
+<h1>Set Up Pi-hole — Network-Wide Ad Blocking</h1>
+
+<p>Pi-hole is a DNS sinkhole that blocks ads and trackers at the network level. Every device on your network gets ad blocking — phones, smart TVs, game consoles — without installing anything on them.</p>
+
+<h2>What You Need</h2>
+
+<ul>
+<li>A Raspberry Pi, old PC, or any Linux machine that stays on 24/7</li>
+<li>Ubuntu, Debian, or Raspberry Pi OS</li>
+<li>A static IP for that machine</li>
+</ul>
+
+<h2>Set a Static IP First</h2>
+
+<p>Pi-hole needs a fixed IP — if it changes, DNS breaks for your whole network.</p>
+
+<pre><code># Find your current IP and gateway
+ip a
+ip route | grep default
+
+# Set static IP via netplan (Ubuntu)
+sudo nano /etc/netplan/01-netcfg.yaml</code></pre>
+
+<pre><code">network:
+  version: 2
+  ethernets:
+    eth0:
+      dhcp4: no
+      addresses: [192.168.1.10/24]
+      routes:
+        - to: default
+          via: 192.168.1.1
+      nameservers:
+        addresses: [1.1.1.1, 8.8.8.8]</code></pre>
+
+<pre><code>sudo netplan apply</code></pre>
+
+<h2>Install Pi-hole</h2>
+
+<pre><code>curl -sSL https://install.pi-hole.net | bash</code></pre>
+
+<p>The installer walks you through the setup interactively:</p>
+
+<ol>
+<li>Select your network interface (usually eth0 or wlan0)</li>
+<li>Choose an upstream DNS provider — Cloudflare (1.1.1.1) or Quad9 are good choices</li>
+<li>Keep the default blocklists</li>
+<li>Install the web admin interface — yes</li>
+<li>Enable logging</li>
+<li>Note the admin password shown at the end</li>
+</ol>
+
+<h2>Access the Web Interface</h2>
+
+<pre><code">http://192.168.1.10/admin    # use your Pi-hole's IP</code></pre>
+
+<p>Log in with the password shown at end of install, or reset it:</p>
+
+<pre><code>pihole -a -p newpassword</code></pre>
+
+<h2>Point Your Router at Pi-hole</h2>
+
+<p>The most effective setup: change the DNS server in your router so every device on the network uses Pi-hole automatically.</p>
+
+<ol>
+<li>Log into your router (usually 192.168.1.1 or 192.168.0.1)</li>
+<li>Find DNS settings — usually under DHCP or WAN settings</li>
+<li>Set Primary DNS to your Pi-hole's IP (e.g. 192.168.1.10)</li>
+<li>Set Secondary DNS to a fallback like 1.1.1.1 (optional — if empty, outage = no internet)</li>
+<li>Save and restart the router</li>
+</ol>
+
+<h2>Update Blocklists</h2>
+
+<pre><code"># Update gravity (blocklists) manually
+pihole -g
+
+# Update Pi-hole itself
+pihole -up</code></pre>
+
+<h2>Whitelist a Domain That Got Blocked</h2>
+
+<pre><code># From the terminal
+pihole -w example.com
+
+# Or from the web interface:
+# Whitelist → add domain</code></pre>
+
+<h2>Check What's Being Blocked</h2>
+
+<p>The web dashboard shows a live query log — every DNS request on your network. You can see which device is querying what, and which domains are being blocked. Useful for finding broken services.</p>
+
+<h2>Add More Blocklists</h2>
+
+<p>Pi-hole ships with good defaults. You can add more from the web interface under Group Management → Adlists. Popular additions:</p>
+
+<ul>
+<li>Steven Black's hosts: <code>https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts</code></li>
+<li>OISD: <code>https://abp.oisd.nl/</code></li>
+</ul>
+
+<p>After adding lists run <code>pihole -g</code> to update gravity.</p>
+
+<h2>Pi-hole Behind a VPN</h2>
+
+<p>If you run WireGuard or Tailscale, set Pi-hole as the DNS server in your VPN config so you get ad blocking even when away from home.</p>
+
+<pre><code"># In WireGuard client config
+[Interface]
+DNS = 192.168.1.10    # your Pi-hole IP</code></pre>
+
+<h2>Useful Commands</h2>
+
+<pre><code">pihole status           # check if Pi-hole is running
+pihole -d               # run diagnostics
+pihole tail             # live query log in terminal
+pihole disable 5m       # temporarily disable for 5 minutes
+pihole enable           # re-enable</code></pre>

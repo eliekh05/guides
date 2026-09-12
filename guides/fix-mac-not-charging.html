@@ -1,0 +1,72 @@
+<!-- macos:macOS -->
+<h1>Fix MacBook Not Charging</h1>
+
+<p>A MacBook that won't charge is frustrating but usually fixable without a trip to the Apple Store. Work through these in order before assuming the hardware is dead.</p>
+
+<h2>Start With the Obvious</h2>
+
+<ul>
+<li>Try a different wall outlet — the outlet itself might be dead</li>
+<li>Remove any USB hub or dock and plug directly into the MacBook</li>
+<li>Try a different cable if you have one — USB-C cables fail more than people realise</li>
+<li>Plug the charger into the other side of the MacBook if it has ports on both sides</li>
+<li>Check for debris in the USB-C port — compressed air can clear it</li>
+</ul>
+
+<h2>Check the Battery Status</h2>
+
+<pre><code>Hold Option → click the battery icon in the menu bar</code></pre>
+
+<p>The status shows: Normal, Service Recommended, Service Battery, or Charging. If it says "Service Battery" the battery needs replacing — but the guide below can still help you charge in the meantime.</p>
+
+<h2>Check MagSafe LED (Older MacBooks)</h2>
+
+<ul>
+<li>Green = charged or nearly charged</li>
+<li>Orange/Amber = currently charging</li>
+<li>No light = not connected properly, dead cable, or dead adapter</li>
+</ul>
+
+<p>If the LED is green but battery percentage is low and not rising, the SMC needs resetting.</p>
+
+<h2>Reset the SMC</h2>
+
+<p>The SMC controls power management including charging. Resetting it fixes most charging issues.</p>
+
+<p><strong>Apple Silicon MacBooks:</strong> Shut down completely and wait 30 seconds. Power on normally — the SMC resets automatically on shutdown.</p>
+
+<p><strong>Intel MacBook (non-removable battery):</strong> Shut down → hold Shift+Control+Option+Power for 10 seconds → release all → power on.</p>
+
+<p><strong>Intel MacBook Pro (T2 chip, 2018 and later):</strong> Shut down → hold Right Shift+Left Control+Left Option for 7 seconds, then keep holding those and also press Power for another 7 seconds → release all → wait a few seconds → power on.</p>
+
+<h2>Let the Battery Drain Completely</h2>
+
+<p>Occasionally the battery controller gets confused about the charge level. Run the battery all the way to 0% until the Mac shuts itself off, then plug in and charge to 100% without interruption.</p>
+
+<h2>Check Battery Cycle Count</h2>
+
+<pre><code>Apple menu → About This Mac → System Report → Hardware → Power</code></pre>
+
+<p>Look at "Cycle Count" and "Condition". MacBook batteries last around 500–1000 cycles before degrading significantly. After that, charging slows and capacity drops — a replacement battery is the only fix.</p>
+
+<h2>Test With a Different Charger</h2>
+
+<p>Apple USB-C chargers and MagSafe adapters fail. If a friend's charger works, yours is dead. A 61W or 96W USB-C charger from any reputable brand (Anker, Belkin, Apple) will work on modern MacBooks.</p>
+
+<h2>Check System Report for Battery Errors</h2>
+
+<pre><code>Apple menu → About This Mac → System Report → Hardware → Power</code></pre>
+
+<p>Look for any error flags under "Battery Information". Also check:</p>
+
+<pre><code>log show --predicate 'subsystem == "com.apple.battery"' --last 1h | grep -i error</code></pre>
+
+<h2>When It's Likely Hardware</h2>
+
+<ul>
+<li>Swollen battery — the MacBook lid lifts slightly at the bottom, or there's a bump under the trackpad</li>
+<li>Bent or burnt USB-C port — visible damage</li>
+<li>Charging board failure — multiple cables and chargers tried, nothing works</li>
+</ul>
+
+<p>Book an Apple Store Genius Bar appointment. Swollen batteries are replaced free or at low cost even out of warranty in many regions due to safety regulations.</p>

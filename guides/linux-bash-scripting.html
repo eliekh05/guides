@@ -1,0 +1,196 @@
+<!-- linux:Linux -->
+<h1>Bash Scripting Basics</h1>
+
+<p>Bash scripts let you automate anything you'd normally type in a terminal. If you find yourself running the same sequence of commands more than twice, it belongs in a script.</p>
+
+<h2>Create and Run a Script</h2>
+
+<pre><code"># Create a script
+nano myscript.sh
+
+# Make it executable
+chmod +x myscript.sh
+
+# Run it
+./myscript.sh</code></pre>
+
+<h2>The Shebang Line</h2>
+
+<p>Always start with a shebang — it tells the system which interpreter to use:</p>
+
+<pre><code">#!/bin/bash</code></pre>
+
+<h2>Variables</h2>
+
+<pre><code">#!/bin/bash
+
+name="Alice"
+age=30
+files=$(ls /home)    # capture command output
+
+echo "Hello, $name"
+echo "You are $age years old"
+echo "$files"
+
+# Curly braces for clarity
+echo "File: ${name}.txt"</code></pre>
+
+<h2>User Input</h2>
+
+<pre><code">#!/bin/bash
+
+read -p "Enter your name: " name
+echo "Hello, $name"
+
+# Silent input (for passwords)
+read -sp "Password: " password
+echo ""    # newline after silent input</code></pre>
+
+<h2>Conditionals</h2>
+
+<pre><code">#!/bin/bash
+
+# if/else
+if [ "$name" = "Alice" ]; then
+    echo "Welcome, Alice"
+elif [ "$name" = "Bob" ]; then
+    echo "Hey Bob"
+else
+    echo "Who are you?"
+fi
+
+# Check if a file exists
+if [ -f "/etc/passwd" ]; then
+    echo "File exists"
+fi
+
+# Check if a directory exists
+if [ -d "/home/user" ]; then
+    echo "Directory exists"
+fi
+
+# Check if a command succeeded
+if grep -q "root" /etc/passwd; then
+    echo "root user exists"
+fi</code></pre>
+
+<h2>Comparison Operators</h2>
+
+<table>
+<thead><tr><th>Numbers</th><th>Strings</th><th>Files</th></tr></thead>
+<tbody>
+<tr><td>-eq (equal)</td><td>= (equal)</td><td>-f (is file)</td></tr>
+<tr><td>-ne (not equal)</td><td>!= (not equal)</td><td>-d (is directory)</td></tr>
+<tr><td>-gt (greater than)</td><td>-z (empty string)</td><td>-e (exists)</td></tr>
+<tr><td>-lt (less than)</td><td>-n (non-empty)</td><td>-r (readable)</td></tr>
+<tr><td>-ge (greater or equal)</td><td></td><td>-w (writable)</td></tr>
+</tbody>
+</table>
+
+<h2>Loops</h2>
+
+<pre><code">#!/bin/bash
+
+# Loop over a list
+for fruit in apple banana cherry; do
+    echo "Fruit: $fruit"
+done
+
+# Loop over files
+for file in /var/log/*.log; do
+    echo "Processing: $file"
+done
+
+# C-style for loop
+for ((i=1; i<=5; i++)); do
+    echo "Number: $i"
+done
+
+# While loop
+count=0
+while [ $count -lt 5 ]; do
+    echo "Count: $count"
+    ((count++))
+done
+
+# Loop over lines in a file
+while IFS= read -r line; do
+    echo "$line"
+done < /etc/hosts</code></pre>
+
+<h2>Functions</h2>
+
+<pre><code">#!/bin/bash
+
+greet() {
+    local name="$1"    # $1 is the first argument
+    echo "Hello, $name"
+}
+
+backup() {
+    local src="$1"
+    local dst="$2"
+    cp -r "$src" "$dst"
+    echo "Backed up $src to $dst"
+}
+
+greet "Alice"
+backup /home/user /mnt/backup/</code></pre>
+
+<h2>Exit Codes and Error Handling</h2>
+
+<pre><code">#!/bin/bash
+
+# Exit immediately if any command fails
+set -e
+
+# Also fail on undefined variables
+set -u
+
+# Check if a command worked
+if ! mkdir /some/dir; then
+    echo "Failed to create directory"
+    exit 1
+fi
+
+# $? is the exit code of the last command
+ls /nonexistent
+echo "Exit code: $?"    # 2 (ls failed)</code></pre>
+
+<h2>Arguments</h2>
+
+<pre><code">#!/bin/bash
+# Run as: ./script.sh arg1 arg2
+
+echo "Script name: $0"
+echo "First arg: $1"
+echo "Second arg: $2"
+echo "All args: $@"
+echo "Number of args: $#"
+
+# Check required argument
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 <filename>"
+    exit 1
+fi</code></pre>
+
+<h2>Practical Example — Backup Script</h2>
+
+<pre><code">#!/bin/bash
+set -e
+
+SOURCE="/home/user/documents"
+DEST="/mnt/backup"
+DATE=$(date +%Y-%m-%d)
+BACKUP_DIR="$DEST/$DATE"
+
+if [ ! -d "$SOURCE" ]; then
+    echo "Error: Source directory $SOURCE does not exist"
+    exit 1
+fi
+
+mkdir -p "$BACKUP_DIR"
+cp -r "$SOURCE"/* "$BACKUP_DIR/"
+
+echo "Backup complete: $BACKUP_DIR"
+echo "Size: $(du -sh "$BACKUP_DIR" | cut -f1)"</code></pre>

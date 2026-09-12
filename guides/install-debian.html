@@ -1,0 +1,106 @@
+<!-- installation:Installation Guides -->
+<h1>Install Debian Linux</h1>
+
+<p>Debian is one of the oldest and most stable Linux distributions. It's the base that Ubuntu is built on, and it's a solid choice for servers where you want software that just works without constant updates breaking things.</p>
+
+<h2>Download</h2>
+
+<p>Get the latest stable release from debian.org/distrib/. Download the "amd64 netinst" ISO — it's small (around 400MB) and downloads the rest during installation.</p>
+
+<p>If you have no reliable internet during install, get the full DVD image instead.</p>
+
+<h2>Create Bootable USB</h2>
+
+<pre><code"># Linux/macOS
+sudo dd if=debian-12.x.x-amd64-netinst.iso of=/dev/sdX bs=4M status=progress oflag=sync
+
+# Windows — use Rufus (rufus.ie)</code></pre>
+
+<h2>Boot and Start Install</h2>
+
+<ol>
+<li>Enter BIOS/UEFI (F2, F12, Del, or Esc) and boot from USB</li>
+<li>Select "Graphical install" for the guided installer</li>
+</ol>
+
+<h2>Installation Steps</h2>
+
+<ol>
+<li><strong>Language and locale</strong> — pick your language and region</li>
+<li><strong>Hostname</strong> — name your machine (e.g. <code>myserver</code>)</li>
+<li><strong>Domain</strong> — leave blank for a home machine</li>
+<li><strong>Root password</strong> — set a strong one, or leave blank to disable root login and use sudo instead (recommended)</li>
+<li><strong>Create user</strong> — your regular user account</li>
+<li><strong>Partition disks</strong> — "Guided — use entire disk" is fine for most installs. LVM is optional but useful for resizing later</li>
+<li><strong>Package manager mirror</strong> — pick a mirror in your country for faster downloads</li>
+<li><strong>Popularity contest</strong> — your call, doesn't affect the install</li>
+<li><strong>Software selection</strong>:
+  <ul>
+    <li>Server: uncheck everything except "SSH server" and "standard system utilities"</li>
+    <li>Desktop: check your preferred desktop environment</li>
+  </ul>
+</li>
+<li><strong>GRUB bootloader</strong> — install to the primary drive</li>
+<li>Reboot when complete and remove the USB</li>
+</ol>
+
+<h2>First Login and Update</h2>
+
+<pre><code"># Log in as your user
+# Update everything
+sudo apt update && sudo apt upgrade -y</code></pre>
+
+<h2>Enable sudo for Your User</h2>
+
+<p>If you set a root password during install, your user might not have sudo access by default:</p>
+
+<pre><code"># Switch to root
+su -
+
+# Add your user to sudo group
+usermod -aG sudo yourusername
+
+# Exit root
+exit
+
+# Log out and back in for group change to take effect</code></pre>
+
+<h2>Install Essential Packages</h2>
+
+<pre><code"">sudo apt install -y \
+  curl wget git htop ncdu \
+  build-essential \
+  ufw \
+  unzip zip</code></pre>
+
+<h2>Configure Firewall</h2>
+
+<pre><code"">sudo ufw allow OpenSSH
+sudo ufw enable
+sudo ufw status</code></pre>
+
+<h2>Set Static IP (Server)</h2>
+
+<pre><code"">sudo nano /etc/network/interfaces</code></pre>
+
+<pre><code"">auto eth0
+iface eth0 inet static
+  address 192.168.1.50
+  netmask 255.255.255.0
+  gateway 192.168.1.1
+  dns-nameservers 1.1.1.1 8.8.8.8</code></pre>
+
+<pre><code"">sudo systemctl restart networking</code></pre>
+
+<h2>Debian vs Ubuntu</h2>
+
+<table>
+<thead><tr><th></th><th>Debian</th><th>Ubuntu LTS</th></tr></thead>
+<tbody>
+<tr><td>Release cycle</td><td>~2 years, very stable</td><td>2 years LTS</td></tr>
+<tr><td>Package versions</td><td>Older, more stable</td><td>Newer</td></tr>
+<tr><td>Support length</td><td>5 years (10 with LTS)</td><td>5 years standard</td></tr>
+<tr><td>Snap packages</td><td>No</td><td>Yes (some forced)</td></tr>
+<tr><td>Best for</td><td>Servers, stability</td><td>Desktops, easier setup</td></tr>
+</tbody>
+</table>

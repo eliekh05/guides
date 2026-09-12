@@ -1,0 +1,88 @@
+<!-- windows:Windows -->
+<h1>Fix Slow Performance on Windows 11 and 10</h1>
+
+<p>A slow Windows machine is almost never a hardware problem — it's usually startup programs, background services, bloat, or a filesystem that needs attention. Most of these fixes take under 10 minutes.</p>
+
+<h2>Check What's Actually Using Resources</h2>
+
+<pre><code">Ctrl+Shift+Esc → Task Manager → click "More details"</code></pre>
+
+<p>Sort by CPU, then Memory, then Disk. If something is pegging a resource and it's not something you're actively using, that's your culprit.</p>
+
+<h2>Disable Startup Programs</h2>
+
+<p>This is the single most effective fix for slow startup and general sluggishness:</p>
+
+<pre><code">Task Manager → Startup apps tab</code></pre>
+
+<p>Right-click and disable anything you don't need running at login. Common offenders: Teams, Spotify, Discord, OneDrive, Adobe updaters, printer software, old apps you've forgotten about.</p>
+
+<h2>Adjust Power Plan</h2>
+
+<pre><code">Control Panel → Power Options → choose "High performance" or "Balanced"
+(not "Power saver")</code></pre>
+
+<p>On laptops, Windows sometimes defaults to power-saving mode which throttles the CPU. Plugging in should switch automatically, but manually setting "Balanced" ensures it.</p>
+
+<h2>Free Up Disk Space</h2>
+
+<p>Windows slows significantly when the drive is over 90% full:</p>
+
+<pre><code">Win+R → cleanmgr → select C: → check all boxes → also click "Clean up system files"</code></pre>
+
+<p>Or use Settings → System → Storage → Cleanup recommendations.</p>
+
+<p>Enable Storage Sense to automatically clean up temp files:</p>
+
+<pre><code">Settings → System → Storage → Storage Sense → turn on</code></pre>
+
+<h2>Run Disk Check and System File Repair</h2>
+
+<pre><code"># Open Command Prompt as Administrator
+sfc /scannow
+
+# If issues found, run DISM first then sfc again
+DISM /Online /Cleanup-Image /RestoreHealth
+sfc /scannow</code></pre>
+
+<h2>Check for Malware</h2>
+
+<p>Background malware is a common cause of unexplained slowness:</p>
+
+<pre><code">Windows Security → Virus & threat protection → Quick scan</code></pre>
+
+<p>Or download Malwarebytes (free version) for a second opinion.</p>
+
+<h2>Adjust Visual Effects</h2>
+
+<pre><code">Win+R → sysdm.cpl → Advanced tab → Performance Settings
+→ choose "Adjust for best performance"</code></pre>
+
+<p>This disables animations and visual effects — makes Windows feel noticeably faster on older hardware.</p>
+
+<h2>Disable Search Indexing (Older/Slower Machines)</h2>
+
+<pre><code">Services → Windows Search → right-click → Properties → Startup type: Disabled</code></pre>
+
+<p>Windows constantly indexes files in the background. On spinning hard drives this causes constant disk activity. Disabling it means Windows Search is slower but the system overall feels snappier.</p>
+
+<h2>Update Drivers</h2>
+
+<p>Outdated chipset, storage, or GPU drivers can cause slowdowns:</p>
+
+<pre><code">Device Manager → right-click key devices → Update driver</code></pre>
+
+<p>For best results, go to your PC or motherboard manufacturer's website and download drivers directly rather than relying on Windows Update.</p>
+
+<h2>Check if It's the Drive</h2>
+
+<p>Spinning hard drives (HDDs) are dramatically slower than SSDs. If your system drive is an HDD, upgrading to an SSD is the single biggest performance improvement possible — more impactful than any software fix.</p>
+
+<pre><code">Task Manager → Performance → Disk
+# If disk is at 100% constantly, the drive is the bottleneck</code></pre>
+
+<p>Download CrystalDiskInfo to check drive health — a failing drive causes severe slowdowns before it dies completely.</p>
+
+<h2>Restart Regularly</h2>
+
+<p>Windows accumulates memory leaks and stale processes over time. If you leave your machine running for weeks, a restart often dramatically improves performance without any other changes.</p>

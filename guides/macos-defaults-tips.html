@@ -1,0 +1,121 @@
+<!-- macos:macOS -->
+<h1>macOS Hidden Settings Worth Changing</h1>
+
+<p>macOS ships with a lot of defaults that make sense for most people but are annoying for power users. Most of these can be changed through System Settings, but some only via the terminal.</p>
+
+<h2>Finder</h2>
+
+<pre><code"># Show hidden files (toggle with Cmd+Shift+.)
+defaults write com.apple.finder AppleShowAllFiles YES
+
+# Show full path in Finder title bar
+defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
+
+# Show all file extensions
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+# Disable the warning when changing a file extension
+defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+
+# Show ~/Library folder in Finder
+chflags nohidden ~/Library
+
+# Default to list view in all Finder windows
+defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
+
+# Apply changes
+killall Finder</code></pre>
+
+<h2>Dock</h2>
+
+<pre><code"># Remove the auto-hide delay (dock appears instantly)
+defaults write com.apple.dock autohide-delay -float 0
+defaults write com.apple.dock autohide-time-modifier -float 0.4
+
+# Don't show recent apps in the Dock
+defaults write com.apple.dock show-recents -bool false
+
+# Make Dock icons of hidden apps translucent
+defaults write com.apple.dock showhidden -bool true
+
+# Apply changes
+killall Dock</code></pre>
+
+<h2>Screenshots</h2>
+
+<pre><code"># Change screenshot save location
+defaults write com.apple.screencapture location ~/Desktop/Screenshots
+
+# Save as JPG instead of PNG
+defaults write com.apple.screencapture type jpg
+
+# Remove the shadow from window screenshots
+defaults write com.apple.screencapture disable-shadow -bool true
+
+# Apply
+killall SystemUIServer</code></pre>
+
+<h2>Safari</h2>
+
+<pre><code"># Enable developer menu
+defaults write com.apple.Safari IncludeDevelopMenu -bool true
+defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
+
+# Show full URL in address bar
+defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true</code></pre>
+
+<h2>TextEdit</h2>
+
+<pre><code"># Default to plain text instead of rich text
+defaults write com.apple.TextEdit RichText -int 0
+
+# Open and save as UTF-8
+defaults write com.apple.TextEdit PlainTextEncoding -int 4
+defaults write com.apple.TextEdit PlainTextEncodingForWrite -int 4</code></pre>
+
+<h2>System-Wide</h2>
+
+<pre><code"># Expand save panel by default
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+
+# Expand print panel by default
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
+
+# Disable the "Are you sure you want to open this app?" quarantine dialog
+# (careful — this removes a security check)
+defaults write com.apple.LaunchServices LSQuarantine -bool false
+
+# Speed up key repeat rate
+defaults write NSGlobalDomain KeyRepeat -int 2
+defaults write NSGlobalDomain InitialKeyRepeat -int 15
+
+# Disable autocorrect
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+
+# Disable auto-capitalization
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false</code></pre>
+
+<h2>Useful System Settings (GUI)</h2>
+
+<p>These are harder to miss but worth knowing:</p>
+
+<ul>
+<li><strong>Trackpad → Tap to click</strong> — saves your finger from pressing down every click</li>
+<li><strong>Trackpad → Three finger drag</strong> — Accessibility → Pointer Control → Trackpad Options</li>
+<li><strong>Keyboard → Key repeat rate</strong> — max it out if you use the terminal a lot</li>
+<li><strong>Accessibility → Display → Reduce motion</strong> — makes window animations much faster</li>
+<li><strong>Desktop & Dock → Click wallpaper to reveal desktop</strong> — set to "Only in Stage Manager" so you stop accidentally hiding all your windows</li>
+</ul>
+
+<h2>Reset a Preference to Default</h2>
+
+<pre><code"># If something breaks, delete the preference key
+defaults delete com.apple.finder AppleShowAllFiles
+
+# Or reset an entire app's preferences
+defaults delete com.apple.finder</code></pre>
+
+<h2>Read Current Value of a Setting</h2>
+
+<pre><code"">defaults read com.apple.finder AppleShowAllFiles
+defaults read NSGlobalDomain KeyRepeat</code></pre>

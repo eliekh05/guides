@@ -1,5 +1,7 @@
 <!-- installation:Installation Guides -->
 <h1>Install Proxmox on a Laptop (WiFi Only) via Debian 13</h1>
+
+<p>First, flash your ISO to a USB drive. See the <a href="/g/create-bootable-usb">Bootable USB guide</a> for every tool — Ventoy, Rufus, Etcher, dd, and more.</p>
 <p>The official Proxmox ISO installer assumes you have an Ethernet connection and will fail or leave you with a broken network setup on a WiFi-only laptop. This guide skips the Proxmox ISO entirely and installs Proxmox on top of <strong>Debian 13 (Trixie)</strong> — the current stable release — using <code>apt</code>. You get the same full Proxmox VE with no subscription required, and WiFi working from the start.</p>
 <blockquote>
 <p><strong>Why not the Proxmox ISO?</strong> The Proxmox ISO does not include WiFi drivers or <code>wpa_supplicant</code>. It expects Ethernet during installation and sets up a Linux bridge (<code>vmbr0</code>) that is incompatible with WiFi by default. This method avoids all of that.</p>

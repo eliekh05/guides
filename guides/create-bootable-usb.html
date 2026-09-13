@@ -1,0 +1,185 @@
+<!-- installation:Installation Guides -->
+<h1>Create a Bootable USB Drive — Every Tool, Every Platform</h1>
+
+<p>A bootable USB lets you install an operating system, run a live environment, or recover a broken system. This guide covers every major tool across Windows, macOS, and Linux — including Ventoy, which lets you put multiple ISOs on one drive.</p>
+
+<h2>What You Need</h2>
+
+<ul>
+<li>A USB drive — 8GB minimum, 16GB+ recommended. Everything on it will be erased.</li>
+<li>The ISO file for the OS you want to install</li>
+<li>One of the tools below</li>
+</ul>
+
+<h2>Ventoy — One USB, Many ISOs (Recommended)</h2>
+
+<p>Ventoy is the best option if you use bootable USBs regularly. You install Ventoy once onto the drive, then just copy ISO files onto it like normal files. Boot the USB and pick which ISO to boot from a menu. No re-flashing needed when you download a new ISO.</p>
+
+<p><strong>Download:</strong> <a href="https://www.ventoy.net/en/download.html" target="_blank" rel="noopener">ventoy.net/en/download.html</a></p>
+
+<h3>Ventoy on Windows</h3>
+<ol>
+<li>Download and extract the Ventoy zip</li>
+<li>Run <code>Ventoy2Disk.exe</code> as Administrator</li>
+<li>Select your USB drive from the Device dropdown</li>
+<li>Click Install — this erases the drive and sets up Ventoy</li>
+<li>Once done, the USB shows up as a normal drive in Explorer</li>
+<li>Copy any ISO files directly onto the drive</li>
+<li>Boot from the USB — Ventoy shows a menu to pick which ISO to boot</li>
+</ol>
+
+<h3>Ventoy on Linux</h3>
+<pre><code># Extract the downloaded archive
+tar xzf ventoy-*.tar.gz
+cd ventoy-*/
+
+# Find your USB drive
+lsblk
+
+# Install Ventoy (replace sdX with your drive — this erases it)
+sudo ./Ventoy2Disk.sh -i /dev/sdX
+
+# The USB now has a large partition — copy ISOs onto it
+sudo mount /dev/sdX1 /mnt
+sudo cp ubuntu-24.04.iso /mnt/
+sudo umount /mnt</code></pre>
+
+<h3>Ventoy on macOS</h3>
+<pre><code># Extract the downloaded archive
+cd ventoy-*/
+
+# Find your USB drive
+diskutil list
+
+# Install Ventoy (replace diskN with your drive)
+sudo ./Ventoy2Disk.sh -i /dev/diskN
+
+# Copy ISOs onto the drive once complete</code></pre>
+
+<h2>Balena Etcher — Simplest Single-ISO Tool</h2>
+
+<p>Etcher is the easiest option for flashing a single ISO. Works identically on Windows, macOS, and Linux. Three clicks: select image, select drive, flash.</p>
+
+<p><strong>Download:</strong> <a href="https://etcher.balena.io" target="_blank" rel="noopener">etcher.balena.io</a></p>
+
+<ol>
+<li>Download and install Etcher for your platform</li>
+<li>Open Etcher → click <strong>Flash from file</strong> → select your ISO</li>
+<li>Click <strong>Select target</strong> → choose your USB drive</li>
+<li>Click <strong>Flash</strong> — Etcher verifies the write automatically when done</li>
+</ol>
+
+<p>Etcher protects you from accidentally selecting your system drive by greying out fixed disks.</p>
+
+<h2>Rufus — Windows Only, Most Control</h2>
+
+<p>Rufus is the most feature-rich Windows tool. It handles Windows 11 TPM bypasses, GPT vs MBR, and lets you customise the install (skip Microsoft account, set username) before flashing.</p>
+
+<p><strong>Download:</strong> <a href="https://rufus.ie" target="_blank" rel="noopener">rufus.ie</a> — portable, no install needed</p>
+
+<ol>
+<li>Open Rufus (run as Administrator for best results)</li>
+<li>Select your USB drive under Device</li>
+<li>Click <strong>SELECT</strong> and choose your ISO</li>
+<li>Partition scheme: <strong>GPT</strong> for modern UEFI systems, MBR for old BIOS-only machines</li>
+<li>File system: leave as default (Rufus sets this based on the ISO)</li>
+<li>Click <strong>START</strong></li>
+</ol>
+
+<p>For Windows 11 ISOs, Rufus offers to remove TPM, Secure Boot, and RAM requirements — and to skip the Microsoft account requirement during setup.</p>
+
+<h2>dd — Linux and macOS Command Line</h2>
+
+<p>dd is built into every Linux and macOS system. It's fast and reliable but has no safety net — double-check your drive letter before running it.</p>
+
+<pre><code># Find your USB drive (look for the size to identify it)
+lsblk                    # Linux
+diskutil list            # macOS
+
+# Unmount the drive (don't eject — just unmount)
+sudo umount /dev/sdX     # Linux (replace sdX)
+diskutil unmountDisk /dev/diskN    # macOS (replace diskN)
+
+# Write the ISO
+# Linux
+sudo dd if=/path/to/image.iso of=/dev/sdX bs=4M status=progress oflag=sync
+
+# macOS (use rdiskN for faster writes)
+sudo dd if=/path/to/image.iso of=/dev/rdiskN bs=4m</code></pre>
+
+<p>The <code>status=progress</code> flag shows transfer speed and progress. Without it dd appears frozen — it isn't, just wait.</p>
+
+<h2>GNOME Disks — Linux GUI</h2>
+
+<p>If you're on a GNOME desktop (Ubuntu, Fedora, etc.), GNOME Disks is already installed and handles bootable USBs cleanly.</p>
+
+<ol>
+<li>Open <strong>Disks</strong> from your app launcher</li>
+<li>Select your USB drive in the left panel</li>
+<li>Click the menu (three dots, top right) → <strong>Restore Disk Image</strong></li>
+<li>Select your ISO file</li>
+<li>Click <strong>Start Restoring</strong></li>
+</ol>
+
+<h2>Startup Disk Creator — Ubuntu Built-In</h2>
+
+<p>Ubuntu ships with Startup Disk Creator for making Ubuntu bootable USBs specifically.</p>
+
+<ol>
+<li>Search for <strong>Startup Disk Creator</strong> in the app launcher</li>
+<li>Select the ISO under "Source disc image"</li>
+<li>Select your USB under "Disk to use"</li>
+<li>Click <strong>Make Startup Disk</strong></li>
+</ol>
+
+<p>Only works well with Ubuntu and Ubuntu-based ISOs. For anything else use dd or Etcher.</p>
+
+<h2>Boot from the USB</h2>
+
+<p>After flashing, restart your machine and boot from the USB:</p>
+
+<table>
+<thead><tr><th>Manufacturer</th><th>Boot menu key</th><th>BIOS/UEFI key</th></tr></thead>
+<tbody>
+<tr><td>Dell</td><td>F12</td><td>F2</td></tr>
+<tr><td>HP</td><td>F9 or Esc</td><td>F10</td></tr>
+<tr><td>Lenovo</td><td>F12 or Fn+F12</td><td>F1 or F2</td></tr>
+<tr><td>ASUS</td><td>F8 or Esc</td><td>F2 or Del</td></tr>
+<tr><td>Acer</td><td>F12</td><td>F2 or Del</td></tr>
+<tr><td>MSI</td><td>F11</td><td>Del</td></tr>
+<tr><td>Gigabyte</td><td>F12</td><td>Del</td></tr>
+<tr><td>Apple (Intel)</td><td>Hold Option at startup</td><td>—</td></tr>
+</tbody>
+</table>
+
+<p>Tap the boot menu key repeatedly right after pressing the power button — before the OS starts loading. Select your USB drive from the list.</p>
+
+<p>If the USB doesn't appear in the boot menu, check that <strong>Secure Boot</strong> is disabled in UEFI settings for Linux ISOs (Windows 11 needs it enabled).</p>
+
+<h2>Troubleshooting</h2>
+
+<table>
+<thead><tr><th>Problem</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>USB not in boot menu</td><td>Disable Secure Boot in UEFI, try a different USB port (use USB 2.0 ports for older BIOSes)</td></tr>
+<tr><td>Boots then black screen</td><td>Try adding <code>nomodeset</code> to boot parameters at the GRUB menu</td></tr>
+<tr><td>Windows says USB is corrupted</td><td>Re-flash with Rufus — some tools don't produce Windows-bootable drives correctly</td></tr>
+<tr><td>dd appears frozen</td><td>It's writing — wait. Use <code>status=progress</code> next time</td></tr>
+<tr><td>Ventoy not booting</td><td>Make sure ISO is in the root of the Ventoy partition, not in a subfolder</td></tr>
+<tr><td>UEFI only boots in legacy mode</td><td>Switch partition scheme to GPT in Rufus, or re-flash</td></tr>
+</tbody>
+</table>
+
+<h2>Which Tool Should You Use?</h2>
+
+<table>
+<thead><tr><th>Situation</th><th>Best tool</th></tr></thead>
+<tbody>
+<tr><td>You flash USBs regularly with different ISOs</td><td>Ventoy</td></tr>
+<tr><td>Quick one-off flash, any platform</td><td>Balena Etcher</td></tr>
+<tr><td>Windows ISO with TPM bypass or customisation</td><td>Rufus</td></tr>
+<tr><td>Linux terminal, scripting, or automation</td><td>dd</td></tr>
+<tr><td>GNOME desktop user</td><td>GNOME Disks</td></tr>
+<tr><td>Ubuntu user making an Ubuntu USB</td><td>Startup Disk Creator</td></tr>
+</tbody>
+</table>

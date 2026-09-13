@@ -1,5 +1,7 @@
 <!-- installation:Installation Guides -->
 <h1>Install Home Assistant OS (HAOS) — All Methods, All Systems</h1>
+
+<p>First, flash your ISO to a USB drive. See the <a href="/g/create-bootable-usb">Bootable USB guide</a> for every tool — Ventoy, Rufus, Etcher, dd, and more.</p>
 <p>Every HAOS guide online covers one method for one device and gets half the steps wrong. This guide covers every supported installation method in one place — Raspberry Pi, generic x86 PC, Proxmox VM, and Docker — with the real errors people run into and exactly how to fix them.</p>
 <blockquote>
 <p><strong>Current version:</strong> HAOS 17.2 (May 2026). Always check <a href="https://github.com/home-assistant/operating-system/releases">https://github.com/home-assistant/operating-system/releases</a> for the latest version number before downloading — replace any version number in this guide with the latest.</p>
@@ -169,9 +171,9 @@ reboot
 <li>Wait for it to finish (5–15 minutes depending on drive speed).</li>
 </ol>
 <h3>Step 2 Alternative — Flash Using balenaEtcher</h3>
-<p>If you prefer balenaEtcher:
+<p>If you prefer balenaEtcher — see the <a href="/g/create-bootable-usb">Bootable USB guide</a> for instructions:
 1. Boot Ubuntu live (same as above).
-2. Download and run balenaEtcher: <code>flatpak install flathub io.balena.etcher</code> or download the AppImage from <a href="https://etcher.balena.io">https://etcher.balena.io</a>.
+2. Download and run balenaEtcher: <code>flatpak install flathub io.balena.etcher</code> or download it from the <a href="/g/create-bootable-usb">Bootable USB guide</a>.
 3. Select the HAOS <code>.img.xz</code> file as source.
 4. Select your internal drive as target.
 5. Click Flash.</p>

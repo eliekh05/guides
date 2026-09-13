@@ -1,15 +1,13 @@
 <!-- installation:Installation Guides -->
 <h1>Install Arch Linux</h1>
 
+
+<p>First, flash your ISO to a USB drive. See the <a href="/g/create-bootable-usb">Bootable USB guide</a> for every tool — Ventoy, Rufus, Etcher, dd, and more.</p>
 <p>Arch Linux has no graphical installer. Installation is done entirely from the command line, which means you understand exactly what is on your system. This guide covers a standard UEFI installation.</p>
 
 <h2>Download and Boot</h2>
 
-<p>Download the ISO from <a href="https://archlinux.org/download/">https://archlinux.org/download/</a>. Flash with Ventoy or dd:</p>
-
-<pre><code>sudo dd if=archlinux-x86_64.iso of=/dev/sdX bs=4M status=progress && sync</code></pre>
-
-<p>Boot from USB. You land at a root shell.</p>
+<p>Download the ISO from <a href="https://archlinux.org/download/">https://archlinux.org/download/</a>, then flash it to a USB and boot. You land at a root shell.</p>
 
 <h2>Connect to the Internet</h2>
 

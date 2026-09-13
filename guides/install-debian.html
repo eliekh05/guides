@@ -1,6 +1,8 @@
 <!-- installation:Installation Guides -->
 <h1>Install Debian Linux</h1>
 
+
+<p>First, flash your ISO to a USB drive. See the <a href="/g/create-bootable-usb">Bootable USB guide</a> for every tool — Ventoy, Rufus, Etcher, dd, and more.</p>
 <p>Debian is one of the oldest and most stable Linux distributions. It's the base that Ubuntu is built on, and it's a solid choice for servers where you want software that just works without constant updates breaking things.</p>
 
 <h2>Download</h2>
@@ -8,13 +10,6 @@
 <p>Get the latest stable release from debian.org/distrib/. Download the "amd64 netinst" ISO — it's small (around 400MB) and downloads the rest during installation.</p>
 
 <p>If you have no reliable internet during install, get the full DVD image instead.</p>
-
-<h2>Create Bootable USB</h2>
-
-<pre><code"># Linux/macOS
-sudo dd if=debian-12.x.x-amd64-netinst.iso of=/dev/sdX bs=4M status=progress oflag=sync
-
-# Windows — use Rufus (rufus.ie)</code></pre>
 
 <h2>Boot and Start Install</h2>
 

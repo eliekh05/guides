@@ -1,21 +1,13 @@
 <!-- installation:Installation Guides -->
 <h1>Install Ubuntu Server</h1>
 
+
+<p>First, flash your ISO to a USB drive. See the <a href="/g/create-bootable-usb">Bootable USB guide</a> for every tool — Ventoy, Rufus, Etcher, dd, and more.</p>
 <p>Ubuntu Server is one of the most widely used Linux distributions for hosting, self-hosting, and cloud deployments. It has no GUI by default — you manage everything through the terminal.</p>
 
 <h2>Download</h2>
 
 <p>Get the latest LTS (Long Term Support) release from ubuntu.com/download/server. LTS versions get 5 years of security updates. As of 2026, that's Ubuntu 24.04 LTS (Noble Numbat).</p>
-
-<h2>Create Bootable USB</h2>
-
-<pre><code"># Linux/macOS — find your USB drive first
-lsblk    # or diskutil list on macOS
-
-# Write the ISO (replace sdX with your USB drive)
-sudo dd if=ubuntu-24.04-server.iso of=/dev/sdX bs=4M status=progress oflag=sync</code></pre>
-
-<p>On Windows, use Rufus (rufus.ie) — select the ISO, pick your USB, click Start.</p>
 
 <h2>Installation Steps</h2>
 

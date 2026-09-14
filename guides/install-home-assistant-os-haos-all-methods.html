@@ -159,7 +159,7 @@ reboot
 <h3>Step 2 — Flash HAOS to the Internal Drive (Ubuntu Method — Recommended)</h3>
 <p>HAOS has no installer — you write the image directly to the internal drive. The cleanest way is booting Ubuntu live and using the Disks app.</p>
 <ol>
-<li>Flash <strong>Ubuntu Desktop</strong> to a USB drive using <a href="https://etcher.balena.io">https://etcher.balena.io</a>.</li>
+<li>Flash <strong>Ubuntu Desktop</strong> to a USB drive — see the <a href="/g/create-bootable-usb">Bootable USB guide</a>.</li>
 <li>Boot your PC from the Ubuntu USB.</li>
 <li>At the GRUB menu, select <strong>Try Ubuntu</strong> — do NOT click Install Ubuntu.</li>
 <li>Open the <strong>Files</strong> app and navigate to where you downloaded the HAOS <code>.img.xz</code> file (or download it now in Firefox).</li>
@@ -170,13 +170,8 @@ reboot
 <li>Click <strong>Start Restoring</strong> → confirm.</li>
 <li>Wait for it to finish (5–15 minutes depending on drive speed).</li>
 </ol>
-<h3>Step 2 Alternative — Flash Using balenaEtcher</h3>
-<p>If you prefer balenaEtcher — see the <a href="/g/create-bootable-usb">Bootable USB guide</a> for instructions:
-1. Boot Ubuntu live (same as above).
-2. Download and run balenaEtcher: <code>flatpak install flathub io.balena.etcher</code> or download it from the <a href="/g/create-bootable-usb">Bootable USB guide</a>.
-3. Select the HAOS <code>.img.xz</code> file as source.
-4. Select your internal drive as target.
-5. Click Flash.</p>
+<h3>Step 2 Alternative — Flash Using Etcher</h3>
+<p>If you prefer Etcher over GNOME Disks — see the <a href="/g/create-bootable-usb">Bootable USB guide</a> for download and setup. Once open: select the HAOS <code>.img.xz</code> file as source, select your internal drive as target, and click Flash.</p>
 <h3>Step 3 — Configure BIOS</h3>
 <p>Before booting HAOS for the first time:
 1. Enter BIOS/UEFI (press F2, Del, or F12 during startup — varies by manufacturer).

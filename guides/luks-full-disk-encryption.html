@@ -1,0 +1,114 @@
+<!-- security:Security & Apps -->
+<h1>LUKS Full Disk Encryption on Linux</h1>
+
+<p>LUKS (Linux Unified Key Setup) is the standard for encrypting drives on Linux. If your laptop gets stolen, an encrypted drive is unreadable without the passphrase — even if the attacker pulls the drive and puts it in another machine.</p>
+
+<h2>Two Approaches</h2>
+
+<ul>
+<li><strong>During install</strong> — most distros offer "encrypt this installation" as a checkbox. This is the easiest and covers everything including swap.</li>
+<li><strong>Encrypting a secondary drive</strong> — covered in this guide. For a new data drive you're adding to an existing system.</li>
+</ul>
+
+<h2>Encrypt a New Drive</h2>
+
+<pre><code># Find your drive
+lsblk
+
+# Install cryptsetup if needed
+sudo apt install cryptsetup -y    # Debian/Ubuntu
+sudo dnf install cryptsetup -y    # Fedora/RHEL
+
+# WARNING: this erases everything on the drive
+sudo cryptsetup luksFormat /dev/sdb
+
+# You'll be prompted to type YES in uppercase, then set a passphrase
+# Use a strong passphrase — this is the only thing protecting your data</code></pre>
+
+<h2>Open and Mount an Encrypted Drive</h2>
+
+<pre><code># Open the encrypted container (maps it to /dev/mapper/mydata)
+sudo cryptsetup luksOpen /dev/sdb mydata
+
+# Create a filesystem (first time only)
+sudo mkfs.ext4 /dev/mapper/mydata
+
+# Mount it
+sudo mkdir -p /mnt/mydata
+sudo mount /dev/mapper/mydata /mnt/mydata
+
+# Use it normally
+ls /mnt/mydata</code></pre>
+
+<h2>Close the Encrypted Drive</h2>
+
+<pre><code"># Unmount first, then close
+sudo umount /mnt/mydata
+sudo cryptsetup luksClose mydata</code></pre>
+
+<h2>Auto-Mount at Boot with /etc/crypttab</h2>
+
+<pre><code"># Get the UUID of the encrypted device
+sudo cryptsetup luksUUID /dev/sdb
+
+# Add to /etc/crypttab
+sudo nano /etc/crypttab
+# mydata   UUID=your-uuid-here   none   luks
+
+# Add to /etc/fstab
+sudo nano /etc/fstab
+# /dev/mapper/mydata   /mnt/mydata   ext4   defaults   0   2
+
+# Test without rebooting
+sudo cryptdisks_start mydata
+sudo mount -a</code></pre>
+
+<h2>Add a Key File (Auto-Unlock Without Passphrase)</h2>
+
+<p>For a secondary drive you want to auto-unlock at boot using a key file stored on the encrypted root drive:</p>
+
+<pre><code"># Generate a random key file
+sudo dd if=/dev/urandom of=/etc/luks-keyfile bs=512 count=8
+sudo chmod 400 /etc/luks-keyfile
+
+# Add the key file as an additional unlock method
+sudo cryptsetup luksAddKey /dev/sdb /etc/luks-keyfile
+
+# Update /etc/crypttab to use it
+# mydata   UUID=your-uuid   /etc/luks-keyfile   luks</code></pre>
+
+<h2>Check Encryption Info</h2>
+
+<pre><code"">sudo cryptsetup luksDump /dev/sdb</code></pre>
+
+<p>This shows the cipher (should be aes-xts-plain64), key size (256 or 512 bit), and which key slots are in use. LUKS supports up to 8 key slots — useful for multiple passphrases or a recovery key.</p>
+
+<h2>Add a Backup Passphrase</h2>
+
+<pre><code"># Add a second passphrase (recovery key)
+sudo cryptsetup luksAddKey /dev/sdb
+# Enter any existing passphrase when prompted, then set the new one
+
+# List key slots
+sudo cryptsetup luksDump /dev/sdb | grep "Key Slot"
+
+# Remove a passphrase
+sudo cryptsetup luksRemoveKey /dev/sdb</code></pre>
+
+<h2>Backup the LUKS Header</h2>
+
+<p>The LUKS header stores the encryption metadata. If it gets corrupted, your data is permanently gone even with the correct passphrase. Back it up:</p>
+
+<pre><code"># Backup header to a file
+sudo cryptsetup luksHeaderBackup /dev/sdb --header-backup-file luks-header-backup.img
+
+# Store this file somewhere safe — NOT on the encrypted drive itself
+
+# Restore if needed
+sudo cryptsetup luksHeaderRestore /dev/sdb --header-backup-file luks-header-backup.img</code></pre>
+
+<h2>Benchmark Encryption Speed</h2>
+
+<pre><code"">sudo cryptsetup benchmark</code></pre>
+
+<p>Modern hardware with AES-NI instruction support handles LUKS encryption with almost no performance impact — typically less than 5% overhead on an SSD.</p>

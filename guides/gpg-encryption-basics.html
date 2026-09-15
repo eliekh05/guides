@@ -1,0 +1,145 @@
+<!-- security:Security & Apps -->
+<h1>GPG — Encrypt Files and Verify Signatures</h1>
+
+<p>GPG (GNU Privacy Guard) implements public-key cryptography. You use it to encrypt files so only the intended recipient can read them, sign files to prove they came from you, and verify that software you download hasn't been tampered with.</p>
+
+<h2>How It Works</h2>
+
+<p>GPG uses a key pair — a public key you share with everyone, and a private key you never share. Someone encrypts a file with your public key. Only your private key can decrypt it. You sign a file with your private key. Anyone with your public key can verify the signature.</p>
+
+<h2>Install GPG</h2>
+
+<pre><code># Linux (usually pre-installed)
+sudo apt install gnupg -y
+
+# macOS
+brew install gnupg</code></pre>
+
+<h2>Generate a Key Pair</h2>
+
+<pre><code>gpg --full-generate-key
+
+# Choose:
+# Key type: RSA and RSA (default)
+# Key size: 4096
+# Expiry: 1y (rotate annually) or 0 for no expiry
+# Enter your name and email
+# Set a strong passphrase — this protects your private key</code></pre>
+
+<h2>List Your Keys</h2>
+
+<pre><code># List public keys
+gpg --list-keys
+
+# List private keys
+gpg --list-secret-keys
+
+# Output shows key ID and fingerprint:
+# pub   rsa4096 2024-01-01 [SC]
+#       AABBCCDD11223344AABBCCDD11223344AABBCCDD
+# uid   Your Name <you@example.com></code></pre>
+
+<h2>Export and Share Your Public Key</h2>
+
+<pre><code># Export to a file
+gpg --armor --export you@example.com > mypubkey.asc
+
+# Upload to a keyserver so others can find you
+gpg --keyserver keyserver.ubuntu.com --send-keys YOUR_KEY_ID
+
+# Print fingerprint to verify over another channel
+gpg --fingerprint you@example.com</code></pre>
+
+<h2>Import Someone Else's Key</h2>
+
+<pre><code># Import from a file
+gpg --import theirkey.asc
+
+# Import from a keyserver
+gpg --keyserver keyserver.ubuntu.com --recv-keys THEIR_KEY_ID
+
+# Verify the fingerprint matches what they gave you out-of-band
+gpg --fingerprint their@email.com</code></pre>
+
+<h2>Encrypt a File</h2>
+
+<pre><code># Encrypt for a recipient (they decrypt with their private key)
+gpg --encrypt --recipient their@email.com --armor file.txt
+# Creates file.txt.asc
+
+# Encrypt for multiple recipients
+gpg --encrypt -r alice@example.com -r bob@example.com file.txt
+
+# Encrypt with a passphrase instead of a key (symmetric)
+gpg --symmetric file.txt
+# Creates file.txt.gpg</code></pre>
+
+<h2>Decrypt a File</h2>
+
+<pre><code># Decrypt (GPG finds the right private key automatically)
+gpg --decrypt file.txt.asc > file.txt
+
+# Or let GPG write the output file
+gpg --output file.txt --decrypt file.txt.asc</code></pre>
+
+<h2>Sign a File</h2>
+
+<pre><code># Create a detached signature (separate .sig file)
+gpg --detach-sign file.tar.gz
+# Creates file.tar.gz.sig
+
+# Create an armored (text) signature
+gpg --armor --detach-sign file.tar.gz
+# Creates file.tar.gz.asc
+
+# Sign and encrypt in one step
+gpg --sign --encrypt --recipient their@email.com file.txt</code></pre>
+
+<h2>Verify a Signature</h2>
+
+<pre><code># Verify a detached signature
+gpg --verify file.tar.gz.sig file.tar.gz
+
+# Good signature output:
+# gpg: Good signature from "Developer Name <dev@project.org>"
+
+# Bad signature output:
+# gpg: BAD signature from ...
+# Never trust a file with a bad signature</code></pre>
+
+<h2>Verify Downloaded Software</h2>
+
+<p>Many projects publish GPG signatures alongside their releases. Here's the pattern:</p>
+
+<pre><code># Example: verifying a release
+# 1. Import the project's signing key
+gpg --keyserver keyserver.ubuntu.com --recv-keys PROJECT_KEY_ID
+
+# 2. Download the release and its signature
+wget https://project.org/release-1.0.tar.gz
+wget https://project.org/release-1.0.tar.gz.sig
+
+# 3. Verify
+gpg --verify release-1.0.tar.gz.sig release-1.0.tar.gz</code></pre>
+
+<h2>Backup Your Private Key</h2>
+
+<pre><code># Export private key (keep this extremely safe)
+gpg --armor --export-secret-keys you@example.com > private-key-backup.asc
+
+# Store encrypted, offline — a USB in a safe, not cloud storage
+
+# Import on a new machine
+gpg --import private-key-backup.asc</code></pre>
+
+<h2>Revoke a Key</h2>
+
+<pre><code># Generate a revocation certificate when you create the key
+# (do this while you still have access)
+gpg --gen-revoke you@example.com > revoke.asc
+
+# If your key is compromised, import the revocation
+gpg --import revoke.asc
+
+# Upload the revoked key to keyservers
+gpg --keyserver keyserver.ubuntu.com --send-keys YOUR_KEY_ID</code></pre>

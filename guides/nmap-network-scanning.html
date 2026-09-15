@@ -1,0 +1,143 @@
+<!-- security:Security & Apps -->
+<h1>nmap — Scan Your Network and Find Open Ports</h1>
+
+<p>nmap is a network scanner. It discovers hosts, identifies open ports, detects services and versions, and fingerprints operating systems. Security teams use it to audit what's exposed on their network. You should know what your own machines are exposing before someone else finds out.</p>
+
+<p>Only scan networks and hosts you own or have explicit permission to scan. Scanning someone else's infrastructure without permission is illegal in most countries.</p>
+
+<h2>Install</h2>
+
+<pre><code># Ubuntu/Debian
+sudo apt install nmap -y
+
+# Fedora/RHEL
+sudo dnf install nmap -y
+
+# macOS
+brew install nmap</code></pre>
+
+<h2>Basic Scans</h2>
+
+<pre><code># Scan a single host — top 1000 ports
+nmap 192.168.1.1
+
+# Scan a domain
+nmap example.com
+
+# Scan multiple hosts
+nmap 192.168.1.1 192.168.1.2 192.168.1.3
+
+# Scan a subnet — all 254 hosts
+nmap 192.168.1.0/24
+
+# Scan a range
+nmap 192.168.1.1-50</code></pre>
+
+<h2>Port Scanning Options</h2>
+
+<pre><code># Scan specific ports
+nmap -p 22,80,443 192.168.1.1
+
+# Scan a port range
+nmap -p 1-1000 192.168.1.1
+
+# Scan ALL 65535 ports (slow but thorough)
+nmap -p- 192.168.1.1
+
+# Fast scan — top 100 ports only
+nmap -F 192.168.1.1</code></pre>
+
+<h2>Scan Types</h2>
+
+<pre><code># SYN scan — fast, stealthy (requires root)
+sudo nmap -sS 192.168.1.1
+
+# TCP connect scan — no root needed, more detectable
+nmap -sT 192.168.1.1
+
+# UDP scan — slower, finds DNS/SNMP/NTP etc
+sudo nmap -sU 192.168.1.1
+
+# Ping scan — just find which hosts are up, no port scan
+nmap -sn 192.168.1.0/24</code></pre>
+
+<h2>Service and Version Detection</h2>
+
+<pre><code># Detect service versions on open ports
+nmap -sV 192.168.1.1
+
+# Example output:
+# 22/tcp  open  ssh     OpenSSH 9.3 (protocol 2.0)
+# 80/tcp  open  http    nginx 1.24.0
+# 443/tcp open  https   nginx 1.24.0
+
+# OS detection (requires root)
+sudo nmap -O 192.168.1.1
+
+# Aggressive scan — OS, versions, scripts, traceroute
+sudo nmap -A 192.168.1.1</code></pre>
+
+<h2>Useful Scan Combinations</h2>
+
+<pre><code># Quick network audit — versions on common ports
+sudo nmap -sV -p 22,25,53,80,443,3306,5432,6379,8080,8443 192.168.1.0/24
+
+# Full thorough scan of one host
+sudo nmap -sS -sV -sC -O -p- 192.168.1.1
+
+# Find all SSH servers on your network
+nmap -p 22 --open 192.168.1.0/24</code></pre>
+
+<h2>NSE Scripts</h2>
+
+<p>nmap has a scripting engine (NSE) with hundreds of scripts for specific checks:</p>
+
+<pre><code># Run default safe scripts
+nmap -sC 192.168.1.1
+
+# Check for specific vulnerabilities
+nmap --script vuln 192.168.1.1
+
+# Check SSH configuration
+nmap --script ssh-auth-methods 192.168.1.1
+
+# Check SSL/TLS configuration
+nmap --script ssl-enum-ciphers -p 443 192.168.1.1
+
+# Detect if SMB signing is disabled (Windows networks)
+nmap --script smb-security-mode -p 445 192.168.1.0/24</code></pre>
+
+<h2>Output Formats</h2>
+
+<pre><code># Save as normal text
+nmap -oN scan.txt 192.168.1.0/24
+
+# Save as XML (for parsing or importing into tools)
+nmap -oX scan.xml 192.168.1.0/24
+
+# Save all formats at once
+nmap -oA scan-results 192.168.1.0/24
+# Creates scan-results.nmap, scan-results.xml, scan-results.gnmap</code></pre>
+
+<h2>Audit Your Own Server</h2>
+
+<pre><code"># From outside your server — what does the world see?
+nmap -sV -p- yourserver.com
+
+# From the server itself — what is actually listening?
+sudo ss -tlnp    # faster, no nmap needed for local checks
+sudo netstat -tlnp</code></pre>
+
+<h2>Reading Results</h2>
+
+<table>
+<thead><tr><th>State</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>open</td><td>Port is listening and accepting connections</td></tr>
+<tr><td>closed</td><td>Port is reachable but nothing is listening</td></tr>
+<tr><td>filtered</td><td>Firewall is blocking nmap's probes — can't determine state</td></tr>
+<tr><td>open|filtered</td><td>Can't tell if open or filtered (common with UDP)</td></tr>
+</tbody>
+</table>
+
+<p>Any open port is a potential attack surface. If you see something open that shouldn't be, find what process owns it (<code>sudo ss -tlnp</code>) and stop it or block it at the firewall.</p>

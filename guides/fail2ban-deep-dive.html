@@ -1,0 +1,162 @@
+<!-- security:Security & Apps -->
+<h1>fail2ban — Intrusion Prevention Deep Dive</h1>
+
+<p>fail2ban watches log files for repeated failed authentication attempts and temporarily bans the source IP using firewall rules. It's one of the most effective ways to reduce brute force attacks on public servers without much effort.</p>
+
+<h2>Install</h2>
+
+<pre><code>sudo apt install fail2ban -y        # Debian/Ubuntu
+sudo dnf install fail2ban -y        # Fedora/RHEL
+
+sudo systemctl enable --now fail2ban</code></pre>
+
+<h2>How It Works</h2>
+
+<p>fail2ban reads a log file, applies a regex filter to find failed authentication lines, counts how many times an IP triggers the filter within a time window, and if it exceeds the threshold it runs an action (usually adding an iptables/nftables DROP rule for that IP).</p>
+
+<h2>Config Structure</h2>
+
+<pre><code">/etc/fail2ban/
+  jail.conf          # defaults — never edit this directly
+  jail.d/            # your custom configs go here
+  filter.d/          # regex filters for reading logs
+  action.d/          # what to do when banning (iptables, email, etc)</code></pre>
+
+<h2>Create Your Local Config</h2>
+
+<pre><code">sudo nano /etc/fail2ban/jail.d/custom.conf</code></pre>
+
+<pre><code">[DEFAULT]
+# Ban for 1 hour
+bantime  = 1h
+
+# Look back 10 minutes
+findtime = 10m
+
+# Allow 3 failures before banning
+maxretry = 3
+
+# Never ban these IPs
+ignoreip = 127.0.0.1/8 ::1 192.168.1.0/24
+
+# Email alerts (optional — configure SMTP separately)
+# destemail = admin@yourdomain.com
+# action = %(action_mwl)s
+
+[sshd]
+enabled  = true
+port     = ssh
+logpath  = %(sshd_log)s
+maxretry = 3
+bantime  = 2h</code></pre>
+
+<pre><code">sudo systemctl restart fail2ban</code></pre>
+
+<h2>Check Status</h2>
+
+<pre><code"># List all active jails
+sudo fail2ban-client status
+
+# Status of a specific jail — shows banned IPs and counts
+sudo fail2ban-client status sshd
+
+# Watch the log live
+sudo tail -f /var/log/fail2ban.log</code></pre>
+
+<h2>Manually Ban and Unban</h2>
+
+<pre><code"># Ban an IP manually
+sudo fail2ban-client set sshd banip 203.0.113.99
+
+# Unban an IP
+sudo fail2ban-client set sshd unbanip 203.0.113.99
+
+# Unban from all jails at once
+sudo fail2ban-client unban 203.0.113.99</code></pre>
+
+<h2>Protect Nginx</h2>
+
+<pre><code"">sudo nano /etc/fail2ban/jail.d/custom.conf</code></pre>
+
+<pre><code">[nginx-http-auth]
+enabled  = true
+port     = http,https
+logpath  = /var/log/nginx/error.log
+maxretry = 3
+
+[nginx-limit-req]
+enabled  = true
+port     = http,https
+logpath  = /var/log/nginx/error.log
+maxretry = 10
+findtime = 1m
+
+[nginx-botsearch]
+enabled  = true
+port     = http,https
+logpath  = /var/log/nginx/access.log
+maxretry = 5</code></pre>
+
+<h2>Protect Other Services</h2>
+
+<pre><code">[postfix]
+enabled  = true
+port     = smtp,ssmtp
+logpath  = %(postfix_log)s
+
+[dovecot]
+enabled  = true
+port     = pop3,pop3s,imap,imaps
+logpath  = %(dovecot_log)s
+
+[wordpress]
+enabled  = true
+port     = http,https
+logpath  = /var/log/nginx/access.log
+filter   = wordpress
+maxretry = 3</code></pre>
+
+<h2>Write a Custom Filter</h2>
+
+<pre><code"">sudo nano /etc/fail2ban/filter.d/myapp.conf</code></pre>
+
+<pre><code">[Definition]
+failregex = ^<HOST> .* "POST /login HTTP.*" 401
+ignoreregex =</code></pre>
+
+<pre><code"># Test your filter against a log file
+sudo fail2ban-regex /var/log/nginx/access.log /etc/fail2ban/filter.d/myapp.conf</code></pre>
+
+<h2>Aggressive Bantime for Repeat Offenders</h2>
+
+<pre><code">[DEFAULT]
+# Ban multiplier — doubles bantime for each subsequent ban
+bantime.increment = true
+bantime.multiplier = 2
+bantime.maxtime   = 1w    # cap at 1 week</code></pre>
+
+<p>With this config, first offence = 1 hour, second = 2 hours, third = 4 hours, eventually capping at 1 week.</p>
+
+<h2>Persistent Bans Across Reboots</h2>
+
+<pre><code">[DEFAULT]
+# Bans survive fail2ban restarts and reboots
+dbpurgeage = 1d    # keep ban records for 1 day</code></pre>
+
+<h2>View What Got Banned in the Firewall</h2>
+
+<pre><code"># iptables
+sudo iptables -L f2b-sshd -n --line-numbers
+
+# nftables (newer systems)
+sudo nft list table inet f2b-table</code></pre>
+
+<h2>fail2ban is Not Enough Alone</h2>
+
+<p>fail2ban slows down brute force attacks but isn't a replacement for:</p>
+<ul>
+<li>SSH key authentication (disables password auth entirely)</li>
+<li>Changing the SSH port (reduces noise in logs)</li>
+<li>A strict firewall that only allows needed ports</li>
+</ul>
+<p>Use all three together. fail2ban is the last line of defence, not the first.</p>

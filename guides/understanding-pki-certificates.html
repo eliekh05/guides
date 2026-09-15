@@ -1,0 +1,117 @@
+<!-- security:Security & Apps -->
+<h1>Understanding PKI and TLS Certificates</h1>
+
+<p>Every time you see HTTPS, a certificate is doing the work behind the scenes. Understanding how Public Key Infrastructure (PKI) actually works helps you debug certificate errors, set up your own CA, and make better decisions about trust.</p>
+
+<h2>The Core Problem PKI Solves</h2>
+
+<p>When you connect to your bank, how does your browser know it's actually your bank and not an attacker intercepting the connection? Anyone can generate a key pair and claim to be anyone. PKI solves this with a chain of trust — a hierarchy of Certificate Authorities (CAs) that vouch for each other.</p>
+
+<h2>The Components</h2>
+
+<table>
+<thead><tr><th>Term</th><th>What it is</th></tr></thead>
+<tbody>
+<tr><td>Private key</td><td>Secret key the server keeps. Never leaves the server.</td></tr>
+<tr><td>Public key</td><td>Embedded in the certificate. Anyone can see it.</td></tr>
+<tr><td>Certificate (cert)</td><td>Contains the public key + identity info + CA signature</td></tr>
+<tr><td>CSR</td><td>Certificate Signing Request — sent to a CA to get a cert issued</td></tr>
+<tr><td>CA</td><td>Certificate Authority — a trusted entity that signs certificates</td></tr>
+<tr><td>Root CA</td><td>Top of the trust chain. Pre-installed in browsers and OSes.</td></tr>
+<tr><td>Intermediate CA</td><td>Signed by Root CA, used to sign end-entity certificates</td></tr>
+<tr><td>Chain of trust</td><td>Your cert → Intermediate CA → Root CA</td></tr>
+</tbody>
+</table>
+
+<h2>How TLS Handshake Works</h2>
+
+<ol>
+<li>Client connects and says which TLS versions and ciphers it supports</li>
+<li>Server sends its certificate (contains public key)</li>
+<li>Client verifies the certificate chain up to a trusted Root CA</li>
+<li>Client verifies the cert's domain matches the site it's connecting to</li>
+<li>They negotiate a shared session key using asymmetric crypto</li>
+<li>All further communication is encrypted with that session key (symmetric crypto — faster)</li>
+</ol>
+
+<h2>Certificate Fields That Matter</h2>
+
+<pre><code"># View a certificate
+openssl x509 -in certificate.crt -text -noout
+
+# Key fields:
+# Subject: CN=example.com          — who the cert is for
+# Issuer: CN=Let's Encrypt...      — who signed it
+# Not Before / Not After           — validity period
+# Subject Alternative Names        — all domains this cert covers
+# Public Key                       — the public key itself</code></pre>
+
+<h2>Verify a Certificate Chain</h2>
+
+<pre><code"># Check a live site's certificate
+openssl s_client -connect example.com:443 -showcerts
+
+# Verify cert against a CA bundle
+openssl verify -CAfile /etc/ssl/certs/ca-certificates.crt certificate.crt
+
+# Check expiry date
+echo | openssl s_client -connect example.com:443 2>/dev/null | openssl x509 -noout -dates
+
+# Check what domains a cert covers
+echo | openssl s_client -connect example.com:443 2>/dev/null | openssl x509 -noout -text | grep -A1 "Subject Alternative"</code></pre>
+
+<h2>Create a Private Key and CSR</h2>
+
+<pre><code"># Generate a private key
+openssl genrsa -out server.key 4096
+
+# Create a CSR to send to a CA
+openssl req -new -key server.key -out server.csr
+# Fill in: country, state, org, common name (your domain)
+
+# View what's in the CSR
+openssl req -text -noout -in server.csr</code></pre>
+
+<h2>Self-Signed Certificates</h2>
+
+<p>For internal tools, development, or testing — not for public sites:</p>
+
+<pre><code"># Generate key + self-signed cert in one command
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes \
+  -subj "/CN=myapp.internal"
+
+# With Subject Alternative Names (modern browsers require this)
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes \
+  -subj "/CN=myapp.internal" \
+  -addext "subjectAltName=DNS:myapp.internal,DNS:localhost,IP:127.0.0.1"</code></pre>
+
+<h2>Run Your Own Internal CA</h2>
+
+<pre><code"># Create root CA key and cert
+openssl genrsa -out rootCA.key 4096
+openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 3650 \
+  -out rootCA.crt -subj "/CN=My Internal CA"
+
+# Sign a server certificate with your CA
+openssl genrsa -out server.key 4096
+openssl req -new -key server.key -out server.csr -subj "/CN=myapp.internal"
+openssl x509 -req -in server.csr -CA rootCA.crt -CAkey rootCA.key \
+  -CAcreateserial -out server.crt -days 365 -sha256
+
+# Install rootCA.crt on client machines so they trust your CA
+# Linux: sudo cp rootCA.crt /usr/local/share/ca-certificates/ && sudo update-ca-certificates
+# macOS: Security → Keychain Access → import + trust the root cert
+# Windows: certmgr.msc → Trusted Root Certification Authorities → import</code></pre>
+
+<h2>Common Certificate Errors</h2>
+
+<table>
+<thead><tr><th>Error</th><th>Cause</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Certificate expired</td><td>Past the Not After date</td><td>Renew the certificate</td></tr>
+<tr><td>Name mismatch</td><td>Domain not in Subject/SAN</td><td>Reissue cert with correct domains</td></tr>
+<tr><td>Untrusted CA</td><td>Root CA not in trust store</td><td>Install the root CA or use a public CA</td></tr>
+<tr><td>Incomplete chain</td><td>Missing intermediate cert</td><td>Include full chain (fullchain.pem)</td></tr>
+<tr><td>Self-signed</td><td>No CA vouching for it</td><td>Install root CA on clients, or use Let's Encrypt</td></tr>
+</tbody>
+</table>

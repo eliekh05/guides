@@ -1,0 +1,126 @@
+<!-- security:Security & Apps -->
+<h1>Wazuh — Open Source Intrusion Detection and SIEM</h1>
+
+<p>Wazuh is a free, open source security platform that combines intrusion detection (HIDS), log analysis, file integrity monitoring, vulnerability detection, and a SIEM dashboard. It's what security teams use to know what's actually happening across their infrastructure.</p>
+
+<h2>Architecture</h2>
+
+<ul>
+<li><strong>Wazuh Manager</strong> — the server that collects, analyses, and stores data. Runs on Linux.</li>
+<li><strong>Wazuh Agent</strong> — lightweight daemon on each machine you want to monitor. Sends events to the manager.</li>
+<li><strong>Wazuh Dashboard</strong> — web UI built on OpenSearch. Where you actually see everything.</li>
+</ul>
+
+<h2>Install the Wazuh Server (All-in-One)</h2>
+
+<p>The quickest way to get started — installs manager, indexer, and dashboard on one machine. Needs at least 4GB RAM, 2 CPUs, 50GB disk.</p>
+
+<pre><code">curl -sO https://packages.wazuh.com/4.9/wazuh-install.sh
+curl -sO https://packages.wazuh.com/4.9/config.yml</code></pre>
+
+<pre><code"># Edit config.yml — set the node name and IP
+nano config.yml</code></pre>
+
+<pre><code">nodes:
+  indexer:
+    - name: node-1
+      ip: "YOUR_SERVER_IP"
+  server:
+    - name: wazuh-1
+      ip: "YOUR_SERVER_IP"
+  dashboard:
+    - name: dashboard
+      ip: "YOUR_SERVER_IP"</code></pre>
+
+<pre><code"># Generate config and install
+bash wazuh-install.sh --generate-config-files
+bash wazuh-install.sh --wazuh-indexer node-1
+bash wazuh-install.sh --start-cluster
+bash wazuh-install.sh --wazuh-server wazuh-1
+bash wazuh-install.sh --wazuh-dashboard dashboard</code></pre>
+
+<p>The install script prints the admin password at the end. Access the dashboard at <code>https://YOUR_IP</code>.</p>
+
+<h2>Install an Agent (Linux)</h2>
+
+<pre><code"># On the machine you want to monitor
+curl -so wazuh-agent.deb \
+  https://packages.wazuh.com/4.x/apt/pool/main/w/wazuh-agent/wazuh-agent_4.9.0-1_amd64.deb
+
+sudo WAZUH_MANAGER='YOUR_MANAGER_IP' dpkg -i wazuh-agent.deb
+sudo systemctl enable --now wazuh-agent</code></pre>
+
+<h2>Install an Agent (Windows)</h2>
+
+<pre><code"># Run in PowerShell as Administrator
+Invoke-WebRequest -Uri https://packages.wazuh.com/4.x/windows/wazuh-agent-4.9.0-1.msi -OutFile wazuh-agent.msi
+
+msiexec.exe /i wazuh-agent.msi /q WAZUH_MANAGER="YOUR_MANAGER_IP"
+
+NET START WazuhSvc</code></pre>
+
+<h2>What Wazuh Detects Out of the Box</h2>
+
+<ul>
+<li><strong>File integrity monitoring</strong> — alerts when system files change (<code>/etc/passwd</code>, <code>/etc/shadow</code>, binaries)</li>
+<li><strong>Log analysis</strong> — reads syslog, auth.log, Windows Event Log, nginx, Apache, and hundreds more</li>
+<li><strong>Rootkit detection</strong> — scans for hidden processes, files, and ports</li>
+<li><strong>Policy monitoring</strong> — checks against CIS benchmarks automatically</li>
+<li><strong>Vulnerability detection</strong> — compares installed packages against CVE databases</li>
+<li><strong>Active response</strong> — can automatically block IPs with fail2ban or firewall rules</li>
+</ul>
+
+<h2>Key Dashboard Sections</h2>
+
+<table>
+<thead><tr><th>Section</th><th>What to look at</th></tr></thead>
+<tbody>
+<tr><td>Security Events</td><td>Real-time alerts from all agents</td></tr>
+<tr><td>Integrity Monitoring</td><td>Files that changed — always investigate</td></tr>
+<tr><td>Vulnerability Detection</td><td>CVEs on your systems, sorted by severity</td></tr>
+<tr><td>MITRE ATT&CK</td><td>Alerts mapped to attack techniques</td></tr>
+<tr><td>Regulatory Compliance</td><td>PCI DSS, HIPAA, NIST posture</td></tr>
+</tbody>
+</table>
+
+<h2>Tune Alert Levels</h2>
+
+<pre><code"># Alert levels 0-15
+# 0-3: informational
+# 4-7: low
+# 8-11: medium
+# 12-15: high/critical
+
+# Edit /var/ossec/etc/ossec.conf on the manager
+# Set minimum level to log
+<alerts>
+  <log_alert_level>3</log_alert_level>
+  <email_alert_level>12</email_alert_level>
+</alerts></code></pre>
+
+<h2>Active Response — Auto-Block Attackers</h2>
+
+<pre><code"># In ossec.conf — auto block SSH brute force
+<active-response>
+  <command>firewall-drop</command>
+  <location>local</location>
+  <rules_id>5763</rules_id>    <!-- SSH brute force rule -->
+  <timeout>600</timeout>       <!-- block for 10 minutes -->
+</active-response></code></pre>
+
+<h2>Useful Commands</h2>
+
+<pre><code"># Manager status
+sudo systemctl status wazuh-manager
+
+# Agent status (on the agent machine)
+sudo systemctl status wazuh-agent
+
+# Check agent connection on manager
+sudo /var/ossec/bin/agent_control -l
+
+# Run rootcheck manually
+sudo /var/ossec/bin/wazuh-control restart
+
+# View recent alerts
+sudo tail -f /var/ossec/logs/alerts/alerts.log</code></pre>

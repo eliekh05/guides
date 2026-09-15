@@ -1,0 +1,117 @@
+<!-- security:Security & Apps -->
+<h1>UFW — Firewall Basics for Linux</h1>
+
+<p>UFW (Uncomplicated Firewall) is the straightforward way to manage firewall rules on Ubuntu and Debian. It sits on top of iptables and translates simple commands into the right rules so you don't have to write iptables syntax directly.</p>
+
+<h2>Install and Enable</h2>
+
+<pre><code>sudo apt install ufw -y
+
+# Set default policies first — deny all incoming, allow all outgoing
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+
+# Enable the firewall
+sudo ufw enable
+
+# Check status
+sudo ufw status verbose</code></pre>
+
+<p>Always allow SSH before enabling UFW on a remote server — otherwise you lock yourself out.</p>
+
+<h2>Allow Services</h2>
+
+<pre><code># By service name (UFW knows common services)
+sudo ufw allow OpenSSH
+sudo ufw allow http
+sudo ufw allow https
+
+# By port number
+sudo ufw allow 22
+sudo ufw allow 80
+sudo ufw allow 443
+
+# By port and protocol
+sudo ufw allow 51820/udp    # WireGuard
+sudo ufw allow 3000/tcp     # custom app
+
+# Port range
+sudo ufw allow 6000:6007/tcp</code></pre>
+
+<h2>Allow from Specific IPs</h2>
+
+<pre><code># Allow SSH only from your home IP
+sudo ufw allow from 203.0.113.10 to any port 22
+
+# Allow anything from a trusted subnet
+sudo ufw allow from 192.168.1.0/24
+
+# Allow a specific IP to a specific port
+sudo ufw allow from 10.0.0.5 to any port 5432    # Postgres from one host only</code></pre>
+
+<h2>Deny and Delete Rules</h2>
+
+<pre><code># Deny a port
+sudo ufw deny 8080
+
+# Delete a rule by re-typing it with delete
+sudo ufw delete allow 80
+sudo ufw delete allow from 203.0.113.10 to any port 22
+
+# Delete by rule number
+sudo ufw status numbered
+sudo ufw delete 3</code></pre>
+
+<h2>Application Profiles</h2>
+
+<pre><code># List available app profiles
+sudo ufw app list
+
+# Allow by app profile
+sudo ufw allow "Nginx Full"      # opens 80 and 443
+sudo ufw allow "Nginx HTTPS"     # opens 443 only
+
+# See what a profile includes
+sudo ufw app info "Nginx Full"</code></pre>
+
+<h2>Limit Connections (Basic Brute Force Protection)</h2>
+
+<pre><code># Rate-limit SSH — blocks IPs with 6+ connections in 30 seconds
+sudo ufw limit ssh
+
+# Same for a custom port
+sudo ufw limit 2222/tcp</code></pre>
+
+<h2>Logging</h2>
+
+<pre><code># Enable logging
+sudo ufw logging on
+sudo ufw logging medium    # low, medium, high, full
+
+# View firewall logs
+sudo tail -f /var/log/ufw.log</code></pre>
+
+<h2>Reset Everything</h2>
+
+<pre><code"># Wipe all rules and start over
+sudo ufw reset</code></pre>
+
+<h2>Full Example — Secure Web Server</h2>
+
+<pre><code>sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow 22/tcp          # SSH
+sudo ufw allow 80/tcp          # HTTP
+sudo ufw allow 443/tcp         # HTTPS
+sudo ufw limit 22/tcp          # rate-limit SSH
+sudo ufw enable
+sudo ufw status verbose</code></pre>
+
+<h2>UFW and Docker</h2>
+
+<p>Docker bypasses UFW by writing its own iptables rules directly. A port published with <code>-p 8080:80</code> will be exposed publicly even if UFW blocks port 8080. To fix this, bind Docker ports to localhost only:</p>
+
+<pre><code># Bind to localhost — not exposed externally
+docker run -p 127.0.0.1:8080:80 nginx
+
+# Then proxy through Nginx which UFW does control</code></pre>

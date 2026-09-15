@@ -1,0 +1,122 @@
+<!-- security:Security & Apps -->
+<h1>Lynis — Audit and Harden Your Linux System</h1>
+
+<p>Lynis is a security auditing tool that scans your Linux system and produces a prioritised list of hardening suggestions. It checks hundreds of things — SSH config, file permissions, kernel parameters, installed software, open ports, and more. It doesn't fix anything automatically, it just tells you what to fix and why.</p>
+
+<h2>Install</h2>
+
+<pre><code># Ubuntu/Debian
+sudo apt install lynis -y
+
+# Fedora/RHEL
+sudo dnf install lynis -y
+
+# Or get the latest version directly (more up to date than package repos)
+git clone https://github.com/CISOfy/lynis
+cd lynis</code></pre>
+
+<h2>Run a System Audit</h2>
+
+<pre><code># Full system audit
+sudo lynis audit system
+
+# If installed from git
+sudo ./lynis audit system</code></pre>
+
+<p>The scan takes 1–3 minutes. Output scrolls past in real time — let it finish.</p>
+
+<h2>Reading the Output</h2>
+
+<pre><code"># At the end of the scan you'll see:
+# -[ Lynis 3.x.x Results ]-
+#
+# Warnings (2):
+# - SSH root login is enabled [SSH-7412]
+# - No firewall active [FIRE-4512]
+#
+# Suggestions (47):
+# - Consider hardening SSH configuration [SSH-7408]
+# - Install a file integrity tool [TOOL-5002]
+#
+# Hardening index : 64 [############        ]</code></pre>
+
+<p>The hardening index is a score out of 100. A fresh Ubuntu server typically scores around 55–65. Aim for 80+.</p>
+
+<h2>View the Full Report</h2>
+
+<pre><code"># Lynis writes a detailed report
+sudo cat /var/log/lynis.log
+
+# Just the findings
+sudo cat /var/log/lynis-report.dat | grep "^warning\|^suggestion" | head -40
+
+# Re-read suggestions after the scan
+sudo lynis show details SSH-7408    # look up a specific test ID</code></pre>
+
+<h2>Common Findings and How to Fix Them</h2>
+
+<h3>SSH hardening [SSH-7408]</h3>
+<pre><code"># /etc/ssh/sshd_config
+PermitRootLogin no
+PasswordAuthentication no
+MaxAuthTries 3
+X11Forwarding no
+AllowTcpForwarding no</code></pre>
+
+<h3>No firewall active [FIRE-4512]</h3>
+<pre><code">sudo ufw default deny incoming
+sudo ufw allow ssh
+sudo ufw enable</code></pre>
+
+<h3>Kernel hardening [KRNL-6000]</h3>
+<pre><code"">sudo nano /etc/sysctl.d/99-hardening.conf</code></pre>
+<pre><code"># Disable IP forwarding (unless this is a router)
+net.ipv4.ip_forward = 0
+
+# Protect against SYN flood attacks
+net.ipv4.tcp_syncookies = 1
+
+# Disable ICMP redirects
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv6.conf.all.accept_redirects = 0
+
+# Ignore broadcast pings
+net.ipv4.icmp_echo_ignore_broadcasts = 1
+
+# Log suspicious packets
+net.ipv4.conf.all.log_martians = 1</code></pre>
+<pre><code"">sudo sysctl -p /etc/sysctl.d/99-hardening.conf</code></pre>
+
+<h3>File permissions [FILE-7524]</h3>
+<pre><code"># Fix common permission issues Lynis flags
+sudo chmod 700 /root
+sudo chmod 600 /etc/crontab
+sudo chmod 700 /etc/cron.d /etc/cron.daily /etc/cron.weekly /etc/cron.monthly</code></pre>
+
+<h3>Password policy [AUTH-9286]</h3>
+<pre><code"">sudo apt install libpam-pwquality -y
+sudo nano /etc/security/pwquality.conf</code></pre>
+<pre><code">minlen = 12
+minclass = 3
+maxrepeat = 3</code></pre>
+
+<h2>Run Non-Privileged (No sudo)</h2>
+
+<pre><code"># Runs with reduced checks but useful for seeing what a normal user can detect
+lynis audit system --pentest</code></pre>
+
+<h2>Automate Weekly Audits</h2>
+
+<pre><code"">sudo crontab -e</code></pre>
+<pre><code"># Run Lynis every Sunday at 3am, email results
+0 3 * * 0 /usr/sbin/lynis audit system --cronjob >> /var/log/lynis-weekly.log 2>&1</code></pre>
+
+<h2>Compare Against CIS Benchmarks</h2>
+
+<p>Lynis tests map to CIS (Center for Internet Security) benchmark controls. If you need to meet a compliance standard like CIS Level 1 or 2, Lynis gives you a starting point — each test ID corresponds to a CIS control you can look up in the benchmark PDF at cisecurity.org.</p>
+
+<pre><code"># Show which profile is being used
+sudo lynis show profiles
+
+# Run with a specific profile
+sudo lynis audit system --profile /etc/lynis/default.prf</code></pre>

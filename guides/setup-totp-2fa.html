@@ -1,0 +1,103 @@
+<!-- security:Security & Apps -->
+<h1>Set Up Two-Factor Authentication (TOTP)</h1>
+
+<p>Two-factor authentication (2FA) means even if someone gets your password, they still can't log in without your second factor. TOTP (Time-based One-Time Password) is the most common form — the 6-digit code that changes every 30 seconds in an authenticator app.</p>
+
+<h2>How TOTP Works</h2>
+
+<p>When you set up 2FA, the site gives you a secret key (usually as a QR code). Your authenticator app and the server both use this secret plus the current time to generate the same 6-digit code. The code changes every 30 seconds and is only valid once. An attacker who intercepts your code can't reuse it.</p>
+
+<h2>Choose an Authenticator App</h2>
+
+<table>
+<thead><tr><th>App</th><th>Platform</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Ente Auth</td><td>iOS, Android, Desktop</td><td>Open source, encrypted cloud backup, best overall</td></tr>
+<tr><td>Aegis</td><td>Android</td><td>Open source, local encrypted backup, no cloud</td></tr>
+<tr><td>Raivo</td><td>iOS</td><td>Open source, iCloud backup</td></tr>
+<tr><td>Bitwarden</td><td>All platforms</td><td>Built into password manager, convenient</td></tr>
+<tr><td>Google Authenticator</td><td>iOS, Android</td><td>Works but no backup — avoid unless nothing else available</td></tr>
+<tr><td>Authy</td><td>iOS, Android</td><td>Closed source, cloud backup — acceptable but not ideal</td></tr>
+</tbody>
+</table>
+
+<h2>Enable TOTP on a Service</h2>
+
+<ol>
+<li>Go to the service's security settings (usually under Account → Security → Two-factor authentication)</li>
+<li>Choose "Authenticator app" or "TOTP"</li>
+<li>Open your authenticator app and scan the QR code — or enter the secret key manually if QR doesn't work</li>
+<li>Enter the 6-digit code from the app to verify it's working</li>
+<li>Save the backup/recovery codes somewhere secure — a password manager, or printed and locked away</li>
+</ol>
+
+<h2>Backup Codes — Do Not Skip This</h2>
+
+<p>Every service gives you backup codes when you set up 2FA. These are single-use codes that let you log in if you lose your phone. Store them:</p>
+<ul>
+<li>In your password manager (most reliable)</li>
+<li>Printed and stored physically somewhere safe</li>
+<li>In an encrypted file in cloud storage</li>
+</ul>
+<p>Do not store them in the same place as your passwords. If you lose your phone and your backup codes, you may be permanently locked out.</p>
+
+<h2>Add 2FA to SSH (Linux Servers)</h2>
+
+<pre><code"># Install Google Authenticator PAM module
+sudo apt install libpam-google-authenticator -y
+
+# Run setup as your user (not root)
+google-authenticator
+
+# Answer yes to all prompts
+# Scan the QR code with your app
+# Save the emergency codes</code></pre>
+
+<pre><code"># Configure PAM to use it
+sudo nano /etc/pam.d/sshd</code></pre>
+
+<pre><code"># Add at the top:
+auth required pam_google_authenticator.so</code></pre>
+
+<pre><code"># Configure SSH to request both password AND TOTP
+sudo nano /etc/ssh/sshd_config</code></pre>
+
+<pre><code">ChallengeResponseAuthentication yes
+AuthenticationMethods publickey,keyboard-interactive    # key + TOTP
+# or for password + TOTP:
+# AuthenticationMethods keyboard-interactive</code></pre>
+
+<pre><code"">sudo systemctl restart sshd</code></pre>
+
+<h2>Hardware Keys (FIDO2/WebAuthn)</h2>
+
+<p>Hardware security keys like YubiKey are stronger than TOTP — they use public-key cryptography and are phishing-resistant (they verify the domain, so a fake login page doesn't work).</p>
+
+<ul>
+<li>YubiKey 5 — most compatible, works with FIDO2, U2F, PIV, OTP</li>
+<li>Google Titan Key — cheaper, FIDO2/U2F only</li>
+<li>Nitrokey — open source hardware</li>
+</ul>
+
+<p>Setup varies per service but follows the same pattern: Security Settings → Add security key → tap the key when prompted. Register at least two keys — one as a backup.</p>
+
+<h2>TOTP from the Command Line</h2>
+
+<pre><code"># Generate TOTP codes without an app (useful for scripts)
+sudo apt install oathtool -y
+
+# Generate a code from your secret
+oathtool --totp --base32 "YOUR_SECRET_KEY"
+
+# Continuous output
+watch -n 1 'oathtool --totp --base32 "YOUR_SECRET_KEY"'</code></pre>
+
+<h2>What 2FA Does Not Protect Against</h2>
+
+<ul>
+<li><strong>Real-time phishing</strong> — an attacker's fake site forwards your credentials and TOTP code to the real site immediately. Hardware keys (WebAuthn) prevent this.</li>
+<li><strong>Malware on your device</strong> — if your device is compromised, 2FA doesn't help much</li>
+<li><strong>SIM swapping</strong> — SMS 2FA is vulnerable to this. Use TOTP or hardware keys instead of SMS.</li>
+</ul>
+
+<p>Avoid SMS-based 2FA wherever possible. SMS is better than nothing, but TOTP and hardware keys are significantly more secure.</p>

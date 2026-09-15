@@ -1,0 +1,151 @@
+<!-- security:Security & Apps -->
+<h1>iptables Basics — Linux Firewall Rules</h1>
+
+<p>iptables is the underlying firewall framework on Linux. Tools like UFW and firewalld write iptables rules for you, but understanding iptables directly lets you handle complex scenarios they can't. On modern systems nftables is replacing iptables, but iptables syntax is still widely used and supported.</p>
+
+<h2>How iptables Works</h2>
+
+<p>iptables processes packets through tables → chains → rules. Each rule has a match condition and a target (what to do).</p>
+
+<table>
+<thead><tr><th>Table</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td>filter</td><td>Default. Controls which packets are allowed in/out</td></tr>
+<tr><td>nat</td><td>Network address translation — port forwarding, masquerade</td></tr>
+<tr><td>mangle</td><td>Modify packet headers</td></tr>
+</tbody>
+</table>
+
+<table>
+<thead><tr><th>Chain</th><th>When it applies</th></tr></thead>
+<tbody>
+<tr><td>INPUT</td><td>Packets destined for this machine</td></tr>
+<tr><td>OUTPUT</td><td>Packets originating from this machine</td></tr>
+<tr><td>FORWARD</td><td>Packets routing through this machine</td></tr>
+<tr><td>PREROUTING</td><td>Before routing decision (nat table)</td></tr>
+<tr><td>POSTROUTING</td><td>After routing decision (nat table)</td></tr>
+</tbody>
+</table>
+
+<h2>View Current Rules</h2>
+
+<pre><code"># List all rules with line numbers
+sudo iptables -L -n -v --line-numbers
+
+# List a specific chain
+sudo iptables -L INPUT -n -v
+
+# List NAT rules
+sudo iptables -t nat -L -n -v</code></pre>
+
+<h2>Basic Rule Syntax</h2>
+
+<pre><code"">sudo iptables -[A/I/D] CHAIN -[options] -j TARGET</code></pre>
+
+<table>
+<thead><tr><th>Flag</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>-A</td><td>Append rule to end of chain</td></tr>
+<tr><td>-I</td><td>Insert rule at beginning (or specific position)</td></tr>
+<tr><td>-D</td><td>Delete a rule</td></tr>
+<tr><td>-p</td><td>Protocol (tcp, udp, icmp)</td></tr>
+<tr><td>--dport</td><td>Destination port</td></tr>
+<tr><td>--sport</td><td>Source port</td></tr>
+<tr><td>-s</td><td>Source IP/subnet</td></tr>
+<tr><td>-d</td><td>Destination IP/subnet</td></tr>
+<tr><td>-i</td><td>Input interface (eth0, etc)</td></tr>
+<tr><td>-o</td><td>Output interface</td></tr>
+<tr><td>-j</td><td>Jump to target: ACCEPT, DROP, REJECT, LOG</td></tr>
+</tbody>
+</table>
+
+<h2>Common Rules</h2>
+
+<pre><code"># Allow established connections (essential — add this first)
+sudo iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# Allow loopback
+sudo iptables -A INPUT -i lo -j ACCEPT
+
+# Allow SSH
+sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
+# Allow HTTP and HTTPS
+sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+
+# Allow from specific IP only
+sudo iptables -A INPUT -s 192.168.1.100 -p tcp --dport 5432 -j ACCEPT
+
+# Drop everything else
+sudo iptables -A INPUT -j DROP</code></pre>
+
+<h2>Rate Limiting (Brute Force Protection)</h2>
+
+<pre><code"># Limit SSH to 3 connections per minute
+sudo iptables -A INPUT -p tcp --dport 22 -m state --state NEW \
+  -m limit --limit 3/min --limit-burst 3 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 22 -j DROP</code></pre>
+
+<h2>Logging</h2>
+
+<pre><code"># Log dropped packets (add before a DROP rule)
+sudo iptables -A INPUT -j LOG --log-prefix "IPTables-Dropped: " --log-level 4
+
+# View logs
+sudo dmesg | grep "IPTables-Dropped"
+sudo tail -f /var/log/kern.log | grep IPTables</code></pre>
+
+<h2>NAT — Port Forwarding</h2>
+
+<pre><code"># Forward external port 8080 to internal port 80
+sudo iptables -t nat -A PREROUTING -p tcp --dport 8080 -j REDIRECT --to-port 80
+
+# Forward to another machine
+sudo iptables -t nat -A PREROUTING -p tcp --dport 8080 \
+  -j DNAT --to-destination 192.168.1.50:80
+sudo iptables -A FORWARD -p tcp -d 192.168.1.50 --dport 80 -j ACCEPT
+
+# Masquerade outgoing traffic (for NAT router setup)
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE</code></pre>
+
+<h2>Delete Rules</h2>
+
+<pre><code"># Delete by rule number
+sudo iptables -L INPUT --line-numbers
+sudo iptables -D INPUT 3    # delete rule 3
+
+# Delete by matching the rule
+sudo iptables -D INPUT -p tcp --dport 80 -j ACCEPT
+
+# Flush all rules in a chain
+sudo iptables -F INPUT
+
+# Flush everything
+sudo iptables -F</code></pre>
+
+<h2>Save Rules (Survive Reboot)</h2>
+
+<pre><code"># Ubuntu/Debian
+sudo apt install iptables-persistent -y
+sudo netfilter-persistent save
+
+# Fedora/RHEL
+sudo service iptables save
+
+# Manual
+sudo iptables-save > /etc/iptables/rules.v4
+# Restore with:
+sudo iptables-restore < /etc/iptables/rules.v4</code></pre>
+
+<h2>Secure Default Policy</h2>
+
+<pre><code"># Set default policies — deny everything, then allow what you need
+sudo iptables -P INPUT DROP
+sudo iptables -P FORWARD DROP
+sudo iptables -P OUTPUT ACCEPT
+
+# Essential rules to add BEFORE setting DROP policy
+sudo iptables -A INPUT -i lo -j ACCEPT
+sudo iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT    # SSH</code></pre>

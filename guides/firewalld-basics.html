@@ -1,0 +1,146 @@
+<!-- security:Security & Apps -->
+<h1>firewalld — Firewall Management on Fedora and RHEL</h1>
+
+<p>firewalld is the default firewall manager on Fedora, RHEL, CentOS, Rocky Linux, and AlmaLinux. It uses zones to group rules by trust level — a different approach to UFW, but more flexible once you understand it.</p>
+
+<h2>Concepts — Zones</h2>
+
+<p>firewalld assigns every network interface to a zone. Each zone has its own set of allowed services and ports. The key zones:</p>
+
+<table>
+<thead><tr><th>Zone</th><th>Trust level</th><th>Default behaviour</th></tr></thead>
+<tbody>
+<tr><td>drop</td><td>None</td><td>Drops all incoming, no reply</td></tr>
+<tr><td>block</td><td>None</td><td>Rejects all incoming with ICMP message</td></tr>
+<tr><td>public</td><td>Low</td><td>Default. Only selected services allowed</td></tr>
+<tr><td>external</td><td>Low</td><td>For masquerading/NAT scenarios</td></tr>
+<tr><td>home</td><td>Medium</td><td>More trusted, allows more services</td></tr>
+<tr><td>internal</td><td>Medium</td><td>For internal network interfaces</td></tr>
+<tr><td>trusted</td><td>Full</td><td>Allows everything</td></tr>
+</tbody>
+</table>
+
+<h2>Check Status</h2>
+
+<pre><code"># Is firewalld running?
+sudo systemctl status firewalld
+
+# What zone is each interface in?
+sudo firewall-cmd --get-active-zones
+
+# Full config of the default zone
+sudo firewall-cmd --list-all
+
+# Config of a specific zone
+sudo firewall-cmd --zone=public --list-all</code></pre>
+
+<h2>Allow Services</h2>
+
+<pre><code"># Allow a named service (firewalld knows common ones)
+sudo firewall-cmd --permanent --add-service=ssh
+sudo firewall-cmd --permanent --add-service=http
+sudo firewall-cmd --permanent --add-service=https
+
+# List available service names
+sudo firewall-cmd --get-services
+
+# Allow a specific port
+sudo firewall-cmd --permanent --add-port=3000/tcp
+sudo firewall-cmd --permanent --add-port=51820/udp
+
+# Allow a port range
+sudo firewall-cmd --permanent --add-port=6000-6100/tcp
+
+# Apply changes (required after --permanent changes)
+sudo firewall-cmd --reload</code></pre>
+
+<h2>Remove Rules</h2>
+
+<pre><code"">sudo firewall-cmd --permanent --remove-service=http
+sudo firewall-cmd --permanent --remove-port=3000/tcp
+sudo firewall-cmd --reload</code></pre>
+
+<h2>Runtime vs Permanent</h2>
+
+<p>firewalld has two layers — runtime (active now, lost on reload) and permanent (saved, applied on reload). Always use <code>--permanent</code> for changes you want to keep, then run <code>--reload</code>.</p>
+
+<pre><code"># Temporary test rule (runtime only)
+sudo firewall-cmd --add-port=8080/tcp
+
+# Make it permanent
+sudo firewall-cmd --runtime-to-permanent
+
+# Or add it permanent from the start and reload
+sudo firewall-cmd --permanent --add-port=8080/tcp
+sudo firewall-cmd --reload</code></pre>
+
+<h2>Rich Rules — More Control</h2>
+
+<pre><code"># Allow SSH only from a specific IP
+sudo firewall-cmd --permanent --add-rich-rule='
+  rule family="ipv4"
+  source address="203.0.113.10"
+  service name="ssh"
+  accept'
+
+# Block a specific IP
+sudo firewall-cmd --permanent --add-rich-rule='
+  rule family="ipv4"
+  source address="198.51.100.0/24"
+  reject'
+
+# Rate limit — allow max 3 SSH connections per minute
+sudo firewall-cmd --permanent --add-rich-rule='
+  rule service name="ssh"
+  accept
+  limit value="3/m"'
+
+sudo firewall-cmd --reload</code></pre>
+
+<h2>Port Forwarding</h2>
+
+<pre><code"># Forward port 8080 to 80 on the same machine
+sudo firewall-cmd --permanent --add-forward-port=port=8080:proto=tcp:toport=80
+
+# Forward to another machine
+sudo firewall-cmd --permanent --add-forward-port=port=8080:proto=tcp:toport=80:toaddr=192.168.1.50
+
+sudo firewall-cmd --reload</code></pre>
+
+<h2>Change Zone for an Interface</h2>
+
+<pre><code"># Move eth0 to the home zone
+sudo firewall-cmd --permanent --zone=home --change-interface=eth0
+sudo firewall-cmd --reload
+
+# Verify
+sudo firewall-cmd --get-active-zones</code></pre>
+
+<h2>Emergency Block Everything</h2>
+
+<pre><code"># Panic mode — drops all incoming and outgoing immediately
+sudo firewall-cmd --panic-on
+
+# Disable panic mode
+sudo firewall-cmd --panic-off
+
+# Check if panic is on
+sudo firewall-cmd --query-panic</code></pre>
+
+<h2>Logging Dropped Packets</h2>
+
+<pre><code"">sudo firewall-cmd --set-log-denied=all
+# Options: off, unicast, broadcast, multicast, all
+
+# View in journal
+sudo journalctl -k | grep "IN= OUT="</code></pre>
+
+<h2>Full Lockdown Example — Public Web Server</h2>
+
+<pre><code"">sudo firewall-cmd --permanent --zone=public --add-service=ssh
+sudo firewall-cmd --permanent --zone=public --add-service=http
+sudo firewall-cmd --permanent --zone=public --add-service=https
+sudo firewall-cmd --permanent --zone=public --add-rich-rule='rule service name="ssh" accept limit value="3/m"'
+sudo firewall-cmd --set-default-zone=public
+sudo firewall-cmd --reload
+sudo firewall-cmd --list-all</code></pre>
